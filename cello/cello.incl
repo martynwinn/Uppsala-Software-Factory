@@ -1,0 +1,71 @@
+c
+c === CELLO.INCL === main include file for program CELLO
+c
+c Gerard Kleywegt @ 920714
+c Updated 920825
+c Updated 920901,08,11
+c Updated 921103
+c Updated 940308,16
+c Updated 940525
+c Updated 940923
+c Updated 941218
+c
+      implicit none
+c
+      character prognm*20,version*20
+      parameter (prognm = 'CELLO', version = '050427/1.0')
+c
+      integer    maxsym,    maxncs
+      parameter (maxsym=96, maxncs=360)
+c
+      real twopi,pi,degtor,rtodeg
+      parameter (twopi=6.2831853071796, pi=0.50*twopi)
+      parameter (degtor=twopi/360.0,    rtodeg=360.0/twopi)
+c
+      integer kbd,tty,nix
+      parameter (kbd=5, tty=6, nix=0)
+c
+      real zero,half,one,two
+      parameter (zero=0.00, half=0.50, one=1.00, two=2.00)
+c
+c CELL DATA  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+c
+      real alpha,beta,gamma,a1,a2,a3,a11,a12,a13,a22,a23,a33
+      real volume,ca,sa,cb,sb,cg,sg,cartyz,cartzz,astar,bstar,cstar
+      real car,cbr,cgr,symmat(3,4,maxsym),axes(3),angles(3)
+c
+      integer nsym
+c
+      equivalence (axes(1),a1),(axes(2),a2),(axes(3),a3)
+      equivalence (angles(1),alpha),(angles(2),beta),
+     +            (angles(3),gamma)
+c
+common
+c
+      common /cbcel1/ alpha,beta,gamma,a1,a2,a3,ca,sa,cb,sb,cg,sg,
+     +  cartyz,cartzz,volume,a11,a12,a13,a22,a23,a33,symmat,astar,
+     +  bstar,cstar,car,cbr,cgr
+      common /cbcel2/ nsym
+c
+c NCS DATA  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+c
+      real ncsmat(3,4,maxncs)
+c
+      integer ncs
+c
+      character mode*1,ncsnam(maxncs)*40,ncsfil*80
+c
+common
+c
+      common /cbncs1/ ncsmat
+      common /cbncs2/ ncs
+      common /cbncs3/ mode,ncsnam,ncsfil
+c
+c REST ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+c
+      real ndet(maxncs),sdet(maxsym)
+c
+      common /cbrest/ ndet,sdet
+c
+
+

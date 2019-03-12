@@ -1,0 +1,22 @@
+#
+OBJ=	moleman2.o ../gklib/osx_kleylib  ../ccp4libs_latest_m32_osx/libccp4f.a  ../ccp4libs_latest_m32_osx/libccp4c.a
+EXEC =	moleman2
+INCL=	Makefile_osx
+SUBS = 
+SUBS = moleman2_subs.o
+INCL = Makefile_osx moleman2.incl
+##STATIC## STATIC = -static
+
+fc =	 gfortran -DOSX
+
+opt= -O -u -check_bounds -ffixed-line-length-132 -m32 -I..
+link= -O
+
+$(EXEC):	$(OBJ) $(SUBS)
+	$(fc) $(link) -o $(EXEC) $(SUBS) $(OBJ) $(STATIC) -m32 ; strip $(EXEC)
+
+moleman2.o:	moleman2.fpp $(INCL)
+	$(fc) $(opt) -c moleman2.fpp
+
+moleman2_subs.o:	moleman2_subs.fpp $(INCL)
+			$(fc) $(opt) -c moleman2_subs.fpp

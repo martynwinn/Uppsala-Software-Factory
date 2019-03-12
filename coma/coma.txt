@@ -1,0 +1,853 @@
+
+ ** COMA - GENERAL INFORMATION
+
+ Program : COMA
+ Version : 080625
+ Author  : Gerard J. Kleywegt & T. Alwyn Jones,
+           Dept. of Cell and Molecular Biology,
+           Uppsala University, Biomedical Centre, Box 596,
+           SE-751 24 Uppsala, SWEDEN
+ E-mail  : gerard@xray.bmc.uu.se
+ Purpose : calculate NCS correlation map to define a mask
+ Package : RAVE
+
+ ** REFERENCES
+
+ Reference(s) for this program:
+
+ *  1 * T.A. Jones (1992). A, yaap, asap, @#*?  A set of averaging
+        programs. In "Molecular Replacement", edited by E.J. Dodson,
+        S. Gover and W. Wolf. SERC Daresbury Laboratory, Warrington,
+        pp. 91-105.
+
+ *  2 * G.J. Kleywegt & T.A. Jones (1994).  Halloween ... Masks and
+        Bones. In "From First Map to Final Model", edited by
+        S. Bailey, R. Hubbard and D. Waller.  SERC Daresbury
+        Laboratory, Warrington, pp. 59-66.
+        [http://xray.bmc.uu.se/gerard/papers/halloween.html]
+
+ *  3 * G.J. Kleywegt & R.J. Read (1997). Not your average density.
+        Structure 5, 1557-1569.
+        [http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=PubMed&cmd=Retrieve&list_uids=9438862&dopt=Citation]
+
+ *  4 * G.J. Kleywegt & T.A. Jones (1999). Software for handling
+        macromolecular envelopes. Acta Cryst D55, 941-944.
+        [http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=PubMed&cmd=Retrieve&list_uids=10089342&dopt=Citation]
+        [http://scripts.iucr.org/cgi-bin/paper?se0256]
+
+ *  5 * G.J. Kleywegt (1999). Experimental assessment of
+        differences between related protein crystal structures.
+        Acta Cryst. D55, 1878-1857.
+        [http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=PubMed&cmd=Retrieve&list_uids=10531486&dopt=Citation]
+        [http://scripts.iucr.org/cgi-bin/paper?se0283]
+
+ *  6 * R.J. Read & G.J. Kleywegt (2001). Density modification:
+        theory and practice. In: "Methods in Macromolecular
+        Crystallography" (D Turk & L Johnson, Eds.), IOS Press,
+        Amsterdam, pp. 123-135.
+
+ *  7 * Kleywegt, G.J., Zou, J.Y., Kjeldgaard, M. & Jones, T.A. (2001).
+        Around O. In: "International Tables for Crystallography, Vol. F.
+        Crystallography of Biological Macromolecules" (Rossmann, M.G.
+        & Arnold, E., Editors). Chapter 17.1, pp. 353-356, 366-367.
+        Dordrecht: Kluwer Academic Publishers, The Netherlands.
+
+ ** VERSION HISTORY
+
+ 971202 - 0.1 - first version
+ 971203 - 0.2 - improved
+ 971204 - 0.3 - improved
+ 971205 - 0.4 - first released version; manual
+ 971207 - 0.5 - removed nasty bug which crashed the program if
+                there were more NCS-ops than spacegroup symm-ops
+ 980710 - 0.6 - minor changes
+ 990126 - 0.7 - FRCSYM and interpolation errors are no longer listed
+                (only their total number if any occured)
+ 010122 - 1.0 - use C routines to do dynamic memory allocation 
+                and port to Linux
+ 040701 -1.0.1- changed checks of dynamic memory allocation to allow
+                for pointers with negative values as returned by
+                some recent Linux versions
+ 080625 -1.0.2- suppress error messages if more than 10 of them
+
+ ** DESCRIPTION
+
+ COMA is a program that calculates a correlation map which is
+   very useful for the definition of NCS averaging masks.  The
+   program implements Randy Read's algorithm as described in:
+ 
+ FMDAP Vellieux, JF Hunt, S, Roy & RJ Read, "DEMON/ANGEL: a
+   suite of programs to carry out density modification",
+   J. Appl. Cryst. 28, 347-351 (1995).
+
+ Some of the implementation details came about in discussions
+   with Randy Read to whom I am grateful.
+
+ To run the program you need:
+ - an input map (MIR, MAD, ...)
+ - NCS operators
+ - an idea of where your reference molecule (for which the NCS
+   operators are valid, and for which the mask will be generated)
+   lies in 3D space
+
+ The output is a local NCS-density correlation map.  Contour this
+   map on the graphics to find a suitable cut-off level, convert
+   the map into a mask with MAPMAN (using the cut-off value),
+   and touch the mask up in MAMA.
+
+ In addition to the mask, you also get information concerning
+   where in your model later on the NCS operators are valid.
+   This can be helpful when deciding how strongly to restrain
+   the NCS during refinement.
+
+ ** INPUT
+
+ The following example uses the P2 myelin data (distributed with
+   the RAVE tutorial).
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ *** COMA *** COMA *** COMA *** COMA *** COMA *** COMA *** COMA *** COMA *** 
+
+ Version  - 990126/0.7
+ (C) 1992-1999 Gerard J. Kleywegt & T. Alwyn Jones, BMC, Uppsala (S)
+ User I/O - routines courtesy of Rolf Boelens, Univ. of Utrecht (NL)
+ Others   - T.A. Jones, G. Bricogne, Rams, W.A. Hendrickson
+ Others   - W. Kabsch, CCP4, PROTEIN, E. Dodson, etc. etc.
+
+ Started  - Mon Oct 11 19:03:47 1999
+ User     - gerard
+ Mode     - interactive
+ Host     - sarek
+ ProcID   - 12566
+ Tty      - /dev/ttyq12
+
+ *** COMA *** COMA *** COMA *** COMA *** COMA *** COMA *** COMA *** COMA *** 
+
+ Reference(s) for this program:
+
+ *  1 * T.A. Jones (1992). A, yaap, asap, @#*?  A set of averaging
+        programs. In "Molecular Replacement", edited by E.J. Dodson,
+        S. Gover and W. Wolf. SERC Daresbury Laboratory, Warrington,
+        pp. 91-105.
+
+ *  2 * G.J. Kleywegt & T.A. Jones (1994).  Halloween ... Masks and
+        Bones. In "From First Map to Final Model", edited by
+        S. Bailey, R. Hubbard and D. Waller.  SERC Daresbury
+        Laboratory, Warrington, pp. 59-66.
+        [http://xray.bmc.uu.se/gerard/papers/halloween.html]
+
+ *  3 * G.J. Kleywegt & R.J. Read (1997). Not your average density.
+        Structure 5, 1557-1569.
+        [http://www4.ncbi.nlm.nih.gov/htbin-post/Entrez/query?uid=9438862&form=6&db=m&Dopt=r]
+
+ *  4 * G.J. Kleywegt & T.A. Jones (1999). Software for handling
+        macromolecular envelopes. Acta Cryst D55, 941-944.
+        [http://www.ncbi.nlm.nih.gov/htbin-post/Entrez/query?uid=10089342&form=6&db=m&Dopt=b]
+        [http://www.iucr.ac.uk/journals/acta/tocs/actad/1999/actad5504.html]
+
+ *  5 * G.J. Kleywegt (1999). Experimental assessment of
+        differences between related protein crystal structures.
+        Acta Cryst. D, in press.
+
+ *  6 * G.J. Kleywegt & T.A. Jones (2037 ?). Convenient single and
+        multiple crystal real-space averaging. To be published ???
+
+ *  7 * G.J. Kleywegt, J.Y. Zou, M. Kjeldgaard & T.A. Jones (1999 ?).
+        Chapter 25.2.6.  Around O. Int. Tables for
+        Crystallography, Volume F. Submitted.
+
+ ==> For manuals and up-to-date references, visit:
+ ==> http://xray.bmc.uu.se/usf
+
+ *** COMA *** COMA *** COMA *** COMA *** COMA *** COMA *** COMA *** COMA *** 
+
+ Allocate maps of size  : (    5000000) 
+ Allocate masks of size : (    3000000) 
+ Allocate mini maps/masks of size : (     300000) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## map
+
+ Provide your best (MIR, MAD, ...) map as input.  If you have phases
+   to 3 A, use the 3.0 A map.  The map should cover an entire unit
+   cell (or an asymmetric unit, perhaps with a few extra points on
+   the sides).
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Input CCP4 map file ? ( ) p2_start.E
+ Input CCP4 map file : (p2_start.E) 
+ Read header
+ Input map : (p2_start.E) 
+ FORMATTED      OLD     file opened on unit  11
+ Logical name: p2_start.E, Full name: p2_start.E
+
+  (Q)QOPEN allocated #  1
+ User:   gerard               Logical Name: p2_start.E
+ Status: READONLY   Filename: p2_start.E
+
+  File name for input map file on unit  11 : p2_start.E
+                               file size = 2817104  ;  logical name p2_start.E
+
+
+           Number of columns, rows, sections ...............   64  100  110
+           Map mode ........................................    2
+           Start and stop points on columns, rows, sections     0   63    0   99    0  109
+           Grid sampling on x, y, z ........................  100  110   64
+           Cell dimensions .................................  91.80000  99.50000  56.50000  90.00000  90.00000  90.00000
+           Fast, medium, slow axes .........................    Z    X    Y
+           Minimum density .................................   -76.09034
+           Maximum density .................................    91.68163
+           Mean density ....................................     0.00001
+           Rms deviation from mean density .................    15.18876
+           Space-group .....................................   19
+           Number of titles ................................    4
+
+ Titles :
+           Created by MAPMAN V. 931117/3.3 at Wed Dec 22 17:22:28 1993 for user gerard     
+           P2 myelin; initial 2.7 A MIR map; 1 unit cell                                   
+           Created by MAPMAN V. 950216/3.8.2 at Fri Mar 10 16:24:17 1995 for user gerard   
+           RAVE/CCP4 map                                                                   
+
+
+ Parameters as read from the map file
+ Origin ......................          0         0         0
+ Extent ......................        100       110        64
+ Grid ........................        100       110        64
+ Cell axes ...................      91.80     99.50     56.50
+ Cell angles .................      90.00     90.00     90.00
+ UVW (fast, medium, slow) ....          Z         X         Y
+
+ Header done
+ Map read OK
+ Closing BINARY CCP4 map on unit : (      11) 
+ Cell axes   (A) : (  91.800   99.500   56.500) 
+ Cell angles (d) : (  90.000   90.000   90.000) 
+ Grid axes (pts) : (     100      110       64) 
+ Origin    (pts) : (       0        0        0) 
+ Extent    (pts) : (     100      110       64) 
+ Grid spacing (A): (   0.918    0.905    0.883) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## spacegroup symmetry operators
+
+ Provide the name of an O-style symmetry-operator file.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ File with spacegroup symmetry operators ? (symop.o) 19
+ File with spacegroup symmetry operators : (19) 
+ Try to open as : (19) 
+ ERROR --- XOPXOA - error #   2 while opening OLD file : 19
+ OPEN : (UNIT= 1 STATUS=OLD CAR_CONTROL=LIST FORM=FORMATTED 
+  ACCESS=SEQUENTIAL) 
+ Error : (No such file or directory) 
+ OSYM : (/home/gerard/oinfo/symm/) 
+ Try to open as : (/home/gerard/oinfo/symm/19) 
+ Opening O datablock : (/home/gerard/oinfo/symm/19) 
+ O-style symm-ops for spacegroup P212121
+ Datablock : (.SPACE_GROUP_OPERATORS) 
+ Data type : (R) 
+ Number    : (48) 
+ Format    : ((3F10.5)) 
+
+ Nr of spacegroup symmetry operators :   4
+
+ SYMOP  1 =        1.0000       0.0000       0.0000                  0.000
+                   0.0000       1.0000       0.0000                  0.000
+                   0.0000       0.0000       1.0000                  0.000
+ Determinant of rotation matrix =   1.000000
+ Rotation angle                 =   0.000000
+
+ SYMOP  2 =       -1.0000       0.0000       0.0000                  0.500
+                   0.0000      -1.0000       0.0000                  0.000
+                   0.0000       0.0000       1.0000                  0.500
+ Determinant of rotation matrix =   1.000000
+ Rotation angle                 = 180.000000
+
+ SYMOP  3 =       -1.0000       0.0000       0.0000                  0.000
+                   0.0000       1.0000       0.0000                  0.500
+                   0.0000       0.0000      -1.0000                  0.500
+ Determinant of rotation matrix =   1.000000
+ Rotation angle                 = 180.000000
+
+ SYMOP  4 =        1.0000       0.0000       0.0000                  0.500
+                   0.0000      -1.0000       0.0000                  0.500
+                   0.0000       0.0000      -1.0000                  0.000
+ Determinant of rotation matrix =   1.000000
+ Rotation angle                 = 180.000000
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## NCS operators
+
+ Provide your NCS operators in O-style format.  The operators may
+   be in one file, or spread out over multiple files.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ File with NCS RT-operator(s) (RETURN to quit) ? ( ) rt_unit.o
+ File with NCS RT-operator(s) : (rt_unit.o) 
+
+ ==> Read NCS operator : (UNIT_OPERATOR) 
+
+ Nr of RT operators :   1
+
+ RT-OP  1 =     1.0000000    0.0000000    0.0000000                  0.000
+                0.0000000    1.0000000    0.0000000                  0.000
+                0.0000000    0.0000000    1.0000000                  0.000
+ Determinant of rotation matrix         1.000000
+ Column-vector products (12,13,23)      0.000000    0.000000    0.000000
+ Crowther Alpha Beta Gamma                 0.000       0.000       0.000
+ Spherical polars Omega Phi Chi            0.000 *undefined*       0.000
+ Direction cosines of rotation axis     0.000000    0.000000    0.000000
+ Dave Smith                                0.000      90.000       0.000
+ X-PLOR polars Phi Psi Kappa         *undefined* *undefined*       0.000
+ Lattmann Theta+ Theta2 Theta-       *undefined*       0.000 *undefined*
+ Rotation angle                               0.000
+
+ Nr of NCS operators now : (          1) 
+
+ File with NCS RT-operator(s) (RETURN to quit) ? ( ) rt_a_to_b.o
+ File with NCS RT-operator(s) : (rt_a_to_b.o) 
+
+ ==> Read NCS operator : (.LSQ_RT_AV) 
+
+ Nr of RT operators :   1
+
+ RT-OP  1 =     0.3928688    0.1122634   -0.9127194                 64.681
+                0.0835615    0.9840519    0.1570088                -34.267
+                0.9157950   -0.1379537    0.3772229                 -6.074
+ Determinant of rotation matrix         1.000003
+ Column-vector products (12,13,23)     -0.000004    0.000000    0.000000
+ Crowther Alpha Beta Gamma               170.239      67.838    -171.433
+ Spherical polars Omega Phi Chi           90.888     -99.164      67.848
+ Direction cosines of rotation axis    -0.159235   -0.987123   -0.015495
+ Dave Smith                              -22.598      23.681     -15.947
+ X-PLOR polars Phi Psi Kappa              -5.558    -170.794      67.848
+ Lattmann Theta+ Theta2 Theta-             1.194      67.838     161.673
+ Rotation angle                              67.848
+
+ Nr of NCS operators now : (          2) 
+
+ File with NCS RT-operator(s) (RETURN to quit) ? ( ) rt_a_to_c.o
+ File with NCS RT-operator(s) : (rt_a_to_c.o) 
+
+ ==> Read NCS operator : (.LSQ_RT_A_TO_C) 
+
+ Nr of RT operators :   1
+
+ RT-OP  1 =    -0.3026900   -0.2882400   -0.9084600                 81.394
+               -0.8680900   -0.3100900    0.3876300                 95.831
+               -0.3934300    0.9059600   -0.1563600                 -3.107
+ Determinant of rotation matrix         0.999998
+ Column-vector products (12,13,23)      0.000002    0.000001   -0.000002
+ Crowther Alpha Beta Gamma               156.893      98.996      66.526
+ Spherical polars Omega Phi Chi          128.434     -44.817     152.199
+ Direction cosines of rotation axis     0.555662   -0.552125   -0.621613
+ Dave Smith                             -111.968     113.168     136.401
+ X-PLOR polars Phi Psi Kappa            -131.794      56.487     152.199
+ Lattmann Theta+ Theta2 Theta-          -223.419      98.996     -89.634
+ Rotation angle                             152.199
+
+ Nr of NCS operators now : (          3) 
+
+ File with NCS RT-operator(s) (RETURN to quit) ? ( ) 
+ File with NCS RT-operator(s) : ( ) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## search area
+
+ Define the area of 3D space in which you expect your reference
+   molecule to lie  (this is the molecule for which the NCS operators
+   are valid, and for which you want to generate a mask).  Note that
+   in case of proper NCS symmetry, you may want to generate a mask
+   around the entire N-mer (dimer, trimer, ...); in that case, the
+   search area should encompass the entire N-mer.
+
+ The search area is defined in terms of fractional coordinates.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Define the area where you expect your "reference"
+ molecule to be in terms of fractiona coordinates.
+ Fractional search range A ? (   0.000    0.500) 0.2 0.9
+ Fractional search range B ? (   0.000    0.500) 0.3 1.0
+ Fractional search range C ? (   0.000    0.500) 0 1.2
+ Fractional search range A : (   0.200    0.900) 
+ Fractional search range B : (   0.300    1.000) 
+ Fractional search range C : (   0.000    1.200) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## sphere radius
+
+ Define the radius of the sphere which is used for calculating the
+   correlation coefficient.  Typically, this is ~1.5 times the
+   resolution to which you trust your phases.  For example, if
+   you trust your phases to 3.0 A, a radius of 4.5 A would be
+   appropriate.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Sphere radius ~ 1.5 * resolution of trusted phases
+ Sphere radius (A) ? (   4.000) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## type of correlation map
+
+ Two possible correlation maps can be calculated (although they
+   are equivalent in the case of two-fold NCS):
+
+ - R1 = 1/(N-1) * SUM(i) CorrCoeff (mol 1, mol i)
+
+ - R2 = 2/(N*(N-1)) * SUM(i) SUM(j) CorrCoeff (mol i, mol j)
+
+ R1 is the average correlation coefficient between the density in
+   "molecule 1" and that in each of the other molecules.  R2 is
+   the average of all correlation coefficients.  (R2 is slower
+   to compute than R1, but not much, ~5%.)
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Which type of correlation map do you want ?
+ (Note: R1 = R2 for two-fold NCS)
+ 1 = R1 map (<CC(1,J)>)
+ 2 = R2 map (<CC(I,J)>)
+ Type of map (1,2) ? (       1) 1
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## output map
+
+ Provide the name of the output map (CCP4 format).  This will be
+   the correlation map.  It will be on a much coarser grid than
+   the input map (approximately 1/3-rd of the sphere radius).
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Output CCP4 correlation map file ? (coma.E) coma4a_r1.E
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** OUTPUT
+
+ First, the grid for the output map is calculated (spacing roughly
+   1/3-rd of the sphere radius; assuming that the radius is roughly
+   1.5 times the resolution, the grid is ~ dmin/2):
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Output map grid : (      69       75       42) 
+ Spacing (A)     : (   1.330    1.327    1.345) 
+
+ Origin : (         12          21          -1) 
+ Extent : (         52          56          53) 
+ Calculated output map size : (     154336) 
+ Nr of mask points in sphere : (     105) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ A "progress report" is printed every now and then for the impatient:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Progress (%) : (  10.000) 
+ Progress (%) : (  19.999) 
+ Progress (%) : (  29.999) 
+ Progress (%) : (  39.998) 
+ Progress (%) : (  49.998) 
+ Progress (%) : (  59.998) 
+ Progress (%) : (  69.997) 
+ Progress (%) : (  79.997) 
+ Progress (%) : (  89.996) 
+ Progress (%) : (  99.996) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Subsequently, COMA prints some information about the distribution
+   of correlation values in the output map:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Nr of points : (     154336) 
+ Cell volume (A**3)  : (  5.161E+05) 
+ Voxel volume (A**3) : (  2.374E+00) 
+ Bin 38 ... R1 >=  0.90 Nr       42 Cum       42 Cum Vol   9.9725E+01 Solv Cont (%)   100
+ Bin 37 ... R1 >=  0.85 Nr      459 Cum      501 Cum Vol   1.1896E+03 Solv Cont (%)    97
+ Bin 36 ... R1 >=  0.80 Nr     1367 Cum     1868 Cum Vol   4.4354E+03 Solv Cont (%)    90
+ Bin 35 ... R1 >=  0.75 Nr     1800 Cum     3668 Cum Vol   8.7093E+03 Solv Cont (%)    80
+ Bin 34 ... R1 >=  0.70 Nr     1602 Cum     5270 Cum Vol   1.2513E+04 Solv Cont (%)    71
+ Bin 33 ... R1 >=  0.65 Nr     1270 Cum     6540 Cum Vol   1.5529E+04 Solv Cont (%)    64
+ Bin 32 ... R1 >=  0.60 Nr     1038 Cum     7578 Cum Vol   1.7993E+04 Solv Cont (%)    58
+ Bin 31 ... R1 >=  0.55 Nr      994 Cum     8572 Cum Vol   2.0353E+04 Solv Cont (%)    53
+ Bin 30 ... R1 >=  0.50 Nr     1075 Cum     9647 Cum Vol   2.2906E+04 Solv Cont (%)    47
+ Bin 29 ... R1 >=  0.45 Nr     1422 Cum    11069 Cum Vol   2.6282E+04 Solv Cont (%)    39
+ Bin 28 ... R1 >=  0.40 Nr     1901 Cum    12970 Cum Vol   3.0796E+04 Solv Cont (%)    28
+ Bin 27 ... R1 >=  0.35 Nr     2741 Cum    15711 Cum Vol   3.7304E+04 Solv Cont (%)    13
+ Bin 26 ... R1 >=  0.30 Nr     4097 Cum    19808 Cum Vol   4.7032E+04 Solv Cont (%)    -9
+ Bin 25 ... R1 >=  0.25 Nr     6359 Cum    26167 Cum Vol   6.2131E+04 Solv Cont (%)   -44
+ Bin 24 ... R1 >=  0.20 Nr     9962 Cum    36129 Cum Vol   8.5785E+04 Solv Cont (%)   -99
+ Bin 23 ... R1 >=  0.15 Nr    14408 Cum    50537 Cum Vol   1.2000E+05 Solv Cont (%)  -179
+ Bin 22 ... R1 >=  0.10 Nr    19050 Cum    69587 Cum Vol   1.6523E+05 Solv Cont (%)  -284
+ Bin 21 ... R1 >=  0.05 Nr    21482 Cum    91069 Cum Vol   2.1623E+05 Solv Cont (%)  -403
+ Bin 20 ... R1 >=  0.00 Nr    21089 Cum   112158 Cum Vol   2.6631E+05 Solv Cont (%)  -519
+ Bin 19 ... R1 >= -0.05 Nr    17261 Cum   129419 Cum Vol   3.0729E+05 Solv Cont (%)  -615
+ Bin 18 ... R1 >= -0.10 Nr    12022 Cum   141441 Cum Vol   3.3584E+05 Solv Cont (%)  -681
+ Bin 17 ... R1 >= -0.15 Nr     7117 Cum   148558 Cum Vol   3.5274E+05 Solv Cont (%)  -720
+ Bin 16 ... R1 >= -0.20 Nr     3487 Cum   152045 Cum Vol   3.6102E+05 Solv Cont (%)  -739
+ Bin 15 ... R1 >= -0.25 Nr     1500 Cum   153545 Cum Vol   3.6458E+05 Solv Cont (%)  -748
+ Bin 14 ... R1 >= -0.30 Nr      603 Cum   154148 Cum Vol   3.6601E+05 Solv Cont (%)  -751
+ Bin 13 ... R1 >= -0.35 Nr      141 Cum   154289 Cum Vol   3.6634E+05 Solv Cont (%)  -752
+ Bin 12 ... R1 >= -0.40 Nr       42 Cum   154331 Cum Vol   3.6644E+05 Solv Cont (%)  -752
+ Bin 11 ... R1 >= -0.45 Nr        5 Cum   154336 Cum Vol   3.6646E+05 Solv Cont (%)  -752
+
+ "Cumul Vol" ignores any mask overlap !
+ "Solv Cont" ignores overlap, assumes one domain,
+   improper NCS, and all NCS-RT and SymmOps used here !
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ For every correlation value bin (0.05 steps) this list includes:
+ - number of map points in this bin
+ - the cumulative number of points with correlation value greater than
+   or equal to the lower boundary of the bin
+ - the volume of this cumulative number of points (this ignores
+   any overlap that may occur between NCS and/or symmetry mates)
+ - the solvent content if the mask were made with a cut-off equal
+   to the lower boundary of the bin; this is calculated as
+   100.0 * (Vcell - Vmasks) / Vcell, where Vcell is the unit-cell
+   volume, and Vmask is: NNCS * NSYM * Vcumul (NNCS is the number
+   of NCS operators; NSYM is the number of spacegroup symmetry
+   operators, and Vcumul is the cumulative mask volume listed in
+   the previous column)
+
+ Note that the solvent content estimate is only valid if:
+ - the mask comprises the entire "NCS asymmetric unit"
+   (i.e., not if there are multiple domains with different
+   NCS operators)
+ - the NCS is improper (if it is proper, the mask may
+   include parts of all NCS-related molecules)
+ - all NCS operators have been given to the program
+   (e.g., if you have 10-fold NCS, but only want to
+   use a few of the operators in COMA for reasons of
+   speed, this assumption is invalid)
+ - all spacegroup symmetry operators have been supplied
+   (e.g., if you provide a map which contains an entire
+   unit cell, you may supply only P1 symmetry operators,
+   in which case this assumption is invalid)
+ - there is no mask overlap (this is clearly not true
+   for very small correlation values which yield a
+   negative solvent content !)
+
+ In this particular example, all conditions are more or less
+   satisfied, so that a possible cut-off value will probably
+   have to lie in the range 0.4 - 0.7.
+
+ Note that the distribution of the map points shows a bimodal
+   distribution, one centered around a correlation value of 0.75
+   (the mask points, i.e. those that satisfy the NCS relations),
+   and one centered around a value of 0.0 (the rest).  The
+   distribution suggest that a cut-off value of ~0.55 would
+   yield most points that belong to the former category.
+
+ This example took just under 30 minutes to compute (R10000),
+   but it is worth it !!!  In general, the CPU time will
+   increase if there are more NCS operators and/or if the test
+   area is larger.  Note that the sphere radius has no influence
+   since the grid will be set to ~1/3 of the radius (yielding
+   just over 100 points inside the sphere).  In order to get
+   a grid of at least dmin/2, one should not set the sphere
+   radius to anything larger than ~1.5 * dmin !
+
+ ** GETTING THE MASK
+
+ Once COMA is finished, we have done most of the work.  Getting a good
+   starting mask for averaging now entails the following steps:
+
+ (1) contour the map in O to find a suitable cut-off value
+ (2) use this cut-off value in MAPMAN to convert the map into a mask
+ (3) use MAMA to touch up the mask and transfer it to the
+     appropriate grid
+
+ ## inspect map with O
+
+ Use your favourite map-drawing commands in O to contour the map
+   (i.e., Map_*, QM_* or FM_* commands).  Also draw your skeleton
+   and your input map.  Try to find a contour level which gives
+   an aesthetically pleasing mask which covers most of your
+   reference molecule(s) without too much noise and holes.
+
+ Note: if you use the Map_* commands in O, you need to mappage
+   the map first, e.g. with MAPMAN.  You can also use MAPMAN
+   to obtain more statistics about the map, to smooth it, etc.
+
+ In this particular example (which you can re-work using the
+   files provided in the RAVE tutorial), a contour value of
+   0.45 gives a bit too much noise.  A value of 0.5 or 0.55
+   looks much better: a few blobs of noise not connected to
+   the bulk of the "mask", a few cavities inside it, but the
+   "mask" itself is nice and smooth and covers almost the
+   entire molecule (chain "A" in PDB entry 1PMP).  Let's
+   use a value of 0.5 to generate the mask.
+
+ ## convert map to mask with MAPMAN
+
+ Once you have found a suitable contour level, use that as
+   the cut-off to convert the correlation map into a mask
+   with MAPMAN:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ % 698 gerard sarek 17:26:32 gerard/p2 > run mapman
+
+[...]
+
+ MAPMAN > re m1 coma4a_r1.E ccp4
+
+[...]
+
+ MAPMAN > write m1 coma4a_r1.mask
+ Format ? (CCP4) mask
+ Cutoff between non-mask and mask ? (0.0010) 0.5
+ Writing MASK ...
+ Border between 0 and 1 : (   0.500) 
+ Nr of mask points set : (       8572) 
+ Writing mask (compressed O format)
+ Grid points : (     154336) 
+ Stretches   : (        767) 
+ Mask points : (       8572) 
+ Mask write OK
+ MAPMAN > quit
+
+[...]
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## touch up the mask with MAMA
+
+ If you contour the mask in O (Mask_* commands), it should look about
+   the same as the contoured correlation map.  Two things remain to
+   be done:
+ - touch up the mask (remove isolated bits, fill cavities with concrete)
+ - move the mask onto a finer grid (the same as that of the map which
+   you are going to use for averaging)
+
+ These task can easily be accomplished with MAMA.  Start the program
+   and read the mask you just created with MAPMAN:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ % 699 gerard sarek 17:26:32 gerard/p2 > run mama
+
+[...]
+
+ MAMA > read m1 coma4a_r1.mask
+ Reading mask (O format)
+ Format : compressed
+ Grid points : (     154336) 
+ Stretches   : (        767) 
+ Mask points : (       8572) 
+ Number of points in mask : (       8572) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ The first thing to do is to put the mask onto a new grid which
+   is the same as that of the map which you will use for averaging:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAMA > new same m1
+ MAMA > new grid 100  110   64
+ NEW grid : (     100      110       64) 
+ MAMA > new unit m2 m1
+ Nr of points in old mask : (       8572) 
+ Old origin  : (      12       21       -1) 
+ Old extent  : (      52       56       53) 
+ Old grid    : (      69       75       42) 
+ Old cell    : (  91.800   99.500   56.500   90.000   90.000   90.000) 
+ RT operator : (   1.000    0.000    0.000) 
+ RT operator : (   0.000    1.000    0.000) 
+ RT operator : (   0.000    0.000    1.000) 
+ RT operator : (   0.000    0.000    0.000) 
+ Old unit-cell volume  : (  5.161E+05) 
+ Old voxel volume      : (  2.374E+00) 
+ Volume of actual mask : (  2.035E+04) 
+ New grid    : (     100      110       64) 
+ New cell    : (  91.800   99.500   56.500   90.000   90.000   90.000) 
+ Fractional mask bottom : (   0.362    0.453    0.048) 
+ Fractional mask top    : (   0.899    0.813    0.905) 
+ Padding     : (      10       10       10) 
+ New origin  : (      25       39       -8) 
+ New extent  : (      78       63       79) 
+ ... Busy ...
+ Zap points within :  1 1 1
+ New unit-cell volume  : (  5.161E+05) 
+ New voxel volume      : (  7.331E-01) 
+ Required mask points  : (      27765) 
+ Required accuracy (%) : (   0.100) 
+ Points with count    1 =    41732 Cumul =    41732 Mask volume =  3.059E+04
+ Best count     : (          1) 
+ Difference (%) : (  50.304) 
+ First slightly bigger count : (          1) 
+ Difference (%)              : (  50.304) 
+ Setting all points with count >= (       1) 
+ Volume of actual mask   : (  3.059E+04) 
+ Cutting a bit off your mask
+ Removing    10757 surface points with count =    1 and >=  1 non-mask nbrs
+ Mask points left : (      30975) 
+ Volume of actual   mask : (  2.271E+04) 
+ Volume of original mask : (  2.035E+04) 
+ Difference (%)          : (  11.562) 
+ That is the best I can do ...
+ CUT/CONTRACT mask yourself
+ Nr of points set : (      30975) 
+ CPU total/user/sys :       1.5       1.5       0.1
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ If you inspect this mask in O, you will notice that a noise blob
+   is connected to the main bulk.  To get rid of it use:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAMA > contract m2
+ Contract Mask : (M2) 
+ Nr of points set before : (      30975) 
+ Nr of points set after  : (      22457) 
+ MAMA > island m2
+ Island Mask : (M2) 
+ Nr of points set before : (      22457) 
+ Zapping island nr : (          1) 
+ Nr of zap cycles  : (          3) 
+ Nr of mask points : (      22273) 
+ Zapping island nr : (          2) 
+ Nr of zap cycles  : (          2) 
+ Nr of mask points : (          6) 
+ Zapping island nr : (          3) 
+ Nr of zap cycles  : (          3) 
+ Nr of mask points : (        139) 
+ Zapping island nr : (          4) 
+ Nr of zap cycles  : (          2) 
+ Nr of mask points : (         14) 
+ Zapping island nr : (          5) 
+ Nr of zap cycles  : (          2) 
+ Nr of mask points : (         25) 
+ No more islands ...
+ Nr of the core mask : (          1) 
+ Nr of points in it  : (      22273) 
+ Resetting core mask : (          1) 
+ Zeroing island      : (          2) 
+ Zeroing island      : (          3) 
+ Zeroing island      : (          4) 
+ Zeroing island      : (          5) 
+ Nr of points set after  : (      22273) 
+ CPU total/user/sys :       1.9       1.9       0.0
+ MAMA > expand m2
+ Expand Mask : (M2) 
+ Nr of points set before : (      22273) 
+ Nr of points set after  : (      29499) 
+ CPU total/user/sys :       1.2       1.2       0.0
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Now we only have the main bulk of the mask left.  Use the standard
+   mask cosmetics tricks:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAMA > ex m2
+ Expand Mask : (M2) 
+ Nr of points set before : (      29499) 
+ Nr of points set after  : (      37754) 
+ CPU total/user/sys :       1.2       1.2       0.0
+ MAMA > ex m2
+ Expand Mask : (M2) 
+ Nr of points set before : (      37754) 
+ Nr of points set after  : (      47014) 
+ CPU total/user/sys :       1.2       1.2       0.0
+ MAMA > fill m2
+ Fill Mask : (M2) 
+ Nr of points set before : (      47014) 
+ Nr of zap cycles : (          2) 
+ Nr of points set after  : (      47014) 
+ CPU total/user/sys :       1.4       1.4       0.0
+ MAMA > co m2
+ Contract Mask : (M2) 
+ Nr of points set before : (      47014) 
+ Nr of points set after  : (      37822) 
+ MAMA > co m2
+ Contract Mask : (M2) 
+ Nr of points set before : (      37822) 
+ Nr of points set after  : (      29669) 
+ MAMA > is m2
+ Island Mask : (M2) 
+ Nr of points set before : (      29669) 
+ Zapping island nr : (          1) 
+ Nr of zap cycles  : (          3) 
+ Nr of mask points : (      29669) 
+ No more islands ...
+ No isolated islands found
+ Nr of points set after  : (      29669) 
+ MAMA > wr m2 coma_okay.mask
+ Writing mask (compressed O format)
+ Grid points : (     388206) 
+ Stretches   : (       1305) 
+ Mask points : (      29669) 
+ Mask write OK
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Now we have a very nice mask.  If you want to make it a bit bigger
+   do one or more steps of EXpansion; if you want to make it smaller,
+   do one or more steps of COntraction.
+
+ ## how good is the mask ?
+
+ How good is the mask obtained with COMA ?  If we generate a mask
+   around the refined molecule (2.0 A masking radius), and do
+   the usual EXpand, EXpand, FIll_voids, COntract, COntract,
+   ISland_erase, and then compare the two masks, we find that:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAMA > si m1 m2
+ Similarity Mask : (M1) 
+ Similarity Mask : (M2) 
+ Lower limits common volume : (      25       39       -1) 
+ Upper limits common volume : (      86      101       70) 
+ Limits first  mask  : (       1       62        1       63        8       
+  79) 
+ Limits second mask  : (       3       64        5       67        1       
+  72) 
+ Number of common mask points : (     281232) 
+ Nr of points in common grid : (     281232) 
+ Nr of points set in mask 1  : (      29669) 
+ Nr of points set in mask 2  : (      30250) 
+ Nr of points set in both    : (      26547) 
+ Similarity index   : (  8.861E-01) 
+ AND    mask1 mask2 : (      26547) 
+ OR     mask1 mask2 : (      33372) 
+ BUTNOT mask1 mask2 : (       3122) 
+ BUTNOT mask2 mask1 : (       3703) 
+ XOR    mask1 mask2 : (       6825) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ In other words, the two masks are very similar.  The differences are
+   mostly a few areas where surface side chains are not covered by the
+   COMA mask, and a few places where the COMA mask covers space where
+   there aren't any atoms in the final model.  Given that the COMA
+   mask was generated directly from the 2.7 A MIR density and knowledge
+   of the NCS operators, this is an impressive result (methinks) !
+
+ ** MAP AND MASK SIZE
+
+ COMA allocates memory for maps and masks dynamically.  This means that
+   you can increase the size of maps and masks that the program can handle
+   on the fly:
+
+ 1 - through the environment variables MAPSIZE and MASKSIZE (must be
+     in capital letters !), for example put the following in your
+     .cshrc file:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ setenv MAPSIZE 8000000
+ setenv MASKSIZE 3000000
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ 2 - by using command-line arguments MAPSIZE and MASKSIZE (need not
+     be in capitals), for example:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ run coma -b mapsize 10000000 masksize 5000000
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Note that command-line arguments take precedence over environment
+   variables.  So you can set the environment variables in your .cshrc
+   file to "typical" values, and if you have to deal with a map and/or
+   mask which is bigger than that, you can use the command-line argument(s).
+
+ If sufficient memory cannot be allocated, the program will print
+   a message and quit.  In that case, increase the amount of virtual
+   memory (this will not help, of course, if you try to allocate more
+   memory than can be addressed by your machine (for 32-bit machines,
+   something 2**32-1 bytes, I think), or reduce the size requirements.
+
+ COMA needs space for 3 maps and 0.3 masks (actually, 2 maps and
+   one mask, each with 1/10-th the size of a "normal" mask).
+
+ ** KNOWN BUGS
+
+ None, at present.

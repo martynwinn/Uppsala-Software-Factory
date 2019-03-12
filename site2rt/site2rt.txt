@@ -1,0 +1,280 @@
+
+ ** SITE2RT - GENERAL INFORMATION
+
+ Program : SITE2RT
+ Version : 041001
+ Author  : Gerard J. Kleywegt & T. Alwyn Jones,
+           Dept. of Cell and Molecular Biology,
+           Uppsala University, Biomedical Centre, Box 596,
+           SE-751 24 Uppsala, SWEDEN
+ E-mail  : gerard@xray.bmc.uu.se
+ Purpose : try to find inter-crystal operators from two sets of sites
+ Package : RAVE
+
+ ** REFERENCES
+
+ Reference(s) for this program:
+
+ *  1 * T.A. Jones (1992). A, yaap, asap, @#*?  A set of averaging
+        programs. In "Molecular Replacement", edited by E.J. Dodson,
+        S. Gover and W. Wolf. SERC Daresbury Laboratory, Warrington,
+        pp. 91-105.
+
+ *  2 * G.J. Kleywegt & T.A. Jones (1994).  Halloween ... Masks and
+        Bones. In "From First Map to Final Model", edited by
+        S. Bailey, R. Hubbard and D. Waller.  SERC Daresbury
+        Laboratory, Warrington, pp. 59-66.
+        [http://xray.bmc.uu.se/gerard/papers/halloween.html]
+
+ *  3 * G.J. Kleywegt & R.J. Read (1997). Not your average density.
+        Structure 5, 1557-1569.
+        [http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=PubMed&cmd=Retrieve&list_uids=9438862&dopt=Citation]
+
+ *  4 * R.J. Read & G.J. Kleywegt (2001). Density modification:
+        theory and practice. In: "Methods in Macromolecular
+        Crystallography" (D Turk & L Johnson, Eds.), IOS Press,
+        Amsterdam, pp. 123-135.
+
+ *  5 * Kleywegt, G.J., Zou, J.Y., Kjeldgaard, M. & Jones, T.A. (2001).
+        Around O. In: "International Tables for Crystallography, Vol. F.
+        Crystallography of Biological Macromolecules" (Rossmann, M.G.
+        & Arnold, E., Editors). Chapter 17.1, pp. 353-356, 366-367.
+        Dordrecht: Kluwer Academic Publishers, The Netherlands.
+
+ ** VERSION HISTORY
+
+ 971125 - 0.1 - first version
+ 971126 - 0.2 - improved
+ 971127 - 0.3 - first released version; manual
+ 041001 - 0.4 - replaced Kabsch' routine U3BEST by quaternion-based
+                routine (U3QION) to do least-squares superpositioning
+
+ ** DESCRIPTION
+
+ SITE2RT tries to find RT-operators (RT = rotation/translation), as
+   needed for multiple crystal form averaging, by inspecting two
+   sets of sites.  These sites could be heavy atom positions, or
+   selenium positions, etc.
+
+ The input consists of two small PDB files (containing the sites
+   for each crystal form) and a few program parameters:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Max nr of atoms : (       1000) 
+
+ First PDB file (smallest nr of atoms) ? (m1.pdb) q1.pdb
+ Second PDB file (largest nr of atoms) ? (m2.pdb) q2.pdb
+
+ Nr of atoms read file 1 : (          6) 
+
+ Nr of atoms read file 2 : (         13) 
+
+ Triple distance tolerance  ? (   3.000) 4
+ Superpositioning tolerance ? (   3.000) 4
+ Min nr of matched sites    ? (          4) 4
+
+ Exhaustive search (Y/N)    ? (Y) n
+
+ Output ALL solutions (Y/N) ? (N) y
+
+ Start search - may take some time !
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ The algorithm is very simple:
+
+ - enumerate all triples of sites in the first "molecule" (i.e.,
+   sets of 3 sites)
+ - for each triple, find all triples in the other "molecule" that
+   have similar mutual distances (i.e., none of their distances
+   differ by more than the "triple distance tolerance" from those
+   in the first triple)
+ - for each pair of triples, calculate the least-squares operator
+   and apply it to all the sites of the second "molecule"
+ - check if there are more sites in the second "molecule" which
+   are close in space (after applying the operator), within the
+   "superpositioning tolerance"
+ - if any additional sites are found, re-calculate the operator
+   and repeat the check for more matched sites
+ - at the end, report the best match (highest number of matched
+   sites and lowest superpositioning RMSD)
+
+ If you do NOT do an exhaustive search, sites in "molecule 2"
+   which have been matched will not be used in subsequent
+   matching attempts with other triples.  Normally, however,
+   you would do an exhaustive search (unless you have hundreds
+   of sites).
+
+ If you want, you can get verbose output for all solutions.  You
+   could use this if you want to try more solutions than merely
+   the top-scoring one.
+
+ Once the calculations have finished, you can re-run them with
+   different parameters.
+
+ ** EXAMPLE
+
+ In the following example, one crystal form contains 6 sites, and
+   the other 13.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ *** SITE2RT *** SITE2RT *** SITE2RT *** SITE2RT *** SITE2RT *** SITE2RT *** 
+
+ Version  - 971127/0.3
+ (C) 1992-1999 Gerard J. Kleywegt, Dept. Cell Mol. Biol., Uppsala (S)
+ User I/O - routines courtesy of Rolf Boelens, Univ. of Utrecht (NL)
+ Others   - T.A. Jones, G. Bricogne, Rams, W.A. Hendrickson
+ Others   - W. Kabsch, CCP4, PROTEIN, E. Dodson, etc. etc.
+
+ Started  - Mon Oct 11 19:15:34 1999
+ User     - gerard
+ Mode     - interactive
+ Host     - sarek
+ ProcID   - 12905
+ Tty      - /dev/ttyq12
+
+ *** SITE2RT *** SITE2RT *** SITE2RT *** SITE2RT *** SITE2RT *** SITE2RT *** 
+
+ Reference(s) for this program:
+
+ *  1 * T.A. Jones (1992). A, yaap, asap, @#*?  A set of averaging
+        programs. In "Molecular Replacement", edited by E.J. Dodson,
+        S. Gover and W. Wolf. SERC Daresbury Laboratory, Warrington,
+        pp. 91-105.
+
+ *  2 * G.J. Kleywegt & T.A. Jones (1994).  Halloween ... Masks and
+        Bones. In "From First Map to Final Model", edited by
+        S. Bailey, R. Hubbard and D. Waller.  SERC Daresbury
+        Laboratory, Warrington, pp. 59-66.
+        [http://xray.bmc.uu.se/gerard/papers/halloween.html]
+
+ *  3 * G.J. Kleywegt & R.J. Read (1997). Not your average density.
+        Structure 5, 1557-1569.
+        [http://www4.ncbi.nlm.nih.gov/htbin-post/Entrez/query?uid=9438862&form=6&db=m&Dopt=r]
+
+ *  4 * G.J. Kleywegt & T.A. Jones (2037 ?). Convenient single and
+        multiple crystal real-space averaging. To be published ???
+
+ *  5 * G.J. Kleywegt, J.Y. Zou, M. Kjeldgaard & T.A. Jones (1999 ?).
+        Chapter 25.2.6.  Around O. Int. Tables for
+        Crystallography, Volume F. Submitted.
+
+ ==> For manuals and up-to-date references, visit:
+ ==> http://xray.bmc.uu.se/usf
+
+ *** SITE2RT *** SITE2RT *** SITE2RT *** SITE2RT *** SITE2RT *** SITE2RT *** 
+
+ Max nr of atoms : (       1000) 
+
+ First PDB file (smallest nr of atoms) ? (m1.pdb) q1.pdb
+ Second PDB file (largest nr of atoms) ? (m2.pdb) q2.pdb
+
+ Nr of atoms read file 1 : (          6) 
+
+ Nr of atoms read file 2 : (         13) 
+
+ Triple distance tolerance  ? (   3.000) 4
+ Superpositioning tolerance ? (   3.000) 4
+ Min nr of matched sites    ? (          4) 
+
+ Exhaustive search (Y/N)    ? (Y) 
+
+ Output ALL solutions (Y/N) ? (N) 
+
+ Start search - may take some time !
+ Hit nr        1 *** Nr matched sites =      4 *** RMSD (A) =    4.895
+ Hit nr        2 *** Nr matched sites =      4 *** RMSD (A) =    2.529
+ Hit nr        3 *** Nr matched sites =      4 *** RMSD (A) =    2.070
+ Hit nr        4 *** Nr matched sites =      4 *** RMSD (A) =    3.553
+ Hit nr        5 *** Nr matched sites =      4 *** RMSD (A) =    2.254
+ Hit nr        6 *** Nr matched sites =      4 *** RMSD (A) =    2.408
+ Hit nr        7 *** Nr matched sites =      4 *** RMSD (A) =    1.761
+ Hit nr        8 *** Nr matched sites =      4 *** RMSD (A) =    1.761
+
+ -----------------------------
+
+ Nr of hits : (          8) 
+
+ -----------------------------
+
+ Best hit was nr : (          7) 
+ Nr of matching sites : (          4) 
+ With RMSD (A) : (   1.761) 
+
+           Mol 1                Mol 2   Distance
+ ---------------      ---------------   --------
+  X   HET     2  <-->  X   HET    10  =    1.795 A
+  X   HET     4  <-->  X   HET     5  =    1.689 A
+  X   HET     6  <-->  X   HET     6  =    1.280 A
+  X   HET     5  <-->  X   HET     3  =    2.166 A
+
+  RT Mol 2 --> Mol 1 :
+
+.LSQ_RT_SITE2RT_BEST   R   12   (3f16.8)
+      0.06260084      0.57837784     -0.81336349
+      0.97134298      0.15192220      0.18279076
+      0.22929008     -0.80149776     -0.55229282
+     -2.93325138     41.75638199     47.26410294
+
+ Nr of RT operators :   1
+
+ RT-OP  1 =     0.0626008    0.9713430    0.2292901                 -2.933
+                0.5783778    0.1519222   -0.8014978                 41.756
+               -0.8133635    0.1827908   -0.5522928                 47.264
+ Determinant of rotation matrix         1.000000
+ Column-vector products (12,13,23)      0.000000    0.000000    0.000000
+ Crowther Alpha Beta Gamma               105.965    -123.524    -167.334
+ Spherical polars Omega Phi Chi          105.326      46.649     131.981
+ Direction cosines of rotation axis     0.662048    0.701306   -0.264315
+ Dave Smith                              -55.430    -144.426      93.687
+ X-PLOR polars Phi Psi Kappa            -158.236     134.532     131.981
+ Lattmann Theta+ Theta2 Theta-            61.369     123.524    -266.701
+ Rotation angle                             131.981
+
+  RT Mol 1 --> Mol 2 :
+
+.LSQ_RT_INVERSE_BEST   R   12   (3f16.8)
+      0.06260084      0.97134298      0.22929008
+      0.57837784      0.15192220     -0.80149776
+     -0.81336349      0.18279076     -0.55229282
+     14.47555351    -12.13396931     60.24383926
+
+ Nr of RT operators :   1
+
+ RT-OP  1 =     0.0626008    0.5783778   -0.8133635                 14.476
+                0.9713430    0.1519222    0.1827908                -12.134
+                0.2292901   -0.8014978   -0.5522928                 60.244
+ Determinant of rotation matrix         1.000000
+ Column-vector products (12,13,23)      0.000000    0.000000    0.000000
+ Crowther Alpha Beta Gamma               167.334     123.524    -105.965
+ Spherical polars Omega Phi Chi           74.674    -133.351     131.981
+ Direction cosines of rotation axis    -0.662048   -0.701306    0.264315
+ Dave Smith                             -161.687      76.745     -83.823
+ X-PLOR polars Phi Psi Kappa              21.764    -134.532     131.981
+ Lattmann Theta+ Theta2 Theta-           -61.369     123.524      93.299
+ Rotation angle                             131.981
+
+ Re-run with different parameters ? (N) 
+
+
+ *** SITE2RT *** SITE2RT *** SITE2RT *** SITE2RT *** SITE2RT *** SITE2RT *** 
+
+ Version - 971127/0.3
+ Started - Thu Nov 27 16:45:37 1997
+ Stopped - Thu Nov 27 16:46:08 1997
+
+ CPU-time taken :
+ User    -      0.0 Sys    -      0.0 Total   -      0.1
+
+ *** SITE2RT *** SITE2RT *** SITE2RT *** SITE2RT *** SITE2RT *** SITE2RT *** 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Note that the best hit is found more than once (stemming from
+   different initial triples).
+
+ Note that the best operator is printed "both ways", i.e. as an
+  operator that maps "molecule 2" onto "molecule 1", and as the
+  inverse operator which maps "molecule 1" onto "molecule 2".
+
+ ** KNOWN BUGS
+
+ None, at present.

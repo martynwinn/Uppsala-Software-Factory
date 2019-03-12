@@ -1,0 +1,96 @@
+c
+c ... lsqman.incl - include file for program LSQMAN
+c
+c ... Gerard Kleywegt @ 931007
+c
+      implicit NONE
+c
+c PARAMETERS
+c
+c ... MAXATM must be >= 5* MAXRES for buffer arrays
+c
+      integer maxmol,maxres,maxatm
+      parameter (maxmol=8, maxres=30000, maxatm=200000)
+c
+c ... MAXCHN is FIXED at 26 !!! Do NOT change this number !!!
+c     (it is used hard-coded in a few places)
+c
+      integer maxtyp,maxchn
+      parameter (maxtyp=15, maxchn=26)
+c
+      real twopi,pi,degtor,rtodeg,circle
+      parameter (twopi=6.2831853071796)
+      parameter (pi=0.50*twopi)
+      parameter (circle=360.0)
+      parameter (degtor=twopi/circle)
+      parameter (rtodeg=circle/twopi)
+c
+      real zero,half,one,two
+      parameter (zero=0.00, half=0.50, one=1.00, two=2.00)
+c
+      real small
+      parameter (small = 0.00001)
+c
+      integer iunit
+      parameter (iunit = 11)
+c
+c COMMON VARIABLES
+c
+      real rtlsq(12,maxmol,maxmol),atmxyz(3,maxatm,maxmol)
+      real simind(maxmol,maxmol),rmsd(maxmol,maxmol)
+      real matchi(maxmol,maxmol),rmsb(maxmol,maxmol)
+      real cripp(maxmol,maxmol),rrmsd(maxmol,maxmol)
+      real corb(maxmol,maxmol),normsd(maxmol,maxmol)
+      real sas1(maxmol,maxmol),sas2(maxmol,maxmol)
+      real sas3(maxmol,maxmol),sas4(maxmol,maxmol)
+      real qatom(maxatm,maxmol),batom(maxatm,maxmol)
+      real rmsdna(maxmol,maxmol),cell(6,maxmol)
+      real buffi(3,maxatm),buffj(3,maxatm),buffk(3,maxatm)
+      real buffl(3,maxatm),buffm(3,maxatm),buffz(3,2*maxatm)
+      real buffb1(maxatm),buffb2(maxatm)
+      real buffb3(maxatm),buffb4(maxatm)
+      real dismax,decay,rmswgt,cutwat,cuthis,bcutlo,bcuthi
+c
+      integer nmatch(maxmol,maxmol),atomnr(maxatm,maxmol)
+      integer iresid(maxatm,maxmol),chnptr(2,maxchn,maxmol)
+      integer natoms(maxmol),nchain(maxmol)
+      integer ptri(maxatm),ptrj(maxatm),ptrij(maxatm)
+      integer sptrij(maxatm),ibufi(maxatm),ibufj(maxatm)
+      integer natype,nuse1,nuse2,minlen,maxcyc,lendec
+      integer omol,ounit,punit
+c
+      logical incore(maxmol),select(maxmol)
+      logical mmodel(maxmol),usei(maxatm),usej(maxatm)
+      logical lhkeep,ltkeep,lshift,lnmral
+c
+      character atmnam(maxatm,maxmol)*4,resnam(maxatm,maxmol)*3
+      character achain(maxatm,maxmol)*1,last(maxmol,maxmol)*256
+      character axplor(maxatm,maxmol)*4,chname(maxchn,maxmol)*1
+      character name(maxmol)*20,file(maxmol)*80
+      character coment(maxmol)*80,atypes(maxtyp)*4
+      character optcri*2,seqcri*2,chamod*2,ashift*2
+c
+c COMMON BLOCKS
+c
+      common /lmanr1/ rtlsq,atmxyz
+      common /lmanr2/ rmsd,simind,qatom,batom,buffi,buffj,cripp,
+     +                buffk,buffl,buffm,matchi,rmsb,corb,cell,
+     +                buffz,rrmsd,normsd,rmsdna,sas1,sas2,sas3,
+     +                sas4
+      common /lmanr3/ buffb1,buffb2,buffb3,buffb4
+      common /lmanr3/ dismax,decay,rmswgt,cutwat,cuthis,
+     +                bcutlo,bcuthi
+c
+      common /lmani1/ nmatch,atomnr,iresid,chnptr
+      common /lmani2/ natoms,nchain,ptri,ptrj,ptrij,sptrij,
+     +                ibufi,ibufj
+      common /lmani3/ natype,nuse1,nuse2,minlen,maxcyc,lendec,
+     +                omol,ounit,punit
+c
+      common /lmanl1/ incore,select,mmodel,usei,usej
+      common /lmanl2/ lhkeep,ltkeep,lshift,lnmral
+c
+      common /lmanc1/ atmnam,resnam,achain,axplor,last,chname
+      common /lmanc2/ name,file,coment,atypes
+      common /lmanc3/ optcri,seqcri,chamod,ashift
+c

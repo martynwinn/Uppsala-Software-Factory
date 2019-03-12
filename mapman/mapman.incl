@@ -1,0 +1,76 @@
+c
+c ... mapman.incl
+c
+      implicit none
+c
+c ... parameters
+c
+      include 'maxdim.incl'
+c
+ccc      integer mxumap,maxmap,maxpnt,maxrho,maxpk
+      integer mxumap,maxrho,maxpk
+      parameter (mxumap = maxgk4)
+ccc      parameter (maxpnt = maxgk5)
+      parameter (maxrho = 1000000)
+      parameter (maxpk  = 100000)
+c
+      integer maxbop,maxbob,maxboc
+      parameter (maxbop = 500000)
+      parameter (maxbob = maxbop)
+      parameter (maxboc = 2 * maxbob)
+c
+common variables ...
+c
+c ... EDSTAT (1,IMAP) = minimum intensity in map
+c             2       = maximum
+c             3       = average
+c             4       = sigma
+c             5       = variance
+c
+ccc      real map(maxpnt,maxmap),buffer(maxpnt)
+c
+      real cell(6,mxumap),edstat(5,mxumap),peaks(4,maxpk)
+      real rho(maxrho),maprod(mxumap)
+      real pntlis(maxbop,3),bonesa(3,3)
+      real pklev,bobase,bostep,bobfac
+c
+ccc      integer shadow(maxpnt)
+c
+      integer origin(3,mxumap),extent(3,mxumap),uvw(3,mxumap)
+      integer grid(3,mxumap),pklim(2,3),maplus(mxumap)
+c
+      integer npnt(mxumap),spaceg(mxumap)
+      integer levlis(maxbop),brnlis(maxbob,6),conlis(3,maxboc)
+      integer boncon(maxboc)
+c
+      integer nmap,npks,pfirst,bonmap,bonpcn,bonccn,bonlen,bonex
+c
+      logical incore(mxumap),change(mxumap),select(mxumap)
+c
+      character*80 file(mxumap),name(mxumap),commnt(mxumap)
+      character    pkres*3,pkatom*4,pkfile*80
+      character    bonfil*80,bonpdb*80,bonid*5
+c
+c equivalence
+c
+ccc      equivalence (buffer(1),shadow(1))
+c
+common blocks ...
+c
+      common /mamar1/ cell,edstat,peaks,pntlis,bonesa
+      common /mamar2/ rho,maprod
+      common /mamar3/ pklev,bobase,bostep,bobfac
+c
+      common /mamai2/ origin,extent,grid,uvw,spaceg,maplus,pklim
+      common /mamai3/ npnt
+      common /mamai4/ levlis,brnlis,conlis,boncon,bonlen,bonex
+      common /mamai5/ nmap,npks,pfirst,bonmap,bonpcn,bonccn
+c
+      common /mamal1/ incore,change,select
+c
+      common /mamac1/ file,name,commnt
+      common /mamac2/ pkres,pkatom,pkfile
+      common /mamac3/ bonfil,bonpdb,bonid
+c
+c
+c

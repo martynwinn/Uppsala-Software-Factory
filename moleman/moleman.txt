@@ -1,0 +1,3128 @@
+
+ ** MOLEMAN - GENERAL INFORMATION
+
+ Program : MOLEMAN
+ Version : 041001
+ Author  : Gerard J. Kleywegt, Dept. of Cell and Molecular Biology,
+           Uppsala University, Biomedical Centre, Box 596,
+           SE-751 24 Uppsala, SWEDEN
+ E-mail  : gerard@xray.bmc.uu.se
+ Purpose : manipulation and analysis of PDB files
+ Package : X-UTIL
+
+ ** REFERENCES
+
+ Reference(s) for this program:
+
+ *  1 * G.J. Kleywegt (1992-2004).
+        Uppsala University, Uppsala, Sweden.
+        Unpublished program.
+
+ *  2 * Kleywegt, G.J., Zou, J.Y., Kjeldgaard, M. & Jones, T.A. (2001).
+        Around O. In: "International Tables for Crystallography, Vol. F.
+        Crystallography of Biological Macromolecules" (Rossmann, M.G.
+        & Arnold, E., Editors). Chapter 17.1, pp. 353-356, 366-367.
+        Dordrecht: Kluwer Academic Publishers, The Netherlands.
+
+ ** VERSION HISTORY
+
+ 921022 - ability to produce plot files of temperature factors or
+          occupancies, averaged over the side-chain atoms (will
+          give 0.0 for glycyl residues)
+ 921022 - you may now specify a zone of residues with the WRIT
+          option (useful when breaking up your file in pieces for
+          X-PLOR: set the protein X-PLOR id, write protein residues,
+          set the water X-PLOR id, write the waters, etc.)
+ 921022 - definition on main-chain atoms changed; these now include:
+          N, CA, C, O, OT1 and OT2 (for compatibility with X-PLOR)
+ 930118 - new option: apply_random_rotation
+ 930202 - finally removed the well-known but little-understood bug
+          which causes MOLEMAN to sometimes write incomplete
+          PDB files; reason: output file is not closed until next
+          file is opened and therefore the output buffer isn't flushed
+          properly; remedy: close file after WRITe_pdb_file ...
+ 930205 - X-PLOR doesn't like SCALE, CRYST and ORIGX cards, so there
+          is a new question for WRITe_pdb: write non-ATOM/non-REMARK
+          cards or not ? Reply Y for CCP4, N for X-PLOR
+ 930206 - new option: suggest_ot2; using standard geometry, the program
+          can suggest coordinates for OT1 and OT2 oxygens which are
+          needed by X-PLOR (you have to edit them in yourself !)
+        - new option: list_residue; prints all atoms which have the
+          residue number (!) that you type
+ 930211 - new option GEOMetry_list; reorganised list of options;
+          new manual; VERSION 3.0
+ 930212 - added GEOM options 4 and 5
+ 930214 - ask for chain id in WRITE_PDB; new options SEQUence_list,
+          EXPOrt_bad_file, SAME_export, IMPOrt_bad_file
+ 930222 - options ROTAte_molecule and TRANslate_molecule
+ 930305 - options RAMAchandran and BALAsubramanian
+ 930415 - MERLOT rotation angles in ROTAte; proper handling of CRYST,
+          and SCALE cards; new option CRYS to set the cell
+ 930519 - inserted error trap for reading ATOM cards
+ 930616 - new option B_Q_statistics
+ 930618 - new options FRAC and CART to move between fractional
+          and cartesian coordinates; VERSION 4.0
+ 930623 - new option PLAN checks peptide planarity; also recognises
+          "Bioym hydrogens" (1H, 2H and 3H)
+ 930805 - inclusion of hydrogen atoms made optional for B_Q_STAT;
+          new option ALWYn_format_read
+ 930823 - removed minor bug in PLOT (time stamp went to fort.14
+          instead of the per_residue plot file)
+ 930930 - new PIR_sequence_file option
+ 931006 - recognise HETATM cards; recognise the following (store
+          as REMARK cards): REMARK HEADER COMPND SOURCE REVDAT
+          SEQRES HELIX SHEET MASTER FORMUL; make output of
+          REMARK etc cards optional; new option REMA to list
+          all current REMARK etc cards; VERSION 4.6
+ 931109 - option to analyse disulfide geometry added to GEOM
+ 940214 - 4.7.0 - cleaned up for manual
+ 940307 - 4.7.1 - new option XID_to_chain will "translate" X-PLOR
+          labels to chain ids
+ 940316 - 4.7.2 - new option O2XHydrogens to fix X-PLOR hydrogen
+          names for Asn and Arg after mutilation by O
+ 940323 - 4.8   - new option AUTO_chain_segid to generate
+          different chain and X-PLOR segids for separate
+          stretches of residues
+ 940415 - 4.9   - improved O2D plot files
+ 940803 - 5.0   - WRITe option allows you to create poly-Gly or
+          poly-Ser as well; WRITe option allows you to strip X-PLOR
+          OT1/2 oxygens (replace by one " O  " for the benefit of O);
+          the following options now operate on a zone of residues:
+          TEMP, LIMI, XPLO, OCCU and CHAI
+ 940812 - 5.0.1 - GEOM now asks you if you want to see the complete
+          distance matrix and/or the list of bonded distances
+ 940814 - 5.0.2 - debugged WRITe option poly-Serine (didn't handle
+          Ser, Thr and Cys properly)
+ 940815 - 5.0.3 - changed WRITing of X-PLOR OT1/OT2 (now either keep
+          them, or replace them by O/OTX)
+ 940816 - 5.1   - new options ORIGin_move and MIRRor_zone
+ 940817 - 5.1.1 - new option INVErt_zone; extended B_Q_statistics
+          to have separate entry for a ligand or substrate
+ 940829 - 5.1.2 - added option to WATEr_sort to retain residue IDs etc.
+ 940906 - 5.2.0 - new command BONDed_Bs to calculate RMSD and corr.
+          coeff. of the temperature factors of bonded atoms
+ 941219 - 5.3.0 - new command NONBonded_Bs to calculate RMSD and
+          corr. coeff. of the Bs of non-bonded atoms
+ 941223 - 5.4   - new FLAG command
+ 941230 - 5.5   - new CA_Ramachandran_plot command
+ 950101 - 5.5.1 - changed AUTO to generate no more than 26 chains (A-Z)
+ 950102 - 5.6   - new CHI_list command
+ 950124 - 5.7   - new DISUlfide_ODL_file command
+ 950201 - 5.7.1 - changed AUTO command such that all subsequent waters
+                  get the same chain/X-PLOR ID (this allows for gaps
+                  in the water residue numbering)
+ 950207 - 5.8   - new GLYco_site command to list potential
+                  N-glycosylation sites (Asn-X-Ser/Thr)
+ 950215 - 5.8.1 - removed bug from NONB option for all atoms
+ 950223 - 5.8.2 - new SMOOth_Bs command
+ 950227 - 5.8.3 - omit Asn-PRO-Ser/Thr as potential N-glycosylation
+                  sites in GLYCo
+ 950311 - 5.9   - new FIT_water_macro command
+ 950330 - 5.9.1 - minor bug fix (write OXT instead of OTX)
+ 950331 - 5.9.2 - new option FROM_chain_to_XID to translate chain labels
+                  into X-PLOR segment IDs
+ 950412 - 5.9.3 - implement per-residue RMS (B or Q) in PLOT option
+ 950413 - 5.9.4 - COUNt_elements option to count chemical elements;
+                  TALLy_residues option to count residue types
+ 950417 - 5.9.5 - new options to makeusing O easier: RSFIt_datablock,
+                  RSR_datablock, CONNect_file, and TORSion_datablock
+ 950421 - 5.9.6 - new option BURIed_charges to assess how well charges
+                  are balanced in the proteins
+ 950505 - 5.9.7 - new option DISTance_distribution to help decide on
+                  suitable Patterson integration limits for rotation
+                  function calculations
+ 950506 - 6.0   - new options CHECk_nomenclature and CORRect_nomenclature
+                  to see if side-chain atoms have been numbered 1/2
+                  correctly
+ 950530 - 6.0.1 - added option to produce polar Ramachandran plots to
+                  the RAMA command
+ 950609 - 6.0.2 - TALLy now also prints % of each residue type; put some
+                  parts of the main program into subroutines so that the
+                  ESV version will compile again ;-)
+ 950614 - 6.0.3 - option SHORt to print short distances
+ 950621 - 6.0.4 - removed bug from RAMA and BALA commands which
+                  calculated "phi" and "psi" angles for N and C
+                  terminal residues at chain breaks ;-)  (Look on
+                  it from the bright side: your Ramachandran plot
+                  can only get better !)
+ 950630 - 6.1   - option EXTI to estimate the extinction coefficient
+                  at 280 nm
+ 950705 - 6.2   - new option NO_H_read to strip hydrogen atoms while
+                  reading a PDB file; reorganised list of commands
+ 950715 - 6.3   - new RADIal_B_plot option; print elapsed CPU time if
+                  this exceeds one second; new options HELIx_generate
+                  and STRAnd_generate to generate ideal helices or
+                  strands given two end points
+ 950723 - 6.3.1 - minor bug fix (writing out a single chain didn't work)
+ 950829 - 6.3.2 - print radius of gyration, sum of masses and centre
+                  of mass in STAT command;
+                  edit spacegroup name and value of Z in CRYS command;
+                  new SSBO(nd) command to add SSBOND PDB records
+ 950922 - 6.3.3 - removed bug from O dictionary generation options which
+                  would cause a core dump for ligands of more than 51 atoms;
+                  PLANar_peptides option now skips non-connected (but
+                  sequential) residues; it also prints a warning when
+                  a peptide is CIS (|omega| < 30), or distorted
+                  (30 < |omega| < 150).
+ 950923 - 6.4   - the CA_Ramachandran plot option now also lists (when you
+                  select a PostScript output file) how many residues are in
+                  core, additional, generous and disallowed regions of this
+                  plot
+ 950928 - 6.5   - added CACA_distance command to list statistics about
+                  CA-CA distances
+ 950929 - 6.5.1 - added statistics to CACA command
+ 951010 -       - changed lay-out of manual for easy conversion to HTML
+ 951030 - 7.0   - disulfide links are no longer flagged as "bad" contacts
+                  in SHORt_contacts; REMARK records are added with the
+                  following commands: CACA_distances, CA_Ramachandran,
+                  SHORt_contacts, BONDed_Bs, NONBonded_Bs, B_Q_stats;
+                  the B_Q_stats command can now be run on all chains
+                  or just on one (e.g., if you have a protein-protein
+                  complex this is useful to get separate B-factor
+                  statistics for both proteins); the B_Q_stats command
+                  now also lists the maximum B-factor in each category;
+                  waters are now automatically recognised by B_Q_;
+                  you can enter more than one residue type name for
+                  ligands/substrates in the B_Q_ command
+ 951102 - 7.1   - new ASK_auto_chain_segid command
+ 951110 - 7.1.1 - removed bug from text output file with Phi/Psi values
+ 960208 - 7.1.2 - new DUMP_pdb_file command (same as WRITe but no
+                  questions aked other than the file name; other
+                  settings same as in last WRITe)
+ 960209 - 7.2   - added new favoured regions to Ramachandran plot
+                  (PostScript files only)
+ 960405 - 7.2.1 - fixed some instances where ASCII(0) was written
+                  to output PDB files
+ 960415 - 7.2.2 - minor bug fixes
+ 960712 - 7.2.3 - use two cut-offs for bonded atoms for O dictionary
+                  generation commands
+ 961121 - 7.2.4 - minor bug fix
+ 961218 - 7.2.5 - minor bug fix (Ramachandran crashed sometimes on Alphas)
+ 991230 - 7.3   - minor changes for Linux
+ 010116 - 7.3.1 - WATEr_sort: always convert water residue type to uppercase
+ 010306 - 7.3.2 - fixed reading of CRYST1 card (crashed Linux version
+                  if ZMOL wasn't there)
+ 011204 - 7.3.3 - fixed writing of SCALEx cards (unpredictable
+                  translations in Linux version ... pointed out
+                  by Brian Mark)
+ 020218 - 7.3.4 - new ATRE_number command to renumber atoms and residues
+                  simultaneously
+ 020329 - 7.3.5 - new ECHO_pdb_file command to read a PDB file and echo
+                  all lines to the terminal (this will now no longer
+                  happen for the other PDB-file-reading commands)
+ 041001 - 7.4   - replaced Kabsch' routine U3BEST by quaternion-based
+                  routine (U3QION) to do least-squares superpositioning
+
+
+ ** LARGELY OBSOLETE PROGRAM !!!
+
+ Now that MOLEMAN2 is available, this program has become largely
+   obsolete.  Most of the functionality has been implemented in
+   the new program, except for a few exotic ones.  Also, many
+   improvements and bug fixes have been made for MOLEMAN2, but
+   not for this program.  Hence, unless you want to use one of
+   the few options not (yet) available in MOLEMAN2, use of this
+   program is discouraged.  It will not be developed further in
+   the future, although it will remain available for those few
+   exotic options (or users ;-).
+
+ ** LIST OF COMMANDS
+
+ ?                         - list available options
+ !                         - comment (used in scripts)
+ QUIT                      - stop working with the program
+ READ_pdb_file             - PDB formats: standard, Alwyn, X-PLOR
+                             these are automatically recognized
+ ECHO_pdb_file             - read PDB file and echo all lines
+ NO_H_read                 - read PDB file and strip hydrogens
+ ALWYn_format_read         - read mixed-format PDB file
+ APPEnd_pdb_file           - read another PDB file without removing the
+                             atoms already in memory; this is handy when
+                             you want to collect various X-PLOR output PDB
+                             files (protein, ligand, waters) into one model
+                             PDB file for use with "O"
+ WRITe_pdb_file            - almost in standard PDB format; lots of options;
+                             check the example below
+ DUMP_pdb_file             - same as WRITe, but no questions asked
+ SPLIt_pdb_file            - write separate chains to separate files; NONE
+                             of the options of the WRITE option are supported here
+ COUNt_elements            - count how many carbons etc are in the molecule
+ TALLy_residues            - count residue types
+ RENUmber_atoms            - renumber ALL atoms; you must provide the
+                             number of the first atom in the NEW order
+                             (usually, but not always, 1)
+ ATRE_number               - renumber all atoms and residues simultaneously
+ RESIdu_renumber           - renumber ALL residues; you must provide the
+                             number of the first residue in the NEW order
+                             (usually, but not always, 1)
+ ZONE_renumber             - renumber a range of residues
+ TEMP_factors_set          - alter them using: TFnew = A * TFold + B
+ AVERage_temp_factors      - over (1) all atoms, (2) per residue/all atoms,
+                             (3) per residue/main and side chain separately,
+                             (4) over different chains
+ OCCUpancies               - alter them using: OFnew = A * OFold + B
+ CHAIn_type                - set the chain id for all atoms (NOTE: a chain
+                             id consists of 2 characters, e.g., ' A')
+ TRANslate_molecule        - apply an arbitrary translation to
+                             all your coordinates (NOTE: this irreversibly
+                             alters the coordinates; to retrieve the old
+                             ones, read the input PDB file again !); may be
+                             in Cartesian or Fractional coordinates
+ ROTAte_molecule           - rotate your coordinates; you may enter a rotation
+                             matrix or CCP4 Euler angles or CCP4 polar angles
+                             or MERLOT Euler or MERLOT polar angles
+ APPLy_random_rotation     - apply a random rotation to all your coordinates
+                             a random rotation matrix with entries between
+                             -1 and =1 is generated; this matrix is scaled
+                             until its determinant equals 1.0000 (NOTE: this
+                             alters the coordinates; to retrieve the old
+                             ones, read the input PDB file again !)
+ STATistics                - print average, standard deviation, minimum
+                             and maximum of the X-, Y- and Z-coordinates,
+                             the temperature factors and the occupancies
+ DISTance_distribution     - generate distribution of inter-atomic distances
+ RANDom_shifts             - impose random shifts on the X-, Y- and Z-coordinates,
+                             the temperature factors and the occupancies;
+                             if you want an RMS positional shift of 0.5 A,
+                             then use 0.5, 0.5, 0.5 for the maximum X-, Y- and Z-
+                             shifts (NOTE: this irreversibly alters the
+                             coordinates; to retrieve the old ones, read the input
+                             PDB file again !)
+ PLOT_Bs_or_Qs             - create two plot files of the temperature factors OR
+                             the occupancies of all your atoms and averaged over
+                             each residue (either over all or main-chain only atoms);
+                             these files can be plotted and converted into
+                             PostScript format by O2D
+ RADIal_B_plot             - make a plot of the radial distribution of Bs
+ XPLOr_ids                 - set 4-character X-PLOR segment id's
+ XID_to_chain              - "translate" a 4-character X-PLOR segment ID into a
+                             2-character chain label
+ FROM_chain_to_XID         - "translate" chain label to X-PLOR segment ID
+ AUTO_chain_segid          - auto-generate chain and X-PLOR segids
+ ASK_auto_chain_segid      - same as AUTO, but ask for ID names
+ O2XHydrogens              - fix X-PLOR hydrogen names for Asn and Arg
+ ALTEr_residue_name        - change, e.g., all 'SOL' to 'HOH' or 'WAT'
+ CA_Distance_plot          - create a plot file (which can be contoured and
+                             converted into PostScript format by O2D) of the
+                             Ca-Ca distances in your molecule(s)
+ LIMIt_B_and_Q             - reset any unrealistic values that may have crept
+                             in; you supply the minimum and maximum allowed
+                             values for the temperature factors and occupancies
+                             and the program resets any values which exceed
+                             these limits
+ WATEr_sort                - collect all waters (hydrogens are assumed to be
+                             ABSENT !!!); make the one with the set of lowest
+                             X, Y and Z coordinates water nr 1, then its
+                             nearest neighbour water nr 2, etc. This should
+                             help (a) to minimise the number of map_draw
+                             operations in "O" and (b) to detect any duplicate
+                             waters (i.e., they're close together or coincide)
+                             NOTE: the X, Y, Z, B and Q are SWAPPED; the
+                             residue names, numbers, etc are not altered,
+                             unless tou specifically request this
+ FIT_water_macro           - generate O macro to do RSR_rigid and RS_fit on all waters
+ SUGGest_OT2               - suggest coordinates for OT1 and OT2 using the
+                             coordinates of N, CA, C and O, using standard
+                             geometry (bonds, angles, flat carboxylate)
+ LIST_residue              - list all atoms with a given residue number
+ GEOMetry_list             - list geometry of a residue, the N-CA-C backbone,
+                             the CA backbone, two residues (e.g., two neighbours
+                             or two Cysteines in a disulfide bridge) or a zone
+                             of residues
+ DISUlfide_ODL_file        - create an ODL file to draw disulfide bridges in O
+ SSBOnd                    - add PDB SSBOND records automatically
+ GLYCo_site                - list potential N-glycosylation sites
+ RSFIt_datablock           - generate O RS-fit datablock for a residue type
+ RSR_datablock             - generate O RSR datablock for a residue type
+ CONNect_file              - generate O connectivity file for a residue type
+ TORSion_datablock         - generate torsion datablock for a residue type
+ SEQUence_list             - list the first atom of every residue (helps
+                             if you forgot the residue numbers of your
+                             waters, etc. etc.)
+ EXPOrt_bad_file           - write a file with INTERNAL (as opposed to Cartesian)
+                             coordinates
+ SAME_export               - ditto, with a previously generated sort order and
+                             connectivity table
+ IMPOrt_bad_file           - read an internal coordinate file
+ RAMAchandran_plot         - guess what
+ BALAsubramanian_plot      - ditto
+ CHI_list                  - list CHI1-4 values (where defined)
+ BURIed_charges            - assess charged protein residues
+ CA_Ramachandran_plot      - make a pseudo-Ramachandran plot with CA angles
+                             and dihedrals & list statistics
+ CACA_distances            - print statistics about CA-CA distances
+ CRYStal_PDB_card          - define unit-cell constants
+ B_Q_statistics            - print average B and Q for protein, main-chain, side-chain,
+                             water, other atoms and overall
+ BONDed_Bs                 - print RMSD and corr. coeff. of the temperature factors of
+                             bonded atoms
+ NONBonded_Bs              - print RMSD and corr. coeff. of the temperature factors of
+                             non-bonded atoms
+ SHORt_contacts            - print short distances
+ SMOOth_Bs		   - smooth B factors for neighbouring atoms
+ CHECk_nomenclature        - check if side-chain 1/2 atoms are named correctly
+ CORRect_nomenclature      - correct any errors in side-chain 1/2 atom names
+ FRACtional_to_cartesian   - guess what
+ CARTesian_to_fractional   - guess again
+ PLANar_peptides           - lists peptide impropers
+ PIR_sequence_file         - make a PIR sequence file using the
+                             residues in your current protein
+ REMArk_etc_cards          - list all REMARK, HEADER etc. cards that
+                             are currently in memory
+ ORIGin_move               - move the centre-of-gravity of a zone of residues
+                             to (0,0,0)
+ MIRRor_zone               - mirror one or more residues in the YZ, XZ or XY
+                             plane to get different chiral enantiomers
+ INVErt_zone               - invert the coordinates of one or more residues
+                             and move the centre-of-gravity back to where
+                             it was
+ FLAG_colours              - generate O datablock for colouring your molecule
+                             according to the colours of a flag
+ EXTInction_280            - estimate extinction at 280 nm
+
+ ** USAGE NOTES
+
+ The program handles canonical PDB files as well as the files that
+   are produced or needed by O, CCP4, X-PLOR and BIOSYM programs.
+   However, only ATOM, HETATM and CRYST1 cards are actually parsed.
+   Some other cards are stored (REMARK etc.), others are ignored.
+
+ There is one conflict with PDB conventions and that is that the
+   chain ID may consist of *TWO* characters in MOLEMAN.  This can
+   be circumvented by always using a "space" (blank) as the first
+   character of any chain ID you type.
+
+ Older versions of O produced "Alwynian PDB files" which
+   had the residue name appended to the chain identifier.
+   The READ and APPEnd options will check the VERY FIRST ATOM
+   in your file to see if it is in "Alwyn's format".  If you
+   have MIXED FORMATS (e.g., the protein in standard format
+   and the solvent in Alwyn's format), use the option ALWY to
+   read your PDB file.
+
+ The following residue types are recognised as being water molecules
+   by most commands: WAT, HOH, SOL, OHH, HHO, H2O, OH2, H3O, OH3, EAU.
+
+ Hydrogen atoms are recognised as such if their atom names start with
+   ' H' (standard PDB convention), 'HH', 'HD', 'HE' (X-PLOR),
+   '1H', '2H', '3H', ' 1H', ' 2H', ' 3H' (BIOSYM and others), or
+   ' Q' (NMR pseudo-atoms).
+
+ The first FOUR characters of each command are unique and are the only
+   ones that need to be typed.  The program will prompt for any additional
+   input if required, using sensible defaults in most cases.
+
+ To run the program in batch mode (gives carriage returns after input
+   prompts and will crash if a file can't be opened), use the "-b"
+   flag as a command-line argument.
+
+ Some options produce O2D plot files.  These need to be converted into
+   PostScript or CricketGraph format with the program O2D, also part of
+   the X-UTIL suite of programs.
+
+ ** STARTUP
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ *** MOLEMAN *** MOLEMAN *** MOLEMAN *** MOLEMAN *** MOLEMAN *** MOLEMAN *** 
+
+ Version  - 950929/6.5.1
+ (C) 1993-5 Gerard J. Kleywegt, Dept. Mol. Biology, BMC, Uppsala (S)
+ User I/O - routines courtesy of Rolf Boelens, Univ. of Utrecht (NL)
+ Others   - T.A. Jones, G. Bricogne, Rams, W.A. Hendrickson
+ Others   - W. Kabsch, CCP4, PROTEIN, E. Dodson, etc. etc.
+
+ Started  - Wed Oct 11 01:16:35 1995
+ User     - gerard
+ Mode     - interactive
+ Host     - onyx
+ ProcID   - 19394
+ Tty      - /dev/ttyq17
+
+ *** MOLEMAN *** MOLEMAN *** MOLEMAN *** MOLEMAN *** MOLEMAN *** MOLEMAN *** 
+
+ Reference(s) for this program:
+
+ *  1 * [O/X-PLOR DICTIONARIES] G.J. Kleywegt
+        Dictionaries for Heteros
+        ESF/CCP4 Newsletter 31 (32?), June 1995, pp. 45-50
+
+ *** MOLEMAN *** MOLEMAN *** MOLEMAN *** MOLEMAN *** MOLEMAN *** MOLEMAN *** 
+
+ Maximum number of atoms     : (     100000) 
+ Maximum number of residues  : (      10000) 
+ Max nr of atoms per residue : (        100) 
+ Maximum buffer (words)      : (     524288) 
+ Max nr of non-ATOM records  : (       1000) 
+
+ => Random number generator initialised with seed :          1
+ 
+ ===> INPUT/OUTPUT/CONTROL:
+ ?                         !
+ READ_pdb_file             NO_H_read
+ ALWYn_format_read         APPEnd_pdb_file
+ WRITe_pdb_file            SPLIt_pdb_file
+ EXPOrt_bad_file           IMPOrt_bad_file
+ SAME_export               QUIT
+ HELIx_generate            STRAnd_generate
+ 
+ ===> MISCELLANEOUS:
+ REMArk_etc_cards          CRYStal_PDB_card
+ TALLy_residues            COUNt_elements
+ GLYCo_sites               EXTInction_280
+ WATEr_sort                PIR_sequence_file
+ SSBOnd_records
+ 
+ ===> O FILES:
+ RSR_datablock             CONNect_file
+ TORSion_datablock         RSFIt_datablock
+ DISUlfide_ODL_file        FIT_water_macro
+ FLAG_colours
+ 
+ ===> ANALYSIS:
+ STATistics                CA_Distance_plot
+ PLOT_Bs_or_Qs             LIST_residue
+ GEOMetry_list             SEQUence_list
+ RAMAchandran_plot         BALAsubramanian_plot
+ CA_Ramachandran_plot      CACA_distances
+ PLANar_peptides           BURIed_charges
+ DISTance_distribution     SHORt_contacts
+ RADIal_B_plot             CHI_list
+ 
+ ===> TEMPERATURE FACTORS & OCCUPANCIES:
+ LIMIt_B_and_Q             AVERage_temp_factors
+ TEMP_factors_set          OCCUpancies_set
+ SMOOth_Bs                 B_Q_statistics
+ BONDed_Bs                 NONBonded_Bs
+ 
+ ===> ATOMS, RESIDUES, CHAINS & SEGMENTS:
+ O2XHydrogens              SUGGest_OT2
+ CHECk_nomenclature        CORRect_nomenclature
+ CHAIn_name                XPLOr_ids
+ FROM_chain_to_XID         XID_to_chain
+ AUTO_chain_segid          ASK_auto_chain_segid
+ RENUmber_atoms            ALTEr_residue_name
+ RESIdu_renumber           ZONE_renumber
+ ATRE_number
+ 
+ ===> MANIPULATION OPTIONS:
+ FRACtional_to_cartesian   CARTesian_to_fractional
+ ROTAte_molecule           TRANslate_molecule
+ APPLy_random_rotation     RANDom_shifts
+ ORIGin_move               MIRRor_zone
+ INVErt_zone
+ 
+
+ Option ? (READ_pdb_file) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** INPUT, OUTPUT, CONTROL COMMANDS
+
+ ## ? - list available commands in the present version
+
+ ## ! - ignore this input line (can be used in batch input files)
+
+ ## READ_pdb_file - read a PDB file
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (?) read
+
+ Input PDB file ? (in.pdb) 1cel.pdb
+ Number of lines read : (       7524) 
+ Number of atoms now  : (       7038) 
+ CPU total/user/sys :       5.0       4.9       0.1
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## ECHO_pdb_file - read a PDB file and echo all lines to the terminal
+
+ ## NO_H_read - read a PDB file and strip hydrogen atoms
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (READ) no_h
+
+ Input PDB file ? (1cel.pdb) m1_mb.pdb
+ Number of lines read : (       5864) 
+ Hydrogens skipped    : (       1118) 
+ Number of atoms now  : (       4742) 
+ CPU total/user/sys :       4.2       4.1       0.1
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## APPEnd_pdb_file - read a PDB file and append to the one(s) already in memory
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (NO_H) appe
+
+ Input PDB file ? (m1_mb.pdb) 1cel.pdb
+ Number of lines read : (       7524) 
+ Number of atoms now  : (      11780) 
+ CPU total/user/sys :       5.0       5.0       0.1
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## WRITe_pdb_file - write a PDB file
+
+ Write the current molecule(s) to a PDB file.  If the file exists,
+   an error message is printed and (in interactive mode) you are
+   asked if you want to overwrite the file, or provide a different
+   name for it.
+ One new REMARK card can be added, and all previous REMARK etc. cards
+   may either be written or ignored.
+ You may select which chain and/or zone of residues to write out.
+ To generate molecular replacement models, you can write out all atoms,
+   main-chain only, poly-Gly, poly-Ala or poly-Ser.
+ You may either write or skip hydrogen atoms.
+ The carboxy-terminal oxygens (if they have X-PLOR names) can be written
+   with different names.
+ You may include CRYST1 etc. cards (e.g., for CCP4), or omit them (e.g.,
+   for X-PLOR).
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (APPE) write
+
+ Output PDB file                               ? (out.pdb) m1_mb.pdb
+ ERROR --- XOPXNA - error # 126 while opening NEW file : m1_mb.pdb
+ OPEN : (UNIT= 12 STATUS=NEW CAR_CONTROL=LIST FORM=FORMATTED 
+  ACCESS=SEQUENTIAL) 
+ Error : (Connection timed out) 
+ Open file as OLD (Y/N) ? (N) yes
+ REMARK at start of file ? (MoleMan PDB file) 
+ Copy all REMARK, HEADER etc. cards from input ? (Y) 
+ Which chain to write (** = any and all)       ? (**) 
+ Residue range to write (0 0 = all molecule)   ? (       0        0) 
+ You may output All atoms, only Main-chain atoms,
+ a Poly-alanine (Gly intact), a poly-Serine,
+ (Gly and Ala intact) or a poly-Glycine
+ Write option do you want (All/M/P/S/G)        ? (A) 
+ Write HYDROGEN atoms (Y/N)                    ? (N) 
+ Force consecutive atom numbering (Y/N)        ? (Y) 
+ XPLOR needs OT1 and OT2, but O hates them
+ If your file contains OT1/2 you may either
+ keep them, or replace them by O/OXT
+ Write XPLOR OT1/2 ? (Y/N)                     ? (N) 
+ Cell : (  84.000   86.200  111.800   90.000   90.000   90.000) 
+ CCP4 requires CRYST, SCALE and ORIGX cards
+ XPLOR does not like them at all
+ Therefore: reply Y for CCP4 and N for XPLOR :
+ Write CRYST, SCALE, ORIGX cards (Y/N)         ? (Y) 
+ Nr of atoms written : (      11780) 
+ CPU total/user/sys :       9.0       8.9       0.1
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## DUMP_pdb_file - write a PDB file
+
+ Same as WRITe, but no questions are asked, other than the output file name.
+   All other parameters will have the same values as the last time you
+   used the WRITe command (or the defaults, if you hadn't used WRITe yet).
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (DIST) dump
+
+ Output PDB file                               ? (out.pdb) q.pdb
+ Nr of atoms written : (       3646) 
+ CPU total/user/sys :       2.1       2.1       0.0
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## SPLIt_pdb_file - write each chain to a separate PDB file
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Nr of segments found : (         10) 
+ Option ? (AUTO) split
+
+ Basename of PDB files ? (out) qqq
+ New chain id : ( A) 
+ New pdb file : (qqqa.pdb) 
+ Nr of atoms written to it : (       4226) 
+ New chain id : ( B) 
+ New pdb file : (qqqb.pdb) 
+ Nr of atoms written to it : (        464) 
+ New chain id : ( C) 
+ New pdb file : (qqqc.pdb) 
+ Nr of atoms written to it : (         36) 
+ ...
+ New chain id : ( J) 
+ New pdb file : (qqqj.pdb) 
+ Nr of atoms written to it : (          2) 
+ Nr of atoms written in core : (      11780) 
+ CPU total/user/sys :       8.9       8.8       0.2
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## ALWYn_format_read - read a PDB file, but assume it is in Alwyn's old format
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (SPLIt) alwy
+
+ Input PDB file ? (1cel.pdb) 
+ OnO !!!  It is an "Alwyn-Jones-PDB-file" ...
+ Number of lines read : (       7524) 
+ Number of atoms now  : (       7038) 
+ CPU total/user/sys :       5.1       5.1       0.1
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## HELIx_gen/STRAnd_gen - generate ideal alpha-helix or ideal beta-strand
+
+ Use these commands to generate bits of ideal helix/strand.  For instance,
+   if you see a helix in your map, click on two bones atoms at the termini,
+   feed them into MOLEMAN, and include the helix into your model with O.
+ The number of residues is figured out by dividing the distance between
+   the end-points by 1.46 A/residue (helix) or 3.32 A/residue (strand).
+ If you want to model without experimental data, just multiply the
+   number of residues that you want to generate by 1.46 or 3.32 and use
+   that number as the X-coordinate of the end point, with all other
+   coordinates equal to zero.
+ NOTE: both these options will ERASE the current molecule from memory !!!
+
+ NOTE: the version of the algorithm implemented in MOLEMAN is inferior
+   to the one available in MOLEMAN2.  In particular for short stretches
+   this may yield rubbish in this program, but correct results in
+   MOLEMAN2.  You are therefore strongly advised to use MOLEMAN2
+   instead of this program for the generation of helices and strands !
+   Use the AUto SPink, BOnes or SSe command in MOLEMAN2 instead.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (ALWY) helix
+ WARNING - This will ERASE your current molecule !
+ Are you sure ? (N) yes
+ Provide the coordinates of the N- and the C-
+ terminal CA atoms (approximately).
+ If you only want to generate X residues,
+ enter 0,0,0 for the N-terminus and:
+ HELIX : 1.46*X,0,0 for the C-terminus,
+ STRAND: 3.32*X,0,0 for the C-terminus
+ Start coordinates (N-term) ? (   0.000    0.000    0.000) 49.0 62.6 44.4
+ End   coordinates (C-term) ? (  10.000   10.000   10.000) 56.8 67.7 46.3
+ Length (A) : (   9.511) 
+ Nr of residues : (          7) 
+ Distance terminal CAs (A) : (   9.626) 
+ All done ...
+ Use Move_zone and RSR_rigid in O to
+ position the structure element into the
+ density; then use Mutate_* and Lego_side_ch
+ for the correct residue types and rotamers.
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (HELIx) strand
+ WARNING - This will ERASE your current molecule !
+ Are you sure ? (N) y
+ Provide the coordinates of the N- and the C-
+ terminal CA atoms (approximately).
+ If you only want to generate X residues,
+ enter 0,0,0 for the N-terminus and:
+ HELIX : 1.46*X,0,0 for the C-terminus,
+ STRAND: 3.32*X,0,0 for the C-terminus
+ Start coordinates (N-term) ? (  49.000   62.600   44.400) 48.5 66.3 19.5
+ End   coordinates (C-term) ? (  56.800   67.700   46.300) 37.7 69.9 35.9
+ Length (A) : (  19.964) 
+ Nr of residues : (          7) 
+ Distance terminal CAs (A) : (  19.829) 
+ All done ...
+ Use Move_zone and RSR_rigid in O to
+ position the structure element into the
+ density; then use Mutate_* and Lego_side_ch
+ for the correct residue types and rotamers.
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## QUIT - stop working with MOLEMAN
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (STRAnd) quit
+
+
+ *** MOLEMAN *** MOLEMAN *** MOLEMAN *** MOLEMAN *** MOLEMAN *** MOLEMAN *** 
+
+ Version - 950929/6.5.1
+ Started - Wed Oct 11 01:16:35 1995
+ Stopped - Wed Oct 11 01:26:15 1995
+
+ CPU-time taken :
+ User    -     37.0 Sys    -      0.6 Total   -     37.6
+
+ *** MOLEMAN *** MOLEMAN *** MOLEMAN *** MOLEMAN *** MOLEMAN *** MOLEMAN *** 
+
+ >>> This program (C) 1993-95, GJ Kleywegt & TA Jones <<<
+ E-mail: "gerard@xray.bmc.uu.se" or "alwyn@xray.bmc.uu.se"
+
+ *** MOLEMAN *** MOLEMAN *** MOLEMAN *** MOLEMAN *** MOLEMAN *** MOLEMAN *** 
+
+STOP ... Toodle pip ... statement executed
+36.9u 0.6s 9:40 6% 0+0k 144+239io 65pf+0w
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## EXPOrt/SAME/IMPOrt - internal coordinate manipulation
+
+ These options were implemented for use with a new version of AVEPDB which
+   will average coordinate sets based on the internal coordinates (i.e., in
+   terms of distances, angles and dihedrals) of molecules, rather than on
+   their Cartesian coordinates.  The rationale for doing this is that the
+   latter will distort the bond distances and angles if two or more structures
+   are considerably different.  For example, if you have two diverged molecules
+   after Simulated Annealing, the bonds and angles will be fairly similar in
+   both, but the (less or non-constrained) dihedrals will differ considerably.
+
+ By averaging internal coordinates, you retain reasonably good geometry.
+ => EXPO will sort the atoms, create a connectivity table, compute the
+    internal coordinates and create a file;
+ => SAME will use the connectivity generated in a previous EXPO step and
+    use it to generate an internal coordinates file;
+ => IMPO will read an internal coordinates file and convert the coordinates
+    back to the Cartesian system.
+
+ NOTE: using EXPO and IMPO subsequently effectively sorts the atoms in your
+       file, BUT it also puts the first atom at (0,0,0) !!! I.e., if you don't
+       want that, use the lsq-options in O to transform the sorted molecule
+       back to its original position and orientation in space. In addition,
+       you will loose all non-ATOM records you had before as well as the
+       information stored beyond the occupancies in the PDB files (such as
+       atomic numbers and X-PLOR id's)
+ NOTE: atoms for each residue are sorted as follows: first come N, CA, C, O,
+       OT1 and OT2 (whichever are present); next the non-hydrogen atoms are
+       sorted according to the "Greek alphabet" using the third and fourth
+       characters of the atom names (i.e., " CG " comes BEFORE " CD " !);
+       finally, the hydrogens are sorted similarly
+ NOTE: if you want to convert several files for use with the new AVEPDB
+       version, first of all make sure that all files contain the SAME set
+       of atoms; then make sure they are in the same order (use EXPO and then
+       IMPO if the order is different); READ the first molecule, EXPOrt it,
+       READ the second molecule, use SAME_export etc.  Don't use ANY OTHER
+       options in the mean time, or you might screw up the connectivity
+       data (they are stored in a volatile buffer array) !!!
+ NOTE: suggested file extension for internal coordinate files is ".bad",
+       for Bond, Angles, Dihedrals
+
+ An internal coordinate file looks as follows (the first line is not
+   part of the file; it shows what each column contains):
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+KEY ATOM-NR TYPE RES  NAME       DIST    ANGLE  DIHEDR  OCC  B-FAC    I1    I2    I3
+BAD       1  N   PRO     2       0.000   0.000   0.000  1.00 20.00     0     0     0
+BAD       2  CA  PRO     2       1.483   0.000   0.000  1.00 20.00     1     0     0
+BAD       3  C   PRO     2       1.544 116.750   0.000  1.00 20.00     2     1     0
+BAD       4  O   PRO     2       1.240 118.965 -58.380  1.00 20.00     3     2     1
+...
+BAD    1089  N   GLU   133       1.342 125.081 144.087  1.00 20.00  1085  1084  1083
+BAD    1090  CA  GLU   133       1.471 117.547-167.337  1.00 20.00  1089  1085  1084
+BAD    1091  C   GLU   133       1.496 118.182-149.730  1.00 20.00  1090  1089  1085
+BAD    1092  OT1 GLU   133       1.233 117.554 119.898  1.00 20.00  1091  1090  1089
+BAD    1093  OT2 GLU   133       1.230 117.243 -62.811  1.00 20.00  1091  1090  1089
+BAD    1094  CB  GLU   133       1.496 108.563  87.927  1.00 20.00  1090  1089  1085
+BAD    1095  CG  GLU   133       1.510 123.211-167.204  1.00 20.00  1094  1090  1089
+BAD    1096  CD  GLU   133       1.522 104.605 174.176  1.00 20.00  1095  1094  1090
+BAD    1097  OE1 GLU   133       1.237 118.296  88.019  1.00 20.00  1096  1095  1094
+BAD    1098  OE2 GLU   133       1.230 117.804 -89.234  1.00 20.00  1096  1095  1094
+BAD    1099  H   GLU   133       0.976 122.606  18.116  1.00  0.00  1089  1085  1084
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ I1 = the atom-nr of the atom to which the distance is defined;
+ I2 = the angle is defined from the current atom via I1 to I2;
+ I3 = ditto, for the dihedral: current - I1 - I2 - I3
+
+ The program is clever enough to use mostly bonded distances, except for the first
+   residue of every separate entity (chain, ligand, waters):
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+...
+BAD    1789  CE1 PHE A 221       1.377 120.623 178.691  1.00 60.54  1787  1786  1785
+BAD    1790  CE2 PHE A 221       1.379 118.651-178.655  1.00 60.54  1788  1786  1785
+BAD    1791  CZ  PHE A 221       1.385 121.139  -0.033  1.00 60.54  1790  1788  1786
+BAD    1792  N   GSB A 300       2.992 122.117  49.893  1.00 21.23   534   532   531
+BAD    1793  CA  GSB A 300       1.441  93.410  52.446  1.00 21.23  1792   534   532
+BAD    1794  C   GSB A 300       1.509 109.221 -90.973  1.00 21.23  1793  1792   534
+...
+BAD    1818  CYY GSB A 300       1.382 121.935  -0.091  1.00 25.29  1817  1816  1813
+BAD    1819  O1  HOH A 401       2.596 145.966 164.959  1.00 36.12  1187  1186  1185
+BAD    1820  O1  HOH A 402       2.556 108.456 -85.671  1.00 28.22  1233  1232  1229
+...
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (STATs) read
+
+ Input PDB file ? (m3b.pdb) m3a.pdb
+ Number of lines read : (       1104) 
+ Number of atoms now  : (       1099) 
+ Option ? (READ) expo
+
+ Output Bonds/Angles/Dihedrals file ? (m3a.bad) m3a.bad
+ ERROR --- XOPXNA - error # 126 while opening NEW file : m3a.bad
+ Open file as OLD (Y/N) ? (N) y
+ Nr of atoms sorted : (       1099) 
+ ... I am toiling ...
+
+ Option ? (EXPO) read
+
+ Input PDB file ? (m3a.pdb) m3b.pdb
+ Number of lines read : (       1104) 
+ Number of atoms now  : (       1099) 
+ Option ? (READ) same
+
+ Output Bonds/Angles/Dihedrals file ? (m3a.bad) m3b.bad
+ ERROR --- XOPXNA - error # 126 while opening NEW file : m3b.bad
+ Open file as OLD (Y/N) ? (N) y
+
+ Option ? (SAME) impo
+
+ Input Bonds/Angles/Dihedrals file ? (m3b.bad) m3a.bad
+ Nr of lines read : (       1099) 
+ Nr of atoms read : (       1099) 
+ ... Converting to Cartesian coordinates ...
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** MISCELLANEOUS COMMANDS
+
+ ## REMArk_etc_cards - list non-coordinate cards in memory
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (READ_pdb_file) remark
+ #  1 > HEADER    HYDROLASE(O-GLYCOSYL)                   17-MAY-94   1CEL      1CEL   2
+ #  2 > COMPND    1,4-BETA-D-GLUCAN CELLOBIOHYDROLASE I (CELLULASE)             1CEL   3
+ #  3 > COMPND   2 (E.C.3.2.1.91)                                               1CEL   4
+ #  4 > SOURCE    FUNGUS (TRICHODERMA REESEI)                                   1CEL   5
+ #  5 > AUTHOR    C.DIVNE,T.A.JONES                                             1CEL   6
+ #  6 > REVDAT   1   01-NOV-94 1CEL    0                                        1CEL   7
+ #  7 > JRNL        AUTH   C.DIVNE,J.STAHLBERG,T.REINIKAINEN,L.RUOHONEN,        1CEL   8
+ ...
+ #286 > SSBOND  20 CYS B  261    CYS B  331                                     1CEL 359
+ #287 > MTRIX1   1  1.000000  0.000000  0.000000      -38.09200    1            1CEL 371
+ #288 > MTRIX2   1  0.000000  1.000000  0.000000      -43.10800    1            1CEL 372
+ #289 > MTRIX3   1  0.000000  0.000000  1.000000      -56.39300    1            1CEL 373
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## CRYStal_pdb_card - define unit-cell parameters
+
+ Define the unit cell constants.  These may be written as a
+   CRYST1 card in output PDB files; SCALEX cards are derived
+   from the cell constants; ORIGX cards are always set to the
+   identity operator.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (REMArk) cryst
+ Unit-cell constants ? (  84.000   86.200  111.800   90.000   90.000   
+  90.000) 
+ Unit-cell volume (A3) : (  8.095E+05) 
+ Spacegroup ? (P 21 21 2) 
+ Value of Z ? (       8) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## TALLy_residues - count the number of glycines, alanines, etc.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (CRYSt) tally
+ Type PCA Number =      2 (   0.14 %)
+ Type SER Number =    100 (   7.12 %)
+ Type ALA Number =     54 (   3.85 %)
+ Type CYS Number =     40 (   2.85 %)
+ Type THR Number =     92 (   6.55 %)
+ ...
+ Type PHE Number =     30 (   2.14 %)
+ Type MET Number =     12 (   0.85 %)
+ Type NAG Number =      2 (   0.14 %)
+ Type IBZ Number =      2 (   0.14 %)
+ Type GLC Number =      2 (   0.14 %)
+ Type  CA Number =      1 (   0.07 %)
+ Nr of waters found   : (        529) 
+ (Using the most usual names for waters)
+ Total nr of residues : (       1404) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (READ) tally
+ Nr of "  T" residues : (          5) 
+ Nr of "  C" residues : (          5) 
+ Nr of "  A" residues : (          5) 
+ Nr of "  G" residues : (          5) 
+ There are *NO* waters
+ Total nr of residues : (         20) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## COUNt_elements - count the number of carbons, hydrogens, etc.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (TALLy) count
+ Nr of Carbon atoms      : (       3992) 
+ There are *NO* Hydrogen atoms
+ Nr of Nitrogen atoms    : (       1068) 
+ Nr of Oxygen atoms      : (       1921) 
+ Nr of Sulfur atoms      : (         54) 
+ There are *NO* Phosphorous atoms
+ Additional elements:
+ Nr of " I" atoms        : (          2) 
+ Nr of "CA" atoms        : (          1) 
+ Total nr of atoms       : (       7038) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## GLYCo_sites - list potential N-glycosylation sites (Asn-X-Ser/Thr)
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (COUNt) glyco
+ Nr of residues found : (       1404) 
+ Potential N-glycosylation site #   1 : ASN   45 - (not PRO) - SER   47
+ Potential N-glycosylation site #   2 : ASN   64 - (not PRO) - THR   66
+ Potential N-glycosylation site #   3 : ASN  270 - (not PRO) - SER  272
+ Potential N-glycosylation site #   4 : ASN  384 - (not PRO) - THR  386
+ *NOT*  an N-glycosylation site       : ASN  431 -    PRO    - SER  433
+ Potential N-glycosylation site #   5 : ASN   45 - (not PRO) - SER   47
+ Potential N-glycosylation site #   6 : ASN   64 - (not PRO) - THR   66
+ Potential N-glycosylation site #   7 : ASN  270 - (not PRO) - SER  272
+ Potential N-glycosylation site #   8 : ASN  384 - (not PRO) - THR  386
+ *NOT*  an N-glycosylation site       : ASN  431 -    PRO    - SER  433
+ Potential glycosylation sites : (          8) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## SSBOnd_records - add SSBOND PDB cards (if they don't already exist)
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (READ) ssbo
+ Max SS bond length (A) ? (   2.500) 2.2
+
+   25  SG  CYS A   4      36.618  67.989  34.228  1.00 21.90      1CEL 398
+  148  SG  CYS A  19      46.720  75.194  72.769  1.00 16.00      1CEL 521
+  181  SG  CYS A  25      47.360  76.947  73.550  1.00 18.46      1CEL 554
+ ...
+ 5989  SG  CYS B 331      -7.298   9.647  20.243  1.00 10.03      1CEL6363
+ 6482  SG  CYS B 397     -25.330  24.877  13.503  1.00 10.62      1CEL6856
+
+ Nr of CYS SG atoms found : (         40) 
+
+ SSBOND   1 CYS A    4    CYS A   72     S-S =   2.03 A
+ SSBOND   2 CYS A   19    CYS A   25     S-S =   2.02 A
+ ...
+ SSBOND  19 CYS B  238    CYS B  243     S-S =   2.03 A
+ SSBOND  20 CYS B  261    CYS B  331     S-S =   2.03 A
+
+ Nr of disulfide bridges : (         20) 
+ Option ? (SSBO) ssbo
+ ERROR --- SSBOND records already present
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## EXTInction_280 - estimate molar extinction coefficient of a protein at 280 nm
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (SSBO) exti
+ Reference: Gill & Von Hippel,
+ Anal. Biochem. 182: 319-326 (1989).
+ e280 = (1280*TYR + 5690*TRP + 120*CYS)
+ accuracy roughly 5%; units M-1 cm-1
+ Nr of residues : (     868) 
+ Nr of TYR      : (      40) 
+ Nr of TRP      : (      18) 
+ Nr of CYS      : (      40) 
+ e280 (M-1 cm-1) ~ (  1.584E+05) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## WATEr_sort - sort water molecules
+
+ Sort your waters so that each water gets its nearest
+   neighbour as its successor in the list of atoms; the
+   printed distances reveal water molecules which you
+   have put in more than once (or extremely close to
+   one another; if a distance is less than 2.5 A, a
+   warning message is printed).
+ NOTE: your file should NOT contain any water-hydrogen atoms !!!
+ Optionally, you may also swap residue IDs etc., but
+   this will mean that your waters are not sorted by
+   ID any longer after this operation !!
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (READ_pdb_file) water
+ What have you called your waters  ? (HOH) 
+ You may either swap XYZ,B,Q only, OR
+ also swap residue numbers etc.; in the
+ latter case, your waters may *NOT* be
+ sorted by residue ID afterwards !!!
+ Swap residue numbers etc. ? (N) y
+ Nr of water molecules found : (        100) 
+ Water molecule with minimum coordinates : (         61) 
+  ... swap waters          300 and          360
+ Closest water is : (        380) 
+ Distance (A)     : (   4.237) 
+  ... swap waters          301 and          380
+ Closest water is : (        331) 
+ Distance (A)     : (   4.568) 
+  ... swap waters          302 and          331
+ Closest water is : (        317) 
+ Distance (A)     : (   2.988) 
+  ... swap waters          303 and          317
+...
+  ... swap waters          311 and          398
+ Closest water is : (        315) 
+ Distance (A)     : (   7.679) 
+  ... swap waters          311 and          315
+ Nr of waters sorted : (        100) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ % 50 gerard rigel 23:39:23 progs/moleman > grep atom watersorted.pdb
+ATOM      1  O1  HOH   360      11.358   8.880  19.119  1.00 24.31   8
+ATOM      2  O1  HOH   380      11.561  10.834  22.873  1.00 43.23   8
+ATOM      3  O1  HOH   331      10.555  13.666  26.313  1.00 32.55   8
+ATOM      4  O1  HOH   317      13.212  14.450  25.193  1.00 18.03   8
+...
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## PIR_sequence_file - generate PIR sequence file
+
+ Generate a PIR sequence file from your current molecule.
+   Unrecognised residue types (e.g. solvent, ligand) give
+   rise to a SPACE, but if these residues FOLLOW your
+   protein residues, no harm is done.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (WATEr) pir_
+ Amino acid residue names ? (ALA ARG ASN ASP CYS GLN GLU GLY HIS ILE LEU 
+  LYS MET PHE PRO SER THR TRP TYR VAL CPR ASX GLX UNK) 
+ One letter codes         ? (A R N D C Q E G H I L K M F P S T W Y V J B Z 
+  X) 
+ PIR output file name     ? (sequence.pir) 
+ PIR sequence name        ? (SEQUENCE) 
+ PIR sequence title       ? (Any title) 
+ Number of residues encountered : (       1404) 
+ Recognised one-letter codes    : (        866) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ % 156 gerard rigel 15:46:09 progs/moleman > cat sequence.pir 
+! Created by MOLEMAN V. 930930/4.5 at Thu Sep 30 16:28:42 1993 for user gerard
+
+>P1;SEQUENCE
+test pir
+FPTIPLSRLF DNAMLRAHRL HQLAFDTYQE FEEAYIPKEQ KYSFLQNPQT SLCFSESIPT
+PSNREETQQK SNLELLRISL LLIQSWLEPV QFLRSVFANS LVYGASDSNV YDLLKDLEEG
+IQTLMGRLED GSPRTGQIFK QTYSKFDTNS HNDDALLKNY GLLYCFRKDM DKVETFLRIV
+QCRSVEGSCG
+*
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** O-RELATED COMMANDS
+
+ ## RSR_datablock - create an O RSR datablock for a residue type
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (RSFIt) rsr_
+ Which residue number ? (     200) 
+
+ 1092  C1  RTA   200      21.972  29.831  16.739  1.00 15.25   6
+ 1093  C2  RTA   200      20.921  30.524  15.841  1.00 15.61   6
+ ...
+ 1113  O22 RTA   200      21.840  21.712  27.037  1.00 10.99   8
+
+ Nr of atoms found : (      22) 
+ Residue type : (RTA) 
+ Atom types   : ( C1   C2   C3   C4   C5   C6   C7   C8   C9   C10  C11  
+  C12  C13  C14  C15  C16  C17  C18  C19  C20  O21  O22) 
+ Datablock file ? (rsr_dict_rta.odb) 
+ Datablock name : (RSR_dict_RTA) 
+ Datablock written
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+! Created by MOLEMAN V. 950417/5.9.5 at Mon Apr 17 23:03:29 1995 for user gerard
+!
+! RSR datablock for RTA
+!
+RSR_dict_RTA T 2 70
+ C1   C2   C3   C4   C5   C6   C7   C8   C9   C10  C11  C12  C13  C14
+ C15  C16  C17  C18  C19  C20  O21  O22
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## CONNect_file - generate O connectivity file
+
+ Generate an O connectivity file for a residue type (append to your
+   standard connectivity file, or read directly into O with the
+   Conn_file command).  Hydrogen-hydrogen "bonds" are automatically
+   removed.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (CONN) 
+ Which residue number ? (     223) 
+ Cut-off distance for bonded atoms ? (   1.000) 1.9
+
+ 1797  N1  GSB A 223      77.464  26.288  13.425  1.00 21.20      1GUH1918
+ 1798  CA1 GSB A 223      78.377  27.299  12.928  1.00 21.20      1GUH1919
+ ...
+ 1822  O31 GSB A 223      81.410  34.774  18.220  1.00 21.20      1GUH1943
+ 1823  O32 GSB A 223      81.064  32.646  18.148  1.00 21.20      1GUH1944
+
+ Nr of atoms found : (      27) 
+ Residue type : (GSB) 
+ Atom types   : ( N1   CA1  C1   O11  O12  CB1  CG1  CD1  OE1  N2   CA2  
+  C2   O2   CB2  SG2  CD2  CE2  CF1  CF2  CZ1  CZ2  CYY  N3   CA3  C3   O31  
+  O32) 
+ Connect file ? (connect_gsb.dat) 
+ Nr of bonds : (         27) 
+ Nr of ATOM records : (          3) 
+ Nr of CONNECT ,,   : (          7) 
+ Connect file written
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+GSB
+ATOM  N1   CA1  C1   O11  O12  CB1  CG1  CD1  OE1  N2 
+ATOM  CA2  C2   O2   CB2  SG2  CD2  CE2  CF1  CF2  CZ1
+ATOM  CZ2  CYY  N3   CA3  C3   O31  O32
+CONNECT -  N1   CA1  C1  O11 +
+CONNECT  CA1  CB1  CG1  CD1  OE1
+CONNECT  C1   O12
+CONNECT  CD1  N2  CA2  C2  O2
+CONNECT  CA2  CB2  SG2  CD2  CE2  CF1  CZ1  CYY  CZ2  CF2  CE2
+CONNECT  C2   N3  CA3  C3  O31
+CONNECT  C3   O32
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## TORSion_datablock - generate torsion datablock for O
+
+ Generate a torsion datablock (for use with the Tor_residue command in O).
+ This appears to be a simple exercise, but it is not.  Consider all-
+   trans-retinoic acid with 22 atoms and 22 bonds.  This yields more than
+   40 dihedral angles, but only 3 torsion entries ...  The trick is to
+   throw away every dihedral which appears to be strongly restrained,
+   dihedrals inside rings, etc.  MOLEMAN uses the following criteria
+   to reduce the number of torsions:
+ - any dihedral which is equal to -180, 0 or +180 degrees (with a
+   tolerance of 5 degrees) is rejected as (probably) being strongly
+   restrained to its current value (e.g., in conjugated systems)
+ - any dihedral K->I->J->L whose rotation affects atom "K" or
+   "I" is rejected as (probably) being part of a ring system
+ - if the number of atoms affected by the torsion is >= the total
+   nr of atoms minus 4, the torsion is rejected.  In this case,
+   (for example, a torsion involving a carboxylate) it makes more
+   sense to use the torsion defined the other way around (i.e.,
+   use torsion L-J-I-K which affects only 1 or 2 atoms, instead of
+   K-I-J-L)
+ - if a torsion is around the same bond as a previous torsion, and
+   it affects the same atoms as that previous torsion, it is rejected
+   as being a simple permutation.  This happens, for instance, for
+   carboxylates and for aliphatic tails sprouting from a ring, in
+   which case there are two equivalent ways to define the torsion
+   of the tail relative to the ring)
+
+ The "surviving", freely rotatable torsion angles are written to a
+   file.  This file must be *appended* to your standard torsion file
+   (ODAT/torsion.o, for instance), and the number of lines in the
+   datablock must be updated accordingly.
+
+ Note that this option doesn't know anything about linkages to
+   other residues (and therefore is less suited for use with oligomeric
+   compounds).  For instance, if you run it on a TRP residue, you'll
+   get several unwanted torsions:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ RESIDUE TRP
+ TORSION TOR1 -58. N CA CB CG CG CD2 CE2 CE3 CD1 NE1 CZ2 CZ3 CH2
+ TORSION TOR2 -40. N CA C O O
+ TORSION TOR3 -58. CG CB CA N N C O
+ TORSION TOR4 -99. CA CB CG CD2 CD2 CE2 CE3 CD1 NE1 CZ2 CZ3 CH2
+ TORSION TOR5 -99. CD2 CG CB CA N CA C O
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ TOR1 is simply CHI1; TOR2 would be deleted; TOR3 is CHI1 in reverse;
+   TOR4 is CHI2 and TOR5 is CHI2 in reverse.  Hence, for oligomeric
+   compounds (with distinct residues, that is; it will work fine for
+   glutathione if this is treated as a single residue; check for
+   example residue 223 in PDB entry 1GUH) one would have to add
+   torsions involving neighbouring residues, and probably delete
+   some non-standard torsions.
+
+ Note: at present, O can only handle a maximum of 12 torsion angles.
+   This means you may have to remove some of them (but remember that
+   many of them will be defined in two ways, so you can keep the one
+   you find most useful of each such pair).
+
+ The following example shows how this works for retinoic acid (residue
+   200 in PDB entry 1CBS if you want to try it at home).  Note that
+   indeed only the three intuitively reasonable torsions are
+   generated: the tail relative to the ring, the ring relative to
+   the tail, and the carboxylate relative to the tail !
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ All-trans-retinoic is (incorrectly ;-) numbered as follows:
+
+     C16     C19        C20        O21
+     |        |          |        /
+     C5  C7   C9   C11   C13   C15
+    /\\ / \\ / \\ /  \\ /  \\ /   \
+  C4  C6    C8  C10   C12   C14    O22
+   |  |
+  C3  C1--C17
+   \  /\
+    C2  C18
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (TORS) 
+ Which residue number ? (       7) 200
+ Cut-off distance for bonded atoms ? (   2.000) 
+
+ 1092  C1  RTA   200      21.972  29.831  16.739  1.00 15.25   6
+ 1093  C2  RTA   200      20.921  30.524  15.841  1.00 15.61   6
+ ...
+ 1112  O21 RTA   200      23.640  21.075  25.978  1.00 13.29   8
+ 1113  O22 RTA   200      21.840  21.712  27.037  1.00 10.99   8
+
+ Nr of atoms found : (      22) 
+ Residue type : (RTA) 
+ Atom types   : ( C1   C2   C3   C4   C5   C6   C7   C8   C9   C10  C11  
+  C12  C13  C14  C15  C16  C17  C18  C19  C20  O21  O22) 
+ Datablock file ? (torsion_rta.dat) 
+ Nr of bonds : (         22) 
+
+ DIHEDRAL  C6  200  C1  200  C2  200  C3  200   -42.76
+ Skip -> ring torsion
+
+ DIHEDRAL  C17 200  C1  200  C2  200  C3  200    77.70
+ Skip -> ring torsion
+
+ ...
+
+ DIHEDRAL  C4  200  C5  200  C6  200  C7  200   178.97
+ Skip -> torsion ~ 180
+
+ ...
+
+ DIHEDRAL  C1  200  C6  200  C7  200  C8  200   154.33
+ Affected atoms : ( C8  C9  C10  C11  C12  C13  C14  C15  C19  C20  O21  
+  O22) 
+ OKAY ==> new torsion : (TOR1) 
+
+ DIHEDRAL  C5  200  C6  200  C7  200  C8  200   -32.57
+ Affected atoms : ( C8  C9  C10  C11  C12  C13  C14  C15  C19  C20  O21  
+  O22) 
+ Permutation of : (TOR1) 
+ Skip -> permutation
+
+ DIHEDRAL  C8  200  C7  200  C6  200  C1  200   154.33
+ Affected atoms : ( C1  C2  C3  C4  C5  C16  C17  C18) 
+ OKAY ==> new torsion : (TOR2) 
+
+ DIHEDRAL  C8  200  C7  200  C6  200  C5  200   -32.57
+ Affected atoms : ( C5  C1  C2  C3  C4  C16  C17  C18) 
+ Permutation of : (TOR2) 
+ Skip -> permutation
+
+ DIHEDRAL  C6  200  C7  200  C8  200  C9  200  -179.29
+ Skip -> torsion ~ 180
+
+ ...
+
+ DIHEDRAL  C19 200  C9  200  C8  200  C7  200    -0.57
+ Skip -> torsion ~ 0
+
+ ...
+
+ DIHEDRAL  C13 200  C14 200  C15 200  O21 200   -50.98
+ Affected atoms : ( O21  O22) 
+ OKAY ==> new torsion : (TOR3) 
+
+ DIHEDRAL  C13 200  C14 200  C15 200  O22 200   129.00
+ Affected atoms : ( O22  O21) 
+ Permutation of : (TOR3) 
+ Skip -> permutation
+
+ DIHEDRAL  O21 200  C15 200  C14 200  C13 200   -50.98
+ Affected atoms : ( C13  C1  C2  C3  C4  C5  C6  C7  C8  C9  C10  C11  C12 
+   C16  C17  C18  C19  C20) 
+ Skip -> too many affected atoms
+
+ DIHEDRAL  O22 200  C15 200  C14 200  C13 200   129.00
+ Affected atoms : ( C13  C1  C2  C3  C4  C5  C6  C7  C8  C9  C10  C11  C12 
+   C16  C17  C18  C19  C20) 
+ Skip -> too many affected atoms
+
+ Nr of unique rotatable torsions : (       3) 
+ Nr of lines written : (          5) 
+ Torsion file written (append to torsion.o)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+RESIDUE RTA
+TORSION TOR1 154. C1 C6 C7 C8 C8 C9 C10 C11 C12 C13 C14 C15 C19 C20 \
+O21 O22
+TORSION TOR2 154. C8 C7 C6 C1 C1 C2 C3 C4 C5 C16 C17 C18
+TORSION TOR3 -51. C13 C14 C15 O21 O21 O22
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ unix > cp odat/torsion.o .
+ unix > cat torsion.o torsion_rta.dat torsion_gsb.dat > q
+ unix > mv q torsion.o
+ unix > wc torsion.o
+       139      1381      5430 torsion.o
+ unix > vi torsion.o
+ { change nr of lines in datablock from 100 to 139 - 1 = 138 }
+ unix > ono test.o
+ ...
+  O > read torsion.o
+  O > tor_res hc2 200
+ Mnp> HC2   200   CA    RTA
+  O > yes
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## RSFIt_datablock - create an O RS-fit datablock for a residue type
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (RSFIt) 
+ Which residue number ? (       7) 200
+
+ 1092  C1  RTA   200      21.972  29.831  16.739  1.00 15.25   6
+ 1093  C2  RTA   200      20.921  30.524  15.841  1.00 15.61   6
+ ...
+ 1113  O22 RTA   200      21.840  21.712  27.037  1.00 10.99   8
+
+ Nr of atoms found : (      22) 
+ Residue type : (RTA) 
+ Atom types   : ( C1   C2   C3   C4   C5   C6   C7   C8   C9   C10  C11  
+  C12  C13  C14  C15  C16  C17  C18  C19  C20  O21  O22) 
+ Datablock file ? (rsfit_rta.odb) 
+ Datablock name : (rsfit_RTA) 
+ Datablock written
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+! Created by MOLEMAN V. 950417/5.9.5 at Mon Apr 17 23:03:24 1995 for user gerard
+!
+! RS-fit datablock for RTA
+!
+rsfit_RTA T 2 70
+ C1   C2   C3   C4   C5   C6   C7   C8   C9   C10  C11  C12  C13  C14
+ C15  C16  C17  C18  C19  C20  O21  O22
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## DISUlfide_odl_file - create an ODL file to draw disulfide bridges in O
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (READ_pdb_file) disu
+
+ Name of disulfide ODL file ? (ss.odl) 
+ Name of the molecule in O ? (M1) cbh1
+ Stick radius (A) ? (   0.200) 
+ Max SS bond length (A) ? (   2.500) 
+
+   25  SG  CYS A   4      36.618  67.989  34.228  1.00 21.90  16
+  148  SG  CYS A  19      46.720  75.194  72.769  1.00 16.00  16
+  181  SG  CYS A  25      47.360  76.947  73.550  1.00 18.46  16
+  375  SG  CYS A  50      30.049  62.231  34.042  1.00 18.22  16
+...
+ 2471  SG  CYS A 331      31.545  52.779  76.335  1.00 14.21  16
+ 2964  SG  CYS A 397      13.725  68.319  69.507  1.00 13.82  16
+
+ Nr of CYS SG atoms found : (         20) 
+
+S=S bond : (stick cbh1 a4 sg cbh1 a72 sg 0.20) 
+ SG-SG distance (A) : (   2.030) 
+S=S bond : (stick cbh1 a19 sg cbh1 a25 sg 0.20) 
+ SG-SG distance (A) : (   2.023) 
+...
+S=S bond : (stick cbh1 a261 sg cbh1 a331 sg 0.20) 
+ SG-SG distance (A) : (   2.034) 
+
+ Nr of disulfide bridges : (         10) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ begin ssbond
+  colour green
+  stick cbh1 a4 sg cbh1 a72 sg 0.20
+  stick cbh1 a19 sg cbh1 a25 sg 0.20
+  stick cbh1 a50 sg cbh1 a71 sg 0.20
+  stick cbh1 a61 sg cbh1 a67 sg 0.20
+  stick cbh1 a138 sg cbh1 a397 sg 0.20
+  stick cbh1 a172 sg cbh1 a210 sg 0.20
+  stick cbh1 a176 sg cbh1 a209 sg 0.20
+  stick cbh1 a230 sg cbh1 a256 sg 0.20
+  stick cbh1 a238 sg cbh1 a243 sg 0.20
+  stick cbh1 a261 sg cbh1 a331 sg 0.20
+ end_object
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## FIT_water_macro - generate O macro to fit waters
+
+ This command generates an O macro which for each water
+   will calculate the RS-fit value and use RSR_rigid to adjust
+   its position in the density.  Afterwards, RS-fit is
+   calculated again.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (READ_pdb_file) fit_w
+
+ Name of water-fitting O macro ? (fit_waters.omac) 
+ O macro written
+ Nr of waters to be fitted : (        486) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ NOTE: you *must* have the appropriate RS-fit datablock in your database.
+       For instance, if you call your waters HOH and the oxygen atoms O1,
+       then you must have the following datablock:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+RSFIT_HOH                 T          1         70
+O1                                                                    
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ The macro may look as follows:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+! Created by MOLEMAN V. 950311/5.9 at Sat Mar 11 21:04:40 1995 for user gerard
+!
+bell Message Set up for water fitting ...
+!
+symbol mymol # Molecule name ? #
+mol $mymol
+!
+symbol mymap # Map file name ? #
+map_file $mymap
+rsr_map $mymap
+!
+rsr_setup
+yes
+no
+conv
+# RS-fit RFAC or RSCC ? #
+yes
+;
+;
+20.0
+3.5
+;
+3
+10.0
+!
+bell Message Fitting waters of mol $mymol in map $mymap ...
+!
+rs_fit C600 ;
+rsr_rigid C600 ; yes
+!
+rs_fit C601 ;
+rsr_rigid C601 ; yes
+...
+rs_fit M957 ;
+rsr_rigid M957 ; yes
+!
+Message Calculating new RS-fit values
+! copy_db ${mymol}//_residue_rsprefit ${mymol}//_residue_rsfit
+rs_fit C600    M957   
+!
+on_off bell Message Done
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## FLAG_colours - generate O datablock to colour your molecule
+
+ Suppose you want to colour your molecule according to the colours of
+   your national flag ;-)  This command creates an _ATOM_FLAG datablock
+   with integer values for each atom that encode which colour it should
+   get in the flag-colouring scheme.
+ At present, only two types of flag are implemented:
+ - "Dutch type" - three horizontal or vertical bars (good for the
+   Dutch, Italian, Belgian, German, French flags)
+ - "Swedish type" - also good for Denmark, Norway and Finland
+ The following sketch illustrates the values in the _ATOM_FLAG
+   datablock:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+  ------------        ------------   Y-axis
+  |   1      |        |1 | |  1  |     ^
+  ------------        ---- -------     |
+  |   2      |        |   2      |     |
+  ------------        ---- -------     |
+  |   3      |        |1 | |  1  |     -----------> X-axis
+  ------------        ------------
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Read the datablock into O and use Paint_case to "translate" these
+   codes into the actual colours of your flag.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (READ_pdb_file) flag
+ Select one of the following:
+ 1) Dutch/Italian etc. flag colours
+ 2) Swedish/Danish etc. flag colours
+ Which type of flag ? (       1) 
+ Molecule name in O ? (M1) p2a
+ O datablock file ? (p2a_atom_flag.odb) 
+ Datablock written; use Paint_case in O
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Now go into O:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+  O > mol p2a ce_zo p2a a1 a131
+ As4> P2A   A1    A131  P2A
+ As4> Centering on zone from A1 to A131
+  O > read p2a_atom_flag.odb
+  O > paint_case
+ Paint> Colour-case a property in molecule P2A
+ Paint> Property [atom_z] : atom_flag
+ Paint> How many cases [8] ? 3
+ Paint> Enter property values [  1  2  3] : 
+ Paint> Enter  3 colour names:  Paint> Colour? [yellow]: red white blue
+  O > zo ; end
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Note that you must look along the Z-axis.
+ For a Swedish-type flag use:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+  O > mol cbh1 ce_zo cbh1 a1 a434
+ As4> CBH1  A1    A434  CBH1
+ As4> Centering on zone from A1 to A434
+  O > read cbh1_atom_flag.odb
+  O > pa_case atom_flag 2 ; blue yellow
+  O > zo ; end
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** ANALYSIS COMMANDS
+
+ ## STATistics - list some statistics
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (PIR_) stat
+ Nr of atom numbers in memory : (       7038) 
+
+       Item        Average         St.Dev            Min            Max
+       ----        -------         ------            ---            ---
+    X-coord         10.543         22.100        -33.949         54.913
+    Y-coord         42.379         23.814         -2.748         86.626
+    Z-coord         33.375         31.576        -29.766         91.680
+   B-factor         17.965          8.663          5.310         67.750
+    Occpncy          1.000          0.000          1.000          1.000
+
+ Radius of gyration (A) :        45.31
+ Sum of masses  :             95666.758
+ Centre-of-mass :      10.54     42.31     33.37
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## CA_Distance_plot - CA-CA distance plot
+
+ Make 2D plot file for O2D with CA-CA distance matrix; plot and
+   convert to PostScript with O2D
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (B_Q_) ca_d
+
+ Name for C-alpha distance plot file ? (Calpha.pl2) ca_ca_1rbp.plt
+ Nr of C-alpha atoms  : (        174) 
+ Nr of points written : (      30276) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ unix > run o2d
+ Option ? (open_window) open 2 1 0 1
+ Option ? (open_window 2 1 0) 2d ca_ca_1rbp.plt ca_ca_1rbp.ps 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## PLOT_Bs_or_Qs - make plot files for O2D of Bs or Qs
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (READ_pdb_file) plot
+
+ Make plot file for Bs or Qs ? (B) 
+ Filename for per_atom plot    ? (atom_b.plt) hc2_atomb.plt
+ Filename for per_residue plot ? (resi_b.plt) hc2_rmsb.plt
+
+ You may plot the following for each residue:
+ R = RMS B/Q for all atoms in the residue
+ A = average B/Q for all atoms
+ M = average B/Q for main-chain atoms
+ S = average B/Q for side-chain atoms
+ Option (R/A/M/S) ? (A) r
+ Write atom/residue labels to file (Y/N)    ? (N) 
+ WARNING - if there are hydrogen atoms they
+           will be included !
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## RADIal_B_plot - radial temperature-factor distribution plot
+
+ Make an O2D plot file of the radial distribution of temperature
+   factors.  The Bs are averaged for 2 A shells of distance to the
+   centre-of-gravity.  A normal protein should have the lowest
+   Bs for the core, and increasingly higher Bs further away.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (READ_pdb_file) radi
+ Plot file ? (b_radial.plt) cbh1_brad.plt
+ Which chain (2 characters !) ? ( A) 
+ Nr of atoms selected (no Hs) : (       3220) 
+ Shell    0.0 -    2.0 A -      3 atoms; <B> = 13.80 A**2
+ Shell    2.0 -    4.0 A -      6 atoms; <B> = 13.06 A**2
+ Shell    4.0 -    6.0 A -     36 atoms; <B> = 11.43 A**2
+ Shell    6.0 -    8.0 A -     62 atoms; <B> = 11.84 A**2
+ Shell    8.0 -   10.0 A -    102 atoms; <B> = 12.34 A**2
+ Shell   10.0 -   12.0 A -    143 atoms; <B> = 12.89 A**2
+ Shell   12.0 -   14.0 A -    193 atoms; <B> = 13.60 A**2
+ Shell   14.0 -   16.0 A -    289 atoms; <B> = 14.66 A**2
+ Shell   16.0 -   18.0 A -    364 atoms; <B> = 15.69 A**2
+ Shell   18.0 -   20.0 A -    449 atoms; <B> = 16.49 A**2
+ Shell   20.0 -   22.0 A -    417 atoms; <B> = 18.10 A**2
+ Shell   22.0 -   24.0 A -    406 atoms; <B> = 19.59 A**2
+ Shell   24.0 -   26.0 A -    315 atoms; <B> = 21.47 A**2
+ Shell   26.0 -   28.0 A -    200 atoms; <B> = 24.85 A**2
+ Shell   28.0 -   30.0 A -    118 atoms; <B> = 24.41 A**2
+ Shell   30.0 -   32.0 A -     81 atoms; <B> = 27.30 A**2
+ Shell   32.0 -   34.0 A -     27 atoms; <B> = 24.15 A**2
+ Shell   34.0 -   36.0 A -      9 atoms; <B> = 37.11 A**2
+ Plot file written
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## LIST_residue - list a residue
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (STAT) list
+ Which residue number ? (       1) 134
+  998  N   SER A 134      22.506  77.869  68.784  1.00 10.34      1CEL1371
+  999  CA  SER A 134      21.237  78.577  68.983  1.00 12.57      1CEL1372
+ 1000  C   SER A 134      20.246  78.558  67.822  1.00 14.46      1CEL1373
+ 1001  O   SER A 134      19.033  78.613  68.042  1.00 15.10      1CEL1374
+ 1002  CB  SER A 134      21.467  80.023  69.448  1.00 10.64      1CEL1375
+ 1003  OG  SER A 134      22.059  80.811  68.438  1.00 14.16      1CEL1376
+ 4516  N   SER B 134     -16.718  34.527  12.931  1.00 10.28      1CEL4890
+ 4517  CA  SER B 134     -17.987  35.226  13.120  1.00 13.83      1CEL4891
+ 4518  C   SER B 134     -18.962  35.238  11.945  1.00 14.82      1CEL4892
+ 4519  O   SER B 134     -20.173  35.316  12.154  1.00 15.94      1CEL4893
+ 4520  CB  SER B 134     -17.753  36.658  13.617  1.00 12.94      1CEL4894
+ 4521  OG  SER B 134     -17.244  37.491  12.594  1.00 14.21      1CEL4895
+ Nr of atoms listed : (      12) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## GEOMetry_list - list geometry
+
+ (1) of a residue: list all distances, all bond angles
+     and all 1-4-dihedral angles (NOTE: if you use a
+     VERY large number for the cut-off distance for
+     bonded atoms you will get ALL angles and dihedrals)
+ (2) of the N-CA-C backbone; listed are the names of the
+     atoms, the distance to the previous atom, the
+     bond angle involving the two preious atoms and the
+     1-4-dihedral angle involving the three previous atoms
+ (3) of the CA backbone: same output as for (2)
+ (4) of two residues (neighbours or disulfides)
+ (5) of a zone of residues
+ (6) of a disulfide (limited set of bonds, angles and
+     dihedrals)
+
+ With options 1, 4 and 5: if more than 25 atoms are found,
+   only the bonded distances are listed, otherwise the complete
+   distance matrix is printed.
+
+ HINT: use this option to find reasonable geometries when you're
+   making dictionary structures for X-PLOR, PROLSQ etc. based
+   for example on a small-molecule structure
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (LIST) geom
+
+ Select an option:
+ 1 - analyse one residue
+ 2 - analyse backbone (N-CA-C)
+ 3 - analyse CAs
+ 4 - analyse two residues (eg, disulfide)
+ 5 - analyse zone of residues
+ 6 - analyse disulfide
+ Option (1-6; 0 to abort) ? (       6) 1
+ Which residue number ? (       4) 72
+ Cut-off distance for bonded atoms ? (   2.200) 
+
+  535  N   CYS A  72      34.608  63.747  35.816  1.00 17.34   7
+  536  CA  CYS A  72      35.411  64.499  36.779  1.00 17.34   6
+  537  C   CYS A  72      34.530  65.272  37.762  1.00 17.34   6
+  538  O   CYS A  72      33.287  65.334  37.645  1.00 17.34   8
+  539  CB  CYS A  72      36.313  65.488  36.071  1.00 13.02   6
+  540  SG  CYS A  72      35.365  66.531  34.967  1.00 13.02  16
+
+ Nr of atoms found : (       6) 
+
+ *** Distances ***
+ Complete distance matrix
+            N    CA   C    O    CB   SG 
+ DIST  N   0.00 1.46 2.47 2.76 2.45 3.01
+ DIST  CA  1.46 0.00 1.53 2.44 1.51 2.72
+ DIST  C   2.47 1.53 0.00 1.25 2.47 3.18
+ DIST  O   2.76 2.44 1.25 0.00 3.41 3.59
+ DIST  CB  2.45 1.51 2.47 3.41 0.00 1.79
+ DIST  SG  3.01 2.72 3.18 3.59 1.79 0.00
+
+ *** Bond angles ***
+ ANGLE  N    72  CA   72  C    72   111.52
+ ANGLE  N    72  CA   72  CB   72   110.80
+ ANGLE  C    72  CA   72  CB   72   108.27
+ ANGLE  CA   72  C    72  O    72   122.52
+ ANGLE  CA   72  CB   72  SG   72   110.69
+
+ *** Dihedral angles ***
+ DIHEDRAL  N    72  CA   72  C    72  O    72    -6.42
+ DIHEDRAL  N    72  CA   72  CB   72  SG   72    53.28
+ DIHEDRAL  C    72  CA   72  CB   72  SG   72   -69.31
+ DIHEDRAL  O    72  C    72  CA   72  CB   72   115.73
+
+ Option ? (GEOM) geom
+
+ Select an option:
+ 1 - analyse one residue
+ 2 - analyse backbone (N-CA-C)
+ 3 - analyse CAs
+ 4 - analyse two residues (eg, disulfide)
+ 5 - analyse zone of residues
+ 6 - analyse disulfide
+ Option (1-6; 0 to abort) ? (       1) 6
+   29  N   CYS     4       8.582  27.251  55.048  1.00 25.90
+  558  N   CYS    70      43.922  22.172  50.132  1.00 28.67
+  964  N   CYS   120      19.470  20.072  51.841  1.00 15.63
+ 1032  N   CYS   129      14.163  22.087  57.465  1.00 18.90
+ 1283  N   CYS   160      14.295  30.222  53.381  1.00 13.24
+ 1402  N   CYS   174      44.619  28.164  46.710  1.00 38.08
+ Nr of CYS/CYH residues : (       6) 
+ First  residue number ? (     160) 120
+ Second residue number ? (     174) 129
+
+  964  N   CYS   120      19.470  20.072  51.841  1.00 15.63
+  965  CA  CYS   120      19.045  19.808  53.200  1.00 17.29
+  968  CB  CYS   120      17.494  19.751  53.374  1.00 15.42
+  969  SG  CYS   120      17.119  19.461  55.134  1.00 15.26
+ 1032  N   CYS   129      14.163  22.087  57.465  1.00 18.90
+ 1033  CA  CYS   129      15.496  21.513  57.385  1.00 18.30
+ 1036  CB  CYS   129      16.160  22.056  56.157  1.00 18.35
+ 1037  SG  CYS   129      17.721  21.256  55.804  1.00 15.55
+
+ Nr of atoms found : (       8) 
+
+   1     2   SG-SG CB-CB CA-CA
+ ===== ===== ===== ===== =====
+   120   129  2.01  3.85  5.75
+
+   1     2   SG1-SG2-CB2 SG2-SG1-CB1 SG1-CB1-CA1 SG2-CB2-CA2  CB1-CA1-N1  CB2-CA2-N2
+ ===== ===== =========== =========== =========== =========== =========== ===========
+   120   129    101.8        96.8       108.5       112.7       113.7       108.0
+
+   1     2    N1-CA1-CB1-SG1 CA1-CB1-SG1-SG2 CB1-SG1-SG2-CB2  N2-CA2-CB2-SG2 CA2-CB2-SG2-SG1
+ ===== ===== =============== =============== =============== =============== ===============
+   120   129     -178.4            69.4           106.4          -171.8            73.1
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## PLANar_peptides - check peptide planarity
+
+ List peptide improper torsion angles to check for deviations from planarity.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (GEOM) plan
+
+ Checking peptide planarity ...
+ Improper Ci-CAi-Ni+1-Oi should be ZERO degrees
+ The nr of * indicates deviation from planarity
+
+    4  O   GLU     1      -1.705 ***
+   13  O   ARG     2      -0.389
+   24  O   ASP     3      -2.938 *****
+   32  O   CYS     4      -1.415 **
+...
+ 1381  O   ASN   171       1.228 **
+ 1389  O   GLY   172       0.266
+ 1393  O   TYR   173       0.448
+
+ Nr of peptide planes : (        173) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## SEQUence_list - list the first atom of every residue
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (BURI) sequ
+    1  N   MET A   1      11.840  26.637  68.001  1.00 40.61      1CHR 160
+    9  N   LYS A   2      11.559  28.870  65.489  1.00 38.38      1CHR 168
+ ...
+ 5589  N   VAL B 369       2.619  61.125  63.785  1.00 44.83      1CHR5749
+ 5596  N   SER B 370       4.907  58.580  62.590  1.00 44.48      1CHR5756
+ 5603 MN    MN B 371      26.234  61.708  57.860  1.00 23.51      1CHR5764
+ Nr of residues found : (        743) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## BURIed_charges - look for buried charges
+
+ Assess how well charged protein residues are surrounded
+   by counter-charged residues, N/O/S etc. (using a
+   distance cut-off of 3.5 A).  Solvent-exposed residues are
+   "recognised" by their having a small number of neighbours.
+ Note that the program only knows something about charges of
+   hetero atoms if the atom name contains a "+" or "-" sign (e.g.,
+   "CA++" will be recognised as a positively charged atom).
+ This option can be used to find buried charges, which may indicate
+   errors in the tracing of the chain.  For example, using PDB file 1CHR
+   (in which residues 15-40 are out-of-register in both chains):
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (READ) buri
+ ...
+ ==> GLU -     7
+ Neighbours for  OE1 ...
+ ... VAL -    34 -  CB  @   3.43 A
+ ... VAL -    34 -  CG1 @   3.21 A
+ ... VAL -    36 -  CB  @   3.05 A
+ ... VAL -    36 -  CG2 @   3.11 A
+ Neighbours for  OE2 ...
+ ... VAL -    36 -  CB  @   3.46 A
+ ... VAL -    36 -  CG2 @   3.47 A
+ #C  6 | #N  0 | #O  0 | #S  0 | #other  0
+ #water  0 | #positive  0 | #negative  0 | #total  6
+ > Appears not to be solvent exposed
+ > No positive charge(s) nearby !!
+ > Not many nitrogens nearby !!
+ > Not many waters nearby !!
+ > Many C/S nearby !!
+ ...
+ ==> ARG -    17
+ Neighbours for  NE  ...
+ Neighbours for  NH1 ...
+ Neighbours for  NH2 ...
+ ... ILE -    19 -  CG1 @   3.26 A
+ ... ILE -    19 -  CD1 @   3.05 A
+ ... LYS -   165 -  CE  @   3.29 A
+ ... LYS -   165 -  NZ  @   3.36 A
+ #C  3 | #N  1 | #O  0 | #S  0 | #other  0
+ #water  0 | #positive  1 | #negative  0 | #total  4
+ > Appears not to be solvent exposed
+ > Positive charge(s) nearby !!
+ > No negative charge(s) nearby !!
+ > Not many O/S nearby !!
+ > Many carbons nearby !!
+ ...
+ ==> ARG -    35
+ Neighbours for  NE  ...
+ ... TYR -    37 -  CE1 @   3.45 A
+ ... LEU -   108 -  CA  @   3.31 A
+ ... LEU -   108 -  CD2 @   3.30 A
+ Neighbours for  NH1 ...
+ ... ILE -     3 -  CD1 @   3.07 A
+ ... ALA -    80 -  CA  @   3.33 A
+ ... ALA -    80 -  CB  @   3.41 A
+ ... LEU -   108 -  CG  @   3.37 A
+ ... LEU -   108 -  CD1 @   2.91 A
+ ... LEU -   108 -  CD2 @   3.13 A
+ Neighbours for  NH2 ...
+ ... ALA -    80 -  CA  @   3.27 A
+ ... ALA -    80 -  C   @   3.42 A
+ ... ALA -    80 -  O   @   2.89 A
+ ... ALA -    80 -  CB  @   3.38 A
+ ... LEU -   108 -  CA  @   2.94 A
+ ... LEU -   108 -  C   @   3.40 A
+ ... LEU -   108 -  O   @   3.08 A
+ ... LEU -   108 -  CB  @   3.03 A
+ ... LEU -   108 -  CD1 @   3.38 A
+ #C 16 | #N  0 | #O  2 | #S  0 | #other  0
+ #water  0 | #positive  0 | #negative  0 | #total 18
+ > Appears not to be solvent exposed
+ > No negative charge(s) nearby !!
+ > Not many O/S nearby !!
+ > Many carbons nearby !!
+ ...
+ ==> GLU -    39
+ Neighbours for  OE1 ...
+ ... LEU -    41 -  O   @   2.63 A
+ ... LEU -   111 -  CD2 @   3.24 A
+ Neighbours for  OE2 ...
+ ... TYR -    37 -  CD2 @   3.12 A
+ ... TYR -    37 -  CE2 @   3.33 A
+ ... SER -    38 -  N   @   3.07 A
+ ... SER -    38 -  C   @   3.33 A
+ #C  4 | #N  1 | #O  1 | #S  0 | #other  0
+ #water  0 | #positive  0 | #negative  0 | #total  6
+ > Appears not to be solvent exposed
+ > No positive charge(s) nearby !!
+ > Not many nitrogens nearby !!
+ > Not many waters nearby !!
+ > Many C/S nearby !!
+ ...
+ ==> LYS -    64
+ Neighbours for  NZ  ...
+ ... GLU -    68 -  OE2 @   3.00 A
+ ... ARG -   368 -  NH2 @   3.35 A
+ #C  0 | #N  1 | #O  1 | #S  0 | #other  0
+ #water  0 | #positive  1 | #negative  1 | #total  2
+ > Appears to be solvent exposed
+ ...
+ ==> GLU -   220
+ Neighbours for  OE1 ...
+ ... ASP -   194 -  CG  @   2.99 A
+ ... ASP -   194 -  OD1 @   2.73 A
+ ... ASP -   194 -  OD2 @   2.71 A
+ ... ASP -   245 -  CB  @   3.45 A
+ ... ASP -   245 -  CG  @   3.46 A
+ ... ASP -   245 -  OD2 @   2.71 A
+ ... GLU -   246 -  OE1 @   2.81 A
+ ...  MN -   371 - MN   @   3.50 A
+ Neighbours for  OE2 ...
+ ... ASP -   194 -  OD2 @   3.00 A
+ ... ASP -   245 -  OD2 @   2.88 A
+ ...  MN -   371 - MN   @   2.72 A
+ #C  3 | #N  0 | #O  6 | #S  0 | #other  2
+ #water  0 | #positive  0 | #negative  6 | #total 11
+ > Appears not to be solvent exposed
+ > Negative charge(s) nearby !!
+ > No positive charge(s) nearby !!
+ > Not many nitrogens nearby !!
+ > Not many waters nearby !!
+ > Many C/S nearby !!
+ ...
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## SHORt_contacts - list short contacts
+
+ Hydrogen atoms are ignored.  Short distances involving atoms in I-1,I,I+1
+   residues are ignroed, unless they are shorter than 1.1 A (MOLEMAN doesn't
+   know anything about connectivity).
+ From version 7.0 onwards, REMARK records are added with some of the
+   results of this operation (don't forget to WRITe the structure in
+   order to get these REMARKs included in your PDB file).  This may be
+   useful when depositing coordinates with the PDB.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (REMA) shor
+ Cut-off distance for SHORT contacts ? (   2.400) 
+ Short contacts : (          0) 
+ Any hydrogen atoms have been ignored
+ Short contacts between I-1,I,I+1 residues ignored
+ (unless they are shorter than 1.1 A)
+ Generating REMARK records ...
+ CPU total/user/sys :       1.6       1.5       0.0
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ The REMARK records may look as follows:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (CA_R) rema
+ #  1 > HEADER    RETINOIC-ACID TRANSPORT                 28-SEP-94   1CBS      1CBS   2
+ ...
+ #277 > REMARK   5 SHORT CONTACTS (EXCL. HYDROGENS AND SYMMETRY)
+ #278 > REMARK   5   PROGRAM USED: MOLEMAN
+ #279 > REMARK   5   NUMBER OF SHORT CONTACTS :       0
+ #280 > REMARK   5   DISTANCE CUTOFF      (A) :    2.40
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## DISTance_distribution - distribution of inter-atomic distances
+
+ Calculate all inter-atomic distances between non-hydrogen atoms, and
+   list the results as a histogram.  This can be used to decide on
+   reasonable Patterson integration limits for rotation function
+   calculations, in particular for molecules which have a non-spherical
+   shape.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (READ_pdb_file) dist
+ Counting distances (Hs ignored) ...
+ Nr of non-hydrogen atoms     : (       3220) 
+ Nr of inter-atomic distances : (    5182590) 
+ Lower(A) Upper(A)      Count        %      Cumul   Cumul%
+     1.00     1.50       2040    0.039       2040    0.039
+     1.50     2.00       1256    0.024       3296    0.064
+     2.00     2.50       3601    0.069       6897    0.133
+     2.50     3.00       2650    0.051       9547    0.184
+     3.00     3.50       3508    0.068      13055    0.252
+     3.50     4.00       6508    0.126      19563    0.377
+     4.00     4.50       7682    0.148      27245    0.526
+     4.50     5.00      11756    0.227      39001    0.753
+...
+    40.00    40.50      44819    0.865    4607902   88.911
+    40.50    41.00      42217    0.815    4650119   89.726
+    41.00    41.50      40038    0.773    4690157   90.498
+    41.50    42.00      38019    0.734    4728176   91.232
+    42.00    42.50      35695    0.689    4763871   91.921
+...
+    66.00    66.50          4    0.000    5182579  100.000
+    66.50    67.00          9    0.000    5182588  100.000
+    67.00    67.50          2    0.000    5182590  100.000
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## CHI_list - list CHI1/2/3/4 dihedral angles of amino-acid residues
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (READ_pdb_file) chi_
+    Residue       CHI1       CHI2       CHI3       CHI4
+ PYR      1      29.44     -25.85    -163.81
+ SER      2      67.11
+ ALA      3
+ CYS      4     -80.06
+ THR      5      49.97
+ LEU      6     -62.38    -169.53
+ GLN      7     153.17      62.98    -106.58
+ SER      8      51.40
+...
+ TRP     16      57.07     -80.75
+ GLN     17     -63.54     -83.16     -35.11
+ LYS     18    -179.84     172.97    -176.26     124.61
+ CYS     19     -52.68
+ SER     20      65.99
+...
+ ASN    431     -69.14     -31.87
+ PRO    432     -34.48      45.26
+ SER    433     -61.22
+ GLY    434
+ Option ? (CHI_) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## CACA_distances - analyse CA-CA distances
+
+ List statistics about CA-CA distances.  There are five intervals:
+ - short :       d <= 2.8 A -> expected = 0.01 % (0.08) of the residues
+ - cis   : 2.8 < d <= 3.0 A -> expected = 0.24 % (0.46) of the residues
+ - poor  : 3.0 < d <= 3.7 A -> expected = 1.52 % (3.5)  of the residues
+ - trans : 3.7 < d <= 3.9 A -> expected = 96.8 % (7.0)  of the residues
+ - long  : 3.9 < d          -> expected = 1.42 % (4.0)  of the residues
+ If there are many short, poor or long CA-CA distances, the model is
+   probably un/ill-refined.
+ From version 7.0 onwards, REMARK records are added with some of the
+   results of this operation (don't forget to WRITe the structure in
+   order to get these REMARKs included in your PDB file).  This may be
+   useful when depositing coordinates with the PDB.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (READ) caca
+     136 CA-CA distances
+ Average CA-CA distance =    3.807 Sigma =    0.018
+ Minimum CA-CA distance =    3.764 Maxim =    3.857
+ Short (<= 2.8 A)  CA-CA dists :      0 res =     0.00 % =  0.1 SIGMA from mean
+ CIS   (<= 3.0 A)  CA-CA dists :      0 res =     0.00 % =  0.5 SIGMA from mean
+ Poor  (<= 3.7 A)  CA-CA dists :      0 res =     0.00 % =  0.4 SIGMA from mean
+ TRANS (<= 3.9 A)  CA-CA dists :    136 res =   100.00 % =  0.5 SIGMA from mean
+ Long  (>  3.9 A)  CA-CA dists :      0 res =     0.00 % =  0.4 SIGMA from mean
+ Generating REMARK records ...
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ The REMARK records may look as follows:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (CA_R) rema
+ #  1 > HEADER    RETINOIC-ACID TRANSPORT                 28-SEP-94   1CBS      1CBS   2
+ ...
+ #216 > REMARK   5 CA-CA DISTANCE DISTRIBUTION
+ #217 > REMARK   5   PROGRAM USED: MOLEMAN
+ #218 > REMARK   5   NUMBER OF DISTANCES      :     136
+ #219 > REMARK   5   SHORT (<= 2.8 A)    (NR) :       0
+ #220 > REMARK   5   SHORT (<= 2.8 A)     (%) :    0.00
+ #221 > REMARK   5   CIS (2.8 - 3.0 A)   (NR) :       0
+ #222 > REMARK   5   CIS (2.8 - 3.0 A)    (%) :    0.00
+ #223 > REMARK   5   POOR (3.0 - 3.7 A)  (NR) :       0
+ #224 > REMARK   5   POOR (3.0 - 3.7 A)   (%) :    0.00
+ #225 > REMARK   5   TRANS (3.7 - 3.9 A) (NR) :     136
+ #226 > REMARK   5   TRANS (3.7 - 3.9 A)  (%) :  100.00
+ #227 > REMARK   5   LONG (> 3.9 A)      (NR) :       0
+ #228 > REMARK   5   LONG (> 3.9 A)       (%) :    0.00
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## CA_Ramachandran_plot - analysis
+
+ Calculate CA-CA(*)-CA angles and CA-CA(*)-CA-CA dihedrals for
+   the CA atoms (marked with an asterisk).
+ Residues in an alpha-helix should cluster tightly around ~(90,50);
+   beta-strands occur around ~(120,-160) with somewhat more spread.
+ If you ask for a PostScript file, you get the most favoured
+   regions in green, the additional favoured regions in blue, and
+   the border of the disallowed regions in red.  Glycines will be
+   marked with a small box, all other residues with a plus sign.
+ The regions are based on an analysis of 203,865 non-Gly residues
+   in less than 90 % homologous proteins from the PDB (Hobohm & Sander
+   list, October 1994).
+ The statistics are based on how 1,343 2.0 A or better structures
+   score on the four assigned regions.  Too few core, or too many
+   disallowed residues indicates an un/ill-refined model and/or
+   a problem with the fold.
+ From version 7.0 onwards, REMARK records are added with some of the
+   results of this operation (don't forget to WRITe the structure in
+   order to get these REMARKs included in your PDB file).  This may be
+   useful when depositing coordinates with the PDB.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (REMA) ca_r
+ Initialising CA_Ramachandran pixels ...
+ Pixels with value 0,1,2,3 : (    5359     1110      387      525) 
+
+ In the following, hit RETURN if you do NOT
+ want to produce the file the programs asks for
+
+ Text file with CA angles/dihedrals ? ( ) 
+ O2D CA angles/dihedrals plot file ? ( ) 
+ PostScript CA angles/dihedrals plot file ? ( ) q.ps
+ => XPS_GRAF - GJK (2.2 @ 950530) 
+ Opened PostScript file : (q.ps) 
+ Date    : (Mon Oct 30 22:17:02 1995) 
+ User    : (gerard) 
+ Program : (MOLEMAN) 
+ Nr of non-GLY residues : (        126) 
+       CORE res :     92 =    73.02 % =  0.0 SIGMA from mean
+ Additional res :     17 =    13.49 %
+   Generous res :     10 =     7.94 %
+ DISALLOWED res :      7 =     5.56 % =  1.1 SIGMA from mean
+ For <= 2.0 A structures :
+ Core       -  7.1 % area - 72.8 % (8.9) residues
+ Additional -  5.2 % area - 12.8 % (4.0) residues
+ Generous   - 15.0 % area - 11.3 % (4.6) residues
+ Disallowed - 72.6 % area -  3.1 % (2.2) residues
+ Generating REMARK records ...
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ The REMARK records may look as follows:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (CA_R) rema
+ #  1 > HEADER    RETINOIC-ACID TRANSPORT                 28-SEP-94   1CBS      1CBS   2
+ ...
+ #230 > REMARK   5 CA RAMACHANDRAN PLOT
+ #231 > REMARK   5   PROGRAM USED: MOLEMAN
+ #232 > REMARK   5   NUMBER OF RESIDUES       :     126
+ #233 > REMARK   5   CORE REGIONS        (NR) :      92
+ #234 > REMARK   5   CORE REGIONS         (%) :   73.02
+ #235 > REMARK   5   ADDITIONAL REGIONS  (NR) :      17
+ #236 > REMARK   5   ADDITIONAL REGIONS   (%) :   13.49
+ #237 > REMARK   5   GENEROUS REGIONS    (NR) :      10
+ #238 > REMARK   5   GENEROUS REGIONS     (%) :    7.94
+ #239 > REMARK   5   DISALLOWED REGIONS  (NR) :       7
+ #240 > REMARK   5   DISALLOWED REGIONS   (%) :    5.56
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## RAMAchandran/BALAsubramanian - produce Ramachandran and Balasubramanian plots
+
+ These options make MOLEMAN calculate the PHI and PSI angles for
+   those residues that contain atoms called ' N  ', ' CA ' and
+   ' C  '.  You may obtain output in several formats:
+
+ (1) a text file with PHI-PSI values
+ (2) a plot file for use with O2D (RAMA only !)
+ (3) an "O" datablock file (use with OOPS !!)
+ (4) a plot file in HPGL format (use "print_hpgl" on XRAY)
+ (5) a plot file in PostScript format (use "lpr -Pqms")
+
+ MOLEMAN asks you for the names of ALL these files; if you do
+   not want a particular one, don't give a file name (i.e., just
+   hit RETURN when the program asks you for the file name).
+ These options make the standalone programs RAMACH and RAMAPS
+   obsolete; they provide a superset of the functionality of
+   these two programs.
+ Note that in Balasubramanian plots GLY residues are plotted
+   with a little square (just as in Ramachandran plots) so you
+   can recognise them easily !
+ These options use some of Alwyn's old RAMACH code.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (CA_Rama) rama
+
+ In the following, hit RETURN if you do NOT
+ want to produce the file the programs asks for
+
+ Text file with PHI-PSIs ? ( ) 
+ O2D Ramachandran plot file ? ( ) 
+ O PHI-PSI datablock file ? ( ) 
+ HPGL Ramachandran plot file ? ( ) 
+ PostScript Ramachandran plot file ? ( ) cbh1_rama.ps
+ => XPS_GRAF - GJK (2.2 @ 950530) 
+ Opened PostScript file : (cbh1_rama.ps) 
+ Date    : (Wed Oct 11 01:48:29 1995) 
+ User    : (gerard) 
+ Program : (MOLEMAN) 
+ PostScript POLAR Ramachandran plot file ? ( ) 
+ Option ? (RAMA) bala
+
+ In the following, hit RETURN if you do NOT
+ want to produce the file the programs asks for
+
+ Text file with PHI-PSIs ? ( ) 
+ O PHI-PSI datablock file ? ( ) 
+ HPGL Balasubramanian plot file ? ( ) 
+ PostScript Balasubramanian plot file ? ( ) cbh1_bala.ps
+ => XPS_GRAF - GJK (2.2 @ 950530) 
+ Opened PostScript file : (cbh1_bala.ps) 
+ Date    : (Wed Oct 11 01:48:44 1995) 
+ User    : (gerard) 
+ Program : (MOLEMAN) 
+ Label for residue axis ? (Residue) 
+ Label for PHI-PSI axis ? (PHI/PSI) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ From version 7.2 onward, (ONLY) when you select a PostScript file, you
+   get improved allowed regions and some statistics.  One would expect
+   ~2% outliers using this definition (see the example).
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ PostScript Ramachandran plot file ? ( ) cbh1_rama.ps
+ => XPS_GRAF - GJK (2.3 @ 960209) 
+ Opened PostScript file : (cbh1_rama.ps) 
+ Date    : (Fri Feb  9 22:22:45 1996) 
+ User    : (gerard) 
+ Program : (MOLEMAN) 
+ Nr of non-Gly residues : (        764) 
+ Nr of outliers (98%)   : (          5) 
+ % Outliers             : (   0.654) 
+ Outliers are defined as residues lying outside the core areas in which 98% of
+ all non-Gly residues were found to lie in a sample of 403 PDB structures of
+ <= 95% homologous structures (Hobohm & Sander list) at 2.0 A resolution or
+ better (GJK, October 1995, unpublished results; data for 74,893 residues).
+ Outliers are shown as asterisks in the plot; core areas are coloured grey.
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** TEMPERATURE FACTOR AND OCCUPANCY COMMANDS
+
+ ## TEMP_factors_set - scale or set your temperature factors
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (BALA) temp
+ TFnew = A * TFold + B.  Enter A, B : (   1.000    0.000) 0 15.0
+ Residue range to apply (0 0 = all molecule) ? (       0        0) 
+ Nr of temperature factors updated : (       7038) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## AVERage_temp_factors - average temperature factors
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (READ) aver
+ Valid options are:
+ 1. Average over all atoms (i.e., compute Boverall)
+ 2. Average per residue over all atoms
+ 3. Average per residue, separately for main and side-chain
+ 4. Average corresponding atoms in different chains
+
+ Option ? (       3) 
+  Res     1     Nr_atoms  7     Bave-MC      28.08 ( 4)     Bave-SC      29.75 ( 3)
+  Res     2     Nr_atoms  8     Bave-MC      19.20 ( 4)     Bave-SC      24.23 ( 4)
+  Res     3     Nr_atoms 11     Bave-MC      12.96 ( 4)     Bave-SC      11.13 ( 7)
+  Res     4     Nr_atoms  6     Bave-MC      10.79 ( 4)     Bave-SC      15.15 ( 2)
+ ...
+  Res   398     Nr_atoms  1     Bave-MC      39.26 ( 1)     Bave-SC       0.00 ( 0)
+  Res   399     Nr_atoms  1     Bave-MC      33.87 ( 1)     Bave-SC       0.00 ( 0)
+ Nr of temperature factors updated : (       1213) 
+ Option ? (AVER) 
+ Valid options are:
+ 1. Average over all atoms (i.e., compute Boverall)
+ 2. Average per residue over all atoms
+ 3. Average per residue, separately for main and side-chain
+ 4. Average corresponding atoms in different chains
+
+ Option ? (       3) 1
+ Nr of temperature factors updated : (       1213) 
+ Average temperature factor : (  16.622) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## OCCUpancies_set - scale or set your occupancies
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (AVER) occu
+ OFnew = A * OFold + B.  Enter A, B : (   1.000    0.000) 0 1.0
+ Residue range to apply (0 0 = all molecule) ? (       0        0) 
+ Nr of occupancy factors updated : (       1213) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (XPLOr) occu
+ OFnew = A * OFold + B.  Enter A, B : (   1.000    0.000) 0 0
+ Residue range to apply (0 0 = all molecule) ? (       1      138) 76 82
+ Nr of occupancy factors updated : (         36) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## B_Q_statistics - list B and Q statistics
+ From version 7.0 onwards, REMARK records are added with some of the
+   results of this operation (don't forget to WRITe the structure in
+   order to get these REMARKs included in your PDB file).  This may be
+   useful when depositing coordinates with the PDB.
+ From version 7.0 onwards, the input and output of this command has
+   changed.  Water molecules are now recognised automatically.  You
+   can enter more than one residue type name for "ligand/substrate".
+   The maximum B-factor for each category is listed.  You can select
+   to do the calculation for one chain or all (use "**" for all chains).
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (AUTO) b_q_
+ Amino acid residue names     ? (ALA ARG ASN ASP CYS GLN GLU GLY HIS ILE 
+  LEU LYS MET PHE PRO SER THR TRP TYR VAL CPR ASX GLX UNK CYH CSS PCA) 
+ Names of ligands/substrates  ? (???) 
+ Which chain (** = all)       ? ( A) 
+ Include HYDROGEN atoms (Y/N) ? (N) 
+
+ B & Q statistics for chain : ( A) 
+
+ Atom type          Number  Average B  Maximum B  Average Q
+ Protein main chain    549     12.925     37.810      1.000
+ Protein side chain    542     18.069     53.120      1.000
+ Protein all atoms    1091     15.480     53.120      1.000
+ Ligand/substrate        0      0.000      0.000      0.000
+ Water molecules         0      0.000      0.000      0.000
+ Other entities          0      0.000      0.000      0.000
+ All atoms            1091     15.480     53.120      1.000
+ Generating REMARK records ...
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ The REMARK records may look as follows:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (CA_R) rema
+ #  1 > HEADER    RETINOIC-ACID TRANSPORT                 28-SEP-94   1CBS      1CBS   2
+ ...
+ #282 > REMARK   5 B-FACTOR STATISTICS FOR CHAIN  A (EXCL. HYDROGENS)
+ #283 > REMARK   5   PROGRAM USED: MOLEMAN
+ #284 > REMARK   5   PROTEIN MAIN CHAIN
+ #285 > REMARK   5     NUMBER OF ATOMS        :     549
+ #286 > REMARK   5     AVERAGE B       (A**2) :   12.92
+ #287 > REMARK   5     MAXIMUM B       (A**2) :   37.81
+ #288 > REMARK   5   PROTEIN SIDE CHAIN
+ #289 > REMARK   5     NUMBER OF ATOMS        :     542
+ #290 > REMARK   5     AVERAGE B       (A**2) :   18.07
+ #291 > REMARK   5     MAXIMUM B       (A**2) :   53.12
+ #292 > REMARK   5   PROTEIN ALL ATOMS
+ #293 > REMARK   5     NUMBER OF ATOMS        :    1091
+ #294 > REMARK   5     AVERAGE B       (A**2) :   15.48
+ #295 > REMARK   5     MAXIMUM B       (A**2) :   53.12
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## BONDed_Bs - bonded-atom temperature factor statistics
+
+ Calculate RMSD and correlation coefficient of the temperature
+   factors of bonded atoms (plus a warning if the RMSD is large)
+ From version 7.0 onwards, REMARK records are added with some of the
+   results of this operation (don't forget to WRITe the structure in
+   order to get these REMARKs included in your PDB file).  This may be
+   useful when depositing coordinates with the PDB.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (REMA) bond
+ Cut-off distance for bonded atoms ? (   2.000) 1.8
+
+ Nr of atoms    : (       1213) 
+ Nr of non-Hs   : (       1213) 
+ Nr of bonds    : (       1124) 
+ RMSD bonded Bs : (   2.200) 
+ Corr. coeff.   : (   0.970) 
+ Hydrogen atoms have been ignored
+ Ignore the following line in case of grouped Bs
+ Bonded Bs properly restrained
+ Generating REMARK records ...
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ The REMARK records may look as follows:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (CA_R) rema
+ #  1 > HEADER    RETINOIC-ACID TRANSPORT                 28-SEP-94   1CBS      1CBS   2
+ ...
+ #242 > REMARK   5 BONDED B-FACTORS (EXCL. HYDROGENS)
+ #243 > REMARK   5   PROGRAM USED: MOLEMAN
+ #244 > REMARK   5   NUMBER OF NON-H ATOMS    :    1213
+ #245 > REMARK   5   BOND DISTANCE CUTOFF (A) :    1.80
+ #246 > REMARK   5   NUMBER OF BONDS          :    1124
+ #247 > REMARK   5   RMSD B-BONDED     (A**2) :    2.20
+ #248 > REMARK   5   CORR. COEFF. B-BONDED    :    0.97
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## NONBonded_Bs - non-bonded-atom temperature factor statistics
+
+ Calculate RMSD and correlation coefficient of the temperature
+   factors of NON-bonded atoms
+ From version 7.0 onwards, REMARK records are added with some of the
+   results of this operation (don't forget to WRITe the structure in
+   order to get these REMARKs included in your PDB file).  This may be
+   useful when depositing coordinates with the PDB.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (REMA) nonb
+ RMS delta-B of non-bonded atoms
+ Select one of the following options :
+  1 = all atoms
+  2 = N and O only (H-bonds & salt links)
+  3 = all atoms, except N and O
+ Option (1-3) ? (       1) 
+ Cut-off distance for bonded atoms ? (   1.800) 
+ Cut-off for NON-bonded atoms      ? (   3.600) 
+
+ Number of atoms           : (       1213) 
+ Number of atoms used      : (       1213) 
+ Nr of non-bonded contacts : (       3765) 
+ RMSD non-bonded Bs        : (   6.125) 
+ Correlation coefficient   : (   0.725) 
+ Hydrogen atoms have been ignored
+ Generating REMARK records ...
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ The REMARK records may look as follows:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (CA_R) rema
+ #  1 > HEADER    RETINOIC-ACID TRANSPORT                 28-SEP-94   1CBS      1CBS   2
+ ...
+ #250 > REMARK   5 NON-BONDED B-FACTORS (EXCL. HYDROGENS)
+ #251 > REMARK   5   PROGRAM USED: MOLEMAN
+ #252 > REMARK   5   NUMBER OF NON-H ATOMS    :    1213
+ #253 > REMARK   5   BOND DISTANCE CUTOFF (A) :    1.80
+ #254 > REMARK   5   NON-BONDED CUTOFF    (A) :    3.60
+ #255 > REMARK   5   NUMBER OF INTERACTIONS   :    3765
+ #256 > REMARK   5   RMSD B-NON-BONDED (A**2) :    6.12
+ #257 > REMARK   5   CORR. COEFF. B-BONDED    :    0.73
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## SMOOth_Bs - smooth temperature factors
+
+ When you want to change from refining grouped temperature
+   factors to individual Bs, or when the RMS delta-B of
+   bonded atoms is too large, you can use this command to
+   replace every atom's B-factor by the average B of all
+   its bonded neighbours including itself.
+ In order to include second neighbours or even non-bonded
+   neighbours, use an artificially large cut-off
+   for bonded atoms, e.g. 2.5 - 3.5 A.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (READ_pdb_file) bond
+ Cut-off distance for bonded atoms ? (   2.000) 
+...
+ RMSD bonded Bs : (   6.085) 
+ Corr. coeff.   : (   0.912) 
+...
+ Option ? (BOND) smoo
+ Cut-off distance for bonded atoms ? (   2.000) 
+ Smoothing temperature factors ...
+
+ Nr of atoms    : (       3338) 
+ Nr of non-Hs   : (       2747) 
+ Nr of bonds    : (       2823) 
+ Hydrogen atoms have been ignored
+ Option ? (SMOO) bond
+...
+ RMSD bonded Bs : (   3.760) 
+...
+ Option ? (BOND) smoo
+ Cut-off distance for bonded atoms ? (   2.000) 
+ Smoothing temperature factors ...
+
+ Nr of atoms    : (       3338) 
+ Nr of non-Hs   : (       2747) 
+ Nr of bonds    : (       2823) 
+ Hydrogen atoms have been ignored
+ Option ? (SMOO) bond
+...
+ RMSD bonded Bs : (   3.153) 
+...
+ Option ? (BOND) smoo
+...
+ Option ? (SMOO) bond
+...
+ RMSD bonded Bs : (   2.833) 
+ Corr. coeff.   : (   0.978) 
+...
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (READ) bond
+ Cut-off distance for bonded atoms ? (   2.000) 3.5
+
+ Nr of atoms    : (       3338) 
+ Nr of non-Hs   : (       2747) 
+ Nr of bonds    : (      10909) 
+ RMSD bonded Bs : (   9.505) 
+ Corr. coeff.   : (   0.737) 
+ Hydrogen atoms have been ignored
+ Ignore the following line in case of grouped Bs
+ Use stronger restraints on bonded Bs
+ Option ? (BOND) smoo
+ Cut-off distance for bonded atoms ? (   3.500) 
+ Smoothing temperature factors ...
+
+ Nr of atoms    : (       3338) 
+ Nr of non-Hs   : (       2747) 
+ Nr of bonds    : (      10909) 
+ Hydrogen atoms have been ignored
+ Option ? (SMOO) bond
+...
+ RMSD bonded Bs : (   4.487) 
+...
+ Option ? (BOND) smoo
+ Cut-off distance for bonded atoms ? (   3.500) 
+...
+ Option ? (SMOO) bond
+ Cut-off distance for bonded atoms ? (   3.500) 
+...
+ RMSD bonded Bs : (   3.299) 
+...
+ Option ? (BOND) smoo
+ Cut-off distance for bonded atoms ? (   3.500) 
+...
+ Option ? (SMOO) bond
+ Cut-off distance for bonded atoms ? (   3.500) 
+...
+ RMSD bonded Bs : (   2.655) 
+ Corr. coeff.   : (   0.951) 
+...
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## LIMIt_B_and_Q - limit the values of your Bs and Qs
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (READ) limi
+ Enter MIN and MAX temperature factor : (   2.000   99.900) 10 50
+ Enter MIN and MAX occupancy          : (   0.000    1.000) 1 1
+ Residue range to apply (0 0 = all molecule) ? (       0        0) 
+ Nr of atoms updated : (       7038) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** ATOM, RESIDUE, CHAIN AND SEGMENT COMMANDS
+
+ ## CHAIn_name - assign a chain identifier
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (OCCU) chai
+ Chain label (2 characters) ? ( )  A
+ Residue range to apply (0 0 = all molecule) ? (      76       82) 1 138
+ Nr of chain labels updated : (        903) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## RENUmber_atoms - renumber all atoms
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (CHAIn) renum
+ First NEW atom number ? (       1) 
+ Nr of atom numbers updated : (       1849) 
+ Nr of last atom            : (       1849) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## ATRE_number - renumber all atoms and residues simultaneously
+
+ This option is only useful when your residues contain only one atom
+   each (e.g., CA atoms, or water oxygens) and many or all have
+   identical residue numbers (e.g., obtained after symmetry-expansion
+   of a molecule). All atom numbers and residue numbers will be
+   renumbered (and will be equal to one another afterwards).
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (READ_pdb_file) atre
+ First NEW atom/residue number ? (       1) 
+ Nr of atoms/residues updated : (         11) 
+ Nr of last atom/residue      : (         11) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## SUGGest_OT2 - suggest coordinates for OT1/OT2
+
+ Suggest reasonable coordinates for C-terminal OT1 and
+   OT2 oxygens (required by X-PLOR) using standard geometries
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (WATEr) sugg
+ Which residue number ? (     120) 174
+ ... found N
+ ... found CA
+ ... found C
+ ... found O
+ Using C-OT distance (A)   : (   1.230) 
+ Using OT-C-OT angle (deg) : ( 122.500) 
+ Distance C-OT1         = (   1.241) 
+ Reset to               = (   1.230) 
+ Angle CA-C-OT1         = ( 120.889) 
+ Reset to               = ( 118.750) 
+ Dihedral N-CA-C-OT1    = ( -10.768) 
+ Distance C-OT2         = (   1.230) 
+ Angle OT1-C-OT2        = ( 122.500) 
+ Dihedral CA-OT1-C-OT2  = ( 180.000) 
+
+ ==>  OT1 NOW :   45.047  28.161  43.976 SUGGESTED :   45.035  28.170  44.021
+ ==>  OT2 NOW :    0.000   0.000   0.000 SUGGESTED :   45.275  26.032  43.872
+
+ Check geometry of carboxylate group :
+ Dist       C-OT1 = (   1.230) 
+ Dist       C-OT2 = (   1.230) 
+ Dist     OT1-OT2 = (   2.157) 
+ Angle  OT1-C-OT2 = ( 122.500) 
+ Angle   OT1-C-CA = ( 118.750) 
+ Angle   OT2-C-CA = ( 118.750) 
+ Dih   OT1-C-CA-N = ( -10.768) 
+ Dih   OT2-C-CA-N = ( 169.232) 
+ Dih CA-OT1-C-OT2 = (-180.000) 
+  ==> YOU MUST ADD/EDIT OT1/OT2 YOURSELF !!!
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## ALTEr_residue_name - change a certain residue type
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (SUGG) alter
+ OLD residue name ? (SOL) HOH
+ NEW residue name ? (HOH) WAT
+ Nr of atoms affected : (         31) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## XPLOr_ids - assign X-PLOR segment IDs
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (LIMI) xplor
+ XPLOR chain label (4 characters) ? ( ) AAAA
+ Residue range to apply (0 0 = all molecule) ? (       0      138) 1 138
+ Nr of XPLOR chain labels updated : (        903) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## FROM_chain_to_XID - "translate" chain labels into X-PLOR segment IDs
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (READ_pdb_file) from
+ Chain label*2 to translate ? ( A) 
+ Corresponding X-PLOR chain label*4 ? (AAAA) 
+ Nr of chain labels translated : (       3220) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## XID_to_chain - "translate" X-PLOR segment IDs into chain IDs
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (READ_pdb_file) xid_
+ XPLOR chain label*4 to translate ? (AAAA) 
+ Corresponding chain label*2 ? ( A) 
+ Nr of XPLOR labels translated : (       1571) 
+ Option ? (XID_) 
+ XPLOR chain label*4 to translate ? (AAAA) BBBB
+ Corresponding chain label*2 ? ( B) 
+ Nr of XPLOR labels translated : (       1571) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## AUTO_chain_segid - auto-generate chain and segment IDs
+
+ Automagically generate X-PLOR segment IDs and chain IDs;
+   the first residues will get " A" and "AAAA"; when the
+   residue-numbering is discontinuous, new IDs are generated
+   for the next stretch of residues (" B" and "BBBB"), etc.
+ Breaks in the residue numbering are allowed for water molecules.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (READ) auto
+ Generating chain and segids ...
+ New chain  A, segid AAAA @ residue    1
+ New chain  B, segid BBBB @ residue   39
+ New chain  C, segid CCCC @ residue   78
+ New chain  D, segid DDDD @ residue   93
+ New chain  E, segid EEEE @ residue  106
+ New chain  F, segid FFFF @ residue  120
+ Nr of segments found : (          6) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ To split the output PDB file into separate files for X-PLOR, use
+ something like:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ unix > grep AAAA out.pdb > a.pdb
+ unix > grep BBBB out.pdb > b.pdb
+ ...
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Or simply use the SPLIt command:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (READ) auto
+ Generating chain and segids ...
+ New chain  A, segid AAAA @ residue    1
+ New chain  B, segid BBBB @ residue   40
+ New chain  C, segid CCCC @ residue   78
+...
+ New chain  Q, segid QQQQ @ residue  106
+ New chain  R, segid RRRR @ residue  119
+ Nr of segments found : (         18) 
+ Option ? (AUTO) split
+
+ Basename of PDB files ? (out) h3
+ New chain id : ( A) 
+ New pdb file : (h3a.pdb) 
+ Nr of atoms written to it : (        246) 
+ New chain id : ( B) 
+ New pdb file : (h3b.pdb) 
+ Nr of atoms written to it : (        236) 
+...
+ New chain id : ( Q) 
+ New pdb file : (h3q.pdb) 
+ Nr of atoms written to it : (         61) 
+ New chain id : ( R) 
+ New pdb file : (h3r.pdb) 
+ Nr of atoms written to it : (        125) 
+ Nr of atoms written in core : (       2403) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ To change the X-PLOR segment IDs, use something like the
+ following (or the ASK_ command):
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ unix > grep CCCC out.pdb | sed -e s/CCCC/DNA/ > c.pdb
+ unix > grep DDDD out.pdb | sed -e s/DDDD/WATR/ > d.pdb
+ ...
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## ASK_auto_chain_segid - auto-generate user-defined chain and segment IDs
+
+ This option is similar to the AUTO command, but instead of naming
+   chains and segments A/AAAA, B/BBBB, ..., it asks you to supply
+   the chain and segment names.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (NO_H) ask_
+ Generating chain and segids ...
+
+    1  CB  ALA    86       3.267  42.575  53.152  1.00 33.06      AAAA
+ New chain name ? ( A) 
+ New SEGId name ? (AAAA) 
+ New chain  A, segid AAAA @ residue   86
+
+ 2735  C1  NAG   501       7.927  39.505  25.387  1.00 38.20      BBBB
+ New chain name ? ( B) 
+ New SEGId name ? (BBBB) 
+ New chain  B, segid BBBB @ residue  501
+
+ 2840  CB  THR    85      15.420  93.618 100.686  1.00 34.83      KKKK
+ New chain name ? ( C)  K
+ New SEGId name ? (KKKK) 
+ New chain  K, segid KKKK @ residue   85
+
+ 5581  C1  NAG   501      22.912  85.991  69.990  1.00 24.61      LLLL
+ New chain name ? ( D)  L
+ New SEGId name ? (LLLL) 
+ New chain  L, segid LLLL @ residue  501
+
+ 5686  O1  HOH     1       2.924  34.893  32.902  1.00 54.85      WWWW
+ New chain name ? ( E)  W
+ New SEGId name ? (WWWW) 
+ New chain  W, segid WWWW @ residue    1
+
+ Nr of segments found : (          5) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## O2XHydrogens - fix X-PLOR hydrogen names after mutilation by O
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (READ_pdb_file) o2xh
+ Fixing hydrogen names for Asn & Arg
+ Renamed ASN  15  HD2 to HD21
+ Renamed ASN  15  HD2 to HD22
+ Renamed ASN  26  HD2 to HD21
+ Renamed ASN  26  HD2 to HD22
+ Renamed ARG  30  HH1 to HH11
+ Renamed ARG  30  HH1 to HH12
+ Renamed ARG  30  HH2 to HH21
+ Renamed ARG  30  HH2 to HH22
+ Renamed ASN  34  HD2 to HD21
+...
+ Renamed ARG  80  HH2 to HH22
+ Nr of hydrogens renamed : (         18) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## ZONE_renumber - renumber a zone of residues (e.g., your waters)
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (XPLOr) zone
+ First residue to renumber    ? (       1) 223
+ Last residue to renumber     ? (       1) 999
+ NEW number for first residue ? (       1) 300
+ Last residue number : (        331) 
+ Nr of atoms changed : (         58) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## RESIdu_renumber - renumber residues
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (GEOM) resi
+ First NEW residue number ? (       1) 
+ Last residue number : (        252) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## CHECk_nomenclature - for side chain 1/2 atoms
+
+ Check if side-chain 1/2 atoms are named correctly.  This affects Phe,
+   Tyr, Asp, Glu and Arg residues.  The rule is that the atom which
+   has the smallest absolute CHI angle should be numbered "1".  It
+   doesn't matter all that much, except when you calculate RMSDs on
+   all atoms or delta-CHIs for different models/molecules.
+ This option only lists errors; to correct them, use the option
+   CORRect_nomenclature.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (READ_pdb_file) check
+ Nr of atoms : (       1213) 
+ Nr of residues : (        238) 
+
+ Checking PHE      3 ...
+ ...
+ Checking GLU    137 ...
+
+ # of PHE checked :     5 # errors :     0
+ # of TYR checked :     2 # errors :     0
+ # of ASP checked :     5 # errors :     0
+ # of GLU checked :    17 # errors :     0
+ # of ARG checked :     7 # errors :     0
+ No problem, mon !
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (READ) check
+ Nr of atoms : (       3407) 
+ Nr of residues : (        373) 
+
+ Checking GLU      9 ...
+ Checking TYR     17 ...
+ ERROR --- Wrong names for CD1/2 and CE1/2
+ Torsion CD1 : ( 125.439) 
+ Torsion CD2 : ( -52.410) 
+
+ Checking ASP     29 ...
+ Checking ASP     35 ...
+ Checking TYR     38 ...
+ ERROR --- Wrong names for CD1/2 and CE1/2
+ Torsion CD1 : ( -97.964) 
+ Torsion CD2 : (  80.065) 
+ ...
+ Checking TYR    326 ...
+ ERROR --- Wrong names for CD1/2 and CE1/2
+ Torsion CD1 : ( 158.234) 
+ Torsion CD2 : ( -48.480) 
+
+ Checking ASP    331 ...
+ Checking GLU    342 ...
+ Checking PHE    359 ...
+ Checking ARG    363 ...
+ Checking ASP    366 ...
+
+ # of PHE checked :     8 # errors :     4
+ # of TYR checked :    19 # errors :    10
+ # of ASP checked :    21 # errors :     8
+ # of GLU checked :    10 # errors :     5
+ # of ARG checked :     6 # errors :     0
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## CORRect_nomenclature - for side chain 1/2 atoms
+
+ Same as CHECk_nomenclature, except that it actually swaps atom names
+   if they are wrong.  Note that any attached hydrogen atoms are *NOT*
+   renamed !!!
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (CHECk) corr
+ Nr of atoms : (       3407) 
+ Nr of residues : (        373) 
+
+ Error in TYR     17 ...
+ Swapped CD1/2 and CE1/2
+ ...
+ Error in ASP    322 ...
+ Swapped OD1/2
+
+ Error in TYR    326 ...
+ Swapped CD1/2 and CE1/2
+
+ # of PHE checked :     8 # errors :     4
+ # of TYR checked :    19 # errors :    10
+ # of ASP checked :    21 # errors :     8
+ # of GLU checked :    10 # errors :     5
+ # of ARG checked :     6 # errors :     0
+ WARNING - any attached hydrogens NOT renamed
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** MANIPULATION COMMANDS
+
+ ## ROTAte_molecule - apply a rotation to all coordinates
+
+ Use this to apply solutions from rotation function searches to your coordinates.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (READ_pdb_file) rotate
+ Options:
+ 1 - enter your own rotation matrix
+ 2 - CCP4 (ALMN) Eulerian angles
+ 3 - CCP4 (ALMN) Omega/Phi/Kappa
+ 4 - MERLOT Eulerian angles
+ 5 - MERLOT Polar angles
+ Options 2 - 5 programmed by Rams
+ Option ? (       1) 3
+ Omega, Phi, Kappa ? (   0.000    0.000    0.000) 12 84 182
+ Nr of atoms rotated : (       1849) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## TRANslate_molecule - apply a translation to all coordinates
+
+ Use this to apply solutions from translation function searches to your
+ coordinates.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (ROTAte) trans
+ 1 = Cartesian, 2 = Fractional. Option ? (       1) 2
+ Unit cell constants    ? ( 100.000  100.000  100.000   90.000   90.000   90.000) 42 42 202
+ Fractional translation ? (   0.000    0.000    0.000) 0.13 -0.04 0.52 
+ Nr of atoms translated : (       1849) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## RANDom_shifts - apply random shifts to your coordinates and/or Bs and/or Qs
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (ROTA) rand
+
+ Max magnitude for shifts (X/Y/Z/B/Q) ? (  1.000E-01   1.000E-01   1.000E-01   0.000E+00 
+  0.000E+00) 0.03 0.03 0.03 0 0
+ Maximum shifts : (  3.000E-02   3.000E-02   3.000E-02   0.000E+00   0.000E+00) 
+ Seed for random number generator     ? (          0) 123456
+ => Random number generator initialised with seed :     123456
+ Max allowed shifts X/Y/Z/B/Q : (  3.000E-02   3.000E-02   3.000E-02   0.000E+00   0.000E+00) 
+ Average     shifts X/Y/Z/B/Q : (  5.462E-04  -7.776E-04  -4.306E-04   0.000E+00   0.000E+00) 
+ RMS         shifts X/Y/Z/B/Q : (  1.729E-02   1.730E-02   1.722E-02   0.000E+00   0.000E+00) 
+ AVERAGE POSITIONAL SHIFT     : (  2.870E-02) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## APPLy_random_rotation - apply a random rotation to your coordinates
+
+ Use this for calculating cavity volumes with VOIDOO using
+   several random orientations of your molecule (can also
+   be done inside VOIDOO nowadays)
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (RAND) apply
+ Seed for random number generator     ? (          0) 736464
+ => Random number generator initialised with seed :     736464
+ Rotations around X,Y,Z (deg) :  153.78   93.32  155.20
+
+ X Matrix :     1.0000000    0.0000000    0.0000000
+                0.0000000   -0.8970705   -0.4418874
+                0.0000000    0.4418874   -0.8970705
+ Determinant of X rotation matrix : (  1.000E+00) 
+ Y Matrix :    -0.0578754    0.0000000   -0.9983238
+                0.0000000    1.0000000    0.0000000
+                0.9983238    0.0000000   -0.0578754
+ Determinant of Y rotation matrix : (  1.000E+00) 
+ Z Matrix :    -0.9078057    0.4193911    0.0000000
+               -0.4193911   -0.9078057    0.0000000
+                0.0000000    0.0000000    1.0000000
+ Determinant of Z rotation matrix : (  1.000E+00) 
+   Matrix :     0.0525396   -0.0242724   -0.9983238
+                0.7766989    0.6293527    0.0255744
+                0.6276770   -0.7767407    0.0519183
+ Determinant of random rotation matrix : (  1.000E+00) 
+ Nr of atoms rotated : (       1849) 
+ Option ? (APPLy) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## FRAC/CART - move between fractional and Cartesian coordinates
+
+ Transform your coordinates from Cartesian to fractional space and vice versa.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (READ_pdb_file) sequ
+    1  ME  MTL     1      18.690   0.000   8.560  3.12  0.00
+    2  ME  MTL     2      21.410  46.080   2.380  2.87  0.00
+ Nr of residues found : (          2) 
+ Option ? (SEQU) frac
+ Unit-cell constants ? (  37.130  106.500   40.500   90.000  110.050   
+  90.000) 
+ Matrix : (  2.693E-02   0.000E+00   0.000E+00) 
+ Matrix : (  1.177E-09   9.390E-03   0.000E+00) 
+ Matrix : (  9.829E-03   5.867E-10   2.628E-02) 
+ Nr of atoms converted : (          2) 
+ Option ? (FRAC) sequ
+    1  ME  MTL     1       0.588   0.000   0.225  3.12  0.00
+    2  ME  MTL     2       0.600   0.433   0.063  2.87  0.00
+ Nr of residues found : (          2) 
+ Option ? (SEQU) cart
+ Unit-cell constants ? (  37.130  106.500   40.500   90.000  110.050   
+  90.000) 
+ Matrix : (  3.713E+01   0.000E+00   0.000E+00) 
+ Matrix : ( -4.655E-06   1.065E+02   0.000E+00) 
+ Matrix : ( -1.389E+01  -2.377E-06   3.805E+01) 
+ Nr of atoms converted : (          2) 
+ Option ? (CART) sequ
+    1  ME  MTL     1      18.690   0.000   8.560  3.12  0.00
+    2  ME  MTL     2      21.410  46.080   2.380  2.87  0.00
+ Nr of residues found : (          2) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## INVErt_zone - inversion of coordinates
+
+ Invert the coordinates of one or more residues.  With this
+   option you can easily produce different stereo-isomers of a
+   compound with a chiral carbon.  After the inversion operation, the
+   zone is translated so that it's centre of gravity is at the
+   same position as before.  The following example shows how to
+   orthogonalise the fractional coordinates of one enantiomer of
+   a chiral ligand and to generate the symmetry-related one by
+   inversion (spacegroup P1bar):
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (READ_pdb_file) 
+
+ Input PDB file ? (in.pdb) shudo.pdb
+ Number of lines read : (         27) 
+ Number of atoms now  : (         22) 
+ Option ? (CRYSt) frac
+ Unit-cell constants ? (  12.417    9.845    7.864   92.390   99.320  
+  103.430) 
+ Matrix : (  1.242E+01   0.000E+00   0.000E+00) 
+ Matrix : ( -2.287E+00   9.576E+00   0.000E+00) 
+ Matrix : ( -1.274E+00  -6.413E-01   7.734E+00) 
+ Nr of atoms converted : (         22) 
+ Option ? (STAT) writ
+ (...)
+ Option ? (WRIT) invert
+ Residue range to invert (0 0 = all molecule) ? (       0        0) 
+ Nr of atoms affected : (         22) 
+ Translation to apply : (  16.862    5.835   -2.021) 
+ Nr of atoms translated : (         22) 
+ Option ? (STAT) writ
+ (...)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## MIRRor_zone - mirror coordinates
+
+ Mirror one or more residues in the YZ, XZ or XY plane.  With this
+   option you can easily produce different stereo-isomers of a
+   compound with a chiral carbon.  After the mirror operation, the
+   zone is translated so that it's centre of gravity is at the
+   same position as before.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (READ_pdb_file) stats
+ Nr of atom numbers in memory : (        903) 
+
+       Item        Average         St.Dev            Min            Max
+       ----        -------         ------            ---            ---
+    X-coord          0.000          6.833        -18.938         15.666
+    Y-coord          0.000          9.302        -18.624         23.130
+    Z-coord          0.000          8.152        -16.378         20.907
+   B-factor         20.000          0.000         20.000         20.000
+    Occpncy          1.000          0.000          1.000          1.000
+
+ Option ? (STATs) mirr
+ Mirror X, Y, or Z (X/Y/Z) ? (X) 
+ Residue range to mirror (0 0 = all molecule) ? (       0        0) 138 138
+ Nr of atoms affected : (         10) 
+ Translation to apply : (  18.368) 
+ Nr of atoms translated : (         10) 
+ Option ? (MIRR) stats
+ Nr of atom numbers in memory : (        903) 
+
+       Item        Average         St.Dev            Min            Max
+       ----        -------         ------            ---            ---
+    X-coord          0.000          6.833        -18.938         15.666
+    Y-coord          0.000          9.302        -18.624         23.130
+    Z-coord          0.000          8.152        -16.378         20.907
+   B-factor         20.000          0.000         20.000         20.000
+    Occpncy          1.000          0.000          1.000          1.000
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## ORIGin_move - translate residues such that their centre is at (0,0,0)
+
+ Translate one or more residues such that their centre-of-gravity ends
+   up at the origin, (0,0,0).
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (READ_pdb_file) stats
+ Nr of atom numbers in memory : (        903) 
+
+       Item        Average         St.Dev            Min            Max
+       ----        -------         ------            ---            ---
+    X-coord         65.969          6.833         47.031         81.635
+    Y-coord         29.006          9.302         10.382         52.136
+    Z-coord         36.908          8.152         20.530         57.815
+   B-factor         20.000          0.000         20.000         20.000
+    Occpncy          1.000          0.000          1.000          1.000
+
+ Option ? (STATs) orig
+ Residue range to move (0 0 = all molecule) ? (       0        0) 
+ Nr of atoms affected : (        903) 
+ Translation to apply : ( -65.969  -29.006  -36.908) 
+ Nr of atoms translated : (        903) 
+ Option ? (ORIG) stats
+ Nr of atom numbers in memory : (        903) 
+
+       Item        Average         St.Dev            Min            Max
+       ----        -------         ------            ---            ---
+    X-coord          0.000          6.833        -18.938         15.666
+    Y-coord          0.000          9.302        -18.624         23.130
+    Z-coord          0.000          8.152        -16.378         20.907
+   B-factor         20.000          0.000         20.000         20.000
+    Occpncy          1.000          0.000          1.000          1.000
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** KNOWN BUGS
+
+ None, at present ("peppar, peppar").

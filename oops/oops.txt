@@ -1,0 +1,1451 @@
+
+ ** OOPS - GENERAL INFORMATION
+
+ Program : OOPS
+ Version : 001211
+ Author  : Gerard J. Kleywegt, Dept. of Cell and Molecular Biology,
+           Uppsala University, Biomedical Centre, Box 596,
+           SE-751 24 Uppsala, SWEDEN
+ E-mail  : gerard@xray.bmc.uu.se
+ Purpose : generation of rebuilding macros for use with O
+ Package : X-UTIL
+
+ ** REFERENCES
+
+ Reference(s) for this program:
+
+ *  1 * G.J. Kleywegt & T.A. Jones (1994). OOPS-a-daisy.
+        CCP4/ESF-EACBM Newsletter on Protein Crystallography 30,
+        June 1994, pp. 20-24.
+        [http://xray.bmc.uu.se/usf/factory_3.html]
+
+ *  2 * G.J. Kleywegt & T.A. Jones (1996). Efficient rebuilding of
+        protein structures. Acta Cryst D52, 829-832.
+        [http://scripts.iucr.org/cgi-bin/paper?gr0469]
+
+ *  3 * G.J. Kleywegt & T.A. Jones (1996). Phi/Psi-chology:
+        Ramachandran revisited. Structure 4, 1395-1400.
+        [http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=PubMed&cmd=Retrieve&list_uids=8994966&dopt=Citation]
+
+ *  4 * G.J. Kleywegt & T.A. Jones (1997). Model-building and
+        refinement practice. Methods in Enzymology 277, 208-230.
+        [http://xray.bmc.uu.se/gerard/gmrp/gmrp.html]
+
+ *  5 * G.J. Kleywegt (2000). Validation of protein crystal
+        structures. Acta Cryst. D56, 249-265 (Topical Review).
+        [http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=PubMed&cmd=Retrieve&list_uids=10713511&dopt=Citation]
+        [http://scripts.iucr.org/cgi-bin/paper?gr0949]
+
+ *  6 * G.J. Kleywegt (2001). Validation of protein crystal structures.
+        In: "International Tables for Crystallography, Volume F.
+        Crystallography of Biological Macromolecules" (Rossmann, M.G.
+        & Arnold, E., Editors). Chapter 21.1, pp. 497-506, 526-528.
+        Dordrecht: Kluwer Academic Publishers, The Netherlands.
+
+ *  7 * G.J. Kleywegt & T.A. Jones (2002). Homo Crystallographicus -
+        Quo Vadis ? Structure 10, 465-472.
+        [http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=PubMed&cmd=Retrieve&list_uids=11937051&dopt=Citation]
+
+ *  8 * G.J. Kleywegt (2004). Quality control and validation.
+        In "Crystallographic Methods", S. Doublie, Ed.
+        Submitted.
+
+ *  9 * Kleywegt, G.J., Zou, J.Y., Kjeldgaard, M. & Jones, T.A. (2001).
+        Around O. In: "International Tables for Crystallography, Vol. F.
+        Crystallography of Biological Macromolecules" (Rossmann, M.G.
+        & Arnold, E., Editors). Chapter 17.1, pp. 353-356, 366-367.
+        Dordrecht: Kluwer Academic Publishers, The Netherlands.
+
+ ** VERSION HISTORY
+
+ 930304 - 0.1 - initial version; analyses pep-flip and rs-fit;
+                first version of the manual
+ 930305 - 0.2 - include "bad" phi-psi values; read residue
+                types as well; list diagnostics (optional);
+                include check for too tight mask
+ 930307 - 0.3 - include checks for too low and too high
+                temperature factors
+ 930413 - 0.4 - include check on RMS-SIDE-CHAIN (RSC)
+ 930521 - 0.5 - allow one line of O commands in every macro
+ 930610 - 0.6 - create residue property datablock badcounts
+ 930621 - 1.0 - now do RS-fit separately for all atoms, main
+                chain atoms and side chain atoms; store highest
+                and lowest temperature factor for each residue
+                and print them (screen and macro); updated manual;
+                made executables for ESV and ALPHA
+ 930625 - 1.1 - improve handling of atoms and residues
+ 930626 - 1.2 - deduce PHI/PSI from PDB file rather than reading
+                it from an O datablock file; added check on
+                peptide planarity; added check on C-alpha
+                chirality; print statistics and histograms (where
+                relevant) before asking for a cut-off value
+                (optional); revamped manual; print statistics
+                and histogram of bad-counts
+ 930817 - 1.3 - removed minor bugs; changed 'centre_atom' in
+                O macros to 'centre_zone' so that it will also
+                work for non-C-alpha-containing residues
+                (such as waters)
+ 931101 - 2.0 - allow for user-definable criteria
+ 931102 - 2.1 - exclude PROlines from CA-chirality calculations
+                since ZETA is ~39-40 degrees rather than ~34
+ 931104 -2.1.1- made default cut-off for peptide planarity
+                5.8 degrees (instead of 2) in accordance with
+                the value used by PROCHECK
+ 931108 - 2.2 - include nr of bad contacts (e.g., extracted
+                from PROCHECK output using ODBM);
+                produce O2D plot files for certain types
+                of datablocks;
+                check consistency of certain datablock names,
+                types and nr of values in them
+ 940104 -2.2.1- fixed bug: now it also works if your residues
+                are called "1A", "2A", etc.
+ 940209 - 2.3 - support HETATM cards (treated as in O, i.e.
+                the residue name gets a "$"-sign in front)
+ 940308 - 3.0 - many more options w.r.t. generated macros;
+                automatic cut-off for RSfit (if statistics on);
+                recognise " OT " as main-chain atom; test first
+                if directory "oops" exists
+ 940413 - 3.1 - hydrogen atoms are now automatically stripped
+                when a PDB file is read; include checks on
+                too low and high occupancies; fixed bug in
+                Ramachandran and peptide-planarity routines
+                (chain breaks are now recognised); include
+                QualWat check for waters
+ 940415 - 3.2 - improved O2D plot files
+ 940418 -     - cleaned up for the 'real' (paper) manual;
+                minor bug fix
+ 940810 - 3.3 - added some more plots; some changed Y/N defaults;
+                more sensible defaults for PDB and MASK file names;
+                several other minor (cosmetic) changes
+ 940922 - 4.0 - added check on Real-Space R-factor (all atoms);
+                added check on RMS delta-B bonded atoms (per residue);
+                added option to create "electronic notebook file";
+                several minor changes
+ 940923 -4.0.1- fixed some minor bugs w.r.t. user-defined criteria
+ 941204 -4.0.2- fixed silly bugs in RSR-factor and RMS delta-B
+                bonded bits
+ 941220 - 4.1 - include option to compare current model with a
+                previous one (e.g., from the previous refinement
+                cycle)
+ 941223 - 4.2 - include option to create pseudo-PDB file
+ 950211 -4.2.1- include negative RS-fit values; change some Y/N defaults
+ 950311 - 4.3 - fix bug in plot files if > 999 residues; PDB C-terminal
+                oxygen OTX now recognised as main-chain atom; following
+                residue types are now recognised as waters: WAT, HOH,
+                SOL, OHH, HHO, H2O, OH2, H3O, OH3, and (pour nos amis
+                et amies) EAU; print reminder in last OOPS macro to
+                clean up the ./oops subdirectory; separate high
+                temperature-factor cut-off for waters
+ 950330 -4.3.1- minor bug fix (recognize OXT)
+ 950331 - 4.4 - waters no longer included in RS-fit main/side chain
+                statistics and plots (nor residues with |RS-fit| < 0.0001);
+                separate RS-fit and RSR cut-offs for waters; in the
+                comparison with a previous (or related) model, waters
+                may now be excluded (since they will often have different
+                names); when comparing to another model, you may now
+                ask for the values (RMSD etc) to be written to an O
+                datablock so you can, for instance, colour-ramp your
+                molecule according to Chi1/Chi2 difference.
+ 950412 -4.4.1- minor bug fix
+ 950912 -4.4.2- tell the user to take a break every time 100 residues have
+                been checked
+ 951026 - 4.5 - produce a "REMARK 5" file for PDB deposition purposes
+ 960801 -4.5.1- use our new definition of core Ramachandran regions
+ 970204 -4.5.2- no longer use the On_off command in O macros
+ 970625 - 4.6 - option to produce residue-by-residue critique in HTML format
+ 980724 - 4.7 - RS-CC and RS-R cutoffs for waters made identical to those
+                for other residues; immediate reporting of number and
+                percentage of outliers for pepflip, RS-CC, RSR and RSC;
+                in interactive mode, if file opening fails, you get a
+                new chance
+ 980728 - 4.8 - OOPS now also checks the OMEGA torsion (CA-C-N-CA) when
+                checking peptide planarity, and will also issue notify
+                the user of cis-peptides
+ 980914 - 5.0 - OOPS will notify the user of D-amino acids IF the
+                CA-chirality is checked; if the Ramachandran plot is
+                checked, unusual PHI torsions can also be listed
+                (Pro not near -65 degrees; non-Gly > 0); new option
+                to notify the user of disulfide bridges and to check
+                for unusual S=S distances and CB-S-S-CB torsions;
+                increased dimensioning to 7000 residues and 70000 atoms
+ 980929 - 5.1 - since map-contouring has become so fast nowadays, there
+                is a new option (only available when you use CHAINED
+                macros) that allows you to go through the residues
+                starting with the (potentially) worst residue (i.e.,
+                the one about which OOPS had the highest number of
+                comments), then the next-worst, etc.
+ 981110 - 5.2 - option to include WHAT IF diagnostics (read from
+                a file called "pdbout.txt" generated by WHAT IF if the
+                command "check ful filename.pdb x y" is executed)
+ 990310 - 5.3 - implemented facility that enables you to keep track
+                of your subjective judgement of every (flagged)
+                residue; changed default answers to many questions
+                (mostly from YES to NO); when an OOPS macro is
+                executed, the current residue name and number will
+                be shown on the message line
+ 990311 -5.3.1- in case of HETATM residues, the macros will not
+                be called oops/$300 etc since this confuses O and
+                makes them more difficult to remove - instead, the
+                dollar sign will be replaced by an _underscore_;
+                when reading a PDB file, don't ask for the maximum
+                CA-CA distance (fixed at 4.5 A)
+ 990507 -5.3.2- include message that "OOPS est mort, vive OOPS2 !"
+ 001211 -5.3.3- minor changes
+
+ ** INTRODUCTION
+
+ NOTE: THIS PROGRAM WILL NO LONGER BE DEVELOPED ! PLEASE USE
+       THE NEW PROGRAM "OOPS2" INSTEAD !
+
+ No more tedious O macros to colour your molecule according
+   to pep-flip and/or rs-fit values etc.  OOPS is here to help you !
+
+ You provide OOPS with some O datablocks and OOPS will
+   generate O macros which take you from one suspicious
+   residue to the next !
+
+ At present OOPS can check:
+
+ A - main-chain geometry:
+ - residues with bad pep-flip values
+ - residues with PHI-PSI values outside the allowed regions
+ - Proline residues with PHI not near -65.4 +/- 11.2 degrees
+ - non-Gly residues with positive PHI
+ - residues with non-planar peptides
+ - residues with unusual omega torsion
+ - residues with a cis-peptide
+
+ B - side-chain geometry:
+ - residues with bad RSC-fit (Rotamer Sidechain) values (version 0.4)
+ - residues with poor C-alpha chirality
+ - D-amino acids
+
+ C - real-space-fit of model to density:
+ - RSCC (real-space corr. coeff.) for all atoms
+ - RSCC for the main chain atoms only
+ - RSCC for the side chain atoms only
+ - RS R-factor for all atoms (version 4.0)
+
+ D - temperature factors and occupancies:
+ - residues with at least one atom with a too low B-factor
+ - ditto, with a too high B-factor
+ - residues with too high an RMS delta-B for bonded atoms (version 4.0)
+ - residues with at least one atom with a too low occupancy (version 3.1)
+ - ditto, with a too high occupancy (version 3.1)
+ - waters with bad QualWat values (version 3.1)
+
+ E - comparison with a previous model:
+ - positional shifts, changes in temperature factors and occupancies,
+    large shifts in Phi/Psi and Chi1/Chi2, as well as newly inserted
+    and mutated residues are flagged since they might warrant your
+    inspection
+
+ F - miscellaneous:
+ - residues with at least one atom which sticks out of the mask
+ - residues with bad contacts (version 2.2; requires PROCHECK output)
+ - residues which violate user-defined criteria (version 2.0)
+ - disulfide bridges
+ - disulfides with S=S distance not near 2.06 +/- 0.10 A
+ - disulfides with CB-S-S-CB not near 96.8 +/- 10.1 degree (right-handed)
+   or -85.8 +/- 8.6 degrees (left-handed)
+ - a subset of WHAT IF diagnostics can be extracted from the file
+   "pdbout.txt" (which is generated if the "check ful file.pdb x y"
+   command is executed in WHAT IF; version 5.2)
+
+ Alternatively, OOPS can be used to generate informative macros
+   for all residues in your protein, and the macros may even have
+   the same name as the residue.  So, to centre on residue A273,
+   and to get a message about what is suspicious about this residue,
+   all you need to type is: @oops/a273
+
+ ** DESCRIPTION
+
+ Before you run OOPS, create a directory called "oops" in your
+   current O directory.  OOPS will write most of the macros to
+   that directory so these files won't clutter your working O
+   directory (use: "mkdir oops" to create this directory).
+
+ NOTE: OOPS WILL NOT WORK IF YOU DON'T HAVE A SUBDIRECTORY
+       CALLED oops !!!
+
+ Also, you will need AT LEAST a file containing the residue
+   names as an O datablock and another which contains the
+   residue types as a datablock.  In addition, you may need the
+   pep-flip, rs-fit and rsc datablocks of your current molecule,
+   a PDB file of your current model and a mask file (in any
+   MAMA format; see the MAMA manual).
+
+ If your current molecule is called RIGA, for example, then
+   type: "dir riga*" in O to get a list of datablocks.  Then
+   write the appropriate datablocks to files, e.g.:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+   write riga_residue_name resnam.o ;
+   write riga_residue_type restyp.o ;
+   write riga_residue_pepflip pepflip.o ;
+   write riga_residue_rsfit rsfit_all.o ;
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ There is a macro called "pre_oops.omac" in the OMAC
+   directory which will calculate RS-fit (all atoms,
+   main-chain and side-chain), pep-flip and rsc values
+   for your current model and create the datablock files
+   needed by OOPS.  Check it out !
+ 
+ ** INPUT
+
+ Now you are ready to run OOPS.  Just run the program and answer
+   the following questions:
+
+ ## statistics and histograms
+ - print statistics and histograms ?  If you reply "Y", then
+   for every item (where relevant), some statistics and a
+   histogram of the encountered values are printed.  This may
+   help you in finding a proper cut-off value.  For most
+   criteria, OOPS comes up with fixed (sensible) defaults.
+   However, for RS-fit cut-offs are calculated, IF you said
+   YES to this question, as follows:
+ CUTOFF = MAX (RSFmin+0.1, MIN(RSFmax-0.1,RSFave-2*RSFsigma)
+
+ ## plot files
+ - if you said YES to the statistics, you may also get O2D
+   plot files for some of the properties (e.g., pep-flip,
+   rs-fit, rsc, bad contacts, bad-counts) if you reply "Y"
+   to the next question: Do you want (some) O2D plot files ?
+
+ ## molecule name in O
+ - name of the current molecule (in O !!), e.g.: riga.  This
+   will be used to centre on the correct residues when you run
+   the O macros created by OOPS
+
+ ## residue names
+ - residue names file, e.g.: resnam.o. Also used in the macros.
+
+ ## residue types
+ - residue types file, e.g.: restyp.o. Used for various checks.
+
+ ## pep-flip
+ - analyse pep-flip values ?
+   if so, give the name of the pepflip datablock file and a
+   cut-off of what you consider to be "bad pep-flips" (e.g., 2.5 A)
+
+ ## real-space fit (CC)
+ - analyse rs-fit values ?
+   if so, give the name of the rsfit datablock file and a
+   cut-off of what you consider to be "bad rs-fits" (e.g., 0.6)
+   this question is repeated for all atoms, main chain atoms
+   and side chain atoms
+
+ ## real-space fit (R-factor)
+ - analyse rs R-factors ?
+   if so, give the name of the rsr-factor datablock file and a
+   cut-off of what you consider to be "bad rs R-factors" (e.g., 0.3)
+   at present, this is implemented only for all atoms; if you
+   want to include checks for main-chain and side-chain atoms
+   as well, enter them as user-defined criteria
+
+ ## rotamers
+ - analyse rsc values ? (rsc = Rotamer Side Chain Fit, a measure of
+   how closely your rotamer resembles a rotamer in the O
+   database; not used for Gly and Ala residues)
+   if so, give the name of the rsc datablock file and a cut-off
+   (normally 1.5 A; 2.0 A for a very rough initial model)
+
+ ## mask
+ - check if the mask is too tight?
+   if so, give the name of the current mask file (any MAMA format),
+   the name of the PDB file of your current model and a radius
+   to apply around all atoms (e.g., 2.0 A); every residue which
+   has at least one atom that sticks out of the mask (or doesn't
+   even fit inside the grid) will be flagged as bad
+
+ ## temperature factors
+ - analyse too low temperature factors ?
+   if so, and the PDB file hasn't been read yet, supply the
+   name of the PDB file; also supply a cut-off
+
+ - analyse too high temperature factors ?
+   if so, and the PDB file hasn't been read yet, supply the
+   name of the PDB file; also supply a cut-off.  If you already
+   analysed too low temperature factors, you will not get
+   statistics again
+
+ - analyse too high RMS delta-B bonded atoms ?
+   if so, and the PDB file hasn't been read yet, supply the
+   name of the PDB file; also supply a distance cut-off.  The values
+   are calculated for each residue separately; bonds to atoms in
+   sequentially neighbouring residues are included as well (e.g. N-C).
+
+ ## occupancies
+ - analyse too low occupancies ?
+   if so, and the PDB file hasn't been read yet, supply the
+   name of the PDB file; also supply a cut-off
+
+ - analyse too high occupancies ?
+   if so, and the PDB file hasn't been read yet, supply the
+   name of the PDB file; also supply a cut-off.  If you already
+   analysed too low occupancies, you will not get statistics again
+
+ ## Ramachandran plot
+ - analyse phi-psi angles ?
+   if so, and the PDB file hasn't been read yet, supply the
+   name of the PDB file; OOPS will check if residues are
+   inside the allowed areas (this is approximate; border-line
+   cases may be overlooked or flagged as bad)
+
+ ## peptide planarity
+ - analyse peptide planarity ?
+   if so, and the PDB file hasn't been read yet, supply the
+   name of the PDB file.  Peptide planarity is judged from
+   the absolute value of the improper twist angle:
+   C(i) - CA(i) - N(i+1) - O(i).  This angle is 0.0 for
+   planar peptides.  Supply a cut-off for the absolute
+   deviation from zero (residues which differ by more than
+   that amount are flagged as bad).
+   From version 4.8 on, the omega torsion (CA-C-N-CA) is also
+   checked, and any cis-peptides are flagged as well (these are
+   not necessarily errors, of course, but you may want to have
+   a look at them anyway)   
+
+ ## C-alpha chirality
+ - analyse C-alpha chirality ?
+   if so, and the PDB file hasn't been read yet, supply the
+   name of the PDB file.  C-alpha chirality is judged from
+   the value of the improper twist angle:
+   CA(i) - N(i) - C(i) - CB(i).  This angle should be near
+   33.9 degrees.  Supply a cut-off for the absolute
+   deviation from 33.9 (residues which differ by more than
+   that amount from 33.9 are flagged as bad)
+
+ ## comparison with a previous model
+ - compare with a previous model ?
+   if so, provide the name of the PDB file containing that model.
+ The following items are checked for each residue of the
+   current model:
+ o has the residue newly been inserted ?
+ o has the residue newly been mutated ?
+ If not:
+ o has it shifted "a lot" ? (e.g., waters in a slow cool !)
+ o have the temperature factors changed a lot ?
+ o have the occupancies changed a lot ?
+ o have the Phi and/or Psi angles changed a lot ?
+ o have the Chi1 and (if present) Chi2 angles changed a lot ?
+ You have to provide a cut-off for each of these checks in
+   order to define what "a lot" actually is.  In all cases, when
+   a large shift has occurred (either during rebuilding or
+   refinement), you want to have a closer look at the residue.
+   The same is true, of course, if you have recently mutated or
+   inserted a residue.
+ Delta-dihedral angles are calculated as:
+     dihedral (now) - dihedral (previous)
+   and moved to fall in the range <-180,+180].
+ If only one of Phi and Psi can be calculated, then the 
+   "Phi/Psi distance" is simply the absolute value of the
+   delta-dihedral; if both can be calculated, the distance
+   is calculated as SQRT (0.5 * (dPhi**2 + dPsi**2) ).
+   A similar method is used for the Chi1/2 distance.
+
+ ## QualWat for waters
+ - analyse QualWat values of water molecules ?
+   this quantity, introduced by E. Arnold and M.G. Rossmann
+   (J. Mol. Biol. 211 (1990) 763-801) is defined as follows:
+ QualWat = 100 * Q * exp (-B/(4d^2))
+ Q is the occupancy and B the temperature factor of the
+   oxygen atom of the water, d is the resolution.  A perfect
+   water would have Q = 100, an absent water has Q = 0.
+   Supply the resolution and a cut-off value if you want
+   to include this check
+
+ ## bad contacts
+ - analyse the number of bad contacts ?
+   if so, give the name of the datablock file and a cut-off.
+   You can extract such a datablock from PROCHECK output
+   using ODBM or ODBMAN (see the ODBM or ODBMAN manuals), or
+   from any other source using your own jiffy program(s)
+
+ ## user-defined criteria
+ - check one or more (up to ten) user-defined criteria ?
+   provide a file name (this MUST be an O-style datablock;
+   both Integer and Real datablocks can be read, but the
+   values are always stored as REAL), a name for the property,
+   and the message to print in O when a residue has a "bad"
+   value for this property.  You must also make clear WHEN
+   a residue has a bad value, i.e. whether VALUE > CUT-OFF or
+   VALUE < CUT-OFF is considered bad.  In order to do this,
+   you must supply a comparison operator (either < or >) and
+   a cut-off value
+
+ ## details to screen
+ - do you want to see the details ? if so, OOPS will list the
+   residues to the screen (and why they are suspicious, if at all)
+
+ ## electronic notebook file
+ - in addition, or alternatively, you can get a file with such
+   a listing ("electronic notebook file").  Just edit this file
+   as you go along rebuilding your model.  At the end, print the
+   file and stick it in your real notebook.  If you want to have
+   such a file, you have to provide a file name.
+
+ ## HTML file
+ - if you like, you can get an HTML file which contains a residue-by-residue
+   critique of your model (version 4.6) to put on your web site or
+   intranet server
+
+ ## pseudo-PDB file
+ - if you want, you can get a "pseudo-PDB file" which contains
+   only the CA atoms of your molecule, with:
+ * X-coordinate = Phi-dihedral angle of the residue
+ * Y = Psi
+ * Z = Pep-flip value * 100
+ * B = max. B of any atom in the residue
+ * Q = RSC value of the residue
+ You also get a small O datablock file which you must read
+   into O.  Then type "Draw ramaflip" to get the plot frame.
+   Read in your pseudo-molecule and do a Zone on it.  You may
+   also use Paint_prop etc. to colour the atoms according to
+   their max. B and/or RSC value.  This may help in finding
+   bad areas, as well as cases where bad peptide-orientations
+   may be the cause of Ramachandran outliers.
+ NOTE: this option is available *only* if you have checked
+         both pep-flip and phi/psi values.
+
+ ## O commands for each residue
+ - line of O commands to execute for each residue.  It is
+   handy to draw a map and a sphere object, for example:
+     map_act map_draw obj sph sphere 10 end bell
+ If you want to execute an awful lot of commands for every
+   "baddy", put them in a macro and just execute that:
+     @do_all_this_for_every_baddy.omac
+ If you don't want to do anything, supply a comment line:
+     ! don't do anything
+ or a dummy message:
+     message Check this one out, babe !
+
+ ## output macros
+ - do you want macros for ALL or only for the BAD residues ?
+   If you want to be use OOPS as an information-macro-generator,
+   choose ALL; for rebuilding of only suspicious residues,
+   choose BAD
+
+ - do you want CHAINED macros ?  If so, each macro will "point
+   to" the next one; it will put an O instruction on the O menu
+   to execute the next macro.  If you want to be use OOPS as an
+   information-macro-generator, select NO; for rebuilding of only
+   suspicious residues, select YES
+
+ - do you want macros to have the same name as the residue to
+   which they relate ?  If so, the macro for residue B107 will
+   be called oops/b107 (note: lowercase); if not, the macros
+   will be called oops/1, oops/2 etc.
+
+ ** METHOD
+
+ OOPS will then loop over all residues.  If a residue has a bad
+   pep-flip or rs-fit value etc., a macro will be written to the
+   oops subdirectory (unless you requested macros for ALL residues).
+   In addition, a start-up macro called "oops.mac" will be put in
+   your current directory.
+
+ In the case of pepflip values etc., only residues which have
+   absolute values greater than 0.01 are considered (this is to
+   prevent OOPS from flagging all your waters as having bad
+   RS-fit values, or your terminal residues as having bad PHI/PSI
+   values).  Similar safe-guards are applied for other attributes
+   (e.g.: RS-fit side-chain not for GLYs; RSC not for GLY/ALA;
+   phi/psi not for N- and C-terminal residues, etc. etc.).
+
+ When OOPS is finished (and if there were any bad residues), all
+   you have to do is type: "@oops.omac" from within O.  This
+   will then automatically centre on the first bad residue and
+   print a message which tells you what is suspicious about this
+   residue.  In addition, a new menu item "@oops/2" will be added
+   to your menu.  When you're finished with the first residue, just
+   click on this new menu item to go the second suspicious residue
+   automatically, etc. ad infinitum.  When the second macro is
+   executed, you again will be centred on this residue's C-alpha
+   atom, a diagnostic message is printed, the previous menu item
+   "@oops/2" is deleted and a new one, "@oops/3" is inserted.
+   Again, when you're finished, just click on "@oops/3" and voila.
+
+ After the last "baddy", the terminal bell will ring and a
+   message that there aren't any more of them is printed.
+
+ ** SUBJECTIVITY
+
+ From version 5.3 on, a facility has been implemented that enables
+   you to keep track of your subjective judgement of all the
+   residues you inspect with the OOPS macros.
+
+ As you execute the "oops.omac" start-up macro, four new commands
+   will be added to your menu:
+ - @Good_fit
+ - @Poor_fit
+ - @Poor_dens
+ - @No_dens
+
+ Also, a new datablock will be created (and filled with zeros)
+   that is called MOLNAM_residue_quality (MOLNAM is the name
+   of the molecule you are scrutinising, e.g. M9).  Now, whenever
+   you inspect a residue, you can click on any of the four new
+   commands, and the entry of the current residue will be set
+   to:
+ - 0 if you click on @Good_fit: the density is good, and the fit
+   of the model to the density is good
+ - 1 if you click on @Poor_fit: the density is good, but the fit
+   of the model to the map is not, i.e. you need to do some
+   rebuilding
+ - 2 if you click on @Poor_dens: the density is poor, so you cannot
+   fit the residue any better than it is
+ - 3 if you click on @No_dens: there is no density, so you cannot
+   reasonably fit the residue at all
+ While you are still working on the same residue, you can revise
+   your judgement, and press another of the four commands.
+
+ When you are done, a new CA-object will be generated (called QUAL),
+   where residues with quality value 0 are blue, value 1 red (these
+   should have been fixed by you), value 2 magenta (may have been
+   rebuilt in the hopes of better density next cycle), and value 3
+   white (no density, little hope at present).  You can use this
+   object, for example, to ask a colleague or your supervisor to
+   have a (quick) look at the problematic residues.
+
+ You can also use it in a next rebuilding cycle to quickly skip
+   over residues that are flagged as outliers (e.g., in pepflip
+   or rotamer analysis), but for which you know that the density and
+   the fit to it are rock solid.
+
+ ** EXAMPLE
+
+ ## write some files from O
+ (or use OMAC/pre_oops.omac to do the work for you ...):
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+  O > rsr_map m5_4.map rs_fit m6a a5 a162
+...
+  O > wr m6a_residue_rsfit rsfit_all.o ;
+  O > read odat/rsfit_mc.o rs_fit m6a a5 a162
+...
+  O > wr m6a_residue_rsfit rsfit_mc.o ;
+  O > read odat/rsfit_sc.o
+  O > rs_fit m6a a5 a162
+...
+  O > wr m6a_residue_rsfit rsfit_sc.o ;
+  O > pep_flip m6a a5 a162
+... 
+  O > wr M6A_RESIDUE_PEPFLIP pepflip.o ;
+  O > rsc m6a a5 a162
+  O > wr m6a_residue_rsc rsc.o ;
+  O > wr M6A_RESIDUE_NAME resnam.o ;
+  O > wr M6A_RESIDUE_TYPE restyp.o ;
+  O > s_a_o m6a.pdb m6a ;;;;;
+ Sam> Coordinate file type assumed from file name is PDB
+ Sam>       1280 atoms written out.
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## run OOPS
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ % 181 gerard rigel 20:04:34 o/m5_6 > run oops
+...
+ Max nr of residues              :       5000
+ Max size of mask                :    4194304
+ Max nr of atoms                 :      50000
+ Max nr of user-defined criteria :         10
+
+ Print statistics and histograms ? (Y) y
+ Auto-generate (some) O2D plot files ? (Y) y
+
+ Molecule name in O ? (M1) m6a
+
+ O data block with residue names   ? (resnam.o) 
+ Datablock : (M6A_RESIDUE_NAME) 
+ Data type : (C) 
+ Number    : (158) 
+ Format    : ((1x,5a)) 
+
+ O data block with residue types   ? (restyp.o) 
+ Datablock : (M6A_RESIDUE_TYPE) 
+ Data type : (C) 
+ Number    : (158) 
+ Format    : ((1x,5a)) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## input for quality criteria
+
+ For every criterion you want to check, you will have to provide
+   one or more filenames and one or more cut-off values etc.  E.g.:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Analyse pep-flip values ? (Y) 
+ O data block with pep-flip values ? (pepflip.o) 
+ Datablock : (M6A_RESIDUE_PEPFLIP) 
+ Data type : (R) 
+ Number    : (158) 
+ Format    : ((8f8.3)) 
+
+ ***************************************************************************
+  Analysis of Pep-flip values (>0)
+ ***************************************************************************
+
+ Number of values ....................                  154
+ Average value .......................                0.837
+ Standard deviation ..................                0.584
+ Minimum value observed ..............                0.166
+ Maximum value observed ..............                3.033
+
+ Nr <        0.0000                    :        0 (  0.00 %; Cum   0.00 %)
+ Nr >=       0.0000 and <       0.2500 :        6 (  3.90 %; Cum   3.90 %)
+ Nr >=       0.2500 and <       0.5000 :       41 ( 26.62 %; Cum  30.52 %)
+ Nr >=       0.5000 and <       0.7500 :       45 ( 29.22 %; Cum  59.74 %)
+ Nr >=       0.7500 and <       1.0000 :       29 ( 18.83 %; Cum  78.57 %)
+ Nr >=       1.0000 and <       1.2500 :        5 (  3.25 %; Cum  81.82 %)
+ Nr >=       1.2500 and <       1.5000 :        9 (  5.84 %; Cum  87.66 %)
+ Nr >=       1.5000 and <       1.7500 :        2 (  1.30 %; Cum  88.96 %)
+ Nr >=       1.7500 and <       2.0000 :        6 (  3.90 %; Cum  92.86 %)
+ Nr >=       2.0000 and <       2.2500 :        6 (  3.90 %; Cum  96.75 %)
+ Nr >=       2.2500 and <       2.5000 :        1 (  0.65 %; Cum  97.40 %)
+ Nr >=       2.5000 and <       2.7500 :        1 (  0.65 %; Cum  98.05 %)
+ Nr >=       2.7500 and <       3.0000 :        2 (  1.30 %; Cum  99.35 %)
+ Nr >=       3.0000 and <       3.2500 :        1 (  0.65 %; Cum 100.00 %)
+ Nr >=       4.7500                    :        0 (  0.00 %; Cum 100.00 %)
+
+ O2D plot file ? (m6a_pepflip.plt) 
+ Plot file written
+
+ Pep-flip cut-off ? (   2.500) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## comparison with a previous model
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Compare with previous model ? (Y) 
+
+ PDB file of previous model ? (m18_prev.pdb) m16.pdb
+ REMARK ( Created by MOLEMAN V. 940525/4.9.1 at Mon Jul 25 20:22:45 1994 
+  for user) 
+ REMARK ( model M16 xplor crabp II 940725) 
+...
+ SCALE3 (      0.000000  0.000000  0.012885        0.00000) 
+ Not in current model :  O1  HOH    331   
+ Not in current model :  O1  HOH    403   
+ Not in current model :  O1  HOH    404   
+ Not in current model :  O1  HOH    408   
+ Not in current model :  O1  HOH    411   
+...
+ Not in current model :  O1  HOH    542   
+ END ( ) 
+ Nr of atoms read  : (       1215) 
+ Nr of atoms found : (       1200) 
+
+   Inserted residue > HOH   600   
+   Inserted residue > HOH   601   
+   Inserted residue > HOH   602   
+   Inserted residue > HOH   603   
+...
+   Inserted residue > HOH   612   
+
+ Name of this previous model ? (Prev Model) 
+
+ Comparing with previous model
+
+ ***************************************************************************
+  Analysis of RMSD current/previous model
+ ***************************************************************************
+
+ Number of values ....................                  238
+ Average value .......................                0.391
+ Standard deviation ..................                0.813
+ Minimum value observed ..............                0.000
+ Maximum value observed ..............                5.671
+
+ Nr <        0.0000                    :        0 (  0.00 %; Cum   0.00 %)
+ Nr >=       0.0000 and <       0.1000 :      115 ( 48.32 %; Cum  48.32 %)
+ Nr >=       0.1000 and <       0.2000 :       49 ( 20.59 %; Cum  68.91 %)
+ Nr >=       0.2000 and <       0.3000 :       23 (  9.66 %; Cum  78.57 %)
+ Nr >=       0.3000 and <       0.4000 :       10 (  4.20 %; Cum  82.77 %)
+...
+ ***************************************************************************
+  Analysis of Phi/Psi distance
+ ***************************************************************************
+
+ Number of values ....................                  238
+ Average value .......................                1.228
+ Standard deviation ..................                1.632
+ Minimum value observed ..............                0.000
+ Maximum value observed ..............               12.650
+
+ Nr <        0.0000                    :        0 (  0.00 %; Cum   0.00 %)
+ Nr >=       0.0000 and <      10.0000 :      237 ( 99.58 %; Cum  99.58 %)
+ Nr >=      10.0000 and <      20.0000 :        1 (  0.42 %; Cum 100.00 %)
+ Nr >=     180.0000                    :        0 (  0.00 %; Cum 100.00 %)
+
+ O2D plot file ? (m18_phipsi.plt) 
+ Plot file written
+
+ ***************************************************************************
+  Analysis of Chi1/2 distance
+ ***************************************************************************
+
+ Number of values ....................                  238
+ Average value .......................                4.160
+ Standard deviation ..................               13.168
+ Minimum value observed ..............                0.000
+ Maximum value observed ..............              137.104
+
+ Nr <        0.0000                    :        0 (  0.00 %; Cum   0.00 %)
+ Nr >=       0.0000 and <      10.0000 :      219 ( 92.02 %; Cum  92.02 %)
+ Nr >=      10.0000 and <      20.0000 :        9 (  3.78 %; Cum  95.80 %)
+ Nr >=      20.0000 and <      30.0000 :        2 (  0.84 %; Cum  96.64 %)
+ Nr >=      40.0000 and <      50.0000 :        3 (  1.26 %; Cum  97.90 %)
+ Nr >=      50.0000 and <      60.0000 :        3 (  1.26 %; Cum  99.16 %)
+ Nr >=      80.0000 and <      90.0000 :        1 (  0.42 %; Cum  99.58 %)
+ Nr >=     130.0000 and <     140.0000 :        1 (  0.42 %; Cum 100.00 %)
+ Nr >=     180.0000                    :        0 (  0.00 %; Cum 100.00 %)
+
+ O2D plot file ? (m18_chi12.plt) 
+ Plot file written
+
+ Maximum RMSD (A)         ? (   0.500) 
+ Maximum RMS delta-B (A2) ? (   5.000) 
+ Maximum RMS delta-Q (A2) ? (   0.100) 
+ Maximum Phi/Psi distance ? (  20.000) 
+ Maximum Chi1/2 distance  ? (  20.000) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## WHAT IF diagnostics
+
+ From version 5.2 on, OOPS can read "pdbout.txt" files created by
+   WHAT IF (command: "check ful filename.pdb x y").  A subset of
+   the diagnostics is used literally by OOPS.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Include WHAT IF diagnostics ? (N) y
+ WHAT IF report file ? (pdbout.txt) 
+ Ouch : (# 1 # Warning: Rounded coordinates detected) 
+ Rounded coordinates : (          5) 
+ Ouch : (# 3 # Warning: Valine nomenclature problem) 
+ Incorrect Valine nomenclature : (          1) 
+ Ouch : (# 4 # Error: Threonine nomenclature problem) 
+ Incorrect Threonine nomenclature : (          1) 
+ No incorrect Isoleucine nomenclature
+ Ouch : (# 6 # Warning: Leucine nomenclature problem) 
+ Incorrect Leucine nomenclature : (          1) 
+ Ouch : (# 7 # Warning: Arginine nomenclature problem) 
+ Incorrect Arginine nomenclature : (          1) 
+ Ouch : (# 13 # Warning: Chirality deviations detected) 
+ Chirality deviation : (          7) 
+ Ouch : (# 16 # Error: Weights outside the 0.0 -- 1.0 range) 
+ Impossible occupancy : (          1) 
+ Ouch : (# 17 # Warning: Missing atoms) 
+ Missing atoms : (          4) 
+ Ouch : (# 20 # Warning: Unusual bond lengths) 
+ Unusual bond lengths : (         18) 
+ Ouch : (# 23 # Warning: Unusual bond angles) 
+ Unusual bond angles : (         35) 
+ Ouch : (# 25 # Error: Side chain planarity problems) 
+ Non-planar side chains : (          1) 
+ Ouch : (# 26 # Error: Connections to aromatic rings out of plane) 
+ Atoms not co-planar with rings : (          1) 
+ Ouch : (# 29 # Warning: Torsion angle evaluation shows unusual residues) 
+ Unusual torsion angles : (          2) 
+ Ouch : (# 30 # Warning: Backbone torsion angle evaluation shows unusual 
+  conformations) 
+ Unusual backbone torsions : (          6) 
+ Ouch : (# 38 # Error: Atoms too close to symmetry axes) 
+ Atoms near symmetry axes : (          2) 
+ Ouch : (# 39 # Error: Abnormally short interatomic distances) 
+ ERROR --- While trying to recognise residue
+ > (  13 LYS  (  13 ) A    NZ   --  130 LEU  ( OXT ) A    O2     0.161   
+  2.539 INTRA) 
+ Short contacts : (         76) 
+ Ouch : (# 40 # Warning: Abnormal packing environment for some residues) 
+ Abnormal packing environments : (          7) 
+ Ouch : (# 48 # Warning: Backbone oxygen evaluation) 
+ Unusual peptide oxygens : (          1) 
+ No unusual rotamers
+ Ouch : (# 50 # Warning: Unusual backbone conformations) 
+ Unusual backbone conformations : (          9) 
+ Ouch : (# 52 # Error: Water clusters without contacts with non-water 
+  atoms) 
+ Isolated water clusters : (          5) 
+ Ouch : (# 53 # Warning: Water molecules need moving) 
+ Waters in wrong asymmetric unit : (          9) 
+ Ouch : (# 54 # Error: Water molecules without hydrogen bonds) 
+ Water molecules without H-bonds : (          5) 
+ Ouch : (# 59 # Error: HIS, ASN, GLN side chain flips) 
+ H/N/Q side chain flips : (          2) 
+ Ouch : (# 61 # Warning: Buried unsatisfied hydrogen bond donors) 
+ Unsatisfied H-bond donors : (          5) 
+ No unsatisfied H-bond acceptors
+ Nr of WHAT IF diagnostics : (        205) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## user-definable criteria
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ User-definable criteria
+ Max number of them : (      10) 
+
+ Enter file with user datablock (<CR> to stop): ( ) rsrfree_zone.o
+ Datablock : (M18_RESIDUE_RSRFREE) 
+ Data type : (R) 
+ Number    : (238) 
+ Format    : ((f10.3)) 
+ Name of the property ? (User-criterion nr 1) RSRfree
+ Warning for bad residues in O ? (Bad RSRfree; value =) 
+
+ ***************************************************************************
+  Analysis of RSRfree                                 
+ ***************************************************************************
+
+ Number of values ....................                  238
+ Average value .......................                0.292
+ Standard deviation ..................                0.090
+ Minimum value observed ..............                0.182
+ Maximum value observed ..............                0.554
+
+ Nr <        0.1448                    :        0 (  0.00 %; Cum   0.00 %)
+ Nr >=       0.1820 and <       0.2192 :       52 ( 21.85 %; Cum  21.85 %)
+ Nr >=       0.2192 and <       0.2564 :       65 ( 27.31 %; Cum  49.16 %)
+ Nr >=       0.2564 and <       0.2936 :       34 ( 14.29 %; Cum  63.45 %)
+ Nr >=       0.2936 and <       0.3308 :       16 (  6.72 %; Cum  70.17 %)
+ Nr >=       0.3308 and <       0.3680 :       27 ( 11.34 %; Cum  81.51 %)
+ Nr >=       0.3680 and <       0.4052 :       11 (  4.62 %; Cum  86.13 %)
+ Nr >=       0.4052 and <       0.4424 :       12 (  5.04 %; Cum  91.18 %)
+ Nr >=       0.4424 and <       0.4796 :       10 (  4.20 %; Cum  95.38 %)
+ Nr >=       0.4796 and <       0.5168 :        4 (  1.68 %; Cum  97.06 %)
+ Nr >=       0.5168 and <       0.5540 :        6 (  2.52 %; Cum  99.58 %)
+ Nr >=       0.5540                    :        1 (  0.42 %; Cum 100.00 %)
+
+
+ A residue has a BAD "RSRfree" IF:
+ its value either > CUTOFF or < CUTOFF
+ Should I use ">" or "<" ? (>) >
+ Cut-off value to use ? (  4.710E-01) 0.45
+ Checking ...
+
+ Enter file with user datablock (<CR> to stop): ( ) 
+
+ Nr of user criteria : (       1) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## selection of output
+
+ After all input has been given, tell OOPS what output you want:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ You may opt to get the details listed
+ on the screen.
+ Do you want to see the details ? (Y) 
+
+ Also, you can get this list written to a file;
+ this is very handy for electronic note-keeping:
+ just edit the file as you rebuild your model &
+ print it & stick it in your notebook !
+ Do you want to have a list file ? (Y) 
+ Name of the list file ? (m18_rebuild.notes) 
+
+ You may enter one line of O commands
+ which will be executed by EVERY macro
+ generated by OOPS.
+ O command(s) to execute in every macro ? (bell print DONE) @fast_dials
+
+ You may opt to get chained macros for
+ ALL or merely the BAD residues.
+ Do you want macros for ALL residues ? (N) 
+
+ You may opt to get chained macros or
+ individual macros without instructions
+ to put the next macro on the menu.
+ Do you want CHAINED macros ? (Y) 
+
+ You may opt to give the macros the
+ same name as the residue which they
+ deal with (in lowercase), or to just
+ give them sequential numbers (1, 2, ...).
+ Do you want macros named as RESIDUES ? (Y) 
+
+ OOPS - (PRO 2) 
+ Large positional shift; RMSD = 0.68
+ Large Chi1/2 shift; RMSD = 26.76
+ OOPS - (LYS 9) 
+ Bad RSC = 2.29
+ OOPS - (ASN 15) 
+ Bad RSC = 1.76
+ Bad Phi-Psi = 65.46 22.91
+ OOPS - (GLU 17) 
+ Large positional shift; RMSD = 1.04
+...
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## overview
+
+ At the end, an overview is printed:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+...
+ OOPS - (HOH 612) 
+ Bad RS-fit (all atoms) = 0.539
+ Newly inserted residue in this model
+
+ Nr of baddies : (         83) 
+
+ Start by typing @oops.omac in O !!!
+
+ Bad pep-flip                 : (          2) 
+ Bad RS-fit (all atoms)       : (         16) 
+ Bad RS-fit (main chain)      : (          0) 
+ Bad RS-fit (side chain)      : (          0) 
+ Bad RS R-factor (all atoms)  : (         16) 
+ Bad RSC                      : (         12) 
+ Bad mask                     : (          0) 
+ Bad B (low)                  : (          0) 
+ Bad B (high)                 : (         26) 
+ Bad RMS delta-B bonded atoms : (          1) 
+ Bad Q (low)                  : (          0) 
+ Bad Q (high)                 : (          0) 
+ Bad Phi/Psi                  : (          3) 
+ Bad peptide planarity        : (          0) 
+ Bad C-alpha chirality        : (          1) 
+ Newly inserted residues      : (         13) 
+ Newly mutated residues       : (          0) 
+ Large positional shift       : (         57) 
+ Large temp.-factor shift     : (          0) 
+ Large occupancy shift        : (          0) 
+ Large Phi/Psi shift          : (          0) 
+ Large Chi1/2 shift           : (         10) 
+ Bad QualWat                  : (          0) 
+ Bad contact(s)               : (          0) 
+ Bad RSRfree : (         19) 
+
+ Read oops_badcounts.o into O and use
+ residue property badcounts to colour your
+ molecule, or plot this file, to reveal
+ areas where the structure is poor.
+
+ ***************************************************************************
+  Analysis of Bad counts
+ ***************************************************************************
+
+ Number of values ....................                  238
+ Average value .......................                0.647
+ Standard deviation ..................                1.178
+ Minimum value observed ..............                0.000
+ Maximum value observed ..............                6.000
+
+ Nr <        0.0000                    :        0 (  0.00 %; Cum   0.00 %)
+ Nr >=       0.0000 and <       1.0000 :      163 ( 68.49 %; Cum  68.49 %)
+ Nr >=       1.0000 and <       2.0000 :       31 ( 13.03 %; Cum  81.51 %)
+ Nr >=       2.0000 and <       3.0000 :       23 (  9.66 %; Cum  91.18 %)
+ Nr >=       3.0000 and <       4.0000 :       14 (  5.88 %; Cum  97.06 %)
+ Nr >=       4.0000 and <       5.0000 :        3 (  1.26 %; Cum  98.32 %)
+ Nr >=       5.0000 and <       6.0000 :        1 (  0.42 %; Cum  98.74 %)
+ Nr >=       6.0000 and <       7.0000 :        3 (  1.26 %; Cum 100.00 %)
+ Nr >=      24.0000                    :        0 (  0.00 %; Cum 100.00 %)
+
+ O2D plot file ? (m18_badcounts.plt) 
+ Plot file written
+
+
+ *** OOPS *** OOPS *** OOPS *** OOPS *** OOPS *** OOPS *** OOPS *** OOPS *** 
+
+ Version - 941220/4.1
+ Started - Tue Dec 20 22:52:26 1994
+ Stopped - Tue Dec 20 23:00:33 1994
+
+ CPU-time taken :
+ User    -      5.8 Sys    -      3.3 Total   -      9.1
+
+ *** OOPS *** OOPS *** OOPS *** OOPS *** OOPS *** OOPS *** OOPS *** OOPS *** 
+
+ >>> This program (C) 1993-94, GJ Kleywegt & TA Jones <<<
+ E-mail: "gerard@xray.bmc.uu.se" or "alwyn@xray.bmc.uu.se"
+
+ *** OOPS *** OOPS *** OOPS *** OOPS *** OOPS *** OOPS *** OOPS *** OOPS *** 
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## OOPS macros
+ the first macro (oops.omac) may look like this:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ print Created by OOPS V. 941220/4.1 at Tue Dec 20 23:00:21 1994 for user gerard
+ print Molecule M18
+ print OOPS has checked:
+ print Pep-flip values; cutoff =    2.500000    
+ print RS-fit (all atoms); cutoff =   0.7000000    
+ print RS R-factor (all atoms); cutoff =   0.4000000    
+ print RSC values; cutoff =    1.500000    
+ print Too high temperature factors; cutoff =    40.00000    
+ print Too high RMS delta-B bonded atoms; cutoff =    5.000000    
+ print Phi-Psi angle combinations (Ramachandran)
+ print Peptide planarity; cutoff =    5.800000    
+ print CA chirality; cutoff =    3.500000    
+ print Comparison with previous model Prev Model
+ print RMSD; cutoff =   0.5000000    
+ print RMS delta-B; cutoff =    5.000000    
+ print RMS delta-Q; cutoff =   0.1000000    
+ print Phi/Psi distance; cutoff =    20.00000    
+ print Chi1/2 distance; cutoff =    20.00000    
+ print RSRfree cut-off = 0.4500000
+ print Macros were generated for BAD residues
+ print Macros were chained together
+ print Macros were given residue names
+ mol M18
+ @oops/2
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ an actual residue macro may look like this:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ % 1493 gerard rigel 18:55:56 oops/exam > cat oops/104
+ centre_zone M18 104 ;
+ print Residue GLU 104
+ print Bad RS-fit (all atoms) = 0.662
+ print Bad RSC = 1.80
+ print Too high temperature factor = 53.12
+ print Large positional shift; RMSD = 1.14
+ print Large Chi1/2 shift; RMSD = 48.77
+ print Bad RSRfree; value = 0.4530000
+ @fast_dials
+ print Hit or type "@oops/107" for next baddy
+ menu @oops/107 on on_off
+ menu @oops/104 off on_off
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## run O
+ start the first macro (@oops.omac) and correct your model, check your
+   mask, etc.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+...
+  O > @oops.omac
+  O > Macro in computer file-system.
+ As4> Created by OOPS V. 931108/2.2 at Mon Nov 8 22:28:52 1993 for user
+  O >  As4> Molecule M8A
+  O >  As4> OOPS has checked:
+  O >  As4> Pep-flip values; cutoff =    2.500000
+  O >  As4> RS-fit (all atoms); cutoff =   0.5500000
+  O >  As4> RSC values; cutoff =    1.500000
+  O >  As4> Phi-Psi angle combinations
+  O >  As4> Peptide planarity; cutoff =    5.800000
+  O >  As4> CA chirality; cutoff =    3.500000
+  O >  As4> Number of bad contacts; cutoff =            1
+  O >   O >   O > Macro in computer file-system.
+ As4> No object defined.
+ As4> M8A   A1    A1    M8A
+ As4> Centering on zone from A1 to A1
+  O >  As4> Residue PRO A1
+  O >  As4> Bad contact(s); count =            1
+  O >  As4> Bad XPLOR GeomPlot; value = 4.706100
+  O >  As4> Hit or type "@oops/2" for next baddy
+  O >   O >   O >   O > Macro in computer file-system.
+...
+ As4> M8A   A2    A2    SPH
+ As4> Centering on zone from A2 to A2
+  O >  As4> Residue SER A2
+  O >  As4> Bad Phi-Psi = 109.16 155.57
+  O >  As4> Non-planar peptide; improper = -8.08
+  O >  As4> Bad CA chirality; zeta = 28.24
+  O >  As4> Bad XPLOR GeomPlot; value = 9.952900
+  O >  As4> Hit or type "@oops/3" for next baddy
+  O >   O >   O >   O > Macro in computer file-system.
+...
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## electronic notebook file
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Created by OOPS V. 941220/4.1 at Tue Dec 20 23:00:21 1994 for user gerard
+ Molecule M18
+ OOPS has checked:
+ Pep-flip values; cutoff =    2.500000    
+ RS-fit (all atoms); cutoff =   0.7000000    
+ RS R-factor (all atoms); cutoff =   0.4000000    
+ RSC values; cutoff =    1.500000    
+ Too high temperature factors; cutoff =    40.00000    
+ Too high RMS delta-B bonded atoms; cutoff =    5.000000    
+ Phi-Psi angle combinations (Ramachandran)
+ Peptide planarity; cutoff =    5.800000    
+ CA chirality; cutoff =    3.500000    
+ Comparison with previous model Prev Model
+ RMSD; cutoff =   0.5000000    
+ RMS delta-B; cutoff =    5.000000    
+ RMS delta-Q; cutoff =   0.1000000    
+ Phi/Psi distance; cutoff =    20.00000    
+ Chi1/2 distance; cutoff =    20.00000    
+ RSRfree cut-off = 0.4500000
+
+
+ OOPS - PRO    - 2     
+ Large positional shift; RMSD = 0.68
+ Large Chi1/2 shift; RMSD = 26.76
+
+ OOPS - LYS    - 9     
+ Bad RSC = 2.29
+
+ OOPS - ASN    - 15    
+ Bad RSC = 1.76
+ Bad Phi-Psi = 65.46 22.91
+
+ OOPS - GLU    - 17    
+ Large positional shift; RMSD = 1.04
+
+ OOPS - GLU    - 18    
+ Bad RSC = 2.31
+
+ OOPS - LYS    - 21    
+ Large positional shift; RMSD = 1.06
+ Large Chi1/2 shift; RMSD = 45.87
+
+...
+
+ OOPS - HOH    - 611   
+ Newly inserted residue in this model
+
+ OOPS - HOH    - 612   
+ Bad RS-fit (all atoms) = 0.539
+ Newly inserted residue in this model
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## "REMARK 5" file
+
+ From version 4.5 onward, OOPS automatically produces a file called
+   oops_remarks.pdb.  This file contains statistics for some of the
+   checks that OOPS has performed (provided you said you wanted
+   statistics listed).  You can include this file in your PDB
+   deposition form.
+
+ The file may look as follows:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+REMARK   5 
+REMARK   5 CREATED BY : OOPS        
+REMARK   5 VERSION    : 951026/4.5  
+REMARK   5 MODEL NAME : M9        
+REMARK   5 DATE       : THU MAR  2 01:45:04 1995
+REMARK   5 
+REMARK   5 MODEL QUALITY
+REMARK   5 
+REMARK   5 PEPTIDE-OXYGEN ORIENTATION
+REMARK   5   PROGRAM USED: O
+REMARK   5   NR OF RESIDUES            :     718
+REMARK   5   MAXIMUM VALUE         (A) :    3.51
+REMARK   5   AVERAGE VALUE         (A) :    0.77
+REMARK   5   CUT-OFF VALUE         (A) :    2.50
+REMARK   5   OUTLIERS             (NR) :      22
+REMARK   5   OUTLIERS              (%) :    3.06
+REMARK   5 
+REMARK   5 ROTAMER SIDECHAIN ANALYSIS
+REMARK   5   PROGRAM USED: O
+REMARK   5   NR OF RESIDUES            :     568
+REMARK   5   MAXIMUM VALUE         (A) :    2.82
+REMARK   5   AVERAGE VALUE         (A) :    0.59
+REMARK   5   CUT-OFF VALUE         (A) :    1.50
+REMARK   5   OUTLIERS             (NR) :      36
+REMARK   5   OUTLIERS              (%) :    6.34
+REMARK   5 
+REMARK   5 REAL-SPACE FIT (CORR. COEFF./ALL ATOMS)
+REMARK   5   PROGRAM USED: O
+REMARK   5   NR OF RESIDUES            :    1250
+REMARK   5   MINIMUM VALUE             :    0.18
+REMARK   5   AVERAGE VALUE             :    0.88
+REMARK   5   STANDARD DEVIATION        :    0.11
+REMARK   5   CUT-OFF VALUE             :    0.60
+REMARK   5   OUTLIERS             (NR) :      30
+REMARK   5   OUTLIERS              (%) :    2.40
+REMARK   5 
+REMARK   5 REAL-SPACE FIT (CORR. COEFF./MAINCHAIN)
+REMARK   5   PROGRAM USED: O
+REMARK   5   NR OF RESIDUES            :     744
+REMARK   5   MINIMUM VALUE             :    0.51
+REMARK   5   AVERAGE VALUE             :    0.92
+REMARK   5   STANDARD DEVIATION        :    0.05
+REMARK   5   CUT-OFF VALUE             :    0.80
+REMARK   5   OUTLIERS             (NR) :      32
+REMARK   5   OUTLIERS              (%) :    4.30
+REMARK   5 
+REMARK   5 REAL-SPACE FIT (CORR. COEFF./SIDECHAIN)
+REMARK   5   PROGRAM USED: O
+REMARK   5   NR OF RESIDUES            :     684
+REMARK   5   MINIMUM VALUE             :    0.51
+REMARK   5   AVERAGE VALUE             :    0.92
+REMARK   5   STANDARD DEVIATION        :    0.05
+REMARK   5   CUT-OFF VALUE             :    0.70
+REMARK   5   OUTLIERS             (NR) :      10
+REMARK   5   OUTLIERS              (%) :    1.46
+REMARK   5 
+REMARK   5 PEPTIDE PLANARITY IMPROPER TORSION
+REMARK   5   PROGRAM USED: OOPS
+REMARK   5   NR OF RESIDUES            :     724
+REMARK   5   MINIMUM VALUE       (DEG) :   -3.18
+REMARK   5   MAXIMUM VALUE       (DEG) :    4.70
+REMARK   5   AVERAGE VALUE       (DEG) :    0.09
+REMARK   5   STANDARD DEVIATION  (DEG) :    1.02
+REMARK   5   CUT-OFF VALUE       (DEG) :    5.80
+REMARK   5   OUTLIERS             (NR) :       0
+REMARK   5   OUTLIERS              (%) :    0.00
+REMARK   5 
+REMARK   5 CA CHIRALITY IMPROPER TORSION
+REMARK   5   PROGRAM USED: OOPS
+REMARK   5   NR OF RESIDUES            :     620
+REMARK   5   MINIMUM VALUE       (DEG) :   29.43
+REMARK   5   MAXIMUM VALUE       (DEG) :   37.48
+REMARK   5   AVERAGE VALUE       (DEG) :   34.12
+REMARK   5   STANDARD DEVIATION  (DEG) :    1.08
+REMARK   5   CUT-OFF VALUE       (DEG) :    3.50
+REMARK   5   OUTLIERS             (NR) :       4
+REMARK   5   OUTLIERS              (%) :    0.65
+REMARK   5 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** NOTES AND HINTS
+
+ ## Colouring your molecule
+
+ colouring your molecule according to the number of violations:
+
+ EXAMPLE 1:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+  O > read oops_badcounts.o
+  O > mol m6a
+  O > pai_ramp residue_badcounts ; blue red
+  O > obj bad ca ; end
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ EXAMPLE 2:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+  O > read oops_badcounts.o
+  O > mol m6a
+  O > pai_prop atom_name = ca blue
+  O > pai_prop residue_badcounts > 0 red
+  O > obj bad ca ; end
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ EXAMPLE 3:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+  O > read oops_badcounts.o
+  O > mol m6a
+  O > pai_case residue_badcounts 5  0 1 2 3 4  blue green yellow orange red
+  O > obj bad ca ; end
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## Using quality information from other programs
+
+ use ODBM or ODBMAN to create O-style datablock files from ASCII files.
+   Example: run the "geomplot" XPLOR script for your molecule(s),
+   then extract the residue values with ODBMAN from the file
+   called geomplot.list.
+ ODBMAN and ODBM can also be used to extract several types of
+   datablock from a PROCHECK output file (see their manuals) !
+
+ ## O commands for each residue
+
+ when prompted by OOPS to supply a line of O commands which
+   will be executed for every bad residue, be clever and execute
+   a macro !  For example: @do_all.omac
+ You may then change the contents of this macro later on without
+   having to re-run OOPS.
+
+ ## Generating O datablocks for OOPS
+
+ Use the OMAC/pre_oops.omac macro to take some work out of your
+   hands (this enables you to have a coffee or a beer while O
+   crunches).
+
+ ## Converting plot files to PostScript
+
+ Converting the O2D plot files generated by OOPS into PostScript
+   format is conveniently done with the OMAC/o2dps script, for
+   instance:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ % 189 gerard rigel 20:04:34 o/m5_6 > o2dps '*.plt' 1d
+
+... o2dps ... convert O2D plot files to PostScript ...
+
+Will convert m6a_badcounts.plt to m6a_badcounts.ps with option 1d ...
+Will convert m6a_pepflip.plt to m6a_pepflip.ps with option 1d ...
+Will convert m6a_rsc.plt to m6a_rsc.ps with option 1d ...
+Will convert m6a_rsfit_all.plt to m6a_rsfit_all.ps with option 1d ...
+Will convert m6a_rsfit_mc.plt to m6a_rsfit_mc.ps with option 1d ...
+Will convert m6a_rsfit_sc.plt to m6a_rsfit_sc.ps with option 1d ...
+
+Running O2D ...
+
+ Lowest X-value        : (  0.000E+00) 
+...
+ Highest Y-value       : (  1.000E+00) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## Consistency checks
+
+ OOPS always checks if the names of datablocks are consistent, to help
+   you prevent using a datablock belonging to an old model:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Analyse RS R-factor (all atoms) ? (Y) 
+ O data block with RS R-factors  ? (rsrfac_all.o) 
+ Datablock : (M18_RESIDUE_RSRCONV) 
+ Data type : (R) 
+ Number    : (238) 
+ Format    : ((f10.3)) 
+ WARNING - inconsistent datablock name
+ Expected    : (m18_residue_rsfit) 
+ Encountered : (m18_residue_rsrconv) 
+ Continue anyway ? (Y) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## Pseudo-PDB file
+
+ If you want to have a pseudo-PDB file, you can do this as follows in OOPS:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ You can also get a "pseudo-PDB file" with
+ one CA atom for each residue which has:
+   X = Phi(residue)
+   Y = Psi
+   Z = Pep-flip * 100
+   B = Maximum temp. factor
+   Q = RSC
+ Displaying and colouring this "molecule"
+ in O may reveal poor areas and correlations
+ between poor Phi/Psi and Pep-flip values
+ Create pseudo-PDB file ? (Y) 
+ Name of the PDB file ? (m18_pseudo.pdb) 
+ Name of the O datablock file ? (m18_pseudo.odb) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ In O, do something like this:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+  O > s_a_i m18_pseudo.pdb pse
+  O > mol pse
+  O > pa_prop
+ Paint> Property? [atom_name]: atom_wt
+ Paint> Operator (< > <= >= ^= [=]): >
+ Paint> Value? []: 1.5
+ Paint> Colour? [red]: 
+  O > pa_prop
+ Paint> Property? [atom_name]: atom_b
+ Paint> Operator (< > <= >= ^= [=]): >
+ Paint> Value? []: 40
+ Paint> Colour? [red]: 
+  O > zone ; end
+  O > read m18_pseudo.odb
+ Heap>
+ Heap>  Type: draw ramaflip
+ Heap>
+  O > draw ramaflip
+  O > ske_cpk pse
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ You can now click on Ramachandran plot outliers etc.
+
+ ** KNOWN BUGS
+
+ None, at present.

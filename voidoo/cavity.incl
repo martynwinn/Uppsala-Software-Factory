@@ -1,0 +1,170 @@
+c
+c === CAVITY.INCL === main include file for program VOIDOO
+c
+c Gerard Kleywegt @ 920807
+c
+c Updated 920810,11,12,13,14,20,21,25,26
+c Updated 920922,23
+c Updated 921020,29
+c Updated 930202,22
+c Updated 930302
+c Updated 930607,18,30
+c Updated 930809,23
+c Updated 931116
+c Updated 940715
+c Updated 950118
+c Updated 971120
+c Updated 990322,0617
+c Updated 030312
+c
+      implicit none
+c
+      character*12 prognm,version
+c
+      parameter (prognm = 'VOIDOO', version = '080826/3.3.4')
+c
+c ... MAXELM = max nr of chemical elements (needed for Vdw-radii)
+c     MAXATY = max nr of atom types
+c     MAXRAC = max nr of residue/atom combinations
+c     MAXATM = max nr of atoms
+c     MAXHOL = max nr of holes
+c     MAXRES = max nr of residue types to keep
+c     MAXCYC = max nr of cycles to find cavities
+c     MAXREF = max nr of refinement cycles
+c     MAXGRD = max grid size in any one dimension
+c     MAXBUF = buffer size
+c
+      integer maxelm,maxaty,maxatm,maxhol,maxres,maxbuf
+      integer maxgrd,maxcyc,maxrac,maxref
+c
+      parameter (maxelm =     50)
+      parameter (maxaty =    100)
+      parameter (maxrac =    500)
+      parameter (maxatm = 500000)
+      parameter (maxhol =  10000)
+      parameter (maxres =    100)
+      parameter (maxcyc =    100)
+      parameter (maxref =    100)
+      parameter (maxgrd =   5000)
+      parameter (maxbuf = 150*1024*1024)
+c
+c ... MEMUSE - memory used for major arrays (in BYTES)
+c
+      integer memuse
+c
+      parameter (memuse = 8*maxatm*4 + 2*maxatm*1 + 2*maxatm*15 +
+     +                    2*maxbuf*1 +
+     +                    3*maxgrd*4 + 1*maxgrd*maxgrd*1)
+c
+c ... to be used for marking grid points
+c
+      character*1 prot,notp,cavi,surf,done,temp
+c
+      parameter (prot='0', notp='1', cavi='2', surf='3')
+      parameter (done='4', temp='9')
+c
+c ... other useful parameters
+c
+      real twopi,pi,degtor,rtodeg
+c
+      parameter (twopi  = 6.2831853071796)
+      parameter (pi     = 0.50*twopi)
+      parameter (degtor = twopi/360.0)
+      parameter (rtodeg = 360.0/twopi)
+c
+      integer kbd,tty,flog,nix,iunit,junit
+c
+      parameter (kbd=5, tty=6, flog=7, nix=0, iunit=11, junit=12)
+c
+      real zero,half,one,two
+c
+      parameter (zero=0.00, half=0.50, one=1.00, two=2.00)
+c
+c ELEMENT DATA  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+c
+      real vdwrad(maxelm),vdwrat(maxaty),vdwrac(maxrac)
+      integer numelm,numaty,numrac
+      character namelm(maxelm)*2
+      character namaty(maxaty)*4
+      character namrac(maxrac)*8
+c
+common
+c
+      common /cbelm1/ vdwrad,vdwrat,vdwrac
+      common /cbelm2/ numelm,numaty,numrac
+      common /cbelm3/ namelm,namaty,namrac
+c
+c RESIDUE DATA  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+c
+      integer numres
+      character resnam(maxres)*3
+c
+common
+c
+      common /cbres1/ numres
+      common /cbres2/ resnam
+c
+c ATOM DATA  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+c
+      real xd(maxatm),yd(maxatm),zd(maxatm)
+      real xr(maxatm),yr(maxatm),zr(maxatm)
+      real dvdw(maxatm),dvdw2(maxatm),vdwmax
+      integer natoms,nrejec
+      logical linecs(maxatm),test(maxatm)
+      character rejnam(maxatm)*15,atmnam(maxatm)*15
+c
+common
+c
+      common /cbatm1/ xd,yd,zd,xr,yr,zr,dvdw,dvdw2,vdwmax
+      common /cbatm2/ natoms,nrejec
+      common /cbatm3/ rejnam,atmnam
+      common /cbatm4/ linecs,test
+c
+c GRID DATA  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+c
+      real xmin,xmax,ymin,ymax,zmin,zmax,gsize,volppt
+      real xg(maxgrd),yg(maxgrd),zg(maxgrd),margin
+      integer ngrid(3),nxy,nxyz,mingrd
+      character ibuff  (maxbuf)*1
+      character ibuff2 (maxbuf)*1
+      character ibuff3 (maxgrd*maxgrd)*1
+c
+common
+c
+      common /cbden1/ xmin,xmax,ymin,ymax,zmin,zmax,gsize,volppt,
+     +                xg,yg,zg,margin
+      common /cbden2/ ngrid,nxy,nxyz,mingrd
+      common /cbden3/ ibuff
+      common /cbden4/ ibuff2
+      common /cbden5/ ibuff3
+c
+c CAVITY DATA  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+c
+      real volcav(maxhol),fvdw,gfact,vtoler,fused,pgrid,probe
+      real fstore(maxcyc),ptoler,vdif(2),volums(maxref)
+      real cavxyz(3),dgrid
+      integer numcav,nptcav(maxhol),numcyc,numhol(maxcyc),minsiz
+      integer numref
+      logical lmask,lodl,ltrace,lrefi,lprob,lspec,lpdot
+      character ofile*80
+      character ctype*1,dtype*1,ptype*1,dfile*80,apdot*1,vtype*1
+c
+common
+c
+      common /cbcav1/ volcav,fvdw,gfact,vtoler,fused,pgrid,probe,
+     +                fstore,ptoler,vdif,volums,cavxyz,dgrid
+      common /cbcav2/ numcav,nptcav,numcyc,numhol,minsiz,numref
+      common /cbcav3/ lmask,lodl,ltrace,lrefi,lprob,lspec,lpdot
+      common /cbcav4/ ofile,ctype,dtype,ptype,dfile,apdot,vtype
+c
+c GENERAL STUFF  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+c
+      real total,user,sys
+      integer ierror,i,j,k
+      logical xinter
+      character line*256,answer*1
+c
+common
+c
+      common /cbgen1/ ierror
+c

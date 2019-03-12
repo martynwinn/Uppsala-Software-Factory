@@ -1,0 +1,22 @@
+#
+OBJ=	spancsi.o ../gklib/osx_kleylib  ../ccp4libs_latest_m32_osx/libccp4f.a  ../ccp4libs_latest_m32_osx/libccp4c.a
+EXEC =	spancsi
+INCL=	Makefile_osx
+SUBS = 
+##SUBS## SUBS = spancsi_subs.o
+##INCL## INCL = Makefile_osx spancsi.incl
+##STATIC## STATIC = -static
+
+fc =	 gfortran -DOSX
+
+opt= -O -u -check_bounds -ffixed-line-length-132 -m32 -I..
+link= -O
+
+$(EXEC):	$(OBJ) $(SUBS)
+	$(fc) $(link) -o $(EXEC) $(SUBS) $(OBJ) $(STATIC) -m32 ; strip $(EXEC)
+
+spancsi.o:	spancsi.fpp $(INCL)
+	$(fc) $(opt) -c spancsi.fpp
+
+##SUBS## spancsi_subs.o:	spancsi_subs.fpp $(INCL)
+##SUBS## 			$(fc) $(opt) -c spancsi_subs.fpp

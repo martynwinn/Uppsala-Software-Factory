@@ -1,0 +1,192 @@
+c
+c ... moleman2.incl - include file for program MOLEMAN2
+c
+c ... Gerard Kleywegt @ 931107
+c
+      implicit NONE
+c
+c PARAMETERS ===========================================================
+c
+      character*12 prognm,vers
+      parameter (prognm = 'MOLEMAN2', vers = '070913/3.3.9')
+c
+c ... useful constants
+c
+      real twopi,rtodeg,degtor
+      parameter (twopi  = 6.2831853071796)
+      parameter (rtodeg = 360.0 / twopi)
+      parameter (degtor = twopi / 360.0)
+c
+c ... library stuff ....................................................
+c
+c     MXRTYP = max nr of library residue types
+c     MXRTAT = max nr of library atom types
+c     MXRTAL = max nr of aliases
+c     MXRING = max nr of ring definitions
+c
+      integer mxrtyp,mxrtat,mxrtal,mxring
+      parameter (mxrtyp = 200, mxrtat = 2000, mxrtal = 500)
+      parameter (mxring = mxrtyp)
+c
+c ... LIBCAT = pre-defined residue categories
+c     NRLCAT = nr of pre-defined residue categories
+c
+      integer iprot,inucl,iwate,imeta,iinor,icarb,iorga,ihete,nrlcat
+      parameter (nrlcat = 7)
+      parameter (iprot=1,inucl=2,iwate=3,imeta=4,iinor=5,icarb=6)
+      parameter (iorga=7,ihete=8)
+c
+c ... molecule stuff ...................................................
+c
+c ... MAXATM = max nr of atoms
+c     MAXRES = max nr of residues
+c     MAXBUF = max buffer size
+c     MAXCOM = max nr of REMARK and OTHER records
+c     MAXTER = max nr of TER records
+c     MAXAPR = max nr of atoms for any single residue
+c     MAXTYP = max nr of atom types somewhere ?
+c     MAXTOR = max nr of torsion angles > max nr atoms/single residue
+c     MAXCPY = max nr of residues of a given type
+c     MAXPLN = max nr of least-squares planes stored
+c
+      integer maxatm,maxbuf,maxres,maxcom,maxapr,maxtyp,maxtor
+      integer maxcpy,maxpln,maxter
+c
+      parameter (maxatm=500000, maxres=100000, maxapr=200)
+c
+c ... MAXBUF MUST BE >= 512*1024, 6*maxatm, 5*maxres !!!!!!!!!!!!!!!!!
+c      parameter (maxbuf = max (512*1024, 6*maxatm, 5*maxres))
+      parameter (maxbuf=3000000)
+c
+      parameter (maxcom=1000, maxtor=2*maxapr, maxtyp=1000)
+      parameter (maxcpy=100, maxpln=20, maxter=100)
+c
+c ... program stuff ....................................................
+c
+c
+c COMMON VARIABLES =====================================================
+c
+c ... library stuff ....................................................
+c
+c ... NMRPTR = atom pointers for each library residue type
+c     NMAPTR = alias pointers for each library residue type
+c     LRTYPE = category
+c     NMRTYP = nr of library residue types
+c     NMATYP = nr of library atom types
+c     NALIAS = nr of aliases
+c     LRTYPE = category
+c     NLRING = nr of ring definitions
+c
+      integer nmrptr(2,mxrtyp),nmaptr(2,mxrtyp)
+      integer lrtype(mxrtyp),icnt(nrlcat+1)
+      integer rngnat(mxring)
+      integer nmrtyp,nalias,nmatyp,nlring
+c
+c ... ISMAIN = .true. if main-chain atom
+c
+      logical ismain(mxrtat)
+c
+c ... LRNAME = library residue type
+c     LIBOLC = one-letter code
+c     LRDESC = descriptive name
+c     LALIAS = array of aliases
+c     LRATOM = atom names
+c
+      character rngatm(10,mxring)*4
+      character lrname(mxrtyp)*3,lrdesc(mxrtyp)*80
+      character lalias(mxrtal)*3,lratom(mxrtat)*4
+      character libolc(mxrtyp)*1,libcat(nrlcat+1)*4
+      character rngres(mxring)*3
+c
+c ... molecule stuff ...................................................
+c
+      real xyz(3,maxatm)
+      real batom(maxatm),qatom(maxatm),weight(maxatm)
+      real atmass(maxatm),cvbrad(maxatm),bsave(maxatm)
+      real cell(6)
+c
+c ... ATOMNR = number of atom in PDB file
+c     IRESID = residue number of the atom
+c     RESPTR = pointer for atom to its residue
+c     ATMPTR = index of first and last atoms of a residue
+c     TYPPTR = type of residue (gly, ala, etc)
+c     RESTYP = category of residue (prot, nucl, etc)
+c     CAPTR  = pointer to residue's CA atom (or -1)
+c     ANISOU = 6 Us for all atoms
+c
+      integer atomnr(maxatm),iresid(maxatm),resptr(maxatm)
+      integer element(maxatm),colour(maxatm),anisou(6,maxatm)
+      integer atmptr(2,maxres),typptr(maxres),restyp(maxres)
+      integer captr(maxres),sstype(maxres),terptr(maxter+1)
+      integer natoms,nres,nrem,nother,nter,zmol,naniso
+c
+c ... LMAIN = true if main-chain atom
+c     LHET  = true if heterogen atom
+c     SELECT= selection flag
+c     LANISO= true if ANISOU card read
+c
+      logical lmain(maxatm),lhet(maxatm),select(maxatm),laniso(maxatm)
+c
+c ... ATMNAM = name of atom
+c     ALTLOC = alternative location indicator
+c     INSERT = insertion code
+c     RESNAM = name of atom's residue
+c     ACHAIN = name of atom's chain
+c     INOTE  = remarks for atom
+c     SEGID  = xplor segment id of atom
+c     REMARK = PDB remark records
+c     OTHER  = other PDB records
+c     RESRES = name of residue
+c
+      character atmnam(maxatm)*4,altloc(maxatm)*1,insert(maxatm)*1
+      character resnam(maxatm)*3,achain(maxatm)*1,inote(maxatm)*40
+      character resres(maxres)*3,remark(maxcom)*120,other(maxcom)*120
+      character onelc(maxres)*1,terrec(maxter)*25
+      character pdbfil*128,spgrp*11
+c
+c ... program stuff ....................................................
+c
+      real vplane(3,maxpln)
+      real rbuf(maxbuf)
+      real blimlo,blimhi,qlimlo,qlimhi,mxcaca,tortol,mxbond,mxnonb
+      real mxcyss,largeb,largea,larged,yalcut,ybecut,ylhcut,mxpp
+c
+      integer ibuf(maxbuf),jbuf(maxbuf)
+      integer nselect,iseed
+c
+      logical lbuf(maxbuf),lplane(maxpln)
+      logical linter
+c
+      character nplane(maxpln)*10,ssenam(-1:3)*20
+      character selstr*1024
+c
+c COMMON BLOCKS ========================================================
+c
+      common /M2REA1/ blimlo,blimhi,qlimlo,qlimhi,mxcaca,tortol,mxbond,
+     +   mxnonb,mxcyss,largeb,largea,larged,yalcut,ybecut,ylhcut,mxpp
+c
+      common /M2REA2/ batom,bsave,qatom,cell,rbuf,weight,atmass,cvbrad,
+     +   vplane
+c
+      common /M2REA3/ xyz
+c
+      common /M2INT1/ nmrtyp,nalias,nmatyp,natoms,nres,nrem,
+     +  nother,nter,zmol,nselect,iseed,naniso,nlring
+c
+      common /M2INT2/ lrtype,atomnr,iresid,resptr,typptr,restyp,
+     +  captr,ibuf,jbuf,icnt,element,colour,sstype,rngnat,terptr
+c
+      common /M2INT3/ nmrptr,nmaptr,atmptr,anisou
+c
+      common /M2LOG1/ linter
+c
+      common /M2LOG2/ ismain,lmain,lhet,lbuf,select,laniso,lplane
+c
+      common /M2CHA1/ pdbfil,spgrp,selstr
+c
+      common /M2CHA2/ lrname,lrdesc,lalias,lratom,libcat,remark,
+     +  other,insert,atmnam,altloc,resnam,achain,inote,resres,
+     +  libolc,onelc,nplane,ssenam,rngres,terrec
+c
+      common /M2CHA3/ rngatm
+c

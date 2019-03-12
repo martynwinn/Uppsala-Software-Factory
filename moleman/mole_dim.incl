@@ -1,0 +1,17 @@
+c
+c ... MOLEMAN dimensions ---> note - edit files in 6d/ etc directories !!!
+c
+      integer maxatm,maxbuf,maxres,maxcom,maxapr,maxtyp,maxtor
+      parameter (maxatm=250000, maxbuf=2000000, maxres=25000)
+      parameter (maxcom=2500  , maxapr=100    , maxtyp=1000)
+      parameter (maxtor=100)
+c
+c ... store REMARK records in common
+c
+      integer nrem
+c
+      character remark(maxcom)*120
+c
+      common /moremc/ remark
+      common /moremi/ nrem
+c

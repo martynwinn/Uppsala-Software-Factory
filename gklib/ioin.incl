@@ -1,0 +1,114 @@
+C NMRDEFS.INCL
+C
+C Parameter values for TriVision software products
+C
+C Created  : 881027 (GV/GK)
+C Modified : 881028 (GV)
+C            890116 (GK)
+C            890420 (GK) [declarations = neater FORTRAN]
+C            890914 (GK) [INHELP]
+C            900531 (GK) LNBFIO set to 127
+C            900731 (GK) LNBFIO set to 1024
+C            921011 (GK) adjusted for BMC/Uppsala work
+c            930316 (GK) reduced size of one output line to 80 characters
+c            951105 (GK) minor change in IOLINE
+c            980224 (GK) allow longer lines
+C
+      IMPLICIT NONE
+C
+C                                                    I/O CHANNELS
+      INTEGER ITXINP, ITXOUT, ITXERR
+C ITXINP = channel number for user input (teletype/keyboard)
+      PARAMETER (ITXINP=5)
+C ITXOUT = channel number for output to user (VDU)
+      PARAMETER (ITXOUT=6)
+C ITXERR = channel number for output of error messages
+      PARAMETER (ITXERR=6)
+C                                                    I/O BUFFER
+      INTEGER LNBFIO
+C LNBFIO = length of buffer I/O input routines
+      PARAMETER (LNBFIO=2048)
+C
+C IOIN.INCL
+C
+C Specific parameter values for IOIN
+C
+C Created  : 881101 (rb)
+C Modified : 900731 (gk)
+C
+C I/O error table
+C ***************
+C
+      integer NTXER0,NTXER1,NTXER2,NTXER3,NTXER4,NTXER5
+c
+C NTXER0 = no error
+      PARAMETER (NTXER0=0)
+C NTXER1 = zerotrip error
+      PARAMETER (NTXER1=-1)
+C NTXER2 = buffer overflow
+      PARAMETER (NTXER2=-2)
+C NTXER3 = no variables
+      PARAMETER (NTXER3=-3)
+C NTXER4 = format overflow
+      PARAMETER (NTXER4=-4)
+C NTXER5 = output buffer overflow
+      PARAMETER (NTXER5=-5)
+C
+C
+      CHARACTER*(LNBFIO+1) LINE
+C
+      COMMON /IOINCB/ LINE
+C
+C
+C
+C IOSYS.INCL
+C @RB/GV 900222  (adapted for Silicon Graphics ; IRIX System V rel. 4D1-3.1D)
+C @GV    881110
+C
+      integer ISYSTM,ISYSNM,ISYSFL
+c
+C ISYSTM = 0 VAX/VMS
+C ISYSTM = 1 OTHER SYSTEMS
+C ISYSTM = 2 Silicon Graphics IRIX 3.2
+c
+      PARAMETER   (ISYSTM = 2)
+C
+C ISYSNM = 256 filename length - use 80 instead / gjk@930316
+c
+      PARAMETER   (ISYSNM = 80)
+C
+C ISYSFN = fortran file name
+c
+      PARAMETER   (ISYSFL = 8)
+      CHARACTER*(ISYSFL) ISYSFN
+      PARAMETER   (ISYSFN = 'fortran ')
+C
+C
+C IOSYS.INCL
+C @RB 900717  (for DEC VAX computers; VAX/VMS 5.1)
+C
+C ISYSTM = 0 VAX/VMS
+C ISYSTM = 1 OTHER SYSTEMS
+C ISYSTM = 2 Silicon Graphics IRIX 3.2
+C      PARAMETER   (ISYSTM = 0)
+C
+C ISYSNM = 128 filename length (256 does not work !!?? /gk @ 900720)
+C      PARAMETER   (ISYSNM = 128)
+C
+C ISYSFN = fortran file name
+C      PARAMETER   (ISYSFL = 8)
+C      CHARACTER*(ISYSFL) ISYSFN
+C      PARAMETER   (ISYSFN = 'FOR')
+C
+C
+      INTEGER N,IER,ITI,ITO,LENGTH,I,J,K,LENFMT,LENMAX,LENTE
+      INTEGER I1,MAXLEN,MINLEN,LENTOT,ISTART,ISTOP,NOWSTP
+C
+      REAL BIGGY,SMALLY,RABS
+c
+      logical dollar,xinter
+c
+      common /gkioin/ dollar
+C
+C
+C

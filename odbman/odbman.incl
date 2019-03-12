@@ -1,0 +1,73 @@
+c
+c ... odbman.incl - include file for program ODBMAN
+c
+c ... Gerard Kleywegt @ 931115
+c
+      implicit NONE
+c
+c PARAMETERS
+c
+      character*12 prognm,vers
+      parameter (prognm = 'ODBMAN', vers = '040618/2.2.3')
+c
+      integer maxodb,maxsiz,maxlen,maxtdb
+      parameter (maxodb = 100)
+      parameter (maxsiz = 15000)
+      parameter (maxlen = 72)
+      parameter (maxtdb = 4 * maxodb)
+c
+      real twopi,pi,degtor,rtodeg,circle
+      parameter (twopi=6.2831853071796)
+      parameter (pi=0.50*twopi)
+      parameter (circle=360.0)
+      parameter (degtor=twopi/circle)
+      parameter (rtodeg=circle/twopi)
+c
+      integer all,allr,alli,alln,allc,allt,alls,many
+      parameter (all  =  0)
+      parameter (allr = -1)
+      parameter (alli = -2)
+      parameter (alln = -3)
+      parameter (allc = -4)
+      parameter (allt = -5)
+      parameter (alls = -6)
+      parameter (many = -9)
+c
+      real zero,half,one,two
+      parameter (zero=0.00, half=0.50, one=1.00, two=2.00)
+c
+      real small
+      parameter (small = 0.00001)
+c
+c COMMON VARIABLES
+c
+c ... actual datablocks (+ buffer as element 0)
+c
+      real      rodb (maxsiz, 0:maxodb)
+      real      buffer (maxsiz)
+      integer   iodb (maxsiz, 0:maxodb)
+      character codb (maxsiz, 0:maxodb) * 6
+      character todb (maxsiz, 0:maxodb) * (maxlen)
+c
+c ... info about datablocks
+c
+      integer   odbptr(maxtdb),odblen(maxtdb)
+      logical   odbuse(maxtdb),odbcha(maxtdb),odbsel(maxtdb)
+      character odbtyp(maxtdb)*1,odbfmt(maxtdb)*20
+      character odbnam(maxtdb)*25,odbcom(maxtdb)*80
+c
+      logical linter
+c
+c COMMON BLOCKS
+c
+      common /omanr1/ rodb,buffer
+      common /omani1/ iodb
+      common /omanc1/ codb
+      common /omant1/ todb
+c
+      common /omani2/ odbptr,odblen
+      common /omanl2/ odbuse,odbcha,odbsel
+      common /omant2/ odbtyp,odbfmt,odbnam,odbcom
+c
+      common /omanl3/ linter
+c

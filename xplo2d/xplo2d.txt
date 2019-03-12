@@ -1,0 +1,1486 @@
+
+ ** XPLO2D - GENERAL INFORMATION
+
+ Program : XPLO2D
+ Version : 051002
+ Author  : Gerard J. Kleywegt, Dept. of Cell and Molecular Biology,
+           Uppsala University, Biomedical Centre, Box 596,
+           SE-751 24 Uppsala, SWEDEN
+ E-mail  : gerard@xray.bmc.uu.se
+ Purpose : XPLOR-related utilities
+ Package : X-UTIL
+
+ ** REFERENCES
+
+ Reference(s) for this program:
+
+ *  1 * G.J. Kleywegt (1995). Dictionaries for Heteros.
+        CCP4/ESF-EACBM Newsletter on Protein Crystallography 31,
+        June 1995, pp. 45-50.
+        [http://xray.bmc.uu.se/usf/factory_5.html]
+
+ *  2 * G.J. Kleywegt (1996). Making the most of your search model.
+        CCP4/ESF-EACBM Newsletter on Protein Crystallography 32,
+        June 1996, pp. 32-36.
+        [http://xray.bmc.uu.se/usf/factory_6.html]
+
+ *  3 * G.J. Kleywegt & T.A. Jones (1997). Model-building and
+        refinement practice. Methods in Enzymology 277, 208-230.
+        [http://xray.bmc.uu.se/gerard/gmrp/gmrp.html]
+
+ *  4 * G.J. Kleywegt, K. Henrick, E.J. Dodson & D.M.F. van Aalten.
+        Pound-wise but penny-foolish: How well do micromolecules
+        fare in macromolecular refinement ?
+        Structure, 11, 1051-1059 (2003).
+        [http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=PubMed&cmd=Retrieve&list_uids=12962624&dopt=Citation]
+
+ *  5 * Kleywegt, G.J., Zou, J.Y., Kjeldgaard, M. & Jones, T.A. (2001).
+        Around O. In: "International Tables for Crystallography, Vol. F.
+        Crystallography of Biological Macromolecules" (Rossmann, M.G.
+        & Arnold, E., Editors). Chapter 17.1, pp. 353-356, 366-367.
+        Dordrecht: Kluwer Academic Publishers, The Netherlands.
+
+ ** VERSION HISTORY
+
+ 960215 - 1.4 - first documented version; minor changes; MASS statements
+                in topology files from AUTOdic option now correct for
+                all elements (ex. hydrogens; element types must be
+                characters 1 and 2 of the atom names); NONBonded parameters
+                now included for 33 elements
+ 960708 - 1.5 - fixed dihedrals which are flat (0 or 180 degrees) are
+                really added to the topology file (i.e., not commented
+                out); the force constants for bond lengths, bond angles,
+                fixed dihedrals and impropers are now entered in one go;
+                separate distance cut-offs to determine if two atoms are
+                bonded, one if both atoms are light (H..Ne), the other
+                if either or both are heavy (Na..)
+ 960803 - 2.0 - substantial improvements to the automatic X-PLOR
+                dictionary generation option
+ 960804 - 2.1 - minor debugging of yesterday's work; read and use
+                formula if provided in input PDB file to check if
+                deduced element types actually occur in the structure
+ 961101 - 2.2 - changed X-PLOR generate input files produced by the
+                AUTO command (no hydrogens etc.)
+ 961213 -2.2.1- echo user input for AUTOdict option (for WWW server use)
+ 970527 - 2.3 - implemented DIHE option
+ 970628 - 2.4 - AUTO: vastly improved automatic estimation of number of
+                hydrogen atoms attached to C, N, O and S atoms; implemented
+                use of multiple copies of a compound to get better
+                statistics for bond lengths, angles, dihedrals and impropers
+ 970630 -2.4.1- AUTO: print RMSDs to "reference" molecule if multiple
+                copies are used; also print bond length statistics to
+                help the user detect copies with "weird" geometry
+ 970707 - 2.5 - AUTO: other criterion to determine if two atoms are bonded,
+                namely if their distance is no greater than the sum of
+                their covalent bond radii plus a small tolerance (0.45 A)
+ 970708 -2.5.1- AUTO: all carbons with four non-hydrogen neighbours now
+                give rise to an improper to keep them properly tetrahedral;
+                also generate impropers for N atoms with at least 3
+                neighbours
+ 970709 - 2.6 - AUTO: "unusual" flatness and chirality impropers are
+                automatically reset to standard values (0, +35 or -35);
+                new option to assign every atom its own type (for high
+                resolution input models, or when type conflicts occur,
+                e.g. manifested through large angle ranges); every bond
+                now gives rise to no more than one DIHEdral (to prevent
+                clashes and redundancies); what constitutes a "large"
+                observed range for bond lengths etc. is now defined
+                by the user; X-PLOR minimisation file now also lists
+                any close contacts; re-ordered input; if required, default
+                file names and numerical parameters can be used so as
+                to reduce the amount of input
+ 970710 -2.6.1- AUTO: all atom types (not just carbon and nitrogen) with
+                3 or more neighbours now give rise to one IMPRoper; also,
+                a check is now made that the first three atoms defining
+                an improper restraint are not co-linear (can happen, e.g.
+                with square-planar arrangements, such as in AlF4)
+ 970715 -2.6.2- minor bug fix
+ 970926 - 2.7 - AUTO: can now also be used to generate TNT dictionaries
+ 980416 - 2.8 - AUTO: can now also be used to generate O 6.x dictionaries
+ 980520 -2.8.1- AUTO: tiny change to O 6.x dictionary file
+ 980914 -2.8.2- AUTO: should now also work with mono-atomic compounds
+                (with obvious limitations, such as that no TNT or O files
+                can/need/will be generated)
+ 981030 -2.8.3- AUTO: bug fix (crashed with option to let B-factors
+                indicate atom type)
+ 990106 -2.8.4- AUTO: round DIHEdral targets to nearest multiple of
+                30 degrees (instead of 10 degrees) to prevent silly
+                dihedral restraints with target values of 10 or 170
+                degrees !!!
+ 991110 -2.8.5- AUTO: uniquefying the 4-character atom type names
+                for X-PLOR/CNS should now actually work ...
+ 000209 -2.8.6- AUTO: skip atom if name is a duplicate
+ 000310 -2.8.7- AUTO: minor changes
+ 001108 -2.8.8- AUTO: increased max nr of dihedrals
+ 001221 -2.8.9- AUTO: fixed tiny bug
+ 010829 - 2.9 - AUTO: better handling of FORMUL records; bail out
+                if any bond distance is less than 0.5 A or any
+                bond angle is less than 60 degrees
+ 011009 -2.9.1- AUTO: recognises optional command-line argument
+                "-force" which will force the program to try and
+                create dictionaries even if there are "silly"
+                bond lengths and angles (these should only be
+                used for map calculations, *NOT* for refinement !)
+ 011018 -2.9.2- AUTO: if "-force" is used, print warnings in the
+                X-PLOR, O and TNT parameter files for short bond
+                distances (< 0.5 A) and short angles (< 60 degrees)
+ 011023 -2.9.3- minor changes
+ 011106 -2.9.4- AUTO: make sure that the number of bonds found is not
+                less than the number of atoms minus one
+ 011205 -2.9.5- minor changes
+ 020207 -2.9.6- AUTO: default character for atom type names is now an underscore
+                ("_") instead of "X"
+ 020227 -2.9.7- AUTO: changed cut-off for silly bond distances to 0.8 A,
+                and for silly bond angles to 55 degrees
+ 020329 -2.9.8- AUTO: minor changes
+ 020704 -2.9.9- AUTO: recognises optional command-line argument
+                "-noh" which will force the program to ignore any
+                and all hydrogen atoms that may be present in the
+                input PDB file; changed cut-off for suspicious
+                bond angles to 80 degrees (remember to use the
+                "-force" command line argument to force the program
+                not to bail out when it encounteres unusual bond
+                lengths or angles)
+ 020709 - 3.0 - AUTO: change max value of CUTBND to 0.5 A
+ 020819 -3.0.1- AUTO: minor changes
+ 020926 -3.0.2- AUTO: minor bug fix
+ 030320 -3.0.3- AUTO: increased dimensioning
+ 031002 - 3.1 - AUTO: now produces complete data for O version 9.0.1 !!!
+ 031003 -3.1.1- AUTO: minor changes
+ 031014 - 3.2 - AUTO: torsions near +/- 120 degrees are now treated
+                in the same way as torsions near +/- 60 and +/- 90.
+                O datablocks now contain all torsions so that they can be
+                used to generate coordinates with the Build_res command.
+                The torsions are annotated as being cis, trans,
+                60/90/120 or purely descriptive in comment lines.
+ 031127 -3.2.1- AUTO: changes to TNT dictionary generation:
+                (1) BCORREL cards are now also generated (one for
+                every bond); (2) the order of the atoms in CHIRAL
+                cards has been changed - this will hopefully keep
+                TNT from complaining :-)
+ 040616 -3.2.2- AUTO: changed the "torsion" part of the O dictionary
+                so that target values are no longer written (O figures
+                them out itself from the rotamer conformations)
+ 040901 -3.2.3- AUTO: when an atom name contains an *internal* space
+                (such as " N A" in hetero compound BCB), it is removed
+                and the "de-spaced" name is written to the clean PDB
+                file and used in all dictionary files
+ 041001 - 3.3 - replaced Kabsch' routine U3BEST by quaternion-based
+                routine (U3QION) to do least-squares superpositioning
+ 041005 -3.3.1- AUTO: minor changes
+ 051002 -3.3.2- AUTO: fixed bug that core dumped the program on Linux when
+                it tried to generated unique names for all atoms
+                and one of them wasn't bonded to any others. note that
+                is a user mistake - the compound should apparently
+                be split up into two or more mutually bonded entities !
+                thanks to Kai Schwedhelm for reporting the bug
+
+ ** INTRODUCTION
+
+ This program performs several utility functions having to do with the
+   input or output of X-PLOR.  Select one of the available options (the
+   first four characters suffice), and answer any subsequent questions.
+
+ ## XSEArch
+
+ Convert X-PLOR "search.dat" files from a direct rotation search into O2D
+   2D contour plot files.  The angle increment is assumed to be 10 degrees.
+   Provide the name of the "search.dat" output file from a direct rotation
+   search in X-PLOR (you can have multiple files, e.g. if your job crashed
+   and had to be restarted).  Subsequently, you can plot sections through
+   the map at constant theta1, 2 or 3.  Each section gives a 2D contour plot
+   file.  Use program O2D to either display these plots (on an SGI) or to
+   convert them to PostScript files.
+
+ ## X1DTraz
+
+ Convert X-PLOR "xxx.3dmatrix" files from a 1D translation function along
+   the Z-axis (C-axis; e.g., P31, P43, P65) to O2D 1D plot files.  You are
+   prompted to supply the input and output files, as well as the limits of
+   the viewport in the vertical direction of the plot.  Use program O2D to
+   either display these plots (on an SGI) or to convert them to PostScript
+   files.
+
+ ## X1DYtra
+
+ Convert X-PLOR "xxx.3dmatrix" files from a 1D translation function along
+   the Y-axis (B-axis; e.g., P21) to O2D 1D plot files.  You are prompted
+   to supply the input and output files, as well as the limits of the
+   viewport in the vertical direction of the plot.  Use program O2D to
+   either display these plots (on an SGI) or to convert them to PostScript
+   files.
+
+ ## XFILter
+
+ Analyse "filter.list" files from an X-PLOR PC-refinement OR "search.dat"
+  files from a direct rotation search.  The output is a list of clustered
+  peaks, a "rotman.inp" file to analyse the relations between the various
+  top solutions, and an awk input file "rotman.awk" to extract the salient
+  information from the rotman output file (use thes with the Unix command:
+  awk -f rotman.awk rotman.out > rotman.lis).
+
+ ## LUZZati
+
+ Convert a "luzzati.list" file into an O2D plot file (or two, if you are
+   using Rfree).  You are prompted for the plot file name(s), and for the
+   levels of the theoretical curves.  Use program O2D to either display
+   these plots (on an SGI) or to convert them to PostScript files.
+
+ ## XBADcon
+
+ List residues with bad contacts during a refinement run, to see if there
+   are any residues which are suspiciously often involved in such contacts
+   (they might be wrong).
+
+ ** DIHE
+
+ Sometimes you want to restrain a model you refine to another model.
+   For example, if you have a 1.8 \A native structure and you subsequently
+   solve a complex for which only 3.0 \A data is available, you may want
+   to restrain the protein part of the low-resolution complex to the
+   high-resolution structure.  In many cases this can easily be done
+   with harmonic restraints in X-PLOR, but this has some disadvantages:
+
+ - not trivial to implement properly (especially if the two molecules
+   are in different spacegroups or orientations); usually one takes
+   a short-cut by restraining a model to its *starting* coordinates
+   during refinement, which is of course not the same thing
+
+ - if there are domain movements, it becomes even more difficult to
+   implement
+
+ What one would really want to do is to restrain the major conformational
+   torsion angles of the model to those of the high-resolution model,
+   perhaps excluding a few residues in hinge regions, etc.
+
+ This option of XPLO2D enables you to do just that.  You feed it a PDB
+   file of the model to which you want to restrain your refinement model
+   (e.g., that high-resolution native structure you already have, even
+   though it may be in a different spacegroup or with different domain
+   orientations).  The program generates an X-PLOR include file which
+   contains DIHEdral statements for the PHI, PSI, CHI-1 and CHI-2 torsions
+   of the protein.  If you protein contains a hinge region, simply
+   remove or comment-out the relevant PHI and PSI restraints.  If you
+   don't want to impose restraints on CHI-1 and/or CHI-2, set the
+   corresponding weights to zero (at the top of the X-PLOR include file).
+
+ This approach can be used for X-ray refinement, but also for NMR
+   refinements (one could even restrain an NMR structure to an
+   X-ray structure or -in a jolly gesture- the other way around)
+   and "experimentally challenged" calculations (i.e., simulations
+   without X-ray or NMR data).
+
+ Caution: if you set the weights for the DIHEdral restraints too high,
+   this may lead to the corresponding torsion angles being *fixed* during
+   torsion dynamics !!
+
+ Example:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ...
+ QUIT XSEA X1DT X1DY XFIL LUZZ XBAD AUTO
+ What would you like to do ? (auto) dihe
+
+ DIHE
+
+ Max nr of residues : (      10000) 
+
+ Input PDB file ? (in.pdb) /nfs/pdb/full/1cbs.pdb
+
+ Phi/Psi/Chi-1/Chi-2 restraints file ? (dihe_restr.xplor) 
+
+ Restraint weights for Phi/Psi/Chi-1/Chi-2 ? (  20.000   20.000   15.000   
+  10.000) 
+ PDB file read OK
+ Nr of residues : (        137) 
+ Nr of atoms    : (        749) 
+ Generating DIHEdral restraints ...
+ Nr of PHI   restraints : (        136) 
+ Nr of PSI   restraints : (        136) 
+ Nr of CHI-1 restraints : (        123) 
+ Nr of CHI-2 restraints : (         86) 
+ Restraints file written
+
+ QUIT XSEA X1DT X1DY XFIL LUZZ XBAD AUTO
+ What would you like to do ? (DIHE) quit
+ ...
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ The restraints file may look as follows:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ REMARK Created by XPLO2D V. 970527/2.3 at Tue May 27 21:52:24 1997 for user gerard
+
+ REMARK Filename: dihe_restr.xplor
+
+ evaluate ($phi_wt =     20.0) { Use 0.0 to switch PHI restraints off }
+
+ evaluate ($psi_wt =     20.0) { Use 0.0 to switch PSI restraints off }
+
+ evaluate ($chi1_wt =     15.0) { Use 0.0 to switch CHI-1 restraints off }
+
+ evaluate ($chi2_wt =     10.0) { Use 0.0 to switch CHI-2 restraints off }
+
+ set echo=off end
+
+ { define phi,psi,chi-1,chi-2 restraints }
+
+ parameter
+
+   dihedral
+     (name  N   and segid="1CBS" and resi      1)
+     (name  CA  and segid="1CBS" and resi      1)
+     (name  C   and segid="1CBS" and resi      1)
+     (name  N   and segid="1CBS" and resi      2)
+     $psi_wt  0    151.2  { PSI PRO     1  }
+
+   dihedral
+     (name  N   and segid="1CBS" and resi      1)
+     (name  CA  and segid="1CBS" and resi      1)
+     (name  CB  and segid="1CBS" and resi      1)
+     (name  CG  and segid="1CBS" and resi      1)
+     $chi1_wt 0     32.6  { CHI-1 PRO     1  }
+
+   dihedral
+     (name  CA  and segid="1CBS" and resi      1)
+     (name  CB  and segid="1CBS" and resi      1)
+     (name  CG  and segid="1CBS" and resi      1)
+     (name  CD  and segid="1CBS" and resi      1)
+     $chi2_wt 0    -40.4  { CHI-2 PRO     1  }
+
+   dihedral
+     (name  C   and segid="1CBS" and resi      1)
+     (name  N   and segid="1CBS" and resi      2)
+     (name  CA  and segid="1CBS" and resi      2)
+     (name  C   and segid="1CBS" and resi      2)
+     $phi_wt  0   -124.5  { PHI ASN     2  }
+
+ ...
+
+   dihedral
+     (name  C   and segid="1CBS" and resi    136)
+     (name  N   and segid="1CBS" and resi    137)
+     (name  CA  and segid="1CBS" and resi    137)
+     (name  C   and segid="1CBS" and resi    137)
+     $phi_wt  0    -61.5  { PHI GLU   137  }
+
+   dihedral
+     (name  N   and segid="1CBS" and resi    137)
+     (name  CA  and segid="1CBS" and resi    137)
+     (name  CB  and segid="1CBS" and resi    137)
+     (name  CG  and segid="1CBS" and resi    137)
+     $chi1_wt 0    -74.2  { CHI-1 GLU   137  }
+
+   dihedral
+     (name  CA  and segid="1CBS" and resi    137)
+     (name  CB  and segid="1CBS" and resi    137)
+     (name  CG  and segid="1CBS" and resi    137)
+     (name  CD  and segid="1CBS" and resi    137)
+     $chi2_wt 0   -165.7  { CHI-2 GLU   137  }
+
+ end
+
+ set echo=off end
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ References:
+ - Kleywegt, G.J. and Jones, T.A. (1997). Model-building and refinement
+   practice. Meth Enzymol.
+ - Kleywegt, G.J. (1996). Use of non-crystallographic symmetry in protein
+   structure refinement. Acta Cryst D52, 842-857.
+
+ ** AUTOdic
+
+ ## Input
+
+ Auto-generate X-PLOR dictionary files for a hetero-entity from a PDB file.
+
+ NOTE: in version 2.4, the method to estimate the number of hydrogen
+       atoms attached to C, N, O and S atoms has been vastly improved !
+
+ NOTE: in version 2.4, the ability to handle multiple examples of a
+       ligand has been introduced.  Just put *all* copies of your
+       ligand in one PDB file and feed it to XPLO2D !
+
+ NOTE: in version 2.7, the ability to generate TNT dictionaries was
+       added.  This will automatically set the option to make each
+       atom its own type (necessary for TNT).
+
+ NOTE: in version 2.8, the ability to generate O 6.x dictionaries was
+       added.  This will automatically set the option to make each
+       atom its own type (necessary for O).
+
+ NOTE: XPLO2D was not designed to handle explicit hydrogen atoms, but
+       seems to do so reasonably well anyway (provided they are in the
+       input PDB file - XPLO2D will not generate them !). The version on
+       the HIC-Up server will *strip* all hydrogens, so if you want to
+       include them, you'll need to run the program interactively.
+       If you run it interactively and still want to suppress any
+       hydrogens that may be in the input PDB file, use the command-line
+       option "-noh".
+      
+ This example was produced with version 2.0 of XPLO2D, which contains
+   *substantial* improvements compared to older versions !  It uses
+   the structure of a nogalamycin derivative (with 57 non-hydrogen
+   atoms) as an example:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+COMPND NGU U-58872 DERIVATIVE OF NOGALAMYCIN
+REMARK NGU Extracted from PDB file 1d22.pdb
+REMARK NGU Formula C39 H47 N1 O17
+REMARK NGU Nr of non-hydrogen atoms 57
+REMARK NGU Residue type NGU
+REMARK NGU Residue name 972
+REMARK NGU Original residue name (for O) $1
+REMARK   2 RESOLUTION. 1.8 ANGSTROMS.                                   1D22  30 NGU
+HETATM    1  C1  NGU   972      -1.033  -3.427   2.857  1.00 20.00      1D22
+HETATM    2  C2  NGU   972      -0.998  -3.311   4.231  1.00 20.00      1D22
+HETATM    3  C3  NGU   972      -1.054  -2.053   4.872  1.00 20.00      1D22
+ ...
+HETATM   55  O15 NGU   972       1.289  -6.348   1.715  1.00 20.00      1D22
+HETATM   56  O16 NGU   972       1.437  -4.066   5.945  1.00 20.00      1D22
+HETATM   57  O23 NGU   972       4.906  -4.096   4.521  1.00 20.00      1D22
+REMARK NGU ENDHET
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ QUIT XSEA X1DT X1DY XFIL LUZZ XBAD AUTO
+ What would you like to do ? (auto) 
+
+ AUTODIC
+
+
+ Max nr of atoms       : (        250) 
+ Max nr of atom types  : (        150) 
+ Max nr of neighbours  : (         10) 
+ Max nr of bond types  : (      11250) 
+ Max nr of angle types : (      22500) 
+ Max nr of dihedrals   : (        250) 
+ Max nr of impropers   : (        250) 
+
+ This option has now been improved somewhat in
+ that you may help the program figuring out
+ which atoms are equivalent etc.
+ To this end, the OCCUPANCY column may contain
+ the number of hydrogen atoms attached to each
+ atom, and the B-FACTOR column may contain a
+ number (integer) which is identical for
+ identical atom types.
+ Only reply Yes to the following questions if
+ you have edited the input PDB file appropriately.
+ Note that you do not have to use BOTH options.
+ Do occupancies represent the number of Hs ? (N) 
+ Do B-factors represent atom type flags    ? (N) 
+
+ The program can now also try to figure out the
+ nr of hydrogens attached to each C, N or O.
+ Figure out nr of Hs automatically ? (Y) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Telling the program how many hydrogen atoms are attached to each atom
+   helps it decide which atoms have equivalent types.  It will also
+   yield correct masses for the atom types in your topology file.
+   Note that from version 2.0 onward, there is also the option to
+   let the progam try to "guestimate" the number of hydrogens
+   attached to C, N and O atoms !  This works pretty well, provided
+   the geometry of your ligand is reasonable (i.e., no aliphatic C-C
+   bonds of 1.3 A).
+
+ Telling it which atoms are equivalent (and which ones are not !!) helps
+   it even more.
+
+ If you don't supply this information, the program will try to figure out
+   which atoms are equivalent by looking at atom types, distances to and
+   types of neighbouring atoms and, optionally, atom types of neighbours'
+   neighbours.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Supply the name of a PDB file containing your
+ ligand or whatever, without hydrogens, please
+ The *first* residue in the file will be processed
+ Enter name of PDB file : ( ) ngu.pdb
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Make sure that the PDB file contains only one residue, and that there
+   are no hydrogen atoms in it (otherwise the results are unpredictable !).
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ You will get a new, clean PDB file which can
+ be read by X-PLOR without parsing problems
+ Enter name of new, clean PDB file : (ngu.pdb_clean) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ This PDB file can be fed into X-PLOR straightaway.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ You will also get a new PDB file which has
+ XPLO2Ds atom type as the B-factor and the
+ number of hydrogens as the occupancy (if
+ you asked the program to deduce these).
+ If the topology and parameter files contain
+ atom-type conflicts (or errors in the number
+ of Hs), just edit this PDB file and run it
+ through XPLO2D again !
+ Enter name of this PDB file : (ngu.pdb_xplo2d) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ This is also new in version 2.0: if the program makes obvious mistakes
+   in (1) guessing the number of hydrogens, or (2) assigning atom types,
+   you can edit the B-factor and/or occupancy columns in this file and
+   then re-run XPLO2D with this new PDB file.  You can also read it into
+   O and colour the molecule by "B-factor" to see which atoms are
+   considered to be equivalent by XPLO2D.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Reading & writing PDB file ...
+ > (COMPND NGU U-58872 DERIVATIVE OF NOGALAMYCIN) 
+ > (REMARK NGU Extracted from PDB file 1d22.pdb) 
+ > (REMARK NGU Formula C39 H47 N1 O17) 
+ > (REMARK NGU Nr of non-hydrogen atoms 57) 
+ > (REMARK NGU Residue type NGU) 
+ > (REMARK NGU Residue name 972) 
+ > (REMARK NGU Original residue name (for O) $1) 
+ > (REMARK   2 RESOLUTION. 1.8 ANGSTROMS.                                  
+   1D22  30 NGU) 
+ Using residue : (NGU) 
+ Identifier    : (  972) 
+ Atom #    1 =  C1  @     -1.033    -3.427     2.857  1.00 20.00
+ Atom #    2 =  C2  @     -0.998    -3.311     4.231  1.00 20.00
+ ...
+ Atom #   57 =  O23 @      4.906    -4.096     4.521  1.00 20.00
+ > (REMARK NGU ENDHET) 
+
+ Nr of atoms read : (         57) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ The program will use the first residue it encounters in your PDB file.
+   At this stage, the program also tries to figure out of which chemical
+   element type each atom is.  If it can't deduce this (using a set of
+   heuristics), it will complain and assume carbon atoms.
+
+ Note: from version 2.1 onward, the program can use the formula to
+   better deduce chemical element types.  For example, an atom called
+   "AC3*" would normally be considered to Actinium ...  However, if
+   the formula show that the compound does not contain any actinium,
+   another guess has to be made (in this case the program will decide
+   that it is probably a carbon).  The formula can be entered into
+   the input PDB file in two different ways:
+
+ (1) a card which contains the word "FORMULA" followed by a list
+     of chemical elements (the number of each can also be entered
+     but the program will not use it).  For example:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+REMARK ADR Formula C15 H23 N5 O14 P2
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ (2) a properly formatted PDB FORMUL record with: column 1-6 FORMUL,
+     the residue type in column 13 - 15, and the formula in columns
+     19 etc.  Don't forget that carbon is " C" (i.e., a space and then
+     a "C") etc. !!  For example:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+FORMUL   2  REA    C20 H28 O2
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Form version 2.1 onward, the program will also print the formula it
+   has deduced (and the input formula, if provided), e.g.:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ...
+ Nr of atoms read : (         23) 
+
+ ==> List of elements : ( C17 H20 N4 O2) 
+ ==> Deduced formula  : (  C 17  N  4  O  2) 
+
+ Provide a single character that will be used to
+ ...
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Provide a single character that will be used to
+ generate atom type names.  For instance, if you
+ supply an "X", your carbon types will be CX1,
+ CX2, etc.
+ Character ? (X) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ If you have more than one type of hetero-entity you may want to use
+   different letters (beware of conflicts in X-PLOR !  For instance,
+   CU could be copper, CL chlorine, CA calcium, etc.)
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ I need to know which atoms are chemically bonded.
+ You must supply two distance cut-offs for bonded
+ atoms.  The first is used if both atoms are light
+ (H,He,Li,Be,B,C,N,O,F,Ne), the second if either
+ or both are heavy (Na,Mg,Al,Si,P,S,Cl,Ar,...).
+ "Light" and "heavy" cut-offs ? (   1.800    2.300) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Using these two cut-offs, most bonds will be recognised correctly.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Looking for bonded atoms ...
+ Bond  C1  -  C2  =    1.379 A
+ Bond  C1  -  C21 =    1.393 A
+ Bond  C1  -  O1  =    1.325 A
+ ...
+ Bond  C23 -  O23 =    1.251 A
+ Bond  C24 -  N1  =    1.541 A
+
+ Nr of bonds found : (         63) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ The following information is not important if you have specified the
+   atom types yourself in the B-factor column:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ In order to assign atom types, I have to compare
+ neighbour atom types, bond lengths and (in the
+ second sphere of neighbours) bond angles
+ Supply tolerance levels for me to decide if
+ two bond lengths or angles are "identical"
+ Tolerance for "identical" bond lengths ? (   0.040) 
+ Tolerance for "identical" bond angles  ? (   5.000) 
+
+ Generating neighbour lists ...
+ Atom  C1  > [#  6] 1.379 [#  6] 1.393 [#  8] 1.325
+ Atom  C2  > [#  6] 1.379 [#  6] 1.413 [#  6] 1.567
+ ...
+ Atom  O16 > [#  6] 1.399
+ Atom  O23 > [#  6] 1.251
+
+ Trying to guess number of hydrogens ...
+     Carbon  C1  Nbrs:  3 ~Hs: 0
+     Carbon  C2  Nbrs:  3 ~Hs: 0
+     Carbon  C3  Nbrs:  2 ~Hs: 1
+     Carbon  C4  Nbrs:  3 ~Hs: 0
+ ...
+     Carbon  C24 Nbrs:  1 ~Hs: 3
+   Nitrogen  N1  Nbrs:  3 ~Hs: 0
+     Oxygen  O2  Nbrs:  2 ~Hs: 0
+     Oxygen  O15 Nbrs:  1 ~Hs: 0
+     Oxygen  O16 Nbrs:  1 ~Hs: 0
+     Oxygen  O23 Nbrs:  1 ~Hs: 0
+ Est. total nr of hydrogens : (      41) 
+
+ First round of atom typing ...
+ Atom  C1  gets type CX1 
+ Atom  C4  gets type CX1 
+ Atom  C2  gets type CX2 
+ Atom  C19 gets type CX2 
+ ...
+ Atom  C24 gets type CX32
+ Atom  N1  gets type NX33
+
+ Nr of atoms : (         57) 
+ Nr of types : (         33) 
+
+ Second round of atom typing ...
+ Atom  C4  gets type CX34
+ Atom  C19 gets type CX35
+ ...
+ Atom  C22 gets type CX54
+ Atom  O2  gets type OX55
+ Nr of new types : (      22) 
+
+ Nr of atoms : (         57) 
+ Nr of types : (         55) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ The program gets all bonds, guesses the number of hydrogens on
+   each C, N and O (if requested), and uses that information to
+   find out which atoms are of equivalent types.  It does two rounds
+   of this, looking at the types (and bond distances) of the neighbours.
+
+ If you want, you can also include information about neighbours'
+   neighbours .  Usually, this will give rise to a larger number of
+   distinct atom types.  You can use this if the input model is of
+   very high quality (e.g., a small-molecule structure from the
+   Cambridge database).  On the other hand, if you produced the model
+   yourself without the use of experimental data, you may want to be
+   more conservative.
+
+ Another reason for doing a third round is if you get atom type
+   conflicts. E.g., two atoms are considered equivalent by XPLO2D,
+   but they are not completely equivalent.  In that case, you will
+   get warnings about very large ranges for the values of certain
+   bonds, angles, dihedrals or impropers.  Doing a third round of
+   typing often solves this problem.  If it does not, edit the
+   PDB file which contains atom types as B-factors, and re-run
+   the program.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ At present, atoms are classified *only* based on
+ the number & types of their neighbours and the
+ bond lengths
+ If you want, I can make the typing more strict,
+ by also comparing neighbours of neighbours
+ Do a third round of typing ? (N) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ After the atom typing, XPLO2D makes sure that all type names are
+   unique (4 characters).  If not, it will try to rename duplicates.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Making sure all atom types have unique names ...
+
+ Finished classifying atoms
+ Current atom types :
+ Atom #    1 =  C1  --> CX1 
+ Atom #    2 =  C2  --> CX2 
+ ...
+ Atom #   56 =  O16 --> OX49
+ Atom #   57 =  O23 --> OX47
+
+ Nr of atoms : (         57) 
+ Nr of types : (         55) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ The topology file defines masses, constituent atoms, bonds etc.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ The first file you get is a TOPOLOGY file
+ You must check the MASSes, add CHARges,
+ UNcomment any DIHEdrals you want to impose
+ and check the IMPRopers, DONOrs and ACCEptors
+ Enter name of topology file : (ngu.top) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Some types of dihedral you probably want to restrain (e.g., in aromatic
+   rings).  To help the program identify "special" dihedrals, you need
+   to supply a tolerance level:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ To help me decide if a DIHEdral is special,
+ i.e., close to a multiple of +/- 60, +/- 90
+ +/- 180 or 0 degrees, I need a tolerance level
+ This may be greater for 60/90 than for 0/180
+ dihedrals (the latter enforce flat rings)
+ Tolerance for +-60/+-90 DIHEdrals ? (   5.000) 0.01
+ Tolerance for 0/+-180/360 DIHEdrals ? (   8.000) 10
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ The parameter file specifies target values and energy penalties for
+   bond lengths, angles, etc., as well as Lennard-Jones parameters for
+   the evaluation of non-bonded interactions.
+
+ All bonds get the same weight (energy penalty), all angles get the
+   same (but different) weight, etc.  The lower your resolution and
+   the higher the quality of the starting model for the hetero-entity,
+   the higher the weights you should set.  The defaults are in the
+   Engh & Huber ballpark.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ The second file you get is a PARAMETER file
+ You must check the NONBonded parameters and add
+ any DIHEdrals you want to use
+ Weights are in the same ball park as those used
+ by Engh & Huber; you may want to change them
+ Enter name of parameter file : (ngu.par) 
+
+ Supply values for the force constants for
+ bond lengths, bond angles, fixed dihedrals
+ and impropers, respectively.  The default
+ values are in the Engh & Huber ball-park.
+ Force constants ? (1000.000  500.000  750.000  750.000) 
+
+ Nr of bond types found : (         63) 
+
+ Nr of angle types found : (        102) 
+
+ Nr of dihedral types found : (         75) 
+
+ Nr of improper types found : (         26) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Before using the dictionaries in any crystallographic refinement it's
+   a good idea (in fact: it's not just a good idea, it's Murphy's Law !)
+   to energy-minimise the structure of the hetero-entity in isolation
+   *without* the X-ray term !  The resulting structure shows you what
+   X-PLOR will want to make your ligand look like once you include it
+   in your model and refine it with the X-ray term switched on.  If there
+   are errors in your dictionary, it's better to find & remedy them at
+   this stage than after a slow-cool which took 24 hours to complete ...
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ The third X-PLOR file you get is an INPUT file
+ Run this file with X-PLOR to perform pure geometric
+ energy minimisation
+ Then check if the resulting structure looks like
+ your input structure (especially if the input was
+ a high-resolution small molecule X-ray structure !)
+ If they differ, patch up some of the parameters,
+ impose more IMPRoper or DIHEdral restraints, etc.
+ Remember that the result of the minimisation
+ shows the structure that X-PLOR will try to get at
+ once you start including experimental data !!!
+
+      *** GARBAGE IN ==> GARBAGE OUT ***
+
+ Enter name of X-PLOR minimisation file : (ngu_min.inp) 
+
+ All done ...
+
+ QUIT XSEA X1DT X1DY XFIL LUZZ XBAD AUTO
+ What would you like to do ? (AUTO) quit
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ That's all there is to it !  of course, you should always check the
+   dictionary files, and usually you need to add or edit some of the
+   information (e.g., masses, charges, Lennard-Jones parameters).  Also,
+   by default "non-flat" DIHEdrals are commented out; you need to include those
+   that make chemical sense.
+
+ ## Output
+
+ The clean PDB file may look as follows:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ATOM      1  C1  NGU   972      -1.033  -3.427   2.857  1.00 20.00      1D22
+ATOM      2  C2  NGU   972      -0.998  -3.311   4.231  1.00 20.00      1D22
+ATOM      3  C3  NGU   972      -1.054  -2.053   4.872  1.00 20.00      1D22
+ ...
+ATOM     56  O16 NGU   972       1.437  -4.066   5.945  1.00 20.00      1D22
+ATOM     57  O23 NGU   972       4.906  -4.096   4.521  1.00 20.00      1D22
+END
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ The PDB file with the atom types as B-factors and the number of
+   hydrogens as occupancies may look like this (note also that columns
+   77 and 78 contain the symbol of the chemical element the program
+   thought each atom belongs to):
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+REMARK Created by XPLO2D V. 960803/2.0 at Sun Aug 4 02:38:16 1996 for user gerard
+REMARK XPLO2D pseudo-PDB file
+REMARK B-factors   <===> atom types
+REMARK Occupancies <===> nr of hydrogens
+ATOM      1  C1  NGU   972      -1.033  -3.427   2.857  0.00  1.00      1D22 C
+ATOM      2  C2  NGU   972      -0.998  -3.311   4.231  0.00  2.00      1D22 C
+ ...
+ATOM     56  O16 NGU   972       1.437  -4.066   5.945  0.00 49.00      1D22 O
+ATOM     57  O23 NGU   972       4.906  -4.096   4.521  0.00 47.00      1D22 O
+END   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+  The topology file may look as shown below.
+  Note: the masses should be okay, provided the program recognised
+    the chemical element of each atom, and had the correct number
+    of hydrogens for each atom.
+  Note: the actual value of each dihedral and improper is shown
+    so you can quickly check if they make sense.  Dihedrals of
+    the "+/-60 or +/-90" type are always commented out.  Only
+    use them when you have a good reason to !!!
+  Note: acceptors are included, but any donors are commented out
+    (you have to add any polar hydrogen atoms yourself !)
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+Remarks ngu.top
+Remarks Created by XPLO2D V. 960803/2.0 at Sun Aug 4 02:37:44 1996 for user gerard
+Remarks Auto-generated by XPLO2D from file ngu.pdb
+Remarks You *MUST* check/edit MASSes and CHARges !!!
+Remarks Check DONOrs and ACCEptors
+Remarks Verify IMPRopers yourself
+Remarks DIHEdrals which are not flat are commented out
+
+ set echo=false end
+
+ { edit masses if necessary }
+ MASS CX1    12.01100 ! 12.01100 + 1.008 for each H
+ MASS CX2    12.01100 ! 12.01100 + 1.008 for each H
+ MASS CX3    13.01900 ! 12.01100 + 1.008 for each H
+...
+ MASS OX55   15.99940 ! 15.99940 + 1.008 for each H
+
+ autogenerate angles=true end
+
+RESIdue NGU
+
+GROUp
+ ATOM  C1   TYPE CX1   CHARge  0.0  END ! Nr of Hs =  0
+ ATOM  C2   TYPE CX2   CHARge  0.0  END ! Nr of Hs =  0
+ ATOM  C3   TYPE CX3   CHARge  0.0  END ! Nr of Hs =  1
+...
+ ATOM  O16  TYPE OX49  CHARge  0.0  END ! Nr of Hs =  0
+ ATOM  O23  TYPE OX47  CHARge  0.0  END ! Nr of Hs =  0
+
+ BOND  C1   C2       BOND  C1   C21      BOND  C1   O1       BOND  C2   C3
+ BOND  C2   C34      BOND  C3   C4       BOND  C4   C16      BOND  C4   O4
+ BOND  C5   C16      BOND  C5   C17      BOND  C5   O5       BOND  C6   C17
+...
+ BOND  C23  N1       BOND  C23  O23      BOND  C24  N1
+
+ { edit these DIHEdrals if necessary }
+ DIHEdral  C21  C1   C2   C3  ! flat ? (0 degrees = cis)    -0.56
+ DIHEdral  C21  C1   C2   C34 ! flat ? (180 degrees = trans)   183.76
+...
+ DIHEdral  C22  C34  O2   C30 ! flat ? (180 degrees = trans)   183.90
+
+ { edit these IMPRopers if necessary }
+ IMPRoper  C1   C2   C21  O1  ! chirality or flatness improper     1.45
+ IMPRoper  C2   C1   C3   C34 ! chirality or flatness improper     2.69
+ IMPRoper  C4   O4   C16  C3  ! chirality or flatness improper     0.86
+...
+ IMPRoper  C34  C22  C33  C2  ! chirality or flatness improper    27.41
+
+ { edit these DONOrs and ACCEptors if necessary }
+ ACCEptor  O1   C1
+ ACCEptor  O4   C4
+ ACCEptor  O5   C5
+...
+ ACCEptor  O23  C23
+
+END { RESIdue NGU }
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ The parameter file may look as shown below.
+ Note: all bond and angle target values are the averages of the observed
+   values.  The number of observations is shown as well.
+ Note: dihedral angles and impropers are calculated as the ATAN2 of
+   the average SIN and the average COS.
+ Note: dihedral targets are always given as the nearest mutliple of
+   30 degrees.
+ Note: impropers which are "almost" zero or +/- 35 degrees will receive
+   a target of 0.0, 35.0 or -35.0.  Other impropers are flagged with
+   a warning.  Normally, chiral carbons have an improper of +/- 35,
+   whereas sp2 carbons have an improper of zero.
+ Note: at present, XPLO2D "knows" the NONBonded parameters for almost
+   three dozen chemical element types.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+Remarks ngu.par
+Remarks Created by XPLO2D V. 960803/2.0 at Sun Aug 4 02:38:16 1996 for user gerard
+Remarks Auto-generated by XPLO2D from file ngu.pdb
+Remarks Parameters for residue type NGU
+
+ set echo=false end
+
+ { edit if necessary }
+ BOND CX1  CX2    1000.0  1.379 ! Nobs =    1
+ BOND CX1  CX36   1000.0  1.393 ! Nobs =    1
+ BOND CX1  OX17   1000.0  1.325 ! Nobs =    1
+...
+ BOND CX32 NX33   1000.0  1.541 ! Nobs =    1
+
+ { edit if necessary }
+ ANGLe CX2  CX1  CX36    500.0   121.41 ! Nobs =    1
+ ANGLe CX2  CX1  OX17    500.0   125.24 ! Nobs =    1
+ ANGLe CX36 CX1  OX17    500.0   113.30 ! Nobs =    1
+...
+ ANGLe CX29 OX55 CX30    500.0   113.46 ! Nobs =    1
+
+ { edit if necessary }
+ DIHEdral CX36 CX1  CX2  CX3     750.0 0    0.000 ! Nobs =    1
+ DIHEdral CX36 CX1  CX2  CX30    750.0 0  180.000 ! Nobs =    1
+...
+ DIHEdral CX54 CX30 OX55 CX29    750.0 0  180.000 ! Nobs =    1
+
+ { edit if necessary }
+ IMPRoper CX1  CX2  CX36 OX17    750.0 0    0.000 ! Nobs =    1
+ IMPRoper CX2  CX1  CX3  CX30    750.0 0    0.000 ! Nobs =    1
+...
+ IMPRoper CX36 CX14 CX10 CX1     750.0 0    0.000 ! Nobs =    1
+! WARNING - unusual value for following improper (not near zero or +/- 35 degrees)
+ IMPRoper CX23 OX28 CX38 OX21    750.0 0   28.539 ! Nobs =    1
+ IMPRoper CX38 OX51 CX24 CX23    750.0 0   35.000 ! Nobs =    1
+...
+! WARNING - unusual value for following improper (not near zero or +/- 35 degrees)
+ IMPRoper CX30 CX54 CX43 CX2     750.0 0   27.412 ! Nobs =    1
+
+ { edit if necessary }
+ NONBonded CX1 0.1200 3.7418 0.1000 3.3854 ! assuming Carbon
+ NONBonded CX2 0.1200 3.7418 0.1000 3.3854 ! assuming Carbon
+...
+ NONBonded OX55 0.1591 2.8509 0.1591 2.8509 ! assuming Oxygen
+
+ set echo=true end
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ The energy-minimisation input file may look as follows:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+Remarks ngu_min.inp
+Remarks Created by XPLO2D V. 960803/2.0 at Sun Aug 4 02:38:45 1996 for user gerard
+Remarks Auto-generated by XPLO2D from file ngu.pdb
+Remarks Energy-minimisation input file for residue type NGU
+
+topology
+!  @tophcsdx.pro
+  @ngu.top
+end
+
+parameters
+!  @parhcsdx.pro
+  @ngu.par
+  nbonds
+    atom cdie shift eps=8.0  e14fac=0.4
+    cutnb=7.5 ctonnb=6.0 ctofnb=6.5
+    nbxmod=5 vswitch
+  end
+  remark dielectric constant eps set to 8.0
+end
+
+segment name="1D22"
+  chain
+   coordinates @ngu.pdb_clean
+  end
+end
+coordinates @ngu.pdb_clean
+
+print threshold=0.02 bonds
+print threshold=3.0 angles
+print threshold=3.0 dihedrals
+print threshold=3.0 impropers
+
+Remarks Build hydrogens (if any)
+
+hbuild
+  selection = (hydrogen and not known)
+  phistep=45
+end
+
+Remarks Do Powell energy minimisation
+
+minimise powell
+  nstep=250 drop=40.0
+end
+
+write coordinates output=ngu_min.pdb end
+write structure   output=ngu.psf end
+
+vector ident (store9) (not hydrogen)
+constraints interaction (store9) (store9) end
+
+print threshold=0.02 bonds
+print threshold=3.0 angles
+print threshold=3.0 dihedrals
+print threshold=3.0 impropers
+
+stop
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Run X-PLOR to do the minimisation, and check the result with O !
+   It only takes a few seconds of CPU time, but can save you hours
+   of CPU time later on if you find that there was a mistake in
+   the dictionaries after all !
+
+ Mistakes usually lead to any or all of the following:
+ - large deviations from ideal geometry at the start
+ - very high starting energies
+ - remaining (or even more) large deviations after minimisation
+
+ Almost always the reason is that two or more non-equivalent atoms
+   were considered to be equivalent by the program.  Fix this by
+   editing the PDB file with the atom types as B-factors, and
+   re-running XPLO2D using this edited file as input.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+...
+ X-PLOR>print threshold=0.02 bonds 
+ (atom-i        |atom-j        )    dist.   equil.   delta    energy   const. 
+
+ Number of violations greater    0.020:     0
+ RMS deviation=   0.000
+ X-PLOR>print threshold=3.0 angles 
+ (atom-i        |atom-j        |atom-k        )  angle    equil.     delta    energy  const. 
+
+ Number of violations greater    3.000:     0
+ RMS deviation=   0.003
+ X-PLOR>print threshold=3.0 dihedrals 
+ (atom-i        |atom-j        |atom-k        |atom-L        )    angle    equil.   delta    energy   const.   period
+
+ (1D22 972  C21 |1D22 972  C1  |1D22 972  C2  |1D22 972  C34 ) -176.239  180.000   -3.761    3.231  750.000   0
+ (1D22 972  O1  |1D22 972  C1  |1D22 972  C2  |1D22 972  C34 )    6.437    0.000   -6.437    9.467  750.000   0
+...
+ (1D22 972  C22 |1D22 972  C34 |1D22 972  O2  |1D22 972  C30 ) -176.098  180.000   -3.902    3.479  750.000   0
+ Number of violations greater    3.000:    18
+ RMS deviation=   2.944
+ X-PLOR>print threshold=3.0 impropers 
+ (atom-i        |atom-j        |atom-k        |atom-L        )    angle    equil.   delta    energy   const.   period
+
+ (1D22 972  C7  |1D22 972  O7  |1D22 972  C18 |1D22 972  C8  )   40.915   35.000   -5.915    7.992  750.000   0
+ (1D22 972  C9  |1D22 972  C8  |1D22 972  C10 |1D22 972  C13 )   29.346   35.000    5.654    7.304  750.000   0
+ (1D22 972  C10 |1D22 972  C9  |1D22 972  C14 |1D22 972  C19 )   31.087   35.000    3.913    3.497  750.000   0
+ (1D22 972  C14 |1D22 972  O14 |1D22 972  O10 |1D22 972  C10 )   29.663   35.000    5.337    6.507  750.000   0
+ (1D22 972  C2* |1D22 972  O2* |1D22 972  C3* |1D22 972  C1* )   39.222   35.000   -4.222    4.073  750.000   0
+ (1D22 972  C4* |1D22 972  C3* |1D22 972  C5* |1D22 972  O4* )   29.676   35.000    5.324    6.475  750.000   0
+ (1D22 972  C31 |1D22 972  C30 |1D22 972  C32 |1D22 972  O15 )   29.814   35.000    5.186    6.144  750.000   0
+ (1D22 972  C32 |1D22 972  N1  |1D22 972  C33 |1D22 972  C31 )   31.226   35.000    3.774    3.254  750.000   0
+ (1D22 972  C33 |1D22 972  C32 |1D22 972  C34 |1D22 972  O16 )   31.393   35.000    3.607    2.972  750.000   0
+ Number of violations greater    3.000:     9
+ RMS deviation=   2.994
+...
+ X-PLOR>minimise powell 
+ POWELL>  nstep=250 drop=40.0 
+ POWELL>end 
+ POWELL: number of degrees of freedom=   171
+ NBONDS: generating intra-molecular exclusion list with mode= 5
+ MAKINB: mode   5 found    165 exclusions and    134 interactions(1-4)
+ NBONDS: found      573 intra-atom interactions
+ --------------- cycle=     1 ------ stepsize=    0.0000 -----------------------
+ | Etotal =251.111    grad(E)=159.748    E(BOND)=0.006      E(ANGL)=0.000      |
+ | E(DIHE)=148.482    E(IMPR)=53.236     E(VDW )=49.386     E(ELEC)=0.000      |
+ -------------------------------------------------------------------------------
+ --------------- cycle=     2 ------ stepsize=    0.0000 -----------------------
+ | Etotal =191.641    grad(E)=103.466    E(BOND)=0.969      E(ANGL)=2.175      |
+ | E(DIHE)=97.577     E(IMPR)=41.690     E(VDW )=49.230     E(ELEC)=0.000      |
+ -------------------------------------------------------------------------------
+...
+ --------------- cycle=   250 ------ stepsize=    0.0001 -----------------------
+ | Etotal =78.321     grad(E)=0.969      E(BOND)=4.050      E(ANGL)=18.225     |
+ | E(DIHE)=3.614      E(IMPR)=12.242     E(VDW )=40.189     E(ELEC)=0.000      |
+ -------------------------------------------------------------------------------
+ POWELL: STEP number limit. Normal termination
+ POWELL: Current coordinates set to last minimum
+ X-PLOR> 
+ X-PLOR>write coordinates output=ngu_min.pdb end 
+ ASSFIL: file ngu_min.pdb opened.
+ X-PLOR>write structure   output=ngu.psf end 
+ ASSFIL: file ngu.psf opened.
+ X-PLOR> 
+ X-PLOR>vector ident (store9) (not hydrogen) 
+ SELRPN:     57 atoms have been selected out of     57
+ X-PLOR>constraints interaction (store9) (store9) end 
+ SELRPN:     57 atoms have been selected out of     57
+ SELRPN:     57 atoms have been selected out of     57
+ X-PLOR> 
+ X-PLOR>print threshold=0.02 bonds 
+ (atom-i        |atom-j        )    dist.   equil.   delta    energy   const. 
+
+ Number of violations greater    0.020:     0
+ RMS deviation=   0.008
+ X-PLOR>print threshold=3.0 angles 
+ (atom-i        |atom-j        |atom-k        )  angle    equil.     delta    energy  const. 
+
+ (1D22 972  C10 |1D22 972  C9  |1D22 972  O9  )  110.125  106.930    3.195    1.554  500.000
+ (1D22 972  C31 |1D22 972  C32 |1D22 972  C33 )  109.264  112.360   -3.096    1.460  500.000
+ Number of violations greater    3.000:     2
+ RMS deviation=   1.083
+ X-PLOR>print threshold=3.0 dihedrals 
+ (atom-i        |atom-j        |atom-k        |atom-L        )    angle    equil.   delta    energy   const.   period
+
+ Number of violations greater    3.000:     0
+ RMS deviation=   0.459
+ X-PLOR>print threshold=3.0 impropers 
+ (atom-i        |atom-j        |atom-k        |atom-L        )    angle    equil.   delta    energy   const.   period
+
+ (1D22 972  C7  |1D22 972  O7  |1D22 972  C18 |1D22 972  C8  )   38.025   35.000   -3.025    2.091  750.000   0
+ (1D22 972  C9  |1D22 972  C8  |1D22 972  C10 |1D22 972  C13 )   31.900   35.000    3.100    2.195  750.000   0
+ Number of violations greater    3.000:     2
+ RMS deviation=   1.436
+ X-PLOR> 
+ X-PLOR>stop 
+ CSTACK: size=    40000 used=      150 current=        0
+ HEAP:   maximum use=    38324 current use=        0
+ X-PLOR: total CPU time=      2.9359 s
+ X-PLOR: entry time at 02:55:28 04-Aug-96
+ X-PLOR: exit time at 02:55:33 04-Aug-96
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## Example TNT dictionary
+
+ From version 2.7, the AUTO command can also generate TNT dictionaries.
+   These may look as follows:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+! Filename = trp.tnt
+! Created by XPLO2D V. 980416/2.8 at Thu Apr 16 17:35:57 1998 for user gerard
+! Auto-generated by XPLO2D from file trp.pdb
+!
+! Note: impropers are mapped to TRIGONAL (-17 to +17),
+!       or CHIRAL (+-55 to +-17) restraints. Values
+!       outside these ranges yield an error message
+!
+! Note: PLANES are derived from 0 or +- 180 torsions
+!       and are implemented as sets of 4-atom planes.
+!       You can merge these into larger planes manually.
+!       Also note that cis and trans can NOT be
+!       distinguished by a PLANE restraint !  If this
+!       is important, use a TORSION 1000 or 1180
+!       restraint instead of the corresponding PLANE !
+!
+! Note: non-flat torsion angles lead to a TORSION
+!       restraint which is commented out by a # sign.
+!       To include such restraints in your refinement,
+!       remove the # sign(s). Also note that all such
+!       torsions by default have a periodicity of 1 !
+!
+
+!
+! BOND restraints
+!
+GEOMETRY TRP BOND    1.453    0.020   N    CA  ! Nobs =   18 ... Range =  1.437 1.468
+GEOMETRY TRP BOND    1.528    0.020   CA   C   ! Nobs =   18 ... Range =  1.513 1.538
+GEOMETRY TRP BOND    1.529    0.020   CA   CB  ! Nobs =   18 ... Range =  1.517 1.545
+GEOMETRY TRP BOND    1.234    0.020   C    O   ! Nobs =   18 ... Range =  1.227 1.242
+GEOMETRY TRP BOND    1.484    0.020   CB   CG  ! Nobs =   18 ... Range =  1.457 1.519
+! >>> WARNING - large range for previous bond :    0.062
+GEOMETRY TRP BOND    1.358    0.020   CG   CD1 ! Nobs =   18 ... Range =  1.346 1.364
+GEOMETRY TRP BOND    1.437    0.020   CG   CD2 ! Nobs =   18 ... Range =  1.430 1.446
+GEOMETRY TRP BOND    1.387    0.020   CD1  NE1 ! Nobs =   18 ... Range =  1.384 1.389
+GEOMETRY TRP BOND    1.418    0.020   CD2  CE2 ! Nobs =   18 ... Range =  1.416 1.421
+GEOMETRY TRP BOND    1.393    0.020   CD2  CE3 ! Nobs =   18 ... Range =  1.391 1.396
+GEOMETRY TRP BOND    1.367    0.020   NE1  CE2 ! Nobs =   18 ... Range =  1.365 1.369
+GEOMETRY TRP BOND    1.389    0.020   CE2  CZ2 ! Nobs =   18 ... Range =  1.384 1.393
+GEOMETRY TRP BOND    1.385    0.020   CE3  CZ3 ! Nobs =   18 ... Range =  1.375 1.395
+GEOMETRY TRP BOND    1.364    0.020   CZ2  CH2 ! Nobs =   18 ... Range =  1.360 1.366
+GEOMETRY TRP BOND    1.401    0.020   CZ3  CH2 ! Nobs =   18 ... Range =  1.398 1.405
+!
+! ANGLE restraints
+!
+GEOMETRY TRP ANGLE  111.240    2.000   N    CA   C   ! Nobs =   18 ... Range =   105.67  115.67
+! >>> WARNING - large range for previous angle :    9.995
+GEOMETRY TRP ANGLE  109.916    2.000   N    CA   CB  ! Nobs =   18 ... Range =   106.16  111.88
+GEOMETRY TRP ANGLE  109.462    2.000   C    CA   CB  ! Nobs =   18 ... Range =   105.35  113.39
+! >>> WARNING - large range for previous angle :    8.039
+GEOMETRY TRP ANGLE  120.817    2.000   CA   C    O   ! Nobs =   18 ... Range =   119.66  121.62
+GEOMETRY TRP ANGLE  114.729    2.000   CA   CB   CG  ! Nobs =   18 ... Range =   113.04  117.05
+GEOMETRY TRP ANGLE  126.211    2.000   CB   CG   CD1 ! Nobs =   18 ... Range =   125.12  126.77
+GEOMETRY TRP ANGLE  126.869    2.000   CB   CG   CD2 ! Nobs =   18 ... Range =   126.33  127.87
+GEOMETRY TRP ANGLE  106.831    2.000   CD1  CG   CD2 ! Nobs =   18 ... Range =   106.49  107.06
+GEOMETRY TRP ANGLE  109.754    2.000   CG   CD1  NE1 ! Nobs =   18 ... Range =   109.55  109.91
+GEOMETRY TRP ANGLE  106.905    2.000   CG   CD2  CE2 ! Nobs =   18 ... Range =   106.51  107.05
+GEOMETRY TRP ANGLE  134.227    2.000   CG   CD2  CE3 ! Nobs =   18 ... Range =   133.95  134.77
+GEOMETRY TRP ANGLE  118.867    2.000   CE2  CD2  CE3 ! Nobs =   18 ... Range =   118.72  119.05
+GEOMETRY TRP ANGLE  109.106    2.000   CD1  NE1  CE2 ! Nobs =   18 ... Range =   108.92  109.41
+GEOMETRY TRP ANGLE  107.402    2.000   CD2  CE2  NE1 ! Nobs =   18 ... Range =   107.23  107.52
+GEOMETRY TRP ANGLE  122.486    2.000   CD2  CE2  CZ2 ! Nobs =   18 ... Range =   122.25  122.84
+GEOMETRY TRP ANGLE  130.112    2.000   NE1  CE2  CZ2 ! Nobs =   18 ... Range =   129.93  130.32
+GEOMETRY TRP ANGLE  118.298    2.000   CD2  CE3  CZ3 ! Nobs =   18 ... Range =   118.17  118.42
+GEOMETRY TRP ANGLE  117.382    2.000   CE2  CZ2  CH2 ! Nobs =   18 ... Range =   117.25  117.56
+GEOMETRY TRP ANGLE  121.474    2.000   CE3  CZ3  CH2 ! Nobs =   18 ... Range =   121.28  121.60
+GEOMETRY TRP ANGLE  121.492    2.000   CZ2  CH2  CZ3 ! Nobs =   18 ... Range =   121.36  121.65
+!
+! TORSION and PLANE restraints
+!
+# GEOMETRY TRP TORSION -1050     2.00   N    CA   C    O   ! Nobs =   18 ... Range =   -72.51  168.59
+# GEOMETRY TRP TORSION  1070     2.00   CB   CA   C    O   ! Nobs =   18 ... Range =   -83.22  119.46
+GEOMETRY TRP PLANE  4     0.02   N    CA   CB   CG  ! Torsion Nobs =   18 ... Range =   -87.83  192.68
+# GEOMETRY TRP TORSION  1060     2.00   C    CA   CB   CG  ! Nobs =   18 ... Range =   -68.90  175.65
+# GEOMETRY TRP TORSION -1080     2.00   CA   CB   CG   CD1 ! Nobs =   18 ... Range =  -106.79   94.40
+# GEOMETRY TRP TORSION  1110     2.00   CA   CB   CG   CD2 ! Nobs =   18 ... Range =   -96.26  205.84
+GEOMETRY TRP PLANE  4     0.02   CB   CG   CD1  NE1 ! Torsion Nobs =   18 ... Range =   172.27  184.77
+GEOMETRY TRP PLANE  4     0.02   CD2  CG   CD1  NE1 ! Torsion Nobs =   18 ... Range =    -1.07    0.66
+GEOMETRY TRP PLANE  4     0.02   CB   CG   CD2  CE2 ! Torsion Nobs =   18 ... Range =   175.24  187.74
+GEOMETRY TRP PLANE  4     0.02   CB   CG   CD2  CE3 ! Torsion Nobs =   18 ... Range =    -4.44    7.11
+GEOMETRY TRP PLANE  4     0.02   CD1  CG   CD2  CE2 ! Torsion Nobs =   18 ... Range =    -0.54    1.03
+GEOMETRY TRP PLANE  4     0.02   CD1  CG   CD2  CE3 ! Torsion Nobs =   18 ... Range =   179.68  180.40
+GEOMETRY TRP PLANE  4     0.02   CG   CD1  NE1  CE2 ! Torsion Nobs =   18 ... Range =    -0.53    0.71
+GEOMETRY TRP PLANE  4     0.02   CG   CD2  CE2  NE1 ! Torsion Nobs =   18 ... Range =    -0.65    0.29
+GEOMETRY TRP PLANE  4     0.02   CG   CD2  CE2  CZ2 ! Torsion Nobs =   18 ... Range =   179.23  180.32
+GEOMETRY TRP PLANE  4     0.02   CE3  CD2  CE2  NE1 ! Torsion Nobs =   18 ... Range =   179.76  180.13
+GEOMETRY TRP PLANE  4     0.02   CE3  CD2  CE2  CZ2 ! Torsion Nobs =   18 ... Range =    -0.26    0.14
+GEOMETRY TRP PLANE  4     0.02   CG   CD2  CE3  CZ3 ! Torsion Nobs =   18 ... Range =   179.58  180.92
+GEOMETRY TRP PLANE  4     0.02   CE2  CD2  CE3  CZ3 ! Torsion Nobs =   18 ... Range =    -0.05    0.24
+GEOMETRY TRP PLANE  4     0.02   CD1  NE1  CE2  CD2 ! Torsion Nobs =   18 ... Range =    -0.11    0.20
+GEOMETRY TRP PLANE  4     0.02   CD1  NE1  CE2  CZ2 ! Torsion Nobs =   18 ... Range =   179.73  180.26
+GEOMETRY TRP PLANE  4     0.02   CD2  CE2  CZ2  CH2 ! Torsion Nobs =   18 ... Range =    -0.15    0.15
+GEOMETRY TRP PLANE  4     0.02   NE1  CE2  CZ2  CH2 ! Torsion Nobs =   18 ... Range =   179.80  180.26
+GEOMETRY TRP PLANE  4     0.02   CD2  CE3  CZ3  CH2 ! Torsion Nobs =   18 ... Range =    -0.10    0.11
+GEOMETRY TRP PLANE  4     0.02   CE2  CZ2  CH2  CZ3 ! Torsion Nobs =   18 ... Range =    -0.11    0.24
+GEOMETRY TRP PLANE  4     0.02   CE3  CZ3  CH2  CZ2 ! Torsion Nobs =   18 ... Range =    -0.24    0.09
+!
+! CHIRAL and TRIGONAL restraints
+!
+GEOMETRY TRP CHIRAL 1 1  CA   N    C    CB  ! Nobs =   18 ... Range =    32.19   37.35
+GEOMETRY TRP TRIGONAL 0     0.02  CG   CB   CD1  CD2 ! Nobs =   18 ... Range =    -4.46    2.85
+GEOMETRY TRP TRIGONAL 0     0.02  CD2  CG   CE2  CE3 ! Nobs =   18 ... Range =    -0.29    0.15
+GEOMETRY TRP TRIGONAL 0     0.02  CE2  CD2  NE1  CZ2 ! Nobs =   18 ... Range =    -0.10    0.13
+!
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## Example O dictionary
+
+ From version 2.8, the AUTO command can also generate O dictionaries
+   (no longer in the old Hermans & McQueen Refi format !).
+   From version 3.1, these should contain all the information needed
+   and recognised by O version 9.0.1. For instance:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+! Filename = rea.odb
+! Created by XPLO2D V. 031014/3.1.2 at Tue Oct 14 16:49:35 2003 for gerard
+! Auto-generated by XPLO2D from file rea.pdb
+!
+!!!!! ADD THIS FILE TO YOUR .bonds_angles DATABLOCK  !!!!!
+!!!!! THEN UPDATE THE .bonds_angles DATABLOCK HEADER !!!!!
+!
+! --------------------------------------------------------
+!
+residue REA
+!
+centre  C1 
+!
+atom C1 C2 C3 C4 C5 C6 C7 C8 C9 C10 \
+   C11 C12 C13 C14 C15 C16 C17 C18 C19 C20 \
+   O1 O2
+!
+fragment_all C1 C2 C3 C4 C5 C6 C7 C8 C9 C10 \
+   C11 C12 C13 C14 C15 C16 C17 C18 C19 C20 \
+   O1 O2
+!
+fragment_sc C1 C2 C3 C4 C5 C6 C7 C8 C9 C10 \
+   C11 C12 C13 C14 C15 C16 C17 C18 C19 C20 \
+   O1 O2
+!
+side-chain C1 C2 C3 C4 C5 C6 C7 C8 C9 C10 \
+   C11 C12 C13 C14 C15 C16 C17 C18 C19 C20 \
+   O1 O2
+!
+! connectivity
+!
+connect_all C1 C2 C3 C4 C5 C6 C1 C16
+connect_all C1 C17
+connect_all C5 C18
+connect_all C6 C7 C8 C9 C10 C11 C12 C13 C14 C15 O1
+connect_all C9 C19
+connect_all C13 C20
+connect_all C15 O2
+!
+! torsion-angle definitions
+! note: only the first 12 torsions can be used in O
+!
+torsion tor1 154. C8 C7 C6 C1 C1 C2 C3 C4 C5 C16 C17 C18
+torsion tor2 -51. C13 C14 C15 O1 O1 O2
+!
+! bond lengths
+!
+bond_distance C1 C2 1.546 0.020
+bond_distance C1 C6 1.564 0.020
+
+[...]
+
+bond_distance C15 O1 1.251 0.020
+bond_distance C15 O2 1.251 0.020
+!
+! bond angles
+!
+bond_angle C2 C1 C6 109.69 2.00
+bond_angle C2 C1 C16 108.11 2.00
+
+[...]
+
+bond_angle C14 C15 O2 119.14 2.00
+bond_angle O1 C15 O2 121.55 2.00
+!
+! dihedral angles (fixed and flexible)
+!
+torsion_flexible C6 C1 C2 C3 -43.00 20.00
+! Descriptive torsion - Actual value :   -42.76
+torsion_flexible C16 C1 C2 C3 -163.00 20.00
+! Descriptive torsion - Actual value :  -162.72
+
+[...]
+
+torsion_flexible C1 C2 C3 C4 60.00 20.00
+! 60/90/120 torsion - Actual value :    57.63
+torsion_flexible C2 C3 C4 C5 -43.00 20.00
+! Descriptive torsion - Actual value :   -43.48
+
+[...]
+
+torsion_fixed C4 C5 C6 C1 0.00 2.00
+! CIS torsion - Actual value :    -8.57
+torsion_fixed C4 C5 C6 C7 180.00 2.00
+! TRANS torsion - Actual value :   178.97
+torsion_fixed C18 C5 C6 C1 180.00 2.00
+! TRANS torsion - Actual value :   178.69
+torsion_fixed C18 C5 C6 C7 0.00 2.00
+! CIS torsion - Actual value :     6.22
+torsion_flexible C1 C6 C7 C8 154.00 20.00
+! Descriptive torsion - Actual value :   154.33
+torsion_flexible C5 C6 C7 C8 -33.00 20.00
+! Descriptive torsion - Actual value :   -32.57
+torsion_fixed C6 C7 C8 C9 180.00 2.00
+! TRANS torsion - Actual value :  -179.29
+
+[...]
+
+torsion_fixed C12 C13 C14 C15 180.00 2.00
+! TRANS torsion - Actual value :  -179.63
+torsion_fixed C20 C13 C14 C15 0.00 2.00
+! CIS torsion - Actual value :    -0.15
+torsion_flexible C13 C14 C15 O1 -60.00 20.00
+! 60/90/120 torsion - Actual value :   -50.98
+torsion_flexible C13 C14 C15 O2 120.00 20.00
+! 60/90/120 torsion - Actual value :   129.00
+!
+! improper torsion angles
+!
+torsion_fixed C1 C2 C6 C16 35.00 2.00
+! Actual value :    35.58
+torsion_fixed C5 C4 C6 C18 0.00 2.00
+! Actual value :    -4.01
+torsion_fixed C6 C1 C5 C7 0.00 2.00
+! Actual value :    -4.20
+torsion_fixed C9 C8 C10 C19 0.00 2.00
+! Actual value :    -1.26
+torsion_fixed C13 C12 C14 C20 0.00 2.00
+! Actual value :     0.30
+torsion_fixed C15 C14 O1 O2 0.00 2.00
+! Actual value :    -0.01
+!
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## Interpreting warning messages
+
+ The parameter file may contain one or more warning messages.  Check
+   these carefully:
+
+ - too large range for a certain bond type -> I haven't encountered
+   this, but if it happens, it probably means that the program has
+   accidentally given two distinct atoms the same type.  Edit the
+   XPLO2D PDB file to correct this, and re-run the program.  (Also,
+   please E-mail me, including the coordinates of the compound !)
+
+ - too large range for a certain bond angle -> this can be caused by
+   the same phenomenon as discussed above.  BUT, it may also be that
+   there is an error in the input structure !  For example, for the
+   compound propamidine (from PDB file 1PRP, 2.1 A resolution), the
+   angles C3'-C4'-C7' and C5'-C4'-C7' should be identical.  However,
+   they are 128 and 116 degrees, respectively.  Check the compound
+   carefully on the display to find out what the problem is.
+
+ - too large range for a certain dihedral -> this almost always means
+   that there are redundant torsion definitions.  Consider a structure
+   as shown below, with a flat phenyl ring and a flat carboxylate:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+        C----C1      O5
+       /      \     /
+   C---C      C2---C4
+       \      /     \
+        C----C3      O6
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+   The torsion around the C2-C4 bond can be defined up to four times
+     (C1-C2-C4-O5, C1-C2-C4-O6, C3-C2-C4-O5, and C3-C2-C4-O6), and
+     it normally would be defined four times by the program.  However,
+     two of these dihedrals are X degrees and two are 180+X degrees,
+     so the average (target) will be set to 90+X and the range of
+     observed values will be 180 degrees.  This will lead to a warning.
+   In that case, you don't have to change the atom types !  Instead,
+     remove the redundant DIHEdral definitions from the topology file.
+
+ - too large range for a certain improper -> I haven't encountered
+     this.  If it happens to you, please E-mail me, including the
+     coordinates of the compound.
+
+ - unusual value for a certain improper -> in most cases, this means
+     that there is an error in the structure of your compound.  Carbon
+     atoms with 3 or 4 neighbours are either sp3 or sp2 hybridised.
+     If the atom is chiral, an improper to three of its neighbours
+     should have a value of roughly +35 or -35 degrees; if it is
+     sp2 hybridised, this improper should be zero.  If an improper
+     is not near one of these two values, a warning is issued.
+
+ ** KNOWN BUGS
+
+ None, at present ("peppar, peppar").
+
+ ** UNKNOWN BUGS
+
+ Does not compute.

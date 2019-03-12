@@ -1,0 +1,3148 @@
+
+ ** MAPMAN - GENERAL INFORMATION
+
+ Program : MAPMAN
+ Version : 080625
+ Author  : Gerard J. Kleywegt & T. Alwyn Jones,
+           Dept. of Cell and Molecular Biology,
+           Uppsala University, Biomedical Centre, Box 596,
+           SE-751 24 Uppsala, SWEDEN
+ E-mail  : gerard@xray.bmc.uu.se
+ Purpose : manipulation and analysis of electron-density maps
+ Package : RAVE
+
+ ** REFERENCES
+
+ Reference(s) for this program:
+
+ *  1 * T.A. Jones & S. Thirup (1986). Using known substructures in
+        protein model building and crystallography. EMBO J 5, 819-822.
+        [http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=PubMed&cmd=Retrieve&list_uids=3709525&dopt=Citation]
+
+ *  2 * T.A. Jones (1992). A, yaap, asap, @#*?  A set of averaging
+        programs. In "Molecular Replacement", edited by E.J. Dodson,
+        S. Gover and W. Wolf. SERC Daresbury Laboratory, Warrington,
+        pp. 91-105.
+
+ *  3 * G.J. Kleywegt & T.A. Jones (1994).  Halloween ... Masks and
+        Bones. In "From First Map to Final Model", edited by
+        S. Bailey, R. Hubbard and D. Waller.  SERC Daresbury
+        Laboratory, Warrington, pp. 59-66.
+        [http://xray.bmc.uu.se/gerard/papers/halloween.html]
+
+ *  4 * G.J. Kleywegt & T.A. Jones (1996). xdlMAPMAN and xdlDATAMAN -
+        programs for reformatting, analysis and manipulation of
+        biomacromolecular electron-density maps and reflection data
+        sets. Acta Cryst D52, 826-828.
+        [http://scripts.iucr.org/cgi-bin/paper?gr0468]
+
+ *  5 * G.J. Kleywegt (1996). Making the most of your search model.
+        CCP4/ESF-EACBM Newsletter on Protein Crystallography 32,
+        June 1996, pp. 32-36.
+        [http://xray.bmc.uu.se/usf/factory_6.html]
+
+ *  6 * G.J. Kleywegt & R.J. Read (1997). Not your average density.
+        Structure 5, 1557-1569.
+        [http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=PubMed&cmd=Retrieve&list_uids=9438862&dopt=Citation]
+
+ *  7 * G.J. Kleywegt & T.A. Jones (1999). Software for handling
+        macromolecular envelopes. Acta Cryst D55, 941-944.
+        [http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=PubMed&cmd=Retrieve&list_uids=10089342&dopt=Citation]
+        [http://scripts.iucr.org/cgi-bin/paper?se0256]
+
+ *  8 * G.J. Kleywegt (1999). Experimental assessment of
+        differences between related protein crystal structures.
+        Acta Cryst. D55, 1878-1857.
+        [http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=PubMed&cmd=Retrieve&list_uids=10531486&dopt=Citation]
+        [http://scripts.iucr.org/cgi-bin/paper?se0283]
+
+ *  9 * R.J. Read & G.J. Kleywegt (2001). Density modification:
+        theory and practice. In: "Methods in Macromolecular
+        Crystallography" (D Turk & L Johnson, Eds.), IOS Press,
+        Amsterdam, pp. 123-135.
+
+ * 10 * G.J. Kleywegt, M.R. Harris, J.Y. Zou, T.C. Taylor,
+        A. Wahlby & T.A. Jones (2004). The Uppsala Electron
+        Density Server. Submitted.
+
+ * 11 * Kleywegt, G.J., Zou, J.Y., Kjeldgaard, M. & Jones, T.A. (2001).
+        Around O. In: "International Tables for Crystallography, Vol. F.
+        Crystallography of Biological Macromolecules" (Rossmann, M.G.
+        & Arnold, E., Editors). Chapter 17.1, pp. 353-356, 366-367.
+        Dordrecht: Kluwer Academic Publishers, The Netherlands.
+
+ ** VERSION HISTORY
+
+ 930409 - 0.5 - first production version; first manual
+ 930410 - 0.6 - implemented HISTO, SCALE, ZERO
+ 930413 - 0.7 - implemented UVW, SPACEGROUP
+ 930416 - 0.8 - bug fix (reading XPLOR maps)
+ 930420 - 0.9 - more formats supported
+ 930510 - 1.0 - implemented EXTRACT
+ 930513 - 1.1 - removed bugs in (NEW)EZD scale calculation
+ 930602 - 1.3 - made smaller ESV version (only 3 maps of
+                approximately 3 MW each); print program
+                dimensioning with "?" option
+ 930608 - 1.4 - implemented MOMENTS, $ and NORMALISE options
+ 930615 - 2.0 - new production version; implemented ADD
+ 930705 - 2.1 - new options MIN_MAX and CORRELATE
+ 930803 - 2.2 - implemented PICK commands
+ 930805 - 2.3 - implemented new READ format DSN6/BRICK,
+                so that you may RECONSTRUCT OLD BRICK files !
+ 930806 - 2.4 - implemented CELL option to change cell
+                constants of a map (sometimes needed when
+                reconstructing an old BRICK file)
+ 930825 - 2.5 - made NEW-EZD format compatible with O 5.9.1
+ 930901 -2.5.1- removed bug from reading NEW-EZD files
+ 930928 - 3.0 - implemented BONES and SWAPBYTES options
+ 931001 - 3.1 - implemented BONES PRUNE (for iterative
+                skeletonisation)
+ 931004 -3.1.1- sped up BONES PRUNE by a factor of ~200
+ 931109 - 3.2 - implemented 3DMATRIX (from XPLOR) input
+                format to enable display of rotation and
+                translation functions with O and O2D
+ 931117 - 3.3 - extended ODl command
+ 931124 -     - made paper manual; drastically shortened this one
+ 940303 -     - store spare bones randomly throughout skeleton
+ 940323 - 3.4 - Steve Muchmore (Purdue) implemented TNT input format 
+ 940415 - 3.5 - improved O2D plot files
+ 940525 - 3.6 - option DH produces Density Histogram
+ 940806 - 3.7 - new output format ENVELOPE (for CCP4 masks)
+ 950118 - 3.8 - sensitive to environment variable CCP4_OPEN
+ 950207 -3.8.1- removed minor bug in LIst command
+ 950216 -3.8.2- removed sign-reversal bug from NOrmalise command
+                (it used to *add* rather than subtract the average)
+ 950512 - 3.9 - implemented BRix command; added PHASES and FSMASK
+                input formats for PHASES maps and masks, respectively
+                (both are *UN*tested !)
+ 950630 -3.9.1- minor bug fixes; added 1D_projection and 2D_projection
+ 950717 - 4.0 - implemented loads of "filters"
+ 950719 -4.0.1- fixed bug in reading DSN6 files (should now work properly
+                on all machine types, little- and big-endian)
+ 951020 - 4.1 - new command ERase, INtegrate, PAste and FRame
+ 951102 - 4.2 - new PIck INtegrate command; fixed bug which made that
+                peak interpolation only worked the first time PI PE/IN
+                was used, but not thereafter
+ 951113 - 4.3 - added WRite format X-PLOR (ASCII only); changed X-PLOR
+                reading routine to utilise X-PLOR version 4 addition of
+                average and sigma at end of map file
+ 960124 -4.3.1- minor bug fix; print prod/plus and dynamic range
+                whenever any of them changes
+ 960125 -4.3.2- new VAlue_at command to list density value at a certain
+                grid point (plus those of its neighbours)
+ 960215 - 4.4 - try to restore lost changes (yet another disk crash ...);
+                recalculate & display Prod & Plus whenever the dynamic
+                range of the map changes; improve error message when
+                Prod out of bounds; new VAlue_at command (different
+                from the version before the disk crash); new CHange_value
+                command to set all map values within a certain range
+                to another value
+ 960409 - 4.5 - macro mechanism (@ filename)
+ 960411 -4.5.1- picked peaks can now be written as an AMORE rotation
+                function solution file
+ 960415 -4.5.2- minor bug fixes
+ 960517 - 4.6 - implemented simple symbol mechanism
+ 960629 -4.6.1- changed mask output format to OMASK
+ 960827 -4.6.2- map statistics now do get updated for the MI, CO and AD
+                commands
+ 961121 - 4.7 - implemented PIck HIgh option (e.g., to pick high values
+                in a rotation function map, rather than just the peaks)
+ 961125 - 5.0 - implemented dynamic memory allocation
+ 970501 -5.0.1- MStats command to get statistics about map points
+                inside/outside a mask
+ 970626 - 5.1 - support initialisation macro (setenv GKMAPMAN macrofile)
+ 970628 - 5.2 - several minor changes; new PEek commands
+ 970630 - 5.3 - removed "MAXREC=" from OPEN statements for DSN6 files
+                (this stemmed from the PDP11 days !); implemented
+                reading of BRIX maps; added map type "XPLOR" (easier
+                to type than "X-PLOR" ;-)
+ 971120 -5.3.1- NEWEZD files shouldn't contain null characters any
+                longer (I hope; only happened on SGIs); the EZD format
+                has been renamed to OLDEZD.  From now on, "the EZD" format
+                by default refers to the (NEW)EZD format. (NEW)EZD files
+                can be contoured directly in O using the fm_* commands
+ 980113 - 5.4 - added new map output format "AMORE" which will write
+                *binary* maps for use with Jorge Navaza's version of
+                AMORE (*not* the CCP4 version as far as I know !).  They
+                cannot be read back into MAPMAN at present, but if anyone
+                needs that, let me know.
+ 980428 -5.4.1- fixed bug which caused a crash if all points in a
+                map have the same value
+ 980715 -5.4.2- added option Mean to the "mode" parameter of the PEek
+                CUbe and PEek SPhere commands
+ 980922 -5.4.3- removed bug so that BRIX files are now read correctly
+                on little-endian machines (DEC ALPHA) as well
+ 980929 - 5.5 - new ZP_restart command to re-start the program with
+                different memory allocation
+ 981008 -5.5.1- new QInvert command to do quick-and-dirty inversion of
+                a map (i.e., swap rho(1,1,1) and rho(NX,NY,NZ) etc.)
+ 981021 -5.5.2- new ECho command to echo command-line input (useful
+                in scripts)
+ 981022 - 5.6 - implemented command history (# command)
+ 990129 -5.6.1- BOnes commands will print more information when allocated
+                storage space is exceeded
+ 990319 -5.6.2- changed maximum number of maps allowed to 100
+ 990503 - 5.7 - implemented the NEw commands to generate empty maps
+ 990505 -5.7.1- new input format EM08 (KI-Stockholm-style EM maps), but
+                it doesn't work yet :-)
+ 990506 -5.7.2- added OMAP as input and output format (same as DSN6);
+                writing a map with output format DSN6 or OMAP will now
+                actually do the mappage step for you, and writing a
+                map with output format BRIX will do just that (i.e.,
+                no need to use the separate MAppage and BRix commands
+                any longer)
+ 990823 - 5.8 - new ROughness command to calculate the local RMS
+                density and assess map interpretability a la
+                Terwilliger and Berendzen (Acta Cryst D55, 501-505, 1999)
+ 991203 -5.8.1- minor bug fix
+ 000307 - 5.9 - new OPerate command to combine two maps
+ 001107 -5.9.1- increased dimensioning of arrays used in skeletonisation
+ 001129 -5.9.2- WHere_value command to locate specific density
+                values (with a certain tolerance) in your map
+ 001130 - 6.0 - VRml commands implemented
+ 010122 - 7.0 - use C routines to do dynamic memory allocation 
+                and port to Linux
+ 010227 -7.0.1- fixed mini-bug in peak picking (crashed on Alpha
+                and Linux; didn't do any harm on SGI)
+ 010301 -7.0.2- minor changes to dimensioning
+ 010403 - 7.1 - implemented input format MPI (for MPI-style EM maps)
+ 010409 -7.1.1- minor changes
+ 010424 -7.1.2- enable separate X/Y/Z pixel sizes with MPI format
+ 010502 - 7.2 - SEt_value command; implemented output format TURBO
+                (DSN6 maps for Turbo-Frodo)
+ 010514 -7.2.1- implemented input format AMBER (for AMBER-style
+                X-PLOR maps, but written by AMBER in a wrong format)
+ 010806 -  X  - added some example figures to demonstrate some of
+                the options that produce plots
+ 011010 -7.2.2- changed default atom name for picked peaks to " O  "
+                (instead of " O1 "; note that the defaults can be
+                changed with the PIck PDb command)
+ 011023 -7.2.3- minor changes
+ 011025 -7.2.4- minor changes
+ 011127 - 7.3 - implemented RS_fit command *** TO BE DOCUMENTED ***
+ 011128 -7.3.1- continued with RS_fit command
+ 011130 -7.3.2- implemented MF_map command *** TO BE DOCUMENTED ***;
+                WRite for mask now has an extra parameter, namely the
+                comparator (<, LT, >, GT, <=, LE, >=, or GE; default >)
+                to define which points should be set when writing a map
+                as a mask file; continued with RS_fit command
+ 011204 -7.3.3- continued with RS_fit command
+ 011205 -7.3.4- minor changes
+ 011220 -7.3.5- minor changes
+ 011221 - 7.4 - sped up RS_fit command by a factor of 5-10; documented
+                RS_fit command; implemented Sphere option for MF_map
+                command (now the default although it is a factor two
+                slower)
+ 020306 -7.4.1- minor changes (renamed MF to LC command for "local
+                correlation maps")
+ 020702 -7.4.2- minor changes
+ 020715 -7.4.3- RS_fit command more robust against and informative
+                about errors
+ 020730 -7.4.4- minor changes
+ 020827 -7.4.5- RS_fit command now tries to figure out for each residue
+                whether it is an Amino acid, Nucleic acid, Water, or
+                Hetero-entity and prints this in the list file
+ 020905 -7.4.6- minor changes
+ 020912 -7.4.7- RS_fit command prints more statistics
+ 020913 -7.4.8- RS_fit command prints more statistics
+ 020913 -7.4.9- RS_fit command prints more statistics; also now handles
+                SCALE1/2/3 cards and if the fractionalisation matrix
+                calculated from the cell constants (read from the
+                CRYST1 card) differ from that provided on the SCALEn
+                cards, then all coordinates will be fractionalised
+                (using SCALEn) and then re-orthogonalised (using
+                the CRYST1 cell)
+ 020925 - 7.5 - RS_fit command: if a negative radius is supplied, it is
+                assumed to be the resolution (*-1) and the radius is
+                calculated according to: (1) if resolution < 0.6 A then
+                radius = 0.7 A; (2) if resolution > 3.0 A then radius =
+                resolution/2 A; (3) else radius = 0.7 + (resolution-0.6)/3 A;
+                new parameter to determine how obs_map and cal_map are to
+                be scaled: Q = Quick-n-dirty (ratio of sums of absolute
+                densities, summed over all grid points in the maps), or
+                M = Masked (only sum over grid points within the envelope
+                of the total set of atoms; this is slower but better)
+ 020926 -7.5.1- minor bug fix
+ 020927 -7.5.2- minor changes
+ 020930 -7.5.3- minor changes
+ 021122 -7.5.4- new output format MPI (for MPI-style EM maps)
+ 030227 - X   - added information about the various formats
+ 030328 - 7.6 - new option DRange
+ 030704 - X   - added information about the meaning of grid, origin and extent
+ 030915 - 7.7 - new options TRanslate and GTranslate
+ 040224 -7.7.1- minor bug fix (for Linux only)
+ 040602 -7.7.2- minor bug fix (now several options involving two maps,
+                such as ADd, will also work with 2D maps)
+ 040701 -7.7.3- changed checks of dynamic memory allocation to allow
+                for pointers with negative values as returned by
+                some recent Linux versions
+ 040916 -7.7.4- the PEek commmand now also lists the results to the
+                screen (stdout) and warns when atoms lie outside the
+                limits of the map
+ 041015 - 7.8 - fixed several horrible bugs in the PAste command (thanks to
+                Jeff Bolin; I hope he was the first ever to use this
+                command ...);
+                these bugs also brought to light errors in the subroutine
+                calls used by the VAlues and the INtegrate command, both
+                of which were fixed
+ 050302 -7.8.1- minute change
+ 061124 -7.8.2- fixed bug in writing ASCII CNS maps (last line should
+                contain 0 and 1 instead of the actual average and
+                st. dev. of the density, since the maps are not scaled)
+ 070913 -7.8.3- adjusted for PDB changes in nucleotide nomenclature
+ 071204 -7.8.4- RS_fit stats file now also includes occupancy-weighted
+                centre-of-gravity coordinates for every residue/entity
+ 080625 -7.8.5- suppress error messages if more than 10 of them
+
+
+ ** START-UP MACRO
+
+ From version 5.1 on, MAPMAN can execute a macro at start-up (whether
+   it is run interactively or in batch mode).  This can be used to
+   execute commands which you (almost) always want to have executed.
+   To use this feature, set the environment variable GKMAPMAN to
+   point to a MAPMAN macro file, e.g.:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ setenv GKMAPMAN /home/gerard/mapman.init
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** MAP SIZE AND NUMBER OF MAPS
+
+ From version 5.0 onward, MAPMAN allocates memory for maps dynamically.
+   This means that you can increase the size and number of maps that the
+   program can handle on the fly:
+
+ 1 - through the environment variables MAPSIZE and NUMMAPS (must be
+     in capital letters !), for example put the following in your
+     .cshrc file:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ setenv MAPSIZE 8000000
+ setenv NUMMAPS 3
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ 2 - by using command-line arguments MAPSIZE and NUMMAPS (need not
+     be in capitals), for example:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ run mapman mapsize 20000000 nummaps 1
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Note that command-line arguments take precedence over environment
+   variables.  So you can set the environment variables in your .cshrc
+   file to "typical" values, and if you have to deal with a map
+   which is bigger than that, you can use the command-line argument(s).
+
+ From version 5.5 on, you can also use ZP_restart from within the
+   program itself to increase memory allocation.  WARNING : all memory
+   is reset, so any unsaved data will be lost !!!
+
+ If sufficient memory cannot be allocated, the program will print
+   a message and quit.  In that case, increase the amount of virtual
+   memory (this will not help, of course, if you try to allocate more
+   memory than can be addressed by your machine (for 32-bit machines,
+   something 2**32-1 bytes, I think), or reduce the size requirements.
+
+ MAPMAN needs space for NUMMAPS + 1 maps.
+
+ ** INTRODUCTION
+
+ MAPMAN is a program for manipulation of electron-density
+   files.  Its applications comprise:
+ 
+ 1 - map exchange among different machines through intermediate
+     EZD files
+ 2 - conversion of maps produced by different programs
+ 3 - producing DSN6-files for "O"/FRODO (a la MAPPAGE or BRIX)
+ 4 - simple mathematics on maps
+ 5 - combination of different maps
+ 6 - peak picking
+ 7 - creating BONES skeletons
+ 8 - swap bytes on VAX maps
+
+ MAPMAN allows you to work with several maps simultaneously !
+   The wild-card character "*" can be used for most single-map
+   options if you want to carry out an operation for all maps
+   in memory.
+
+ When you read a map, you give it a name by which you can
+   refer to it later.  All names are converted to uppercase,
+   so "m1" and "M1" are the same maps !  MAPMAN checks that
+   you don't use duplicate map names.
+
+ MAPMAN is command-driven; the first TWO letters of each command
+   are unique (so you don't have to type the rest); the commands
+   are automatically converted to uppercase, so no worries there
+   either.
+
+ Parameters to commands may be supplied on the same line as the
+   command itself.  MAPMAN will prompt you for the values of any
+   parameters that were not supplied in this way.
+
+ MAPMAN runs in interactive mode by default.  This means that if
+ (a) a file can not be opened, MAPMAN will ask you what to do
+ (b) if you delete a map which has unsaved changes, MAPMAN will
+     ask you if you're absolutely sure
+ (c) if you quit and there are maps with unsaved changes, MAPMAN
+     will ask you if you really want to quit
+
+ You may run MAPMAN in batch mode by supplying the command line
+   option -b (or -batch).  In that case, MAPMAN will crash if she
+   can't open a file and any unsaved changes (with QUIT or
+   DELETE) are lost forever.  You may want to use this mode if
+   you run MAPMAN in batch (using an input script).
+
+ NOTE: all output files are opened as "UNKNOWN", which means that
+   any existing files will be overwritten !
+
+ ** GRID, ORIGIN, EXTENT
+
+ Grid, origin, extent - what do all these numbers mean ? A brief explanation:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Fm> Grid .................       224       104       120
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ A map is simply a three-dimensional array. Grid is the number of divisions   
+   along the axes of one entire unit cell. So, in this case, the a ("x")
+   direction has 224 divisions (from 0 to 223), b ("y") has 104, and c ("z") has
+   120. These divisions are typically chosen automatically by the program that
+   calculates the map, and usually such as to get a grid spacing equal to a   
+   fraction f times the resolution (f is usually 1/4 or 1/3). The grid spacing  
+   you can calculate by dividing a cell axis length by its grid size. E.g., for
+   the a axis, it would be 40.81 A (see below) / 224 which is ~0.18 A. Since the
+   resolution is 0.54 A it means that the grid spacing is ~1/3 of the resolution.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Fm> Origin ...............       -30       -13       -50
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ This is the point in space where the map begins, i.e. the smallest a, b and c
+   values. If your map would have contained a complete unit cell, these three
+   numbers would all have been zero. In this case they aren't because the map has
+   been carved out such that it covers the molecule.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Fm> Extent ...............       175       142       165
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ The extent is the number of grid points that the map contains in all three
+  directions. You can calculate how many points are in the map by multiplying
+  these three numbers. Note that the end point of the map is equal to (extent +
+  origin - 1) for all directions. For instance, the end point in the c direction
+  here is: 165 + (-50) - 1 = 114.
+
+ You can now calculate the fractional coordinates of any point in the map as
+   follows: fract = (point + origin - 1) / grid. For instance, grid point number
+   66 along b would be: 66 + -13 - 1 / 104 = 0.500.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Fm> Fast, medium, slow....         X         Y         Z
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ This is a technical detail - don't worry about it.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Fm> Cell axes ............     40.81     18.50     22.36
+ Fm> Cell angles ..........     90.00     90.46     90.00
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ The cell constants (needed to convert fractional to cartesian and vice versa).
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Fm> Prod .................     48.46
+ Fm> Plus .................        70
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Technical details (see elsewhere in the MAPMAN manual if you really want
+   to know more).
+
+ ** FORMATS
+
+ At present, the following map formats are supported:
+
+ Input  formats : ( PROTEIN FFT-Y TENEYCK2 CCP4 X-PLOR OLDEZD MASK NEWEZD 
+  BINXPLOR BRICK DSN6 3DMATRIX TNT PHASES FSMASK BRIX XPLOR CNS EZD EM08 
+  OMAP MPI AMBER) 
+
+ Output formats : ( CCP4 OLDEZD MASK NEWEZD ENVELOPE X-PLOR DSN6 BRIX 
+  XPLOR CNS EZD AMORE OMAP TURBO MPI) 
+
+ Some more information about these formats (note that several are
+   "legacy formats" and quite a few are untested):
+ 
+ - 3DMATRIX (ASCII; input only) - this is a file that contains a 3D
+   matrix of numbers and is produced by X-PLOR. It is typically used
+   to store the results of rotation and translation functions. As a
+   user, you need to supply the extent of the grid (the number of
+   points along the three axes) since this cannot be deduced from
+   the file contents. Similarly, you have to provide (real or dummy)
+   cell constants.
+
+ - AMBER (ASCII; input only) - AMBER's interpretation of the ASCII
+   X-PLOR format (almost, but not quite, the same). Untested.
+
+ - AMORE (BINARY; output only) - AMORE-style binary map. Untested.
+
+ - BINXPLOR (BINARY; input only) - binary X-PLOR format (not recommended)
+
+ - BRICK (BINARY; input only) - treated as DSN6
+
+ - BRIX (BINARY; input and output) - similar to DSN6, but has a
+   human-readable first record that contains the cell constants etc.
+
+ - CCP4 (ASCII or BINARY; input and output) - the CCP4 format. Input
+   maps may be ASCCI, but output maps are always BINARY.
+
+ - CNS (ASCII; input and output) - CNS (and X-PLOR) maps (the difference
+   being that CNS maps contain an extra line at the bottom with the
+   average and standard deviation of the electron density values in
+   the map)
+
+ - DSN6 (BINARY; input and output) - the famous O format (and previously
+   Frodo) as produced by MAPMAN and loads of old MAPPAGE and BRICK-ing
+   programs
+
+ - EM08 (BINARY; input only) - for electron microscopy maps
+   ("KI Stockholm" format). The user needs to provide the number of
+   points along the three axes and the pixel size. Not sure if this
+   actually works.
+
+ - ENVELOPE (BINARY; output only) - CCP4 masks. DOES NOT WORK PROPERLY !
+
+ - EZD (ASCII; input and output) - treated as NEWEZD
+
+ - FFT-Y (BINARY; input only) - annotated in the code as "Ten Eyck
+   style maps". The user needs to supply cell constants, grid size,
+   etc. Not sure if this works and , if so, with what programs.
+
+ - FSMASK (BINARY; input only) - PHASES mask format. Untested.
+
+ - MASK (ASCII; input and output) - MAMA/O style mask (envelope) format
+   (see the MAMA manual). On output, masks are written in compressed
+   O format. On input, all varieties are handled automatically (NEW,
+   OMASK, OEXPLICIT, COMPRESSED, and Alwyn's old format).
+
+ - MPI (BINARY; output only) - for electron microscopy maps ("MPI" format).
+   The user needs to supply the pixel sizes in all three directions.
+   Only the 4 byte per pixel variant is supported. Not sure if this
+   actually works.
+
+ - NEWEZD (ASCII; input and output) - the New E-Z Density format
+   (read by O and sometimes produced by VOIDOO, CNS, and SOLVE)
+
+ - OLDEZD (ASCII; input and output) - an older version of the
+   E-Z Density format
+
+ - OMAP (input and output) - treated as DSN6
+
+ - PHASES (BINARY; input only) - PHASES map format. Untested.
+
+ - PROTEIN (BINARY; input only) - Steigemann's PROTEIN map format.
+   Untested.
+
+ - TENEYCK2 (BINARY; input only) - see FFT-Y (small difference in
+   the file header)
+
+ - TNT (BINARY; input only) - TNT map format. The user needs to supply
+   cell constants etc. Untested.
+
+ - TURBO (BINARY; output only) - Turbo-Frodo variant of the DSN6 format.
+
+ - XPLOR (ASCII; input and output) - treated as CNS
+
+ - X-PLOR (ASCII; input and output) - treated as CNS
+
+ NOTE: only binary XPLOR files produced by 32-bit versions of
+       the program can be read !
+
+ NOTE: if you write a map as a mask file (format MASK or
+       ENVELOPE) you must provide a cut-off to decide between
+       solvent and protein density; the output file will
+       contain zeros and ones.
+
+ NOTE: this program is sensitive to the environment variable
+       CCP4_OPEN.  If this variable has *not* been set, you will
+       not be able to create any CCP4 maps.  If this happens, the
+       program will print a warning message.  To fix this,
+       put the following line in your .login or .cshrc file:
+       setenv CCP4_OPEN UNKNOWN
+
+ NOTE: FORTRAN code for writing MASK and EZD files is available from the
+       O ftp-server (directory pub/gerard/extras/fortran).
+
+ Some examples that may help you recognise ASCII map formats:
+
+ OLDEZD:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+    0    0    0
+   72   72   72
+   72   72  432
+    74.373    74.373   432.373    90.000    90.000   120.000
+MAP (13f6.1)   2.188054E+02
+-495.4 -89.3 138.1   0.0-251.8-349.2-300.5-316.8-373.6-227.4  81.2 219.3  97.5
+  32.5 186.8 292.4 194.9   8.1 -89.3  -8.1 219.3 357.4 219.3 -16.2 -56.9  24.4
+  16.2 -48.7 -89.3-186.8-308.6-259.9 -32.5 138.1 138.1  48.7-105.6-219.3 -56.9
+[...]
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ NEWEZD and EZD:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+EZD_MAP
+! Created by MAPMAN V. 021122/7.5.4 at Thu Feb 27 18:08:44 2003 for gerard
+CELL 74.373 74.373 432.373 90.000 90.000 120.000
+ORIGIN 0 0 0
+EXTENT 72 72 72
+GRID 72 72 432
+SCALE 2.18805374E+02
+MAP
+-495.4 -89.3 138.1 0.0 -251.8 -349.2 -300.5
+-316.8 -373.6 -227.4 81.2 219.3 97.5 32.5
+186.8 292.4 194.9 8.1 -89.3 -8.1 219.3
+[...]
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ MASK (the OMASK variety):
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+.MASK_INPUT
+! Created by MAPMAN V. 021122/7.5.4 at Thu Feb 27 18:09:41 2003 for gerard
+ORIGIN          0          0          0
+EXTENT         72         72         72
+GRID         72         72        432
+CELL    74.3733    74.3733   432.3733    90.0000    90.0000   120.0000
+COMPRESSED
+ 3 3
+ 11 18
+ 21 23
+ 26 27
+[...]
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ CNS, X-PLOR and XPLOR:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+       2
+REMARKS FILENAME="q.q"
+REMARKS Created by MAPMAN V. 021122/7.5.4 at Thu Feb 27 18:10:56 2003 for gerard
+      72       0      71      72       0      71     432       0      71
+ 7.43733E+01 7.43733E+01 4.32373E+02 9.00000E+01 9.00000E+01 1.20000E+02
+ZYX
+       0
+-2.26429E+00-4.08315E-01 6.31032E-01 0.00000E+00-1.15071E+00-1.59614E+00
+-1.37342E+00-1.44766E+00-1.70750E+00-1.03935E+00 3.71195E-01 1.00223E+00
+ 4.45434E-01 1.48478E-01 8.53749E-01 1.33630E+00 8.90869E-01 3.71195E-02
+[...]
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ BINARY map files are usually more difficult to recognise, but sometimes the
+   following Unix command may provide a clue: od -c yourmapfilename | more
+   The command's output for a BRIX file will always start with a line
+   that looks like this (note the string ":-) Origin") :
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+0000000   :   -   )       O   r   i   g   i   n                   0    
+[...]
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ A CCP4 map may contain a line like this (note the string "MAP "):
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+[...]
+0000320   M   A   P     021 021  \0  \0   =   ]   G 217  \0  \0  \0 001
+[...]
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ If nothing works, just try reading the map into MAPMAN with different
+   formats until one of them (if any) gives reasonable results.
+
+
+ ** STARTUP
+
+ MAPMAN welcomes you with the current array dimensions and a
+   list of supported formats for input and output files.  It then
+   gives you a list of all available commands:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ *** MAPMAN *** MAPMAN *** MAPMAN *** MAPMAN *** MAPMAN *** MAPMAN *** 
+
+ Version  - 001130/6.0
+ (C) 1992-2000 Gerard J. Kleywegt & T. Alwyn Jones, BMC, Uppsala (S)
+ User I/O - routines courtesy of Rolf Boelens, Univ. of Utrecht (NL)
+ Others   - T.A. Jones, G. Bricogne, Rams, W.A. Hendrickson
+ Others   - W. Kabsch, CCP4, PROTEIN, E. Dodson, etc. etc.
+
+ Started  - Thu Nov 30 21:53:38 2000
+ User     - gerard
+ Mode     - interactive
+ Host     - sarek
+ ProcID   - 16172
+ Tty      - /dev/ttyq13
+
+ *** MAPMAN *** MAPMAN *** MAPMAN *** MAPMAN *** MAPMAN *** MAPMAN *** 
+
+ Reference(s) for this program:
+
+ *  1 * T.A. Jones & S. Thirup (1986). Using known substructures in
+        protein model building and crystallography. EMBO J 5, 819-822.
+        [http://www.ncbi.nlm.nih.gov/htbin-post/Entrez/query?uid=3709525&form=6&db=m&Dopt=r]
+
+ *  2 * T.A. Jones (1992). A, yaap, asap, @#*?  A set of averaging
+        programs. In "Molecular Replacement", edited by E.J. Dodson,
+        S. Gover and W. Wolf. SERC Daresbury Laboratory, Warrington,
+        pp. 91-105.
+
+ *  3 * G.J. Kleywegt & T.A. Jones (1994).  Halloween ... Masks and
+        Bones. In "From First Map to Final Model", edited by
+        S. Bailey, R. Hubbard and D. Waller.  SERC Daresbury
+        Laboratory, Warrington, pp. 59-66.
+        [http://xray.bmc.uu.se/gerard/papers/halloween.html]
+
+ *  4 * G.J. Kleywegt & T.A. Jones (1996). xdlMAPMAN and xdlDATAMAN -
+        programs for reformatting, analysis and manipulation of
+        biomacromolecular electron-density maps and reflection data
+        sets. Acta Cryst D52, 826-828.
+        [http://www.iucr.ac.uk/journals/acta/tocs/actad/1996/actad5204.html]
+
+ *  5 * G.J. Kleywegt (1996). Making the most of your search model.
+        CCP4/ESF-EACBM Newsletter on Protein Crystallography 32,
+        June 1996, pp. 32-36.
+        [http://xray.bmc.uu.se/usf/factory_6.html]
+
+ *  6 * G.J. Kleywegt & R.J. Read (1997). Not your average density.
+        Structure 5, 1557-1569.
+        [http://www4.ncbi.nlm.nih.gov/htbin-post/Entrez/query?uid=9438862&form=6&db=m&Dopt=r]
+
+ *  7 * G.J. Kleywegt & T.A. Jones (1999). Software for handling
+        macromolecular envelopes. Acta Cryst D55, 941-944.
+        [http://www.ncbi.nlm.nih.gov/htbin-post/Entrez/query?uid=10089342&form=6&db=m&Dopt=b]
+        [http://journals.iucr.org/d/issues/1999/04/00/se0256]
+
+ *  8 * G.J. Kleywegt (1999). Experimental assessment of
+        differences between related protein crystal structures.
+        Acta Cryst. D55, 1878-1857.
+        [http://www.ncbi.nlm.nih.gov/htbin-post/Entrez/query?uid=10531486&form=6&db=m&Dopt=b]
+        [http://journals.iucr.org/d/issues/1999/11/00/se0283]
+
+ *  9 * G.J. Kleywegt & T.A. Jones (2027 ?). Convenient single and
+        multiple crystal real-space averaging. To be published ???
+
+ * 10 * G.J. Kleywegt, J.Y. Zou, M. Kjeldgaard & T.A. Jones (2000).
+        Chapter 17.1.  Around O. Int. Tables for Crystallography,
+        Vol. F. (In press.)
+
+ ==> For manuals and up-to-date references, visit:
+ ==> http://xray.bmc.uu.se/usf
+ ==> For downloading up-to-date versions, visit:
+ ==> ftp://xray.bmc.uu.se/pub/gerard
+
+ *** MAPMAN *** MAPMAN *** MAPMAN *** MAPMAN *** MAPMAN *** MAPMAN *** 
+
+ Allocate maps of size : (    5000000) 
+ Max number of maps    : (          3) 
+
+ Max nr of maps in memory     :          3
+ Max nr of points in map      :    5000000
+ Max nr of picked peaks       :      65536
+ Max size of density buffer   :    1048576
+ Max nr of BONES points       :     500000
+ Max nr of BONES branches     :     500000
+ Max nr of BONES connections  :    1000000
+ Record length for DSN6/BRIX  :        128
+
+ Input  formats : ( PROTEIN FFT-Y TENEYCK2 CCP4 X-PLOR OLDEZD MASK NEWEZD 
+  BINXPLOR BRICK DSN6 3DMATRIX TNT PHASES FSMASK BRIX XPLOR CNS EZD EM08 
+  OMAP) 
+
+ Output formats : ( CCP4 OLDEZD MASK NEWEZD ENVELOPE X-PLOR DSN6 BRIX 
+  XPLOR CNS EZD AMORE OMAP) 
+
+ Initialising : (XVRML - 990924/0.7) 
+ Nr of predefined colours : (        411) 
+
+
+ Symbol START_TIME : (Thu Nov 30 21:53:39 2000) 
+ Symbol USERNAME : (gerard) 
+
+ MAPMAN's options :
+
+ ? (list options)            ! (comment)
+ QUit                        $ shell_command
+ & symbol value              & ? (list symbols)
+ @ macro_file                ZP_restart mapsize nummaps
+ ECho on_off                 # parameter(s) (command history)
+
+ REad map file fmt           WRite map file fmt [cutoff]
+ DElete map                  LIst [map]
+ HIsto map x1 x2 x3 [...]    EXtract map file type plane
+ MOments map                 DH map plot_file nr_bins
+ 1D_proj map file type       2D_proj map file type first last
+
+ MAppage map file            BRix map file
+ SWapbytes brick_file        
+
+ NEw ? (list defaults)       NEw ORigin o1 o2 o3
+ NEw CEll a b c al be ga     NEw EXtent e1 e2 e3
+ NEw GRid g1 g2 g3           NEw SAme oldmap
+ NEw ENcompass oldmap        NEw MAke mapname
+
+ UVw map u v w               SPacegroup map ispcgr
+ LAbel map text              CEll map a b c al be ga
+ PRod_plus map prod plus     RAnge map low high
+ MUltiply map factor         DIvide map factor
+ PLus map value              ODl map odl_file type mode
+ SCale map low high          ZEro map low high
+ NOrmalise map               ERase map e1 .. e6
+ INtegrate map e1 .. e6      FRame map type e1 e2 e3
+ VAlue_at map e1 .. e6       CHange_value map lo hi new
+ WHere_value map value toler 
+
+ SImilarity map1 map2        DUplicate map oldmap
+ ADd map map_to_add          MIn_max map1 map2
+ OPerate map oper map2       COrrelate map1 map2
+ MStats map mask_map cutoff  QInvert map oldmap
+ PAste map1 e1 .. e6 map2 e1 e2 e3
+ ROughness map oldmap npos nneg box plot_file nr_bins
+
+ BOnes SKel map base step nr_spares
+ BOnes COnnect file id mc    BOnes ?   
+ BOnes PRune file mc bfac    
+
+ PIck PDb res atom first     PIck LImits e1 .. e6
+ PIck LEvel threshold        PIck ?
+ PIck PEaks map file format  PIck INtegrate map file format
+ PIck HIgh map file format   
+
+ PEek VAlue map pdb_in pdb_out mode
+ PEek CUbe map pdb_in pdb_out mode nr_points
+ PEek SPhere map pdb_in pdb_out mode radius
+
+ FIlter ?                    FIlter EDge map a b
+ FIlter MEdian map size      FIlter AVerage map size
+ FIlter MInimum map size     FIlter MAximum map size
+ FIlter SMooth map           FIlter SIgnal/noise map size
+ FIlter GRadient map         FIlter LAplace map
+ FIlter KHighest map size k  FIlter KLowest map size k
+ FIlter VAr_thr map size a b FIlter STat_diff map size a b c
+
+ VRml SEtup central_atom max_dist backgr_col default_col
+ VRml INit [filename]                 VRml COlour_list
+ VRml TRace pdb_file [colour]         VRml BOx map [colour] [line_solid]
+ VRml CEll map [colour] [line_solid]  [x_offset] [y_offset] [z_offset]
+ VRml DOts map low high [colour]      VRml DRaw map level [colour]
+ VRml CLose_file                      
+
+ Max nr of maps in memory     :          3
+ Max nr of points in map      :    5000000
+ Max nr of picked peaks       :      65536
+ Max size of density buffer   :    1048576
+ Max nr of BONES points       :     500000
+ Max nr of BONES branches     :     500000
+ Max nr of BONES connections  :    1000000
+ Record length for DSN6/BRIX  :        128
+
+ Execute initialisation macro : (/home/gerard/mapman.init) 
+ ... Opened macro file : (/home/gerard/mapman.init) 
+ ... On unit : (      61) 
+ Command > (! MAPMAN initialisation macro) 
+ Command > (echo on) 
+        1  @ /home/gerard/mapman.init
+        2  ! MAPMAN initialisation macro
+        3  echo on
+ ... End of macro file
+ ... Control returned to terminal
+ MAPMAN > 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** PROD/PLUS PROBLEMS ?
+
+ A very frequently-asked question is the following:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ I'm getting this error with MAPMAN converting XPLOR maps to O for the
+ first time:
+ 
+  ERROR --- PROD > 327.66; reset prod/plus yourself !
+  Or multiply your map with 10 or 100 or ...
+  This error ONLY affects the MAppage command,
+  not the BRix command !
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ The value of PROD and PLUS are used to scale the density
+    values to integer values between 0 and 255 (which are subsequently
+    stored in the DSN6 file): PROD = 255.0 / dynamic_range_of_map .
+
+ In the DSN6 format, there are only two bytes available to
+    store the value of 100*PROD, so PROD can only lie between
+    -327 and +327 (roughly).
+
+ If your map has a very small dynamic range, the required
+    value of PROD may well be bigger than this, but that means
+    it cannot be stored.
+
+ Easiest fix: use the NOrmalise command in MAPMAN; this will
+    give your map an average of 0 and a sigma of 1; then MUltiply
+    the map by 10 (which gives you a sigma of 10); then MAppage
+    your map (and remember to contour at a level of 10).
+
+ How does using the PROD/PLUS command help in fixing this problem ?
+   It doesn't ! E.g., forcing PROD to be 327 applies a "ceiling"
+   function to your density !!!
+
+ NOTE: BRIX files do not suffer from this problem; only "DSN6"
+   (old-fashioned "mappage") files.
+
+
+ ** GENERAL COMMANDS
+
+ ## ? - list options
+ gives a list of the options and the current dimensioning
+    of the program
+
+ ## ! - comment
+ does nothing (use this for comments in input scripts and macros)
+
+ ## $ - execute shell command
+ execute a shell command (does not necessarily work on all
+    machines !)
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > $ xterm &
+ MAPMAN > $ ls -FartCos m1*E
+3435 -r--r--r--   1 gerard   1758288 Jun  2 23:54 m1_start.E
+1634 -rw-r--r--   1 gerard    836224 Jun  8 13:46 m1_startx.E
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## #
+ Command history. Possible uses (blank spaces are optional):
+ - # ? => list history of commands
+ - # ! => ditto, but without numbers (handy for copying into macros)
+ - # ON => switch command history on
+ - # OFf => switch command history off
+ - # # => repeat previous command
+ - # 14 => repeat command number 14 from the list
+ - # 0 => repeat previous command
+ - # -1 => repeat penultimate command, etc.
+ - # 7 more => repeat command number 7, but add "more" to it
+        (e.g., if command 7 was "$ ls" you could type "#7 -FartCos"
+        to get "$ ls -FartCos")
+
+ ## @ - execute MAPMAN macro
+ execute a macro
+
+ Example of a MAPMAN macro:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ! mappage10.mapmac
+ !
+ ! read a map, set sigma level to 10.0, mappage for O
+ !
+ ! enter map file name, then map type
+ read m1
+ !
+ ! normalise map to get sigma level at 1.0
+ norm m1
+ !
+ ! multiply by 10 to get sigma level at 10.0
+ multiply m1 10
+ !
+ ! enter O map file name
+ mappage m1
+ !
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ When executed, this gives:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > @mappage10.mapmac
+ ... Opened macro file : (mappage10.mapmac) 
+ ... On unit : (      61) 
+ > (!) 
+ > (! enter map file name, then type) 
+ > (read m1) 
+ File name ? (not_defined) /nfs/scr_uu1/gerard/scratch/all4_amore.map
+ Format ? (CCP4) 
+ Read header
+ ...
+ CPU total/user/sys :       3.3       1.9       1.4
+ > (!) 
+ > (! normalise map) 
+ > (norm m1) 
+ Normalise : (M1) 
+ Subtract average : (  2.566E-07) 
+ Divide by sigma  : (  1.407E+00) 
+ ...
+ CPU total/user/sys :       3.9       3.9       0.0
+ > (!) 
+ > (! multiply by 10 to get sigma level at 10.0) 
+ > (multiply m1 10) 
+ Multiply : (M1) 
+ ...
+ CPU total/user/sys :       1.9       1.9       0.0
+ > (!) 
+ > (! enter O map file name) 
+ > (mappage m1) 
+ Brick file ? (10) /nfs/scr_uu1/gerard/scratch/q.E
+ Opening DSN6 file : (/nfs/scr_uu1/gerard/scratch/q.E) 
+ Little-endian machine; will swap bytes
+ Scale constant for cell : (      80) 
+ Pages along X, Y and Z  : (      21       21       38) 
+ Nr of records written : (      16759) 
+ CPU total/user/sys :       8.0       6.3       1.7
+ > (!) 
+ ... End of macro file
+ ... Control returned to terminal
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## & - manipulate symbols
+
+ This command can be used to manipulate symbols.  These are probably
+   only useful for advanced users who want to write fancier macros.
+   The command can be used in three ways:
+ (1) & ? -> lists currently defined symbols
+ (2) & symbol value -> sets "SYMBOL" to "value"
+ (3) & symbol -> prompts the user to supply a value for "SYMBOL"
+    (even if the program is executing a macro)
+
+ A few symbols are predefined:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > & ?
+ Nr of defined symbols : (       4) 
+ Symbol PROGRAM : (MAPMAN) 
+ Symbol VERSION : (960517/4.6) 
+ Symbol START_TIME : (Fri May 17 20:26:49 1996) 
+ Symbol USERNAME : (gerard) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ The symbol mechanism is fairly simplistic and has some limitations:
+ - max length of a symbol name is 20 characters
+ - max length of a symbol value is 256 characters
+ - max number of symbols is 100
+ - symbols can not be deleted, but they can be redefined
+ - symbol values are accessed by supplying $SYMBOL_NAME as an
+   argument on the command line; the line that you type on the terminal
+   (or in a macro) is parsed once; if there are additional parameters
+   which the program prompts you for, you cannot use symbols for those
+ - only one substitution per argument (e.g., "$file1 $file2" will
+   lead to a substituion of the entire argument by the value of
+   symbol FILE1 only !)
+ - command names (first argument on any command line) cannot be
+   replaced by a symbol (e.g.: "$command $arg1 $arg2" is not valid)
+ - symbols may be equated to each other, e.g. "& file2 $file1" will
+   give FILE2 the same value as FILE1
+ - symbol substitution is not recursive (e.g., if you set the value
+   of FILE2 to be "$file1", any reference to $FILE2 will be replaced
+   by "$file1", not by the value of FILE1
+ - symbols on comment lines (starting with "!") are not expanded
+ - symbols on system command lines (starting with "$") are not expanded
+
+ ## QUit - stop the program
+ stop working with MAPMAN; if you run interactively, MAPMAN
+    will check if there are any unsaved changes, and if so,
+    ask you if you really want to quit
+
+ ## ZP_restart - restart the program with different memory allocation
+ if you have started the program with too little memory allocated,
+   you can restart it with this command.  Provide new values for
+   MAPSIZE and NUMMAPS.  (The mnemonic "ZP" may be counter-intuitive,
+   but the Z and P keys are far apart on a QWERTY keyboard so the
+   chances of accidentally typing this command are reduced.)
+ WARNING : all memory is reset, so any unsaved data will be lost !!!
+
+ ## ECho - toggle command-line echo on/off
+ if you run the program with scripts, it is sometimes useful to see
+   input commands echoed.  The parameter to the ECho command may be
+   ON, OFf, or ? (to list the echo status).
+
+ ## REad - read a map into memory
+ read a map into memory.  You have to supply a unique name
+    for the map, the file name and the format type.  If you
+    enter "?" for the format type you get a list of currently
+    supported input maps.
+
+ NOTE: binary XPLOR maps can only be read if they were
+          created by an XPLOR version which uses 32 bits
+          for reals and integers !!!
+
+ NOTE: you may also read old mappaged files (BRICK or
+          DSN6 files) !  This enables you to convert ancient
+          VAX PROTEIN maps into UNIX CCP4 format:
+ - create or read from tape your old PROTEIN map
+ - run AMAPPAGE on your VAX
+ - FTP (binary) the DSN6 file to your UNIX box
+ - run MAPMAN and do: SWapbytes old.map
+ -                    REad M1 old.map dsn6
+ -                    WRite M1 new.E ccp4
+
+ NOTE: from version 5.3, BRIX maps can also be read back into MAPMAN
+
+ If you have saved the full range of electron density
+          values when you mappaged the file, you should be able
+          to get correlation coefficients of ~0.998 between the
+          original map and the new CCP4 map !
+          Note that the spacegroup is set to P1 by default.
+ Note that the program knows if it should do a swap-bytes
+          on the header record of the brick file, so you can read
+          BRICK files made on any type of machine into MAPMAN
+          running on any type of machine.
+ Sometimes the cell constants are slightly altered when
+          moving from VAX to UNIX (round-off error plus intermediate
+          conversion to integers); in such cases, use the CELL
+          command to get them right again.
+
+ From version 4.3 onwards, X-PLOR version 4 maps are recognised by
+   the fact that they have the original average and sigma density
+   stored at the end of the map.  If these values are found, the
+   map will be changed such that the original density values are
+   restored (in e-/A3).
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > re m1 x ?
+ Supported formats : ( PROTEIN FFT-Y TENEYCK2 CCP4 X-PLOR EZD MASK NEWEZD 
+  BINXPLOR BRICK DSN6 3DMATRIX TNT) 
+ MAPMAN > re m1 p21_start.E ccp4
+ Read header
+ Filename : (p21_start.E) 
+...
+ Fourier parameters as read from the data-set
+          Origin ................................    0    0    0
+          Extent ................................   70   48   88
+          Grid ..................................   70   48   88
+          uvw (fast, medium, slow) ..............    Z    X    Y
+
+ Header done
+ Map read into memory
+ CPU total/user/sys :       2.2       1.6       0.5
+ MAPMAN > re m2 map.tnt tnt
+ Read header
+ Input map : (map.tnt) 
+ Title : (*Density map produced by RFACTOR) 
+ Title : (*Density map calculated by inverting coefficients.) 
+ Title : (*Coefficients were of type 2FO-FC) 
+ Title : ( Map file PUNCHed on 11-Mar-94 11:54:15.) 
+ Fast, medium, slow axes ? (       1        2        3) 
+ Number of sections ? (      10) 170
+ Unit cell constants ? ( 100.000  100.000  100.000   90.000   90.000   
+  90.000) 109.900   138.800    79.900    90.000   116.500    90.000
+
+ Parameters as read from the map file
+ Origin ......................        -39         0       -62
+ Extent ......................        232       167       170
+ Grid ........................        160       200       120
+ Cell axes ...................     109.90    138.80     79.90
+ Cell angles .................      90.00    116.50     90.00
+ UVW (fast, medium, slow) ....          X         Y         Z
+
+ Header done
+ Not in core
+ Reading levels ...
+ Level number : (      10) 
+ Level number : (      20) 
+...
+ Level number : (     160) 
+ Level number : (     170) 
+ Sum of density in map : (  9.406E+05) 
+ Map read into memory
+ Closing TNT map on unit : (       1) 
+ CPU total/user/sys :      32.0      29.4       2.6
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > re m4 q.xplor x-plor
+ Read header
+ Input map : (q.xplor) 
+ Title : (REMARKS FILENAME="q.xplor") 
+ Title : (REMARKS Created by MAPMAN V. 951113/4.3 at Mon Nov 13 19:50:32 
+  1995 for user ger) 
+ ...
+ Header done
+ Not in core
+ Reading levels ...
+ Level number : (      10) 
+ Level number : (      20) 
+ Level number : (      30) 
+ Level number : (      40) 
+ Level number : (      50) 
+ Level number : (      60) 
+ This is an X-PLOR version 4 map !
+ Average density : (  1.411E-04) 
+ Sigma level     : (  6.193E+00) 
+ Restoring original density values (e-/A3)
+ Sum of density in map : (  1.689E+02) 
+ Map read into memory
+ Closing XPLOR map on unit : (       1) 
+ CPU total/user/sys :       2.3       2.2       0.1
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > re m1 ../test/trimer1.em ?
+ Supported formats : ( PROTEIN FFT-Y TENEYCK2 CCP4 X-PLOR OLDEZD MASK 
+  NEWEZD BINXPLOR BRICK DSN6 3DMATRIX TNT PHASES FSMASK BRIX XPLOR CNS EZD 
+  EM08 OMAP MPI) 
+ MAPMAN > re m1 ../test/trimer1.em mpi
+ Opening MPI map : (../test/trimer1.em) 
+ Reading header ...
+ # X/Y/Z : (         32          32          61) 
+ Comment : ($) 
+ EM data : (  0.000E+00   0.000E+00   0.000E+00   0.000E+00   0.000E+00   
+  0.000E+00   0.000E+00   0.000E+00   0.000E+00   0.000E+00   0.000E+00   
+  0.000E+00   0.000E+00   0.000E+00   0.000E+00   0.000E+00   0.000E+00   
+  0.000E+00   0.000E+00   0.000E+00   0.000E+00   0.000E+00   0.000E+00   
+  0.000E+00   0.000E+00   0.000E+00   0.000E+00   0.000E+00   0.000E+00   
+  0.000E+00   0.000E+00   0.000E+00   0.000E+00   0.000E+00   0.000E+00   
+  0.000E+00   0.000E+00   0.000E+00   0.000E+00   0.000E+00) 
+ Bytes per pixel : (          4) 
+ Pixel size (A) ? (   7.580) 
+ Cell axes   (A) : ( 758.000  758.000  758.000) 
+ Cell angles (d) : (  90.000   90.000   90.000) 
+ Grid axes (pts) : (     100      100      100) 
+ Origin    (pts) : (       0        0        0) 
+ Extent    (pts) : (      32       32       61) 
+ Points in map : (      62464) 
+ Reading data ...
+ File read OK
+ Spacegroup set to P1
+ Map read into memory - calculating statistics
+ Sum of density in map : (  4.206E+01) 
+ Requested dynamic range : -1.1687E+00  1.4186E+00
+ Value of Prod and Plus  :  9.8558E+01     115
+ Actual dynamic range    : -1.1668E+00  1.4205E+00
+ MAPMAN > li m1
+ Nr of maps in memory : (       1) 
+
+ Map   1     = M1
+ File        = ../test/trimer1.em
+ Grid        =        100       100       100
+ Origin      =          0         0         0
+ Extent      =         32        32        61
+ Cell        =    758.000   758.000   758.000    90.000    90.000    90.000
+ UVW         =          2         1         3
+ Spcgrp      =          1      Nr of points =      62464
+ Density min = -1.169E+00      Max          =  1.419E+00
+ Average     =  6.733E-04      Sigma        =  2.376E-01
+ Variance    =  5.644E-02
+ Mappage Prod=  9.856E+01      Plus         =        115
+ Dyn. range  = -1.167E+00      To           =  1.420E+00
+ Cell vol.   =  4.355E+08      Voxel vol.   =  4.355E+02
+ Grid vol.   =  2.720E+07      %Cell vol.   =       6.25
+ Origin frac =    0.00000   0.00000   0.00000
+ Origin Cart =      0.000     0.000     0.000
+ Top frac    =    0.31000   0.31000   0.60000
+ Top Cart    =    234.980   234.980   454.800
+ Spacing     =      7.580     7.580     7.580
+ Top         =         31        31        60
+ Changes     = F
+ Label       = Read from ../test/trimer1.em
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## WRite - write map to disk
+ write a map to disk.  You have to supply the map name, the
+    file name, the format type (or "?" for a list) and, if you
+    are writing the map as a mask, a cut-off value: all points
+    which have a density greater than the cut-off will be set
+    to "1" in the mask; the others to "0".  Masks are written
+    in COMPRESSED format; if you should need the old format,
+    convert the mask with MAMA afterwards.  Note that "MASK"
+    creates and O/RAVE-style mask, whereas "ENVELOPE" creates
+    a CCP4 mask ("mode 0 map").
+
+ From version 4.3 onwards, ASCII X-PLOR maps can also be written
+    (in the format of X-PLOR version 4).
+
+ From version 7.3.2 - when writing a map as a mask there is a new
+    comparator parameter (<, LT, >, GT, <=, LE, >=, or GE; default >)
+    to determine which points should be set
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > wr m3 x ?
+ Supported formats : ( CCP4 OLDEZD MASK NEWEZD ENVELOPE X-PLOR DSN6 BRIX 
+  XPLOR CNS EZD AMORE OMAP TURBO) 
+ MAPMAN > wr m3 rscc8.mask mask 0.8 <=
+ Writing MASK ...
+ Set mask points if map value <=  8.0000E-01
+ Nr of mask points set : (     725474) 
+ Writing mask (compressed O format)
+ Grid points : (    1191330) 
+ Stretches   : (      33993) 
+ Mask points : (     725474) 
+ Mask write OK
+ CPU total/user/sys :       1.7       1.7       0.0
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## DElete - remove map from meory
+ remove a map from memory
+
+ ## LIst - list map properties
+ list properties of one or all maps in memory.  These include:
+ - data from the map header
+ - statistics regarding the density values in the map
+ - data pertaining to the volume of the cell and the map
+ - current mappage PROD/PLUS and dynamic range
+
+ ## LAbel - enter map comment
+ enter a comment for a map (enclose in "double quotes" if the
+    comment contains spaces)
+
+ ## CEll - change cell constants
+ change the unit cell constants of a map (sometimes needed when
+    reconstructing old BRICK files).  No checks are made.  This is
+    a potentially dangerous operation ...
+
+ ## MAppage - make map file for O
+ create an "O"/FRODO DSN6/brick file, using the current values
+    of PROD and PLUS.
+ Note: from version 5.3 on your DSN6 files may have more than 32767
+    records !  (This was a relic from the PDP11 days.)
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > map m1 p21_start.map
+ Opening DSN6 file : (p21_start.map) 
+ Big-endian machine; will NOT swap bytes
+ Pages along X, Y and Z  : (       9        6       11) 
+ Nr of records written : (        649) 
+ CPU total/user/sys :       3.8       3.3       0.4
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## BRix - make map file for O
+ same as MAppage, but creates a paged density file in Morten's
+    BRIX format.  If you type "head -10 brix_file", you'll see
+    the cell constants, grid, etc. of the map.
+ BRIX maps can be used with the Map_* commands in O just as
+    plain mappaged files.
+ Note: from version 5.3 on your DSN6 files may have more than 32767
+    records !  (This was a relic from the PDP11 days.)
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > br m1 m1_1.brix
+ Opening DSN6 file : (m1_1.brix) 
+ Little-endian machine; will swap bytes
+ Pages along X, Y and Z  : (      11       11       10) 
+ Nr of records written : (       1211) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## PRod_plus - set values for MAPPAGE
+ set the values for PROD (real) and PLUS (integer) for any or
+    all maps (will be used for the next MAPPAGE)
+
+ ## RAnge - set values for MAPPAGE
+ define a range of density values at which you are likely to
+    contour your data.  MAPMAN will figure out appropriate values
+    for PROD and PLUS from this range.  (See recipe 3.3 !)
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > range m1 -50 100 
+ Range : (M1) 
+ Requested dynamic range : -5.0000E+01  1.0000E+02
+ Value of Prod and Plus  :  1.7000E+00      85
+ Actual dynamic range    : -5.0000E+01  1.0000E+02
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## DRange - cap dynamic range for MAPPAGE
+ define a range of density values at which you are likely to
+    contour your data.  MAPMAN will figure out appropriate values
+    for PROD and PLUS from this range. This command differs from
+    RAnge in that it will only modify the lower/upper bound if it is
+    lower/higher than the value you provide as arguments here.
+    For instance, if you impose a RAnge of -2 to +5 on a map with
+    dynamic range -1 to +7, it will end up being -2 to +5. If you use
+    the DRange command, it will be set to -1 to +5.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > drange m1 -50 100 
+ Cap dynamic range for map : (M1) 
+ ... Lower before : ( -6.323E+01) 
+ ... Upper before : (  8.682E+01) 
+ Requested dynamic range : -5.0000E+01  8.6821E+01
+ Value of Prod and Plus  :  1.8637E+00      93
+ Actual dynamic range    : -4.9899E+01  8.6922E+01
+ ... Lower after  : ( -4.990E+01) 
+ ... Upper after  : (  8.692E+01) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## MUltiply - multiply map by a constant
+ multiply all density values with a certain factor.  The density
+    statistics AND the values of PROD and PLUS are automatically
+    updated.
+
+ ## DIvide - divide map by a constant
+ divide a map by a factor (NOT equal to zero).  The density
+    statistics AND the values of PROD and PLUS are automatically
+    updated.
+
+ ## PLus - add a constant to map
+ add a number to all density values (use a negative number to
+    subtract). The density statistics AND the values of PROD and
+    PLUS are automatically updated.
+
+ ## ODl - make ODL file for O
+ make an ODL file which shows the boundaries of your map
+    OR of your unit cell when displayed in O.
+    Supply:
+ o  the name of the map
+ o  the name of the ODL output file
+ o  the type (Box or Cell)
+ o  the drawing mode (Line or Solid)
+ Draw it in O by typing: "draw mymap.odl".  This is useful
+    to have on the screen since it prevents you from trying to
+    contour the map outside its boundaries.  If you want to
+    change the name of the graphics object or its colour,
+    you have to edit the file.
+
+ ## FRame - convert map indices
+ conversion between map indices, fractional and Cartesian coordinates.
+   This may be useful for the PIck LImits, ERase, INtegrate, Value_at
+   and PAste commands.
+
+ Note that indices are assumed to start at zero (i.e., index value of
+   zero corresponds to a value of zero for the fractional coordinate).
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > fr            
+ Which map ? (M1) 
+ Input Indices/Fractional/Cartesian (I/F/C) ? (I) 
+ Value for X ? (0.0000000E+00) 20
+ Value for Y ? (0.0000000E+00) 40
+ Value for Z ? (0.0000000E+00) 77
+ Indices    : (      20       40       77) 
+ Fractional : (   0.333    0.417    0.642) 
+ Cartesian  : (   3.017   31.292   57.333) 
+ Point lies inside the map
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > fr m1 fr 0.333    0.417    0.642
+ Fractional : (   0.333    0.417    0.642) 
+ Indices    : (      20       40       77) 
+ Cartesian  : (   2.994   31.317   57.363) 
+ Point lies inside the map
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > fr m1 cart 3.017   31.292   57.333
+ Cartesian  : (   3.017   31.292   57.333) 
+ Fractional : (   0.333    0.417    0.642) 
+ Indices    : (      20       40       77) 
+ Point lies inside the map
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## INtegrate - sum part of map
+ sum the density values in a part of a map.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > in m1 10 50 20 60 30 70
+ Limits : (      10       50       20       60       30       70) 
+ Integrate : (M1) 
+ Nr of points summed : (      68921) 
+ Sum of density      : (  1.105E+02) 
+ Sum of | density |  : (  5.356E+04) 
+ Average zeroed density   : (  1.603E-03) 
+ Average | zeroed dens |  : (  7.771E-01) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## ERase - zero part of map
+ set the density in a part of the map to zero.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > er m1 10 50 20 60 30 70
+ Limits : (      10       50       20       60       30       70) 
+ Erase : (M1) 
+ Nr of points set to zero : (      68921) 
+ Sum of zeroed density    : (  1.105E+02) 
+ Sum of | zeroed dens |   : (  5.356E+04) 
+ Average zeroed density   : (  1.603E-03) 
+ Average | zeroed dens |  : (  7.771E-01) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## WHere_value - locate specific density values in map
+ this option will list all map points whose electron density value
+   is equal to a value you provide (given a tolerance which you
+   provide as well).
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > where m1 -66 0.3
+ Command > (where m1 -66 0.3) 
+ Density value : ( -6.600E+01) 
+ Tolerance     : (  3.000E-01) 
+ Checking map : (M1) 
+ Value @ X, Y, Z     16    44    33 =  -6.6265E+01
+ Value @ X, Y, Z     34    66     1 =  -6.6265E+01
+ Value @ X, Y, Z     66    11    31 =  -6.6265E+01
+ Value @ X, Y, Z     84    99    63 =  -6.6265E+01
+ Nr of points listed : (          4) 
+ Nr of points in map : (     704000) 
+ Percentage listed   : (   0.001) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## VAlue_at - get density values at points in map
+ list the electron-density values at a block of points.  If the limits you
+   supply imply that there are more than 50 points to be listed, the
+   program asks if you really want to see these.  Any limits you provide
+   that are outside the map are reset to the lower or upper bound of the
+   corresponding map limits.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > va m1 -20 -20 -20 -20 -20 -20
+ Limits : (       8        8       20       20      -15      -15) 
+ List values : (M1) 
+ Nr of map points to list : (          1) 
+
+     X    Y    Z      Density
+     8   20  -15   0.0000E+00
+
+ Nr of points listed : (          1) 
+ Sum of density      : (  0.000E+00) 
+ Sum of | density |  : (  0.000E+00) 
+ Average density     : (  0.000E+00) 
+ Average | dens |    : (  0.000E+00) 
+ MAPMAN > va m1 40 42 70 72 40 42
+ Limits : (      40       42       70       72       40       42) 
+ List values : (M1) 
+ Nr of map points to list : (         27) 
+
+     X    Y    Z      Density
+    40   70   40   8.1301E+00
+    40   70   41   9.2141E+00
+    40   70   42   1.0705E+01
+    40   71   40   8.1301E+00
+    40   71   41   9.6206E+00
+    40   71   42   1.1789E+01
+    40   72   40   5.2846E+00
+    40   72   41   7.8591E+00
+    40   72   42   1.1111E+01
+
+     X    Y    Z      Density
+    41   70   40   1.3008E+01
+    41   70   41   1.3008E+01
+    41   70   42   1.3686E+01
+    41   71   40   1.3008E+01
+    41   71   41   1.3008E+01
+    41   71   42   1.4092E+01
+    41   72   40   1.0705E+01
+    41   72   41   1.2195E+01
+    41   72   42   1.4092E+01
+
+     X    Y    Z      Density
+    42   70   40   1.5176E+01
+    42   70   41   1.5447E+01
+    42   70   42   1.5176E+01
+    42   71   40   1.5176E+01
+    42   71   41   1.5447E+01
+    42   71   42   1.5176E+01
+    42   72   40   1.4905E+01
+    42   72   41   1.5447E+01
+    42   72   42   1.5176E+01
+
+ Nr of points listed : (         27) 
+ Sum of density      : (  3.358E+02) 
+ Sum of | density |  : (  3.358E+02) 
+ Average density     : (  1.244E+01) 
+ Average | dens |    : (  1.244E+01) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## PEek VAlue|CUbe|SPhere - extract density values at atomic positions
+ with the PEek commands you can feed MAPMAN a map and a PDB file, and
+   it will extract information concerning the (integrated, r.m.s., ...)
+   density at the atomic positions (of course, this also works for
+   PDB files containing peaks picked earlier by MAPMAN).  The value
+   will be inserted in the B-factor field, and a new PDB file will be
+   created.  Note that the B-factor field has only 6 columns (i.e.,
+   you may have to rescale your map to get reasonable numbers).
+
+ With the PEek VAlue command, the density at the atomic centre will be
+   extracted; the "mode" parameter may be:
+ * N = Nearest - this will extract the value at the nearest grid point
+ * I = Interpolate - this will do linear interpolation of the 8 grid points
+       surrounding each atom
+ * S = Spline - this will do spline interpolation using a 4 * 4 * 4 cube
+       surrounding each atom
+
+ With the PEek CUbe command, density in the neighbourhood of atomic
+   positions will be extracted; the "mode" parameter may be:
+ * I = Integrate - simply add up the density values inside the cube
+ * M = Mean - calculate the average of the density values inside the cube
+ * A = Absolute integral - add up the absolute density values
+ * R = Rms - calculate the root-mean-square density
+ You need to supply the number of grid points around each atom that
+   will be included in the calculations (e.g., 1 or 2).  Using a
+   margin of 1 grid point means that 27 grid points will be considered
+   (in general: (1+2*N)**3, where N is the number you supply).
+ Note that the affected bit of the map is cubic only for cubic cells;
+   in general it will be a parallellopiped.
+
+ The PEek SPhere command is very similar to the PEek CUbe command, except
+   that a sphere of points around each atom is used.  You must supply the
+   mode (same options as for PEek CUbe), and the radius around each atom.
+
+ In the following example, we use a 1.5 A anomalous difference map to
+   locate iodide ions that were part of the crystallisation soup and to
+   get a rough estimate of their occupancies. First read the map and
+   multiply it by -1 to get positive rather than negative peaks:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > read m1 fourier_ano.map cns
+ Read header
+ Input map : (fourier_ano.map) 
+ Title : ( REMARKS FILENAME="fourier_ano.map") 
+ Title : ( REMARKS resolution: 500. - 1.5) 
+ Title : ( REMARKS sg= P2(1)2(1)2) 
+ Title : ( REMARKS a= 164.577 b= 110.98 c= 56.295 alpha= 90 beta= 90 
+  gamma= 90) 
+ Title : ( REMARKS map is scaled to sigma units : true) 
+ Title : ( REMARKS map 1 : anomalous difference map:) 
+ Title : ( REMARKS  fom * [ FOBS+  -  FOBS- ] * exp(i [ phase -90 ] )) 
+ [...]
+ Level number : (     120) 
+ Closing XPLOR map on unit : (       1) 
+ Map read into memory - calculating statistics
+ Sum of density in map : (  1.669E+00) 
+ Requested dynamic range : -1.8609E+01  5.0324E+00
+ Value of Prod and Plus  :  1.0786E+01     201
+ Actual dynamic range    : -1.8635E+01  5.0064E+00
+ CPU total/user/sys :      25.9      25.2       0.7
+ MAPMAN > mu m1 -1
+ Multiply : (M1) 
+ Requested dynamic range : -5.0324E+00  1.8609E+01
+ Value of Prod and Plus  :  1.0786E+01      54
+ Actual dynamic range    : -5.0064E+00  1.8635E+01
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Next, pick peaks at a level of 4 sigma:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > pick level 4
+ MAPMAN > pick peaks m1 peaks.pdb pdb
+ Pick level  : (  4.000E+00) 
+ Pick limits : (       1      179) 
+ Pick limits : (       1      119) 
+ Pick limits : (       1      119) 
+ Nr of points in pick volume : (    2534819) 
+ Nr of points >= pick level  : (        542) 
+ Picking ... Interpolate intensity
+ Nr of peaks found : (         64) 
+ CPU total/user/sys :       4.7       4.4       0.2
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Now integrate the peaks (sphere of radius 3 A - since the anomalous
+   map is rather sparsely populated with signal and since iodides are
+   pretty big, we need to and can use a fairly large radius):
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > peek sphere m1 peaks.pdb peaksint.pdb int 3.0
+ Grid spacing (A) : (   0.457    0.462    0.469) 
+ Peeking ...
+ ATOM      1  O   HOH  1001     --> PEEK-A-BOO -->   1.3495E+02
+ ATOM      2  O   HOH  1002     --> PEEK-A-BOO -->   1.1562E+02
+ ATOM      3  O   HOH  1003     --> PEEK-A-BOO -->   1.8002E+02
+ ATOM      4  O   HOH  1004     --> PEEK-A-BOO -->   2.1915E+02
+ ATOM      5  O   HOH  1005     --> PEEK-A-BOO -->  -4.3614E+01
+ ATOM      6  O   HOH  1006     --> PEEK-A-BOO -->   7.7073E+01
+ [...]
+ ATOM     63  O   HOH  1063     --> PEEK-A-BOO -->   1.5240E+02
+ ATOM     64  O   HOH  1064     --> PEEK-A-BOO -->  -1.4394E+02
+ New PDB file created
+ Nr of atoms read and processed   : (         64) 
+ Nr outside the limits of the map : (          0) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Finally, remove negative peaks and sort by the value of the integral
+   (which now resides in the B-factor column - these provide an
+   estimate of the relative occupancies, e.g. 1.0, 0.75, 0.5):
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > $ grep '^ATOM' peaksint.pdb | grep -v '1.00-' | sort +9 -nbr > sortedpeaks.pdb
+ Spawn system command : (  grep '^ATOM' peaksint.pdb | grep -v '1.00-' | 
+  sort +9 -nbr > sortedpeaks.pdb) 
+ MAPMAN > $ head -10 sortedpeaks.pdb
+ Spawn system command : (  head -10 sortedpeaks.pdb) 
+ATOM     28  O   HOH  1028      33.523  20.307  17.481  1.00 661.6
+ATOM     54  O   HOH  1054      72.750  38.427  50.551  1.00 613.9
+ATOM     46  O   HOH  1046      63.181   6.273  18.911  1.00 488.3
+ATOM     11  O   HOH  1011      16.672  49.706  41.221  1.00 444.5
+ATOM      8  O   HOH  1008       7.219  30.900  10.554  1.00 391.7
+ATOM     51  O   HOH  1051      68.944  44.094  20.249  1.00 390.7
+ATOM     58  O   HOH  1058      75.050  46.867  11.731  1.00 376.3
+ATOM     26  O   HOH  1026      29.320  20.591  12.238  1.00 337.7
+ATOM     33  O   HOH  1033      53.067  44.703  25.872  1.00 336.6
+ATOM     12  O   HOH  1012      18.022   6.181  45.398  1.00 334.7
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## SImilarity - compare two maps
+ compute several comparison statistics for two maps (which must
+    have the same cell and grid and a non-empty overlap region).
+    The following values are computed:
+ - correlation coefficient
+ - the unscaled R-factors with respect to both maps
+ - the RMS-difference between the maps
+ - the shape similarity index (equals the correlation coefficient
+      if and only if the average of both maps is the same) - this
+      is defined for two vectors X and Y as:
+      SI = SUM X(i)*Y(i) / [ SQRT (SUM X(i)^2) * SQRT (SUM Y(i)^2) ]
+      and can thus be interpreted as the cosine of the angle formed
+      between the two vectors.
+
+ Edward Berry explains the similarity index much clearer than I:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+If you take each map and string out the 3-dimensional array of pixel
+values into one dimension (in any order, but the same order),
+and consider these N=nx*ny*nz values as the elements of an ordered
+N-tuple or vector in N-dimensional space, 
+then the similarity index between two maps is the scalar (inner) 
+product of the two normalized vectors, i.e. 
+
+SI = <A/sqr<A.A> . B/sqr<B.B>>   = <A.B>/sqr(<A.A><B.B>)
+
+This is the value of the cosine between the two vectors, or
+if both maps have mean zero (or equal?) it is the same as the
+correlation coefficient. Unlike the correlation coefficient,
+the S.I. will be sensitive to a constant offset of one map
+relative to the other.
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > si m1 m2
+ Similarity Map : (M1) 
+ Similarity Map : (M2) 
+...
+ Nr of points in common grid : (     295680) 
+ Correlation coefficient : (   1.000) 
+ R-factor w.r.t. map 1   : (  35.424) 
+ R-factor w.r.t. map 2   : (   0.973) 
+ RMS difference          : (  1.961E+02) 
+ Shape similariy index   : (   0.239) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## COrrelate - combine two maps
+ combine two maps in the following way:
+ GAMMA = 2*MAP1*MAP2/(MAP1^2 + MAP2^2)
+ MAP1 = GAMMA*MAP1
+ MAP2 = GAMMA*MAP2
+ The resulting density for each point is determined by:
+ (a) the original density
+ (b) the correlation with the density at the corresponding
+        point in the other map
+ Note that -1 <= GAMMA <= +1, with GAMMA = 1 if and only
+    if MAP1 = MAP2. (NOTE: GAMMA is set to 1 if MAP1=MAP2=0.)
+ Reference: B. Rees et al., J. Mol. Biol., 214, 281-297 (1990).
+
+ ## MStats - statistics for map points inside/outside a mask
+ calculate map statistics separately for points lying inside or
+   outside a mask.  Parameters:
+ - name of the map for which you want statistics
+ - name of the "map" which is to be used as the mask
+ - cut-off value for deciding which points are set in the "mask map"
+   (if you read in a real mask, 0 is outside and 1 is inside the
+   mask, so a cut-off of 0.5 is appropriate)
+
+ The map and the "mask map" must have the same grid and cell.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > re m1 m11_2fofc.map dsn6
+ ...
+ MAPMAN > re m2 m1.mask mask
+ ...
+ MAPMAN > mstats m1 m2 0.5
+ Masked stats Map  : (M1) 
+              Mask : (M2) 
+ Lower limits common volume : (     -56      -51      -46) 
+ Upper limits common volume : (      71       63       69) 
+ Limits first  map  : (       1      128        1      115        1      
+  116) 
+ Limits second map  : (      11      138       14      128       17      
+  132) 
+ Number of common map points : (    1707520) 
+
+ Density inside the mask :
+ Nr of points : (     280522) 
+ Average density : (  2.528E-02) 
+ St. deviation   : (  1.803E+01) 
+ Minimum value   : ( -5.488E+01) 
+ Maximum value   : (  1.000E+02) 
+ Sum of values   : (  7.091E+03) 
+
+ Density outside the mask :
+ Nr of points : (    2910308) 
+ Average density : ( -3.621E-01) 
+ St. deviation   : (  1.432E+01) 
+ Minimum value   : ( -5.488E+01) 
+ Maximum value   : (  9.756E+01) 
+ Sum of values   : ( -1.054E+06) 
+ CPU total/user/sys :      10.0       9.7       0.3
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## MIn_max - combine two maps
+ combine two maps in the following way:
+ MAP1 = MIN(MAP1,MAP2)
+ MAP2 = MAX(MAP1,MAP2)
+
+ ## ADd - combine two maps
+ add two maps and store the result in the first map.  Only
+    density inside the common volume is added, the rest of the
+    points are not affected.
+    Possible uses of this option:
+ (1) if you don't like COMAP, use this option in combination
+        with MUltiply (for example), to combine maps from different
+        crystal forms
+ (2) to find the difference between two maps which perhaps
+        should be nearly identical, MUltiply one of them by -1.0
+        and add it to the other; the statistics of the residual
+        density will tell you how different the maps were
+
+ ## OPerate - combine two maps
+ given two maps M1 and M2, this command will replace M1 by
+   M1 (operator) M2, where (operator) can be "+", "-", or "*".
+   If you supply the + or - operator, this command can be used
+   to do the same as the ADd command. Using the * operator
+   to multiply and map and a mask will keep all density within
+   the mask and set all density outside the mask to zero.
+   NOTE: this command *only* operates on the grid space that
+   the two maps have in common !!!
+ 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > oper m1 * m2
+ Command > (oper m1 * m2) 
+ Store Map : (M1) 
+ Other Map : (M2) 
+ Operator  : (*) 
+ Lower limits common volume : (       0        0        0) 
+ Upper limits common volume : (      99      109       63) 
+ Limits first  map  : (       1      100        1      110        1       
+  64) 
+ Limits second map  : (       1      100        1      110        1       
+  64) 
+ Number of common map points : (     704000) 
+ Requested dynamic range : -4.5609E+02  5.1340E+03
+ Value of Prod and Plus  :  4.5617E-02      21
+ Actual dynamic range    : -4.6036E+02  5.1297E+03
+ CPU total/user/sys :       1.9       1.9       0.0
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## PAste - paste density into another map
+ yes, it's Macintosh-like cut-and-paste functionality !  This command
+   allows you to copy a part of a map and to paste it into another
+   map (which must have the same cell and grid, of course).
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > pa m1 10 50 20 60 30 70 m3 10 20 30
+ Limits : (      10       50       20       60       30       70) 
+ Nr of points copied : (      68921) 
+ Sum of OLD density  : (  1.879E+02) 
+ Sum of NEW density  : (  1.105E+02) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## DUplicate - copy a map in memory
+ make a "backup copy" of a map in memory.
+
+ ## QInvert - quick-and-dirty inversion of a map
+ "invert" a map (*not* an inverse FFT !) by creating a new map, such
+   that rho-new(I,J,K) = rho-old(NX+1-I,NY+1-J,NZ+1-K).
+
+ ## ROughness - assess map interpretability
+ Reference: TC Terwilliger & J Berendzen, Acta Cryst D55,
+   501-505 (1999).
+
+ This will calculate a new map that contains the local RMS density
+   divided by the RMS ( RMS local density ). This can help in
+   deciding whether you have an interpretable map or not. Parameters
+   are:
+ - name of new map (will be created)
+ - name of existing map (for which you want to do this calculation)
+ - npos, nneg = number of positive and negative peaks that will be
+   masked out in the calculation (to get rid of heavy-atom artefacts);
+   the suggested value for both is two times the number of heavy-atom
+   sites (in the entire input map !)
+ - box = half the size of the box; a value of 1 yields 3*3*3 cubes,
+   a value of 2 gives 5*5*5 cubes (recommended), etc.
+ - plot_file = O2D histogram plot file with a histogram of the RMS
+   local density (see Figure 2 in Terwilliger & Berendzen)
+ - nr_bins = number of bins to use in the histogram
+
+ $$ <A HREF="http://xray.bmc.uu.se/cgi-bin/gerard/image_page.pl?image=usf/pics/roughist.gif">
+ $$ Example of a ROughness density histogram plot</A>.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > rough m2 m1 8 8 2
+ Command > (rough m2 m1 8 8 2) 
+ O2D plot file ? (dens_hist.plt) 
+ Number of bins ? (100) 
+ Initialising map and mask ...
+ Removing highest peaks ...
+ Peak value : (  1.000E+02) 
+ [...]
+ Peak value : (  9.791E+01) 
+ Removing lowest peaks ...
+ Peak value : ( -3.351E+01) 
+ [...]
+ Peak value : ( -3.351E+01) 
+ Calculating local RMS density ...
+ Box size : (     125) 
+ Finishing touch ...
+ Nr of masked points  : (     690140) 
+ RMS (local RMS dens) : (  1.135E+01) 
+ Minimum : (  1.276E-01) 
+ Maximum : (  3.172E+00) 
+ Average : (  8.501E-01) 
+ St.dev. : (  5.267E-01) 
+ Calculating histogram ...
+ O2D file written
+ CPU total/user/sys :      50.8      50.5       0.3
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Note: for these calculations to be interpretable, it is important
+   that your map covers an integral number of asymmetric units
+   (e.g., one asymmetric unit, or one unit cell) !
+
+ The standard deviation listed above (5.267E-01) is of interest: if
+   it is small (say, 0.2 or lower for 5*5*5 cubes; see Figure 3 in
+   Terwilliger & Berendzen), the map is probably very poor. If it is
+   high (say, 0.3 or above), it looks more hopeful.
+
+ Also have a look at the histogram produced by the program (compare
+   to Figure 2 in Terwilliger & Berendzen). If the histogram is unimodal
+   (one peak centered near 1.0), the map is poor. If the map contains
+   traces of protein, you should get a bimodal distribution, with one
+   sharp solvent distribution peaking near 0.3 or so, and a broader
+   protein distribution peaking near 1.2 or so. To see the histogram,
+   convert the plot file to PostScript with the program O2D. (Note:
+   the large peak at 0.0 in the histogram is due to the points in
+   the map for which the RMS density was not calculated.)
+
+ ## RS_fit - real-space fit calculation
+
+ With this command you can calculate RS-fit values (both correlation
+   coefficients, RSCC, and R-values, RSR) on a per-residue basis for a model,
+   given its "observed" and "calculated" maps. Normally, the "observed"
+   map would be (2mFo-DFc, PHIc) and the "calculated" map would be
+   (Fc, PHIc). If you use CNS ("model_map.inp", for instance), use:
+
+ - u=2; v=1; map_type="sigmaa"; for the observed map
+ - u=0; v=-1; map_type="unweighted"; for the calculated map
+
+ If you NOrmalise both maps before using the RS_fit command, you will
+   get the lowest RSR values (the RSCC values are not affected).
+
+ Note that this implementation differs from both O and CNS. It
+   uses all atoms in each residue (incl. partial occupancies)
+   to define a mask, with a radius of 1.5 \A around these atoms.
+   O uses a more complicated masking algorithm and also uses a "faked"
+   calculated map (a sum of Gaussians with all atoms given a
+   B of 20 \A2) - both were born of necessity since O doesn't deal
+   with reflection data. The CNS implementation is even stranger:
+   the RSCC is estimated as an average point-by-point map correlation
+   and the RSR is simply nonsense (calculated as "RSR" = 1.0 - RSCC).
+
+ A summary of the results for each residue is listed on the screen,
+   and more extensive output is written to a list file. The list file
+   can also be used by OOPS2 ! Note that the average B-value <B> is
+   occupancy-weighted: <B> = (SUM B*Q)/(SUM Q) .
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > read m1 1f83_2mfodfc.xE ccp4
+ [...]
+ MAPMAN > read m2 1f83_fc.xE ccp4
+ [...]
+ MAPMAN > rsfit m1 m2 /db/pub/pdb/data/structures/all/pdb/pdb1f83.ent 1f83_stat.lis 1.5
+ Real-space fit calculation:
+ Obs_map (e.g., 2mFo-DFc,PHIc)   : M1
+ Calc_map (Fc,PHIc)              : M2
+ Model PDB file                  : /db/pub/pdb/data/structures/all/pdb/pdb1f83.ent
+ Result list output file         : 1f83_stat.lis
+ Masking radius around atoms (A) :    1.500
+ Initialising ...
+ Grid spacing (A)      : (   0.666    0.651    0.675) 
+ Max size of mini-maps : (    1398101) 
+ Sum |obs_map| : (  2.275E+05) 
+ Sum |cal_map| : (  2.414E+05) 
+ Scale factor for cal_map : (  9.422E-01) 
+ Processing ...
+ #      1 [PRO A   1 ] Nat      7 RSCC  0.807 RSR  0.547 <B>    50.59
+ #      2 [VAL A   2 ] Nat      7 RSCC  0.937 RSR  0.172 <B>    33.13
+ #      3 [THR A   3 ] Nat      7 RSCC  0.962 RSR  0.132 <B>    27.92
+ #      4 [ILE A   4 ] Nat      8 RSCC  0.909 RSR  0.216 <B>    24.00
+ #      5 [ASN A   5 ] Nat      8 RSCC  0.906 RSR  0.177 <B>    25.10
+[...]
+ #    424 [SER A 424 ] Nat      6 RSCC  0.579 RSR  0.320 <B>    94.51
+ #    425 [LYS A 425 ] Nat      6 RSCC  0.451 RSR  0.632 <B>   110.06
+ #    426 [VAL B  53 ] Nat      7 RSCC  0.380 RSR  0.685 <B>   126.19
+ #    427 [LEU B  54 ] Nat      8 RSCC  0.537 RSR  0.489 <B>   132.46
+ #    428 [GLU B  55 ] Nat      9 RSCC  0.600 RSR  0.584 <B>   132.87
+ #    429 [ARG B  56 ] Nat     11 RSCC  0.474 RSR  0.696 <B>   138.74
+[...]
+ #    457 [LEU C  84 ] Nat      8 RSCC  0.219 RSR  0.936 <B>   140.63
+ #    458 [LYS C  85 ] Nat      9 RSCC  0.530 RSR  0.615 <B>   135.86
+ #    459 [ARG C  86 ] Nat     11 RSCC  0.510 RSR  0.561 <B>   130.91
+ #    460 [LYS C  87 ] Nat      9 RSCC  0.504 RSR  0.476 <B>   106.16
+ #    461 [TYR C  88 ] Nat     13 RSCC  0.653 RSR  0.570 <B>   117.07
+ #    462 [ ZN A 500 ] Nat      1 RSCC  0.609 RSR  0.279 <B>    34.94
+ #    463 [HOH   601 ] Nat      1 RSCC  0.974 RSR  0.141 <B>    11.46
+ #    464 [HOH   602 ] Nat      1 RSCC  0.978 RSR  0.120 <B>    15.75
+[...]
+ #    742 [HOH   926 ] Nat      1 RSCC  0.589 RSR  0.512 <B>    59.71
+ #    743 [HOH   927 ] Nat      1 RSCC  0.786 RSR  0.408 <B>    85.91
+
+ Nr of lines read from file   : (       4463) 
+ Nr of hydrogen atoms skipped : (          0) 
+ Nr of zero-occ atoms         : (          0) 
+ Nr of non-H atoms read       : (       4028) 
+ Nr of residues encountered   : (        743) 
+ ... of which amino acids     : (        461) 
+ ... of which nucleic acids   : (          0) 
+ ... of which waters          : (        281) 
+ ... of which heteros         : (          1) 
+ Nr with alt. conf.           : (          0) 
+ Nr with HETERO atoms         : (        282) 
+ Nr with zero summed occup.   : (          0) 
+ Nr with odd summed occup.    : (          0) 
+ Nr not calculated at all     : (          0) 
+ Nr with computation errors   : (          0) 
+ Total nr with errors         : (          0) 
+ CPU total/user/sys :       1.6       1.6       0.0
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ The list file contains the following information:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+!
+! Created by MAPMAN V. 020827/7.4.5 at Tue Aug 27 20:52:14 2002 for eds
+!
+! RS-fit list file 1f83_stat.lis
+!
+! Obs_map  M1 = 1f83_2mfodfc.xE
+! Calc_map M2 = 1f83_fc.xE
+! Model = /db/pub/pdb/data/structures/all/pdb/pdb1f83.ent
+! Masking radius around atoms =    1.500 A
+!
+! Sum |obs_map| =  2.275E+05
+! Sum |cal_map| =  2.414E+05
+! Scale factor for cal_map =  9.422E-01
+!
+! # = sequential residue index
+! residue_id = columns 18:27 of the ATOM/HETATM card
+! RSCC = residue-based real-space correlation coefficient
+! RSR = residue-based real-space R-value
+! wgtBave = occupancy-weighted average B = (SUM B*Q)/(SUM Q)
+! Natom = nr of atoms encountered in residues
+! S occ = sum of their occupancies (normally same as Natom)
+! Nhet = number of HETATM cards encountered in residue
+! AC = alternative conformation flag (T or F)
+! Scale RHOc = residue-based density scale (not used)
+! Ngridpts = nr of grid points summed for RSCC and RSR
+! R? = Error? = computation-error flag (T or F)
+! K = Kind = kind of residue (Amino, Nucleic, Water, Hetero)
+!
+!        1         2         3         4         5         6         7         8         9        10
+!23456789+123456789+123456789+123456789+123456789+123456789+123456789+123456789+123456789+123456789+
+!    # [residue_id]   RSCC   RSR wgtBave Natom S occ  Nhet AC  Scale RHOc  Ngridpts R? K
+     1 [PRO A   1 ]  0.807 0.547   50.59     7  7.00     0 F   4.6114E-01       254 F  A
+     2 [VAL A   2 ]  0.937 0.172   33.13     7  7.00     0 F   8.8460E-01       272 F  A
+     3 [THR A   3 ]  0.962 0.132   27.92     7  7.00     0 F   8.4815E-01       258 F  A
+     4 [ILE A   4 ]  0.909 0.216   24.00     8  8.00     0 F   8.2670E-01       298 F  A
+     5 [ASN A   5 ]  0.906 0.177   25.10     8  8.00     0 F   8.6668E-01       295 F  A
+[...]
+   425 [LYS A 425 ]  0.451 0.632  110.06     6  6.00     0 F   3.6789E-01       203 F  A
+   426 [VAL B  53 ]  0.380 0.685  126.19     7  7.00     0 F   1.0287E+00       271 F  A
+   427 [LEU B  54 ]  0.537 0.489  132.46     8  8.00     0 F   6.7260E-01       294 F  A
+   428 [GLU B  55 ]  0.600 0.584  132.87     9  9.00     0 F   5.7221E-01       333 F  A
+   429 [ARG B  56 ]  0.474 0.696  138.74    11 11.00     0 F   9.9605E-01       411 F  A
+   430 [ASP B  57 ]  0.475 0.453   98.11     8  8.00     0 F   6.6769E-01       289 F  A
+[...]
+   457 [LEU C  84 ]  0.219 0.936  140.63     8  8.00     0 F   9.7687E-01       313 F  A
+   458 [LYS C  85 ]  0.530 0.615  135.86     9  9.00     0 F   1.6995E+00       346 F  A
+   459 [ARG C  86 ]  0.510 0.561  130.91    11 11.00     0 F   1.1015E+00       425 F  A
+   460 [LYS C  87 ]  0.504 0.476  106.16     9  9.00     0 F   9.4747E-01       324 F  A
+   461 [TYR C  88 ]  0.653 0.570  117.07    13 13.00     0 F   1.9071E+00       420 F  A
+   462 [ ZN A 500 ]  0.609 0.279   34.94     1  1.00     1 F   1.0757E+00        53 F  H
+   463 [HOH   601 ]  0.974 0.141   11.46     1  1.00     1 F   8.9061E-01        53 F  W
+[...]
+   743 [HOH   927 ]  0.786 0.408   85.91     1  1.00     1 F   1.2506E+00        53 F  W
+!
+! Nr of lines read from file   :       4463
+! Nr of hydrogen atoms skipped :          0
+! Nr of zero-occ atoms         :          0
+! Nr of non-H atoms read       :       4028
+! Nr of residues encountered   :        743
+! ... of which amino acids     :        461
+! ... of which nucleic acids   :          0
+! ... of which waters          :        281
+! ... of which heteros         :          1
+! Nr with alt. conf.           :          0
+! Nr with HETERO atoms         :        282
+! Nr with zero summed occup.   :          0
+! Nr with odd summed occup.    :          0
+! Nr not calculated at all     :          0
+! Nr with computation errors   :          0
+! Total nr with errors         :          0
+!
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## HIsto - density histogram
+ generate a histogram of density counts.  You have to supply
+    at least three values to define the histogram ranges.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > hi m1 -100 -50 -30 -20 -10 0 10 20 30 40 50 100
+ Histrogram limits : ( -1.000E+02  -5.000E+01  -3.000E+01  -2.000E+01  
+  -1.000E+01   0.000E+00   1.000E+01   2.000E+01   3.000E+01   4.000E+01   
+  5.000E+01   1.000E+02) 
+ Histogram : (M1) 
+
+ Nr of values <       -100.00                    :        0 (   0.000 %)
+ Nr of values >=      -100.00 and <       -50.00 :      780 (   0.264 %)
+ Nr of values >=       -50.00 and <       -30.00 :    15222 (   5.148 %)
+ Nr of values >=       -30.00 and <       -20.00 :    23328 (   7.890 %)
+ Nr of values >=       -20.00 and <       -10.00 :    42825 (  14.484 %)
+ Nr of values >=       -10.00 and <         0.00 :    77377 (  26.169 %)
+ Nr of values >=         0.00 and <        10.00 :    66974 (  22.651 %)
+ Nr of values >=        10.00 and <        20.00 :    28849 (   9.757 %)
+ Nr of values >=        20.00 and <        30.00 :    16553 (   5.598 %)
+ Nr of values >=        30.00 and <        40.00 :    11028 (   3.730 %)
+ Nr of values >=        40.00 and <        50.00 :     6946 (   2.349 %)
+ Nr of values >=        50.00 and <       100.00 :     5797 (   1.961 %)
+ Nr of values >=       100.00                    :        1 (   0.000 %)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## EXtract - make O2D plot file of a plane
+ extract a plane from a map as a 2D contour plot file for O2D.
+    You must supply the map name, the name of the O2D file, the
+    type of plane (X, Y or Z) and the index of the plane (in grid
+    units).
+ You may plot the file with O2D (first "open 2 1 0 1", then
+    "2d your_file").  This may be useful for plotting Harker
+    sections of Patterson maps, for instance.
+ By default, MAPMAN will generate instructions to plot
+    five levels, (AVERAGE + ILEVEL*SIGMA/2), ILEVEL=1,5.  You may
+    change this by editing the plot file.
+
+ $$ <A HREF="http://xray.bmc.uu.se/cgi-bin/gerard/image_page.pl?image=usf/pics/extract.gif">
+ $$ Example of an EXtracted map plot</A>.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > li m1
+...
+ File    = crabp.difpat
+ Grid    =         40        40       200
+ Origin  =          0         0         0
+ Extent  =         40        21       200
+ Cell    =     41.500    41.500   203.500    90.000    90.000    90.000
+...
+ MAPMAN > ex m1 z25.o2d z 50
+ O2D file written
+ MAPMAN > ex m1 z50.o2d z 100
+ O2D file written
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## 1D_proj - make O2D plot file of a 1D projection
+ project the density in the entire map onto one of the three axes,
+    X, Y or Z (A, B, or C).  The output is a 1D plot file which can
+    be converted into PostScript (or CricketGraph) format with O2D.
+
+ $$ <A HREF="http://xray.bmc.uu.se/cgi-bin/gerard/image_page.pl?image=usf/pics/proj1d.gif">
+ $$ Example of an 1D_projection plot</A>.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > 1d
+ Which map ? (m1) 
+ O2D plot file ? ( ) c.plt
+ ONTO which axis (X/Y/Z) ? (Z) 
+ Nr of points in projection :          301
+ Average density            :   3.9404E+01
+ Standard deviation         :   2.3940E+03
+ Minimum density            :  -4.5252E+03
+ Maximum density            :   4.9876E+03
+ O2D file written
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## 2D_proj - make O2D plot file of a 2D projection
+ project the density in *along* one of the three axes for a number
+    of planes perpendicular to that axis.  This may be useful if you
+    want to include neighbouring planes of Harker plots (compare with
+    the EXtract command).  The output is a 1D plot file which can
+    be converted into PostScript (or CricketGraph) format with O2D.
+
+ $$ <A HREF="http://xray.bmc.uu.se/cgi-bin/gerard/image_page.pl?image=usf/pics/proj2d.gif">
+ $$ Example of a 2D_projection plot</A>.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > 2d
+ Which map ? (M1) 
+ O2D plot file ? ( ) ab.plt
+ ALONG which axis (X/Y/Z) ? (Z) 
+ Start plane ? (0) 
+ End plane ? (300) 
+ Nr of points in projection :        16641
+ Average density            :   7.1369E-01
+ Standard deviation         :   2.8884E+02
+ Minimum density            :  -8.0051E+02
+ Maximum density            :   1.2097E+03
+ O2D file written
+ CPU total/user/sys :       3.6       3.4       0.2
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## SCale - scale map
+ scale a map by defining the lower and upper bounds of the
+    density (statistics and PROD and PLUS are automatically updated).
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+...
+ Density min,max,ave =     -7.2651E+01     1.0000E+02     1.5338E-08
+ Sigma, variance     =      1.9707E+01     3.8836E+02
+ Mappage prod/plus   =      1.4770E+00            107
+ Mappage dyn. range  =     -7.2446E+01     1.0021E+02
+...
+ MAPMAN > sc m1 -1 1
+ Scale : (M1) 
+ MAPMAN > li
+ Nr of maps in memory : (       1) 
+
+ Map  1 = M1
+...
+ Density min,max,ave =     -1.0000E+00     1.0000E+00    -1.5841E-01
+ Sigma, variance     =      2.2829E-01     5.2117E-02
+ Mappage prod/plus   =      1.2750E+02            127
+ Mappage dyn. range  =     -9.9608E-01     1.0039E+00
+...
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## ZEro - zero low/high density values
+ set all points with density LESS THAN the lower bound OR GREATER THAN
+    the upper bound to zero.  Statistics, PROD and PLUS are updated
+    automatically.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+...
+ Density min,max,ave =     -7.2651E+01     1.0000E+02     1.5338E-08
+ Sigma, variance     =      1.9707E+01     3.8836E+02
+ Mappage prod/plus   =      1.4770E+00            107
+ Mappage dyn. range  =     -7.2446E+01     1.0021E+02
+...
+ MAPMAN > zero m1 0 40  
+ Zero : (M1) 
+ Less    than lower bound : (     159532) 
+ Greater than upper bound : (      12744) 
+ MAPMAN > li m1
+ Nr of maps in memory : (       1) 
+
+ Map  1 = M1
+...
+ Density min,max,ave =      0.0000E+00     3.9999E+01     5.0790E+00
+ Sigma, variance     =      8.9967E+00     8.0940E+01
+ Mappage prod/plus   =      6.3751E+00              0
+ Mappage dyn. range  =      0.0000E+00     3.9999E+01
+...
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## CHange_value - alter density values
+ set all points with density GREATER THAN the lower bound AND LESS THAN
+   the upper bound to the new, user-supplied value.  This can be used,
+   for instance, if you want to contour a map extracted with (M)AVE
+   at negative levels.  Since the areas outside the mask will have a
+   density of 0.0, you may want to reset those to a value which is
+   smaller than the minimum density inside the mask.  In that particular
+   case, use a range of -0.001 and 0.001 as in the example below:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > ch
+ Which map ? (m1) 
+ Lower bound ? ( -1.0000E+04) -0.001
+ Upper bound ? (  9.9900E-01) 0.001
+ New value ? (   0.0) -100
+ Change : (M1) 
+ Nr of points changed : (      61484) 
+ Requested dynamic range : -1.0000E+02  1.6125E+01
+ Value of Prod and Plus  :  2.1959E+00     220
+ Actual dynamic range    : -1.0019E+02  1.5939E+01
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## SEt_value - set density values
+ set all points in the map to a value that is calculated as:
+
+ map (i,j,k) = start + (i-1)*dx + (j-1)*dy + (k-1)*dz
+
+ (start, dx, dy and dz are arguments to this command; the
+ latter three are optional and default to zero).
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > set m1 0 0 0 1
+ Command > (set m1 0 0 0 1) 
+ Set values : (M1) 
+ Start value  : (  0.000E+00) 
+ DX increment : (  0.000E+00) 
+ DY increment : (  0.000E+00) 
+ DZ increment : (  1.000E+00) 
+ Requested dynamic range :  0.0000E+00  1.5000E+01
+ Value of Prod and Plus  :  1.7000E+01       0
+ Actual dynamic range    :  0.0000E+00  1.5000E+01
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## UVw  - set slicing directions
+ -> change the values of U, V and W, which determine how the map
+    is written in CCP4-format (fast, medium, slow; 1=X, 2=Y, 3=Z).
+
+ NOTE: NOT TESTED
+
+ ## SPacegroup - set spacegroup number
+ change the spacegroup number (used when writing CCP4 maps),
+    for example from the real one to P1.
+
+ NOTE: DOES NOT CHANGE THE SYMMETRY OPERATORS IN CCP4 MAPS !!!
+      USE MAPFIX TO DO THIS.
+
+ ## TRanslate - translate map by an integer number of unit cells
+ use this option to translate your map an integer number of
+   unit cells along X, Y and Z. This is a safe translation
+   operation that does not upset the compatibility between
+   the map and the underlying data and model.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > tr m1
+ Old origin : (          0           0           0) 
+ Grid       : (        100         100         100) 
+ Nr of UNIT CELLs translation in X ? (0) 1
+ Nr of UNIT CELLs translation in Y ? (0) 2
+ Nr of UNIT CELLs translation in Z ? (0) 3
+ New origin : (        100         200         300) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## GTranslate - translate map by an arbitrary number of grid points
+ use this option to translate your map any number of
+   grid points along X, Y and Z. This is NOT a safe translation
+   operation as it is bound to upset the compatibility between
+   the map and the underlying data and model. Use this option
+   only when you understand this and are still convinced that
+   the safe TRanslate command does not do what you want !
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > gt m1
+
+ WARNING !!! This option will change the origin of your
+ map by any number of grid points that you specify.
+ This is bound to upset the compatibility between this
+ map and your model/data. Only use this option if you
+ understand this and know what you are doing ...
+
+ Old origin : (        100         200         300) 
+ Grid       : (        100         100         100) 
+ Nr of GRID POINTs translation in X ? (0) 11
+ Nr of GRID POINTs translation in Y ? (0) -22
+ Nr of GRID POINTs translation in Z ? (0) 33
+ New origin : (        111         178         333) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## MOments - extensive map statistics
+ calculate more extensive map statistics, including higher-order
+    statistical moments of the electron density distribution
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > mom m1
+ Moments : (M1)
+
+ Extensive map statistics
+ Number of data points ...................          439296
+ Average electron density ................    -1.18879E-07
+ RMS density ("sigma") ...................     1.24695E+01
+ Mean Absolute Deviation from the mean ...     8.93063E+00
+ Variance ................................     1.55488E+02
+ Standard deviation ......................     1.24695E+01
+ Skewness (third moment) .................     7.29890E-01
+ Sigma(skewness) estimate ................     3.69570E-03
+ Skewness / Sigma(skewness) ..............     1.97497E+02
+ Asymmetric tail extending towards positive density
+ Kurtosis (fourth moment) ................     2.47488E+00
+ Sigma(kurtosis) estimate ................     7.39140E-03
+ Kurtosis / Sigma(kurtosis) ..............     3.34832E+02
+ Leptokurtic (sharp) distribution
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## NOrmalise - normalise map
+ gives a map an average value of zero and a standard deviation
+    of one by first subtracting the average and then dividing by
+    the old standard deviation.  May (or may not) be useful for
+    comparing different maps or for scaling maps prior to using
+    COMAP.
+ NOTE: this operation changes the average, standard deviation
+    (and thereby) variance of your map, but not its skewness or
+    kurtosis (see MOMENTS option).
+ NOTE: use this option, followed by MULTIPLY to give your maps
+    a standard sigma level (e.g., 10).
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > list m1
+ ...
+ Nr of points =     208800
+ Density min,max,ave =     -4.5111E+01     1.0000E+02    -5.0106E-03
+ Sigma, variance     =      4.3394E+00     1.8831E+01
+ Mappage prod/plus   =      1.7573E+00             79
+ Mappage dyn. range  =     -4.4956E+01     1.0016E+02
+ ...
+ MAPMAN > no m1
+ Normalise : (M1) 
+ Subtract average : ( -5.011E-03) 
+ Divide by sigma  : (  4.339E+00) 
+ CPU total/user/sys :       1.5       1.4       0.0
+ MAPMAN > li m1
+ ...
+ Nr of points =     208800
+ Density min,max,ave =     -1.0397E+01     2.3043E+01    -2.3120E-03
+ Sigma, variance     =      1.0000E+00     1.0000E+00
+ Mappage prod/plus   =      7.6256E+00             79
+ Mappage dyn. range  =     -1.0360E+01     2.3080E+01
+ ...
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## SWapbytes - swap bytes on binary map file
+ do byte-swapping on a DSN6 map which you ftp-ed (binary)
+    from a VAX to a Unix box
+    This OVERWRITES your old file !!!
+    Due to round-off errors you may need to adjust your
+    cell parameters (see example below, where two
+    angles are 89.99 instead of 90 degrees)
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > sw q2.map
+ Origin              0    0    0
+ Extent             85   66  157
+ Grid               84  128  156
+ Cell       49.10   75.80   92.90   89.99  103.20   89.99
+ Prod/Plus          1.00     0
+ Scale1/2          100  100
+ Bricks in x,y,z    11    9   20
+ Nr of records         1981
+ Total number of records written =     1981
+ CPU total/user/sys :       7.0       1.7       5.3
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## DH - make O2D plot file of density histogram
+ create a Density Histogram.  The output is an O2D plot file
+    (plot with "1D" or "HI" in O2D).  If you've just done an
+    averaging step, ALL solvent points will have the same
+    density; you may want to set the corresponding histogram
+    value to zero in the plot file before conversion with O2D
+    (you may also need to change the XYVIEW card).
+
+ $$ <A HREF="http://xray.bmc.uu.se/cgi-bin/gerard/image_page.pl?image=usf/pics/dh.gif">
+ $$ Example of a DH density histogram plot</A>.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > dh m1 m1bins.plt 500
+ Calculating histogram ...
+ O2D file written
+ CPU total/user/sys :       2.7       2.5       0.1
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ % 420 gerard rigel 00:51:31 dirs/p2 > o2dps m1bins.plt hi
+
+ ... o2dps ... convert O2D plot files to PostScript ...
+
+ Will convert m1bins.plt to m1bins.ps with option hi ...
+
+ Running O2D ...
+
+ Lowest X-value        : ( -6.610E+01) 
+ Highest X-value       : (  8.682E+01) 
+ Lowest Y-value        : (  0.000E+00) 
+ Highest Y-value       : (  3.158E+05) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** CREATING MAPS FROM SCRATCH
+
+ With the NEw commands, you can create empty maps which you can
+   subsequently 'fill' by combining them with one or more existing
+   maps, e.g. using the ADd or PAste commands. [These commands are
+   very similar to the corresponding commands in the mask manipulation
+   program MAMA.]
+
+ ## NEw ? - list settings for the next new map
+ print the parameters for the next new map to be created 
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > new ?
+ Command > (new ?) 
+
+ Current defaults for the next NEW map:
+ Grid    =        100       100       100
+ Origin  =          0         0         0
+ Extent  =        100       100       100
+ Cell    =    100.000   100.000   100.000    90.000    90.000    90.000
+ Nr of points =    1000000 Max =    5000000
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## NEw SAme - copy parameters from existing map
+ copy the parameters for the next new map to be created from an
+   existing map
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > new sam m1
+ Command > (new sam m1) 
+ MAPMAN > new ?
+ Command > (new ?) 
+
+ Current defaults for the next NEW map:
+ Grid    =         45        80        90
+ Origin  =        -50       -55       -43
+ Extent  =        109       110       124
+ Cell    =     23.900    45.300    46.900    90.000    90.000    90.000
+ Nr of points =    1486760 Max =    5000000
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## NEw ORigin - change next new map origin
+ change the origin of the grid for the next new map
+
+ ## NEw EXtent - change next new map extent
+ change the extent of the grid for the next new map
+
+ ## NEw CEll - change next new map cell constants
+ change the cell constants for the next new map
+
+ ## NEw GRid - change next new map grid
+ change the grid for the next new map
+
+ ## NEw ENcompass - increase next new map grid to fit existing map
+ If you want to combine maps that are in different places in space,
+   you'll need to make sure that the grid of the empty map
+   encompasses the space occupied by each of the other maps.
+   With the NEw ENcompass command you can set origin and extent values
+   for the NEXT NEW map, such that it will encompass the space
+   of one or more other maps. Note that the existing map must have
+   the same grid and cell as the next new map !
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > new enc m1
+ Command > (new enc m1) 
+ Current NEw ORigin : (        -55         -60         -48) 
+ Current NEw EXtent : (        100         100         100) 
+ Current map origin : (        -50         -55         -43) 
+ Current map extent : (        109         110         124) 
+ New origin : (        -55         -60         -48) 
+ New extent : (        114         115         129) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## NEw MAke - create a new empty map
+ this command will actually create a new map, with all values set to
+   zero (can be changed with the PLus, RAnge, ADd or PAste commands),
+   with dummy spacegroup P1 (change with SPacegroup), and with axis
+   order XYZ (change with UVw). It will use the current origin,
+   extent, etc. as defined with the various other NEw commands
+   (note that the cell can still be changed with the CEll command
+   if you should wish to do so).
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > new make m2
+ Command > (new make m2) 
+ WARNING --- All map points have identical values !
+ Requested dynamic range :  0.0000E+00  0.0000E+00
+ Value of Prod and Plus  :  1.0000E+00       0
+ Actual dynamic range    :  0.0000E+00  2.5500E+02
+ New (empty) map created (P1) !
+ MAPMAN > li m2
+ Command > (li m2) 
+ Nr of maps in memory : (       2) 
+
+ Map   2     = M2
+ File        = not_defined
+ Grid        =         45        80        90
+ Origin      =        -55       -60       -48
+ Extent      =        119       120       134
+ Cell        =     23.900    45.300    46.900    90.000    90.000    90.000
+ UVW         =          1         2         3
+ Spcgrp      =          1      Nr of points =    1913520
+ Density min =  0.000E+00      Max          =  0.000E+00
+ Average     =  0.000E+00      Sigma        =  0.000E+00
+ Variance    =  0.000E+00
+ Mappage Prod=  1.000E+00      Plus         =          0
+ Dyn. range  =  0.000E+00      To           =  2.550E+02
+ Cell vol.   =  5.078E+04      Voxel vol.   =  1.567E-01
+ Grid vol.   =  2.999E+05      %Cell vol.   =     590.59
+ Origin frac =   -1.22222  -0.75000  -0.53333
+ Origin Cart =    -29.211   -33.975   -25.013
+ Top frac    =    1.40000   0.73750   0.94444
+ Top Cart    =     33.460    33.409    44.294
+ Spacing     =      0.531     0.566     0.521
+ Top         =         63        59        85
+ Changes     = T
+ Label       = Created from scratch with NEw MAke
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** PICKING PEAKS
+
+ ## PIck ? - list peak-pick parameters
+ print the current values of the peak-pick parameters 
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > pi ?
+
+ Peak residue & atom names : |HOH| O1 |
+ First peak residue number : 1001
+ Peak threshold level      :   6.0000E+00
+ Pick limits               :      0     0     0     0     0     0
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## PIck PDb - define peak format
+ define the settings for the PDB file to which the picked peaks
+    will be written; supply the residue type, atom name and the
+    first residue number.  NOTE: atom names have FOUR characters,
+    the FIRST TWO of which must be the symbol of the chemical
+    element (e.g., " O", " N") !
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > pick pdb H2O " O  " 501
+ MAPMAN > pi ?
+
+ Peak residue & atom names : |H2O| O  |
+ First peak residue number :  501
+ Peak threshold level      :   6.0000E+00
+ Pick limits               :      0     0     0     0     0     0
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## PIck LImits - define map part for peak-picking
+ define the part of the map that has to be picked (in grid
+    units).  Supply lower X, upper X, lower Y, etc.
+    Setting lower and upper to 0, or lower greater than
+    upper, results in the entire range of the map being picked.
+ Note that border points cannot be picked and that no
+    crystallographic symmetry is used in the picking process !
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > pi lim 0 0 10 -10 5
+ Upper bound for Z ? (0) 95
+ MAPMAN > pi ?
+
+ Peak residue & atom names : |H2O| O  |
+ First peak residue number :  501
+ Peak threshold level      :   6.0000E+00
+ Pick limits               :      0     0    10   -10     5    95
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## PIck LEvel - define peak-picking level
+ supply the lowest level at which peaks should be picked
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > pi lev 5.5
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## PIck PEaks - do peak-picking in map
+ do the actual picking.  Provide two parameters: the name
+    of the map to be picked, and the name of the PDB file to
+    which the peaks will be written. 
+    First, the pick limits will be set appropriately.
+    Second, all points in the pickable volume whose intensity
+    exceeds the pick level are selected and counted.
+    Third, for each of these points, the program checks if
+    they are a local maximum (i.e., intensity greater than
+    each of the 26 neighbouring points); if so, the peak is
+    picked and interpolation takes place to get a more
+    precise peak position and intensity.
+    Fourth, the peaks are written to a PDB file.
+ Note: from version 4.5.1 on, there is an extra format parameter.
+   This may be P(db) to get a PDB file, or A(more) to get a file
+   which looks like an AMORE rotation function output file (e.g.,
+   for use with the OMAC/auto_amore.csh script).  This can be used
+   if you run lots of rotation functions with different parameters,
+   then combine them with COMAP, and finally peak-pick them with
+   MAPMAN.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > pi pea m1 peaks.pdb pdb
+ Pick level  : (  5.500E+00) 
+ Pick limits : (       1       64) 
+ Pick limits : (       1       87) 
+ Pick limits : (       5       64) 
+ Nr of points in pick volume : (     334080) 
+ Nr of points >= pick level  : (        820) 
+...
+ Nr of peaks found : (         52) 
+ MAPMAN > $ cat peaks.pdb
+REMARK Created by MAPMAN V. 930803/2.2 at Tue Aug 3 17:14:32 1993 for user gerard
+REMARK 52 peaks picked above level 5.500000
+REMARK Map file ../../scratch/am/crabp21.difpat
+REMARK Map name M1
+REMARK Map text Read from ../../scratch/am/crabp21.difpat
+REMARK 
+CRYST1   37.127  106.501   40.495  90.00 110.05  90.00
+REMARK Peak #        1 @      3.220    16.397    46.593 $    5.985534E+00
+ATOM      1  O   H2O   501      -7.990   9.922  26.855  1.00 20.00
+...
+REMARK Peak #       52 @     65.191    73.900    33.332 $    5.892479E+00
+ATOM     52  O   H2O   552      29.660  44.718  19.212  1.00 20.00
+END
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > pi pea m1 multi_roting.log amore
+ Pick level  : (  1.000E+00) 
+ Pick limits : (       1       46) 
+ Pick limits : (       1       71) 
+ Pick limits : (       1      142) 
+ Nr of points in pick volume : (     463772) 
+ Nr of points >= pick level  : (     174271) 
+ Picking ... Interpolate intensity
+ Nr of peaks found : (        340) 
+ CPU total/user/sys :       1.0       1.0       0.1
+ MAPMAN > $ cat multi_roting.log
+REMARK Created by MAPMAN V. 960411/4.5.1 at Thu Apr 11 20:49:51 1996 for user gerard
+REMARK 340 peaks picked above level 1.000000
+REMARK Map file multi_rot.map
+REMARK Map name M1
+REMARK Map text Read from multi_rot.map
+ SOLUTIONRC     1     2.19    40.87   190.94  0.00000  0.00000  0.00000  3.0  0.0
+ SOLUTIONRC     1     1.43    56.65   354.18  0.00000  0.00000  0.00000  2.9  0.0
+ SOLUTIONRC     1     2.78    71.59   156.24  0.00000  0.00000  0.00000  3.7  0.0
+ SOLUTIONRC     1     1.25    85.11   105.13  0.00000  0.00000  0.00000  3.3  0.0
+ ...
+ SOLUTIONRC     1   113.66   140.50   322.90  0.00000  0.00000  0.00000  3.7  0.0
+ SOLUTIONRC     1   114.53   156.38    25.65  0.00000  0.00000  0.00000  4.0  0.0
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## PIck INtegrate - pick peaks in map and integrate
+ same as PIck PEaks, except that an approximation of the peak integral,
+   rather than the interpolated intensity, is stored.  The integral is
+   computed as the sum of the *positive* electron density values in a
+   2*2*2 box centred at the local peak maximum.  When picking maps, this
+   value ought to be roughly proportional to the number of electrons in
+   the box.  This can be used, for example, to estimate the occupancy
+   of partly-occupied metal sites.
+ Note: from version 4.5.1 on, there is an extra format parameter.
+   This may be P(db) to get a PDB file, or A(more) to get a file
+   which looks like an AMORE rotation function output file (e.g.,
+   for use with the OMAC/auto_amore.csh script).  This can be used
+   if you run lots of rotation functions with different parameters,
+   then combine them with COMAP, and finally peak-pick them with
+   MAPMAN.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > pick int m1 integrate.pdb pdb
+ Pick level  : (  4.850E+01) 
+ Pick limits : (       9      176) 
+ Pick limits : (      27      233) 
+ Pick limits : (      26      257) 
+ Nr of points in pick volume : (    8068032) 
+ Nr of points >= pick level  : (       3903) 
+ Picking ... Integrate intensity
+ Nr of peaks found : (        436) 
+ CPU total/user/sys :      17.7      17.6       0.1
+ MAPMAN > $ head -10 integrate.pdb
+REMARK Created by MAPMAN V. 951102/4.2 at Thu Nov 2 21:55:50 1995 for user gerard
+REMARK 436 peaks picked above level 48.50000
+REMARK Map file /nfs/scr_uu1/gerard/scratch/m2_fofc.xE
+REMARK Map name M1
+REMARK Map text Read from /nfs/scr_uu1/gerard/scratch/m2_fofc.xE
+REMARK 
+CRYST1   49.100   75.800   92.900  90.00 103.20  90.00
+REMARK Peak #        1 @      9.346   134.124   169.783 $    9.681636E+02
+ATOM      1  O1  HOH  1001     -14.274  66.886  80.822  1.00 20.00
+REMARK Peak #        2 @     11.919   161.172   115.088 $    1.303484E+03
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## PIck HIgh - pick points with high density values
+ rather than picking peaks (which must be local density maxima), this
+   option picks points whose value exceeds the current level that you
+   have defined.  This can be used, for instance, to pick rotation
+   function solutions with a high value which are not necessarily peaks
+   (e.g., from a rotation function map as produced by the CCP4 version
+   of AMORE).  Use the HIstogram command to find an appropriate level
+   that won't generate too many points.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > re m1 all1_amore.map ccp4
+ MAPMAN > his m1 30 32 34 36 38 39 40
+ MAPMAN > pick lev 39
+ MAPMAN > pick high m1
+ Output file ? (peaks.pdb) 
+ Format (Pdb|Amore) ? (PDB) amo
+ Pick level  : (  3.900E+01) 
+ Pick limits : (       1       82) 
+ Pick limits : (       1      119) 
+ Pick limits : (       1      250) 
+ Nr of points in pick volume : (    2439500) 
+ Nr of points >= pick level  : (        156) 
+ Picking ... High-density values
+ Nr of peaks found : (        156) 
+ CPU total/user/sys :       8.7       8.5       0.2
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** SKELETONISING DENSITY
+
+ ## BOnes ? - list settings
+ list current settings and defaults for the BONES commands
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > bo ?
+
+ Current BONES parameters and defaults :
+ Current BONES map : M1
+ From file         : test.E
+ Skeletonised with base level    5.000 and step    2.000
+ And including      100 spare points
+ Yielding     2373 points and     2555 connections
+ BONES file        : sgi.bones
+ BONES ID for O    : SKL
+ Minimum length for main-chain fragments =   4
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## BOnes SKeletonise - skeletonise map
+ skeletonise a map (which must be in memory); parameters:
+ map = name of the map to use
+ base = base level for the electron density (e.g., 1.5*sigma)
+ step = step size for the skeletonisation (e.g., 0.5*sigma)
+ nr_extra = number of spare points to include
+ Use the LIst command to find the sigma level of your map
+ As of 940303, the spare bones are distributed randomly
+    throughout the skeleton (before, they were all stored
+    at position (1500,1500,1500)).
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > bo sk m1 5 2 100
+ Constructing envelope with base level    5.000
+ Level increment .....................    2.000
+ Number of levels (max. 10) ..........       10
+ Nr of points (level > 0) in input map    12802
+ Ditto, in skeletonised map ..........     2273
+
+ Nr of points in the bones :     2373
+            (includes spare points !)
+ Nr of spare points        :      100
+ Nr of connections         :     2555
+ Nr of branch-points       :      741
+
+ Nr of fragments
+ Size less than or equal to   1 =       18
+ Size less than or equal to   2 =       30
+ Size less than or equal to   3 =        9
+...
+ Size less than or equal to 100 =        0
+ Size greater than          100 =        1
+ Maximum fragment size       =      919
+
+ CPU total/user/sys :      80.2      78.8       1.4
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## BOnes COnnectivity - generate bones from skeleton
+ decide what is main-chain and what is side-chain in the
+    previously generated skeleton and write a BONES datablock
+    file for O; parameters:
+ file = name of the O file
+ id = name for your skeleton (up to 5 characters)
+ mc_len = minimum size of fragments which are to be
+               considered main-chain
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > bo co sgi.bones skl 
+ Min length main-chain fragments ? (           5) 4
+ Min length for main-chain fragments :        4
+ Nr of main-chain connections        :     1879
+ Nr of side-chain connections        :      675
+  eq 1            1        2273
+ Histogram of bones types 1,2,3....
+ Bone type : 1 481 1791 100 0 0 0 0 0 0
+ Type 2 = side-chain; 3 = main-chain
+ Type 1 = left-overs; 4 = spare parts
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## BOnes Prune - (not normally used)
+ take a skeleton, throw away all short stretches which are not
+    connected to any main-chain atoms, and write them to a PDB
+    file; parameters:
+ file = name of output PDB file
+ mc_len = minimum size of fragments which are to be
+               considered main-chain
+ bfac = a uniform temperature factor for ALL BONES atoms
+             which are written to the PDB file
+ The PDB file will contain ALL main-chain BONES atoms PLUS
+    those side-chain atoms which are connected to main-chain
+    fragments.
+ The output PDB file can be used to calculate structure
+    factor amplitudes and phases, which can then be used in
+    an iterative skeletonisation scheme
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > bo pr bones.pdb 6 5.0
+ Min length for main-chain fragments :        6
+ Nr of main-chain connections        :     5074
+ Nr of side-chain connections        :     5912
+ Nr of BONES with 0 neighbours =      372
+ Nr of BONES with 1 neighbours =     3713
+ Nr of BONES with 2 neighbours =     5396
+ Nr of BONES with 3 neighbours =      715
+ Nr of BONES with 4 neighbours =       22
+ Nr of BONES with 5 neighbours =        0
+ Nr of BONES with 6 neighbours =        0
+ Pruning BONES ...
+ Nr of BONES written to PDB file : (       6424) 
+ Nr of BONES with code 1,2,... written:
+ Nr : (0 1479 4945 0 0 0 0 0 0 0) 
+ Nr of BONES with code 1,2,... NOT written:
+ Nr : (1 3793 0 0 0 0 0 0 0 0) 
+ CPU total/user/sys :       5.3       5.0       0.3
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** VRML INTERFACE
+
+ From version 6.0 on, MAPMAN can produce VRML files of masks and
+   molecules (VRML = Virtual Reality Modelling Language).  Rather than
+   writing a dedicated set of routines to display these, use of
+   of VRML is trivial for the programmer, and easy for the user.
+
+ Some things you may need to know:
+ - VRML files have the extension ".wrl"
+ - use your favourite browser with VRML viewer plug-in to inspect
+   the displays (you can launch it from inside MAPMAN, e.g.:
+   "$ netscape test.wrl &")
+ - colours can be defined by name or by RGB values (red-green-blue,
+   three numbers in the range 0-1).  The VRml COlour_list command
+   will list all (> 400) predefined colour names and their RGB
+   values
+
+ A typical series of commands would be:
+ - (generate or read mask)
+ - VRml SEtup (if necessary)
+ - VRml INit filename
+ - VRml DRaw map level
+   (or: VRml DOts map low_level high_level)
+ - VRml TRace pdbfile
+ - VRml CEll mask
+ - VRml BOx mask
+ - VRml CLose_file
+
+ The VRML interface was written for two purposes:
+ - quick inspection of maps
+ - creating files with maps and models which you can
+   include in your web pages (in this case, don't forget to
+   compress the files with the "gzip" command to reduce their
+   size !)
+
+ $$ <A HREF="http://xray.bmc.uu.se/cgi-bin/gerard/image_page.pl?image=usf/pics/vrmlmap.jpg">
+ $$ Example of a VRML display generated with MAPMAN</A>.
+
+ ## VRml SEtup - define some parameters
+
+ With this command you can define the following parameters:
+
+ - the central atom type (" CA " for proteins)
+ - the maximum allowed distance between two subsequent central
+   atoms for them to be connected on the display (4.5 \A is a
+   reasonable cut-off for CA-CA distances in proteins)
+ - the background colour (default is black)
+ - the default colour for molecules (default is white)
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > vr set " CA " 4.5 black white
+ Central atom type : ( CA) 
+ Max central atom distance : (   4.500) 
+ Background colour : (0.0000000E+00 0.0000000E+00 0.0000000E+00) 
+ Default colour : (1.000000 1.000000 1.000000) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## VRml INit - open a new VRML file
+
+ This command opens a new VRML file (default: same file name as
+   before if the file name is not provided).  To actually write
+   masks and molecules to it, use the VRml DRaw/DOts/TRace etc.
+   commands
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > vr in mapman.wrl
+ Open VRML file : (mapman.wrl) 
+ Opened VRML file
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## VRml CLose_file - close current VRML file
+
+ The current VRML file is not closed until you open a new VRML
+   file, or use this command. It may be necessary to close the
+   file so that the output buffer is flushed properly and your
+   VRML browser can read the file.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > vr close
+ Closed VRML file
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## VRml COlour_list - list predefined colour names
+
+ To help you find colours, more than 400 colour names have been
+   predefined.  This command will list their names and their
+   RGB values.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > vr col
+ Nr of colours : (        411) 
+ #   1 (black                ) =     12595212 RGB    0.000   0.000   0.000
+ #   2 (red                  ) =     12596212 RGB    1.000   0.000   0.000
+ #   3 (green                ) =     13619212 RGB    0.000   1.000   0.000
+ #   4 (blue                 ) =   1061171212 RGB    0.000   0.000   1.000
+ #   5 (yellow               ) =     13620212 RGB    1.000   1.000   0.000
+ #   6 (magenta              ) =   1061172212 RGB    1.000   0.000   1.000
+ #   7 (cyan                 ) =   1062195212 RGB    0.000   1.000   1.000
+ #   8 (light_grey           ) =    852276012 RGB    0.800   0.800   0.800
+ #   9 (grey                 ) =    537395712 RGB    0.500   0.500   0.500
+ #  10 (dark_grey            ) =    222515412 RGB    0.200   0.200   0.200
+ #  11 (white                ) =   1062196212 RGB    1.000   1.000   1.000
+ #  12 (gainsboro            ) =    917351274 RGB    0.862   0.862   0.862
+ #  13 (honeydew             ) =   1000330169 RGB    0.941   1.000   0.941
+ #  14 (mistyrose            ) =    938355700 RGB    1.000   0.894   0.882
+ ...
+ # 407 (dodgerblue2          ) =    991454330 RGB    0.110   0.525   0.933
+ # 408 (lightsteelblue3      ) =    855328391 RGB    0.635   0.709   0.803
+ # 409 (green3               ) =     13417484 RGB    0.000   0.803   0.000
+ # 410 (orangered4           ) =     12745261 RGB    0.545   0.146   0.000
+ # 411 (mediumorchid1        ) =   1061582714 RGB    0.878   0.401   1.000
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## VRml TRace - add a trace of a molecule to the current VRML file
+
+ Adds the central-atom trace of the molecule in the PDB file you
+   supply, in the colour you specify (if any), to the current
+   VRML file.  Use the VRml SEtup command to define the central
+   atom type and the maximum distance between sequential central
+   atoms for them to be connected.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > vr trace 1pmp.pdb yellow
+ VRML - Trace of  CA  atoms for PDB file 1pmp.pdb
+ Nr of atoms written : (        393) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## VRml CEll - add a unit cell to the current VRML file
+
+ Adds a unit cell.  You must supply the map name.  Optionally,
+   you can specify the drawing colour, whether the cell should
+   be drawn as lines or as a solid body, and you can supply
+   offsets (integeral numbers of unit cells) so you can show other
+   unit cells than the one with x,y,z = 0->1.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > vr cell m1 blue
+ VRML - Cell for map M1                                                                              
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## VRml BOx - adds a map's box to the current VRML file
+
+ Adds the box of a selected map.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > vr box m1 green
+ VRML - Box for map M1                                                                              
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## VRml DOts - adds certain map points to the current VRML file
+
+ You supply the name of the map, a lower and an upper level and
+   (optionally) a colour. All map points whose density falls in
+   the selected range will be drawn as dots.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > vr dots m1 60 100 red
+ Nr of points written : (        219) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## VRml DRaw - adds contour drawing of map to the current VRML file
+
+ You supply the name of the map, the contour level and
+   (optionally) a colour. Instructions to draw a chicken wire
+   representation of the entire map will be added to the VRML
+   file.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > vr draw m1 12 cyan
+ Contour planes perpendicular to : (X) 
+ Number of planes : (      57) 
+ Nr of contours drawn  : (        598) 
+ Nr of points included : (      10736) 
+ Contour planes perpendicular to : (Y) 
+ Number of planes : (      62) 
+ Nr of contours drawn  : (        584) 
+ Nr of points included : (      10820) 
+ Contour planes perpendicular to : (Z) 
+ Number of planes : (      67) 
+ Nr of contours drawn  : (        586) 
+ Nr of points included : (      10760) 
+ Contours written
+ CPU total/user/sys :       5.7       5.7       0.0
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** MAP COSMETICS
+
+ ## FIlter - apply digital image filters to map
+ this command enables you to apply a host of "filters" to your maps.
+    Most of these are inspired by digital image-processing techniques.
+    Some of them suppress noise, others enhance features, yet others
+    are utterly useless.
+ Type "FIlter ?" to get a list of implemented filters plus an
+    explanation of their parameters.
+    Note that most filters change *all* characteristics of your map
+    (average, sigma), so you have to find a suitable contour level.
+    Also, some operations will not work well in coarse grids (MI, KL).
+    For those options that require a cube size, a value of "1" (one)
+    is recommended; for other parameters sensible defaults are given
+    by the program.
+
+ Some (early) observations:
+ - MEdian, AVerage, SMooth and VAr_thr reduce noise somewhat
+ - MAximum and KHighest smear out the density
+ - SIgnal/noise may bring out density for surface side chains
+ - LAplace shows the edges of the molecule (sometimes)
+ - EDge and STat_diff are rather neutral operations
+ - KLowest, GRadient and MInimum are rather useless
+ These filters are intended to clean up your density a bit, or to
+    enhance real features.
+  An as yet unexplored application lies in the use of these techniques
+    in density modification.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > filter ?
+  
+ Filter options:
+ ---------------
+ MEdian  - replace point by median  value in local cube
+ MInimum - replace point by minimum value in local cube
+ MAximum - replace point by maximum value in local cube
+ AVerage - replace point by average value in local cube
+           i.e., convolution with     1 1 1   1 1 1   1 1 1
+                             (1/27) * 1 1 1   1 1 1   1 1 1
+                                      1 1 1   1 1 1   1 1 1
+ SMooth  - convolution with           1 2 1   2 3 2   1 2 1
+                             (1/55) * 2 3 2   3 5 3   2 3 2
+                                      1 2 1   2 3 2   1 2 1
+ EDge    - convolution with       A A A   A   A   A   A A A
+                          (1/B) * A A A   A B-26A A   A A A
+           (A<0, B>0)             A A A   A   A   A   A A A
+ SIgnal/noise - replace point by average/sigma in local cube
+ GRadient     - convolution with (-1 0 +1) in 3 directions
+ LAplace      - convolution with (-1 2 -1) in 3 directions
+ KLowest      - replace point by average of K lowest  nbrs
+ KHighest     - replace point by average of K highest nbrs
+ VAr_thr      - variable threshold (A, B in <0,1]):
+                   NEW = old - (A*sigma + B*ave)
+ STat_diff    - statistical differencing (A, B, C in <0,1]):
+                   NEW = (1-A)*old + (old-ave)*B*C/(C+B*sigma)
+  
+ Parameters:
+ Size  = one-sided size of small, local cube (usually, 1)
+ A,B,C = parameters that determine the convolution matrix
+         (the program suggests sensible defaults)
+ K     = number of neigbours to use in averaging
+  
+ Further reading :
+ Wayne Niblack, "An Introduction to Digital Image Processing",
+ Prentice-Hall International, London, 1986.
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > fil smo m1
+ SMooth - working ...
+ Filter : (   1.000    2.000    1.000    2.000    3.000    2.000    1.000  
+    2.000    1.000    2.000    3.000    2.000    3.000    5.000    3.000    
+  2.000    3.000    2.000    1.000    2.000    1.000    2.000    3.000    
+  2.000    1.000    2.000    1.000) 
+ Sum    : (  55.000) 
+ CPU total/user/sys :       3.9       3.9       0.0
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** KNOWN BUGS
+
+ Some of the input and output formats don't work properly (yet).

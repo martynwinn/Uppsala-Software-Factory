@@ -1,0 +1,22 @@
+#
+OBJ=	comap.o ../gklib/osx_kleylib  ../ccp4libs_latest_m32_osx/libccp4f.a  ../ccp4libs_latest_m32_osx/libccp4c.a
+EXEC =	comap
+INCL=	Makefile_osx
+SUBS = 
+##SUBS## SUBS = comap_subs.o
+##INCL## INCL = Makefile_osx comap.incl
+##STATIC## STATIC = -static
+
+fc =	 gfortran -DOSX
+
+opt= -O -u -check_bounds -ffixed-line-length-132 -m32 -I..
+link= -O
+
+$(EXEC):	$(OBJ) $(SUBS)
+	$(fc) $(link) -o $(EXEC) $(SUBS) $(OBJ) $(STATIC) -m32 ; strip $(EXEC)
+
+comap.o:	comap.fpp $(INCL)
+	$(fc) $(opt) -c comap.fpp
+
+##SUBS## comap_subs.o:	comap_subs.fpp $(INCL)
+##SUBS## 			$(fc) $(opt) -c comap_subs.fpp

@@ -1,0 +1,1164 @@
+!
+! Library file for MoleMan2 - G J KLEYWEGT
+!
+! REM = moleman2.lib = version 0.1 = 951106 = gj kleywegt = 118 entries =
+! REM = moleman2.lib = version 0.2 = 960311 = gj kleywegt = 118 entries =
+! REM = moleman2.lib = version 0.3 = 970724 = gj kleywegt = 119 entries =
+! REM = moleman2.lib = version 0.4 = 970807 = gj kleywegt = 119 entries =
+! REM = moleman2.lib = version 2.7 = 000526 = gj kleywegt = 119 entries =
+! REM = moleman2.lib = version 2.8 = 021126 = gj kleywegt = 120 entries =
+! REM = moleman2.lib = version 3.0 = 030225 = gj kleywegt = 153 entries = 97 aliases = 78 ring definitions
+!
+REM = moleman2.lib = version 3.1 = 070913 = gj kleywegt = 153 entries = 97 aliases = 78 ring definitions
+!
+! Gerard J Kleywegt @ 951106 - 118 entries
+!   most hetero-entries auto-generated from OMAC/hetero.pdb
+! 960311 - added one-letter code (OLC)
+! 970724 - better nucleic acids
+! 970807 - use of wildcard "?" in atom names
+! 000526 - added RNG cards to define ring atoms
+! 021126 - added ATP
+! 030225 - 3.0 - added some alternative (HET) names for D-amino
+!                and seleno-amino acid residues plus many ring
+!                definitions, and lots of popular hetero compounds
+!                and modified amino acids (according to HIC-Up)
+! 070913 - 3.1 - added DA, DC, DG, DT AKAs for nucleotides
+!
+! defined categories:
+! PROTein
+! NUCLeic acid
+! WATEr
+! METAl ions
+! INORganic ions and clusters
+! CARBohydrates
+! ORGAnic ligands, ions, substrates, co-factors etc.
+! all others will be called HETEro
+!
+! For each residue type:
+!
+! RES XYZ description
+!   FORMAT: (A3,1x,A3,1x,A80)
+!   - XYZ = 3-letter residue type
+!   - description = free text
+! OLC N
+!   FORMAT: (A3,1x,A1)
+!   - N = one-letter code
+! TYP ABCDefghijkl
+!   FORMAT: (A3,1x,A4)
+!   - ABCD = one of the defined categories, e.g. protein
+! AKA ABC DEF GHI
+!   FORMAT: (A3,n(1x,A3)) (multiple cards allowed)
+!   - 0 or more synonyms for the residue type
+! MCH ...
+!   FORMAT: first card (A3,1X,*)
+!           subsequent cards (4X,*)
+!   - 0 or more atom names which constitute the main chain or backbone
+! SCH ...
+!   FORMAT: first card (A3,1X,*)
+!           subsequent cards (4X,*)
+!   - 0 or more atom names which constitute the side chain
+! END
+!   FORMAT: (A3)
+!   - signals end of residue definition
+!
+! in MCH and SCH lines, use a "-" at the end of a line to signal
+!   continuation on the next one; start the next line with 5 spaces !
+!
+! any line beginning with "!" is a comment which will not be printed
+!
+! any line beginning with REM is a comment which will be printed
+!
+! RNG signals a ring definition (*NOT* inside RES !!) for ONo RIngs
+! example: RNG PHE  7. CG . CD1. CE1. CZ . CE2. CD2. CG
+! FORMAT: A3,1X,A3,1X,I2,10(1x,A4)
+!   'PHE' = residue type
+!    ' 7' = nr of atoms (first and last should be the same; MAX 10 !!)
+!   rest of line is the names of the atoms in the ring
+!   note: TRP split into two RNG definitions
+!   note: rings don't have to be flat (e.g., PRO works fine)
+!
+! ================================================== PROTEIN
+!
+RES GLY glycine
+OLC G
+TYP protein
+MCH ' N  ' ' CA ' ' C  ' ' O  '
+END
+!
+RES ALA alanine
+OLC A
+TYP protein
+AKA DAL
+MCH ' N  ' ' CA ' ' C  ' ' O  '
+SCH ' CB '
+END
+!
+RES THR threonine
+OLC T
+TYP protein
+MCH ' N  ' ' CA ' ' C  ' ' O  '
+SCH ' CB ' ' OG1' ' CG2'
+END
+!
+RES TPO phosphothreonine
+OLC T
+TYP protein
+MCH ' N  ' ' CA ' ' C  ' ' O  '
+SCH ' CB ' ' OG1' ' CG2' ' P  ' ' O1P' ' O2P' ' O3P'
+END
+!
+RES CYS cysteine
+OLC C
+TYP protein
+AKA CSS CSH CYH CYX BTC DCY FCY
+MCH ' N  ' ' CA ' ' C  ' ' O  '
+SCH ' CB ' ' SG '
+END
+!
+RES CSO s-hydroxycysteine
+OLC C
+TYP protein
+MCH ' N  ' ' CA ' ' C  ' ' O  '
+SCH ' CB ' ' SG ' ' OD '
+END
+!
+RES CSD s-cysteinesulfinic acid
+OLC C
+TYP protein
+MCH ' N  ' ' CA ' ' C  ' ' O  '
+SCH ' CB ' ' SG ' ' OD1' ' OD2'
+END
+!
+RES CSE selenocysteine
+OLC C
+TYP protein
+MCH ' N  ' ' CA ' ' C  ' ' O  '
+SCH ' CB ' 'SEG '
+END
+!
+RES SER serine
+OLC S
+TYP protein
+AKA DSN
+MCH ' N  ' ' CA ' ' C  ' ' O  '
+SCH ' CB ' ' OG '
+END
+!
+RES SEP phosphoserine
+OLC S
+TYP protein
+MCH ' N  ' ' CA ' ' C  ' ' O  '
+SCH ' CB ' ' OG ' ' P  ' ' O1P' ' O2P' ' O3P'
+END
+!
+RES VAL valine
+OLC V
+TYP protein
+AKA DVA
+MCH ' N  ' ' CA ' ' C  ' ' O  '
+SCH ' CB ' ' CG1' ' CG2'
+END
+!
+RES LEU leucine
+OLC L
+TYP protein
+AKA DLE
+MCH ' N  ' ' CA ' ' C  ' ' O  '
+SCH ' CB ' ' CG ' ' CD1' ' CD2'
+END
+!
+RES PRO proline
+OLC P
+TYP protein
+AKA CPR PR0 PRZ DPR
+MCH ' N  ' ' CA ' ' C  ' ' O  '
+SCH ' CB ' ' CG ' ' CD '
+END
+RNG PRO  6. N  . CA . CB . CG . CD . N
+!
+RES HIS histidine
+OLC H
+TYP protein
+AKA DHI
+MCH ' N  ' ' CA ' ' C  ' ' O  '
+SCH ' CB ' ' CG ' ' ND1' ' CD2' ' CE1' ' NE2'
+END
+RNG HIS  6. CG . ND1. CE1. NE2. CD2. CG
+!
+RES ILE isoleucine
+OLC I
+TYP protein
+AKA ILU DIL
+MCH ' N  ' ' CA ' ' C  ' ' O  '
+SCH ' CB ' ' CG1' ' CG2' ' CD1'
+END
+!
+RES PHE phenylalanine
+OLC F
+TYP protein
+AKA DPN
+MCH ' N  ' ' CA ' ' C  ' ' O  '
+SCH ' CB ' ' CG ' ' CD1' ' CD2' ' CE1' ' CE2' ' CZ '
+END
+RNG PHE  7. CG . CD1. CE1. CZ . CE2. CD2. CG
+!
+RES TYR tyrosine
+OLC Y
+TYP protein
+AKA DTY
+MCH ' N  ' ' CA ' ' C  ' ' O  '
+SCH ' CB ' ' CG ' ' CD1' ' CD2' ' CE1' ' CE2' ' CZ ' ' OH '
+END
+RNG TYR  7. CG . CD1. CE1. CZ . CE2. CD2. CG
+!
+RES TYS sulfonated tyrosine
+OLC Y
+TYP protein
+MCH ' N  ' ' CA ' ' C  ' ' O  '
+SCH ' CB ' ' CG ' ' CD1' ' CD2' ' CE1' ' CE2' ' CZ ' ' OH ' -
+    ' S  ' ' O1 ' ' O2 ' ' O3 '
+END
+RNG TYR  7. CG . CD1. CE1. CZ . CE2. CD2. CG
+!
+RES PTR phosphotyrosine
+OLC Y
+TYP protein
+MCH ' N  ' ' CA ' ' C  ' ' O  '
+SCH ' CB ' ' CG ' ' CD1' ' CD2' ' CE1' ' CE2' ' CZ ' ' OH ' -
+    ' P  ' ' O1P' ' O2P' ' O3P'
+END
+RNG PTR  7. CG . CD1. CE1. CZ . CE2. CD2. CG
+!
+RES TRP tryptophan
+OLC W
+TYP protein
+AKA TRY DTR LTR
+MCH ' N  ' ' CA ' ' C  ' ' O  '
+SCH ' CB ' ' CG ' ' CD1' ' CD2' ' NE1' ' CE2' ' CE3' ' CZ2' ' CZ3' ' CH2'
+END
+RNG TRP  6. CG . CD1. NE1. CE2. CD2. CG
+RNG TRP  7. CE2. CZ2. CH2. CZ3. CE3. CD2. CE2
+!
+RES ASP aspartate
+OLC D
+TYP protein
+AKA DAS DSP
+MCH ' N  ' ' CA ' ' C  ' ' O  '
+SCH ' CB ' ' CG ' ' OD1' ' OD2'
+END
+!
+RES ASN asparagine
+OLC N
+TYP protein
+MCH ' N  ' ' CA ' ' C  ' ' O  '
+SCH ' CB ' ' CG ' ' OD1' ' ND2'
+END
+!
+RES MET methionine
+OLC M
+TYP protein
+MCH ' N  ' ' CA ' ' C  ' ' O  '
+SCH ' CB ' ' CG ' ' SD ' ' CE '
+END
+!
+RES MSE selenomethionine
+OLC M
+TYP protein
+MCH ' N  ' ' CA ' ' C  ' ' O  '
+SCH ' CB ' ' CG ' 'SED ' ' CE '
+END
+!
+RES GLU glutamate
+OLC E
+TYP protein
+AKA DGL
+MCH ' N  ' ' CA ' ' C  ' ' O  '
+SCH ' CB ' ' CG ' ' CD ' ' OE1' ' OE2'
+END
+!
+RES GLN glutamine
+OLC Q
+TYP protein
+AKA DGN
+MCH ' N  ' ' CA ' ' C  ' ' O  '
+SCH ' CB ' ' CG ' ' CD ' ' OE1' ' NE2'
+END
+!
+RES ARG arginine
+OLC R
+TYP protein
+AKA DAR
+MCH ' N  ' ' CA ' ' C  ' ' O  '
+SCH ' CB ' ' CG ' ' CD ' ' NE ' ' CZ ' ' NH1' ' NH2'
+END
+!
+RES LYS lysine
+OLC K
+TYP protein
+AKA DLY
+MCH ' N  ' ' CA ' ' C  ' ' O  '
+SCH ' CB ' ' CG ' ' CD ' ' CE ' ' NZ '
+END
+!
+RES KCX lysine nz-carboxylic acid
+OLC K
+TYP protein
+MCH ' N  ' ' CA ' ' C  ' ' O  '
+SCH ' CB ' ' CG ' ' CD ' ' CE ' ' NZ ' ' CX ' ' OX1' ' OX2'
+END
+!
+RES PCA pyroglutamate
+OLC Q
+TYP protein
+AKA PYR PGA
+MCH ' N  ' ' CA ' ' C  ' ' O  '
+SCH ' CB ' ' CG ' ' CD ' ' OE '
+END
+RNG PCA  6. N  . CA . CB . CG . CD . N
+!
+! ================================================== NUCLEIC ACIDS
+!
+RES A   adenosine
+OLC A
+TYP nucleic
+AKA ADE "  A" " DA"
+MCH ' P  ' ' O1P' ' O2P' ' O5*' ' C5*' ' C4*' ' O4*' ' C3*' ' O3*' -
+    ' C2*' ' O2*' ' C1*'
+SCH ' N9 ' ' C8 ' ' N7 ' ' C5 ' ' C6 ' ' N6 ' ' N1 ' ' C2 ' ' N3 ' ' C4 '
+END
+RNG A    6. N9 . C8 . N7 . C5 . C4 . N9
+RNG A    7. C5 . C4 . N3 . C2 . N1 . C6 . C5
+RNG   A  6. N9 . C8 . N7 . C5 . C4 . N9
+RNG   A  7. C5 . C4 . N3 . C2 . N1 . C6 . C5
+!
+RES G   guanosine
+OLC G
+TYP nucleic
+AKA GUA "  G" " DG"
+MCH ' P  ' ' O1P' ' O2P' ' O5*' ' C5*' ' C4*' ' O4*' ' C3*' ' O3*' -
+    ' C2*' ' O2*' ' C1*'
+SCH ' N9 ' ' C8 ' ' N7 ' ' C5 ' ' C6 ' ' O6 ' ' N1 ' ' C2 ' ' N2 ' -
+    ' N3 ' ' C4 '
+END
+RNG G    6. N9 . C8 . N7 . C5 . C4 . N9
+RNG G    7. C5 . C4 . N3 . C2 . N1 . C6 . C5
+RNG   G  6. N9 . C8 . N7 . C5 . C4 . N9
+RNG   G  7. C5 . C4 . N3 . C2 . N1 . C6 . C5
+!
+RES C   cytidine
+OLC C
+TYP nucleic
+AKA CYT "  C" " DC"
+MCH ' P  ' ' O1P' ' O2P' ' O5*' ' C5*' ' C4*' ' O4*' ' C3*' ' O3*' -
+    ' C2*' ' O2*' ' C1*'
+SCH ' N1 ' ' C2 ' ' O2 ' ' N3 ' ' C4 ' ' N4 ' ' C5 ' ' C6 '
+END
+RNG C    7. N1 . C2 . N3 . C4 . C5 . C6 . N1
+RNG   C  7. N1 . C2 . N3 . C4 . C5 . C6 . N1
+!
+RES U   uridine
+OLC U
+TYP nucleic
+AKA URI "  U"
+MCH ' P  ' ' O1P' ' O2P' ' O5*' ' C5*' ' C4*' ' O4*' ' C3*' ' O3*' -
+    ' C2*' ' O2*' ' C1*'
+SCH ' N1 ' ' C2 ' ' O2 ' ' N3 ' ' C4 ' ' O4 ' ' C5 ' ' C6 '
+END
+RNG U    7. N1 . C2 . N3 . C4 . C5 . C6 . N1
+RNG   U  7. N1 . C2 . N3 . C4 . C5 . C6 . N1
+!
+RES T   thymidine
+OLC T
+TYP nucleic
+AKA THY "  T" " DT"
+MCH ' P  ' ' O1P' ' O2P' ' O5*' ' C5*' ' C4*' ' O4*' ' C3*' ' O3*' -
+    ' C2*' ' O2*' ' C1*'
+SCH ' N1 ' ' C2 ' ' O2 ' ' N3 ' ' C4 ' ' O4 ' ' C5 ' ' C6 ' ' C5M'
+END
+RNG T    7. N1 . C2 . N3 . C4 . C5 . C6 . N1
+RNG   T  7. N1 . C2 . N3 . C4 . C5 . C6 . N1
+!
+! ================================================== WATER
+!
+RES HOH water
+TYP water
+AKA WAT SOL OHH HHO H2O OH2 H3O OH3 EAU DOD MTO TIP DOD
+SCH ' O??'
+END
+!
+! ================================================== METAL IONS
+!
+RES CD  cadmium2+
+TYP metal_ion
+AKA CD2  CAD
+SCH 'CD??'
+END
+!
+RES ZN  zinc2+
+TYP metal_ion
+AKA ZN2  ZNC
+SCH 'ZN??'
+END
+!
+RES NA  sodium1+
+TYP metal_ion
+AKA NA+ NA1 SOD
+SCH 'NA??'
+END
+!
+RES AL  aluminum3+
+TYP metal_ion
+AKA AL3 ALU
+SCH 'AL??'
+END
+!
+RES CA  calcium2+
+TYP metal_ion
+AKA CA2  CAL " CA"
+SCH 'CA??'
+END
+!
+RES CO  cobalt 2+ cation
+TYP metal_ion
+AKA CO2 COB
+SCH 'CO??'
+END
+!
+RES CU  copper cation
+TYP metal_ion
+AKA CU1 CU2
+SCH 'CU??'
+END
+!
+RES FE  iron ion
+TYP metal_ion
+AKA FE2 FE3
+SCH 'FE??'
+END
+!
+RES MG  magnesium
+TYP metal_ion
+AKA MG2
+SCH 'MG??'
+END
+!
+RES MN  manganese
+TYP metal_ion
+AKA MN2
+SCH 'MN??'
+END
+!
+RES HG  mercury ++ cation
+TYP metal ion
+AKA HG2
+SCH 'HG??'
+END
+!
+RES NI  nickel ++
+TYP metal_ion
+AKA NI2
+SCH 'NI??'
+END
+!
+RES K   potassium +
+TYP metal_ion
+AKA K1  POT
+SCH ' K??'
+END
+!
+! ================================================== INORGANIC IONS & CLUSTERS
+!
+RES NH4 ammonium ion
+TYP inorganic
+SCH ' NH4'
+END
+!
+RES SO4 sulphate
+TYP inorganic
+AKA SUL
+SCH ' S  ' ' O1 ' ' O2 ' ' O3 ' ' O4 '
+END
+!
+RES PO4 phosphate
+TYP inorganic
+AKA PHO IPS " PI"
+SCH ' P  ' ' O1 ' ' O2 ' ' O3 ' ' O4 '
+END
+!
+RES POP pyrophosphate
+TYP inorganic
+SCH ' P1 ' ' O1 ' ' O2 ' ' O3 ' ' O  ' ' P2 ' ' O4 ' -
+    ' O5 ' ' O6 '
+END
+!
+RES AZI azide ion, n3 -
+TYP inorganic
+SCH ' N1 ' ' N2 ' ' N3 '
+END
+!
+RES CAC cacodylate
+TYP inorganic
+SCH 'AS  ' ' O1 ' ' O2 '
+END
+!
+RES CL  chlorine ion
+TYP inorganic
+AKA " CL"
+SCH 'CL??'
+END
+!
+RES F   fluoride ion
+TYP inorganic
+AKA FLO "  F"
+SCH ' F??'
+END
+!
+RES BR  BROMIDE ion
+TYP inorganic
+AKA BRO " BR"
+SCH 'BR??'
+END
+!
+RES F4S fe/s inorganic cluster
+TYP inorganic
+AKA FS4
+SCH 'FE1 ' 'FE2 ' 'FE3 ' 'FE4 ' ' S1 ' ' S2 ' ' S3 ' ' S4 '
+END
+!
+RES FS3 fe/s inorganic cluster
+TYP inorganic
+SCH 'FE1 ' 'FE2 ' 'FE3 ' ' S1 ' ' S2 ' ' S3 ' ' S4 '
+END
+!
+RES FES fe/s inorganic cluster
+TYP inorganic
+SCH 'FE1 ' 'FE2 ' ' S1 ' ' S2 '
+END
+!
+RES IUM uranyl(vi) ion
+TYP inorganic
+SCH ' U??' ' O1 ' ' O2 '
+END
+!
+RES HEM iron protoprophyrin ix
+TYP inorganic
+SCH 'FE??' ' CHA' ' CHB' ' CHC' ' CHD' ' N A' ' C1A' ' C2A' ' C3A' ' C4A' -
+    ' CMA' ' CAA' ' CBA' ' CGA' ' O1A' ' O2A' ' N B' ' C1B' ' C2B' ' C3B' -
+    ' C4B' ' CMB' ' CAB' ' CBB' ' N C' ' C1C' ' C2C' ' C3C' ' C4C' ' CMC' -
+    ' CAC' ' CBC' ' N D' ' C1D' ' C2D' ' C3D' ' C4D' ' CMD' ' CAD' ' CBD' -
+    ' CGD' ' O1D' ' O2D'
+END
+RNG HEM  5. NA . C1A. C2A. C3A. C4A. NA
+RNG HEM  5. NB . C1B. C2B. C3B. C4B. NB
+RNG HEM  5. NC . C1C. C2C. C3C. C4C. NC
+RNG HEM  5. ND . C1D. C2D. C3D. C4D. ND
+!
+RES NO3 nitrate
+TYP inorganic
+SCH ' N  ' ' O1 ' ' O2 ' ' O3 '
+END
+!
+RES NO2 nitrite
+TYP inorganic
+SCH ' N  ' ' O1 ' ' O2 '
+END
+!
+RES SCN thiocyanate ion
+TYP inorganic
+SCH ' S  ' ' C  ' ' N  '
+END
+!
+! ================================================== CARBOHYDRATES
+!
+RES NAG n-acetyl-glucosamine glcnac 2-acetamido-2-deoxy-d-glucose
+TYP carbohydrate
+SCH ' C1 ' ' C2 ' ' N2 ' ' C3 ' ' O3 ' ' C4 ' ' O4 ' ' C5 ' ' O5 ' -
+    ' C6 ' ' O6 ' ' C7 ' ' O7 ' ' C8 '
+END
+RNG NAG  7. C1 . C2 . C3 . C4 . C5 . O5 . C1
+!
+RES NBG 1-n-acetyl-beta-d-glucosamine
+TYP carbohydrate
+SCH ' C1 ' ' C2 ' ' C3 ' ' C4 ' ' C5 ' ' C6 ' ' C7 ' ' C8 ' ' N1 ' ' O3 ' -
+    ' O2 ' ' O4 ' ' O5 ' ' O6 ' ' O7 '
+END
+RNG NBG  7. C1 . C2 . C3 . C4 . C5 . O5 . C1
+!
+RES MAL maltose
+TYP carbohydrate
+SCH ' C1 ' ' C2 ' ' C3 ' ' C4 ' ' C5 ' ' C6 ' ' O1 ' ' O2 ' ' O3 ' ' O4 ' -
+    ' O5 ' ' O6 ' ' C1'' ' C2'' ' C3'' ' C4'' ' C5'' ' C6'' ' O1'' ' O2'' -
+    ' O3'' ' O5'' ' O6''
+END
+RNG MAL  7. C1 . C2 . C3 . C4 . C5 . O5 . C1
+RNG MAL  7. C1'. C2'. C3'. C4'. C5'. O5'. C1'
+!
+RES GLA alpha d-galactose
+TYP carbohydrate
+AKA GAL
+SCH ' C1 ' ' C2 ' ' C3 ' ' C4 ' ' C5 ' ' C6 ' ' O1 ' ' O2 ' ' O3 ' ' O4 ' -
+    ' O5 ' ' O6 '
+END
+RNG GLA  7. C1 . C2 . C3 . C4 . C5 . O5 . C1
+!
+RES GLB beta d-galactose
+TYP carbohydrate
+SCH ' C1 ' ' C2 ' ' C3 ' ' C4 ' ' C5 ' ' C6 ' ' O1 ' ' O2 ' ' O3 ' ' O4 ' -
+    ' O5 ' ' O6 '
+END
+RNG GLB  7. C1 . C2 . C3 . C4 . C5 . O5 . C1
+!
+RES FCA alpha-d-fucose
+TYP carbohydrate
+SCH ' C1 ' ' C2 ' ' C3 ' ' C4 ' ' C5 ' ' C6 ' ' O1 ' ' O2 ' ' O3 ' ' O4 ' -
+    ' O5 '
+END
+RNG FCA  7. C1 . C2 . C3 . C4 . C5 . O5 . C1
+!
+RES FCB beta-d-fucose
+TYP carbohydrate
+SCH ' C1 ' ' C2 ' ' C3 ' ' C4 ' ' C5 ' ' C6 ' ' O1 ' ' O2 ' ' O3 ' ' O4 ' -
+    ' O5 '
+END
+RNG FCB  7. C1 . C2 . C3 . C4 . C5 . O5 . C1
+!
+RES FUC fucose
+TYP carbohydrate
+SCH ' C1 ' ' C2 ' ' C3 ' ' C4 ' ' C5 ' ' C6 ' ' O2 ' ' O3 ' ' O4 ' ' O5 '
+END
+RNG FUC  7. C1 . C2 . C3 . C4 . C5 . O5 . C1
+!
+RES GLC alpha-d-glucose
+TYP carbohydrate
+AKA AGL
+SCH ' C1 ' ' C2 ' ' C3 ' ' C4 ' ' C5 ' ' C6 ' ' O1 ' ' O2 ' ' O3 ' ' O4 ' -
+    ' O5 ' ' O6 '
+END
+RNG GLC  7. C1 . C2 . C3 . C4 . C5 . O5 . C1
+!
+RES GLC beta-d-glucose
+TYP carbohydrate
+AKA BGL
+SCH ' C1 ' ' C2 ' ' C3 ' ' C4 ' ' C5 ' ' C6 ' ' O1 ' ' O2 ' ' O3 ' ' O4 ' -
+    ' O5 ' ' O6 '
+END
+RNG GLC  7. C1 . C2 . C3 . C4 . C5 . O5 . C1
+!
+RES GLO d-glucose in linear form
+TYP carbohydrate
+SCH ' C1 ' ' C2 ' ' C3 ' ' C4 ' ' C5 ' ' C6 ' ' O1 ' ' O2 ' ' O3 ' ' O4 ' -
+    ' O5 ' ' O6 '
+END
+!
+RES MAN alpha-d-mannose
+TYP carbohydrate
+SCH ' C1 ' ' C2 ' ' C3 ' ' C4 ' ' C5 ' ' C6 ' ' O2 ' ' O3 ' ' O4 ' ' O5 ' -
+    ' O6 '
+END
+RNG MAN  7. C1 . C2 . C3 . C4 . C5 . O5 . C1
+!
+RES MAN beta-d-mannose
+TYP carbohydrate
+SCH ' C1 ' ' C2 ' ' C3 ' ' C4 ' ' C5 ' ' C6 ' ' O2 ' ' O3 ' ' O4 ' ' O5 ' -
+    ' O6 '
+END
+RNG MAN  7. C1 . C2 . C3 . C4 . C5 . O5 . C1
+!
+RES ARA alpha-l-arabinose
+TYP carbohydrate
+SCH ' C1 ' ' C2 ' ' C3 ' ' C4 ' ' C5 ' ' O1 ' ' O2 ' ' O3 ' ' O4 ' ' O5 '
+END
+RNG ARA  7. C1 . C2 . C3 . C4 . C5 . O5 . C1
+!
+RES ARB beta-l-arabinose
+TYP carbohydrate
+SCH ' C1 ' ' C2 ' ' C3 ' ' C4 ' ' C5 ' ' O1 ' ' O2 ' ' O3 ' ' O4 ' ' O5 '
+END
+RNG ARB  7. C1 . C2 . C3 . C4 . C5 . O5 . C1
+!
+RES XYS cyclic xylose
+TYP carbohydrate
+SCH ' C1 ' ' C2 ' ' C3 ' ' C4 ' ' C5 ' ' O1 ' ' O2 ' ' O3 ' ' O4 ' ' O5 '
+END
+RNG XYS  7. C1 . C2 . C3 . C4 . C5 . O5 . C1
+!
+RES XLS d-xylose
+TYP carbohydrate
+SCH ' C1 ' ' C2 ' ' C3 ' ' C4 ' ' C5 ' ' O1 ' ' O2 ' ' O3 ' ' O4 ' ' O5 '
+END
+!
+RES XUL d-xylulose
+TYP carbohydrate
+SCH ' C1 ' ' C2 ' ' C3 ' ' C4 ' ' C5 ' ' O1 ' ' O2 ' ' O3 ' ' O4 ' ' O5 '
+END
+!
+RES NGA n-acetyl-d-galactosamine
+TYP carbohydrate
+SCH ' C1 ' ' C2 ' ' C3 ' ' C4 ' ' C5 ' ' C6 ' ' C7 ' ' C8 ' ' N2 ' ' O4 ' -
+    ' O5 ' ' O7 '
+END
+RNG NGA  7. C1 . C2 . C3 . C4 . C5 . O5 . C1
+!
+! ================================================== ORGANIC LIGANDS ETC.
+!
+RES DCE 1,2-dichloroethane (ethylene dichloride)
+TYP organic
+SCH 'CL1 ' ' C1 ' ' C2 ' 'CL2 '
+END
+!
+RES FAT 1-hexyldecanoic acid
+TYP organic
+SCH ' C1 ' ' OE1' ' OE2' ' C2 ' ' C3 ' ' C4 ' ' C5 ' ' C6 ' ' C7 ' ' C8 ' -
+    ' C9 ' ' C10' ' C11' ' C12' ' C13' ' C14' ' C15' ' C16'
+END
+!
+RES PFB 2,3,4,5,6-pentafluorobenzyl alcohol
+TYP organic
+SCH ' C1 ' ' C2 ' ' C3 ' ' C4 ' ' C5 ' ' C6 ' ' C7 ' ' F2 ' ' F3 ' ' F4 ' -
+    ' F5 ' ' F6 ' ' O1 '
+END
+RNG PFB  7. C1 . C2 . C3 . C4 . C5 . C6 . C1
+!
+RES DOB 2,4-dihydroxybenzoic acid
+TYP organic
+SCH ' C1'' ' O1'' ' O2'' ' C1 ' ' C2 ' ' C3 ' ' C4 ' ' C5 ' ' C6 ' ' O2 ' -
+    ' O4 '
+END
+RNG DOB  7. C1 . C2 . C3 . C4 . C5 . C6 . C1
+!
+RES SEO 2-mercaptoethanol
+TYP organic
+SCH ' S1 ' ' C1 ' ' C2 ' ' O2 '
+END
+!
+RES BME beta-mercaptoethanol
+TYP organic
+SCH ' O1 ' ' C1 ' ' C2 ' ' S2 '
+END
+!
+RES HED 2-hydroxyethyl disulfide
+TYP organic
+SCH ' O1 ' ' C1 ' ' C2 ' ' S3 ' ' S4 ' ' C5 ' ' C6 ' ' O6 '
+END
+!
+RES MES 2-(n-morpholino)-ethanesulfonic acid
+TYP organic
+SCH ' O1 ' ' C2 ' ' C3 ' ' N4 ' ' C5 ' ' C6 ' ' C7 ' -
+    ' C8 ' ' S  ' ' O1S' ' O2S' ' O3S'
+END
+RNG MES  7. O1 . C2 . C3 . N4 . C5 . C6 . O1
+!
+RES EPE hepes 4-(2-hydroxyethyl)-1-piperazine ethanesulfonic acid
+TYP organic
+SCH ' N1 ' ' C2 ' ' C3 ' ' N4 ' ' C5 ' ' C6 ' ' C7 ' -
+    ' C8 ' ' O8 ' ' C9 ' ' C10' ' S  ' ' O1S' ' O2S' -
+    ' O3S'
+END
+RNG EPE  7. N1 . C2 . C3 . N4 . C5 . C6 . N1
+!
+RES MPD 2-methyl-2,4-pentanediol
+TYP organic
+SCH ' C1 ' ' C2 ' ' O2 ' ' CM ' ' C3 ' ' C4 ' ' O4 ' ' O4 ' ' C5 '
+END
+!
+RES 2PG 2-phosphoglycerate
+TYP organic
+SCH ' C1 ' ' C2 ' ' C3 ' ' P  ' ' O11' ' O12' ' O31' ' O1P' ' O2P' ' O3P' -
+    ' O4P'
+END
+!
+RES MP3 3-phosphoglycerate
+TYP organic
+SCH ' O1 ' ' C1 ' ' O2 ' ' C2 ' ' OH ' ' C3 ' ' OPC' ' PC ' ' OC1' ' OC2' -
+    ' OC3'
+END
+!
+RES ACY acetate acetic_acid
+TYP organic
+AKA ACT
+SCH ' C  ' ' O  ' ' OXT' ' CH3'
+END
+!
+RES FMT formate
+TYP organic
+SCH ' C  ' ' O1 ' ' O2 '
+END
+!
+RES ACN acetone molecule
+TYP organic
+SCH ' C  ' ' O  ' ' C1 ' ' C2 '
+END
+!
+RES CCN acetonitrile
+TYP organic
+SCH ' N  ' ' C1 ' ' C2 '
+END
+!
+RES ACO acetyl coenzyme *a
+TYP organic
+SCH 'AO6 ' 'AP2 ' 'AO4 ' 'AO5 ' 'AO3 ' 'AP1 ' 'AO1 ' 'AO2 ' 'AO5*' 'AC5*' -
+    'AC4*' 'AO4*' 'AC3*' 'AO3*' 'AP3*' 'AO7 ' 'AO8 ' 'AO9 ' 'AC2*' 'AO2*' -
+    'AC1*' 'AN9 ' 'AC8 ' 'AN7 ' 'AC5 ' 'AC6 ' 'AN6 ' 'AN1 ' 'AC2 ' 'AN3 ' -
+    'AC4 ' 'PS1 ' 'PC2 ' 'PC3 ' 'PN4 ' 'PC5 ' 'PO5 ' 'PC6 ' 'PC7 ' 'PN8 ' -
+    'PC9 ' 'PO9 ' 'PC10' 'PO10' 'PC11' 'PC12' 'PC13' 'PC14' ' C  ' ' O  ' -
+    ' CH3'
+END
+RNG ACO  6.AN9 .AC8 .AN7 .AC5 .AC4 .AN9
+RNG ACO  7.AC5 .AC4 .AN3 .AC2 .AN1 .AC6 .AC5
+!
+RES ACE acetyl group
+TYP organic
+SCH ' C  ' ' O  ' ' CH3'
+END
+!
+RES NH2 terminal amide group
+TYP organic
+SCH ' N  '
+END
+!
+RES CH3 methyl or methylene group
+TYP organic
+AKA CH2
+SCH ' C  '
+END
+!
+RES ACH acetylcholine
+TYP organic
+SCH ' N1 ' ' C2 ' ' C3 ' ' O4 ' ' C5 ' ' C6 ' ' O7 ' ' C8 ' ' C9 ' ' C10'
+END
+!
+RES ASC ascorbic acid
+TYP organic
+SCH ' C1 ' ' C2 ' ' C3 ' ' C4 ' ' C5 ' ' C6 ' ' O1 ' ' O2 ' ' O3 ' ' O4 ' -
+    ' O5 ' ' O6 '
+END
+RNG ASC  5. C1 . C2 . C3 . C4 . O4 . C1
+!
+RES IMD imidazole
+TYP organic
+SCH ' N1 ' ' C2 ' ' N3 ' ' C4 ' ' C5 ' 
+END
+RNG IMD  5. N1 . C2 . N3 . C4 . C5 . N1
+!
+RES BNZ benzene
+TYP organic
+SCH ' C1 ' ' C2 ' ' C3 ' ' C4 ' ' C5 ' ' C6 '
+END
+RNG BNZ  7. C1 . C2 . C3 . C4 . C5 . C6 . C1
+!
+RES BEN benzyldiamine
+TYP organic
+SCH ' C1 ' ' C2 ' ' C3 ' ' C4 ' ' C5 ' ' C6 ' -
+    ' C  ' ' N1 ' ' N2 '
+END
+RNG BNZ  7. C1 . C2 . C3 . C4 . C5 . C6 . C1
+!
+RES BCT bicarbonate
+TYP organic
+AKA CO3
+SCH ' C  ' ' O1 ' ' O2 ' ' O3 '
+END
+!
+RES BIO biopterin
+TYP organic
+SCH ' NA2' ' C2 ' ' N1 ' ' N3 ' ' C4 ' ' C4A' ' C8A' ' N8 ' ' C7 ' ' C6 ' -
+    ' N5 ' ' C9 ' ' C10' ' C11' ' O4 ' ' O9 ' ' O10'
+END
+RNG BIO  6. C4A. N5 . C6 . C7 . N8 . C8A. C4A
+RNG BIO  7. N1 . C2 . N3 . C4 . C4A. C8A. N1
+!
+RES BTN biotin
+TYP organic
+SCH ' C1 ' ' C10' ' C9 ' ' C8 ' ' C7 ' ' C2 ' ' C6 ' ' C4 ' ' C5 ' ' C3 ' -
+    ' O1 ' ' O2 ' ' O3 ' ' N1 ' ' N2 ' ' S1 '
+END
+RNG BTN  6. N1 . C5 . C4 . N2 . C3 . N1
+RNG BTN  6. S1 . C2 . C4 . C5 . C6 . S1
+!
+RES CMO carbon monoxide
+TYP organic
+AKA CO
+SCH ' C  ' ' O  '
+END
+!
+RES O2  molecular oxygen
+TYP organic
+AKA OXY
+SCH ' O1 ' ' O2 '
+END
+!
+RES CIT citrate
+TYP organic
+SCH ' C1 ' ' O1 ' ' O2 ' ' C2 ' ' C3 ' ' O7 ' ' C4 ' ' C5 ' ' O3 ' ' O4 ' -
+    ' C6 ' ' O5 ' ' O6 '
+END
+!
+RES COA coenzyme a
+TYP organic
+SCH 'AO6 ' 'AP2 ' 'AO4 ' 'AO5 ' 'AO3 ' 'AP1 ' 'AO1 ' 'AO2 ' 'AO5*' 'AC5*' -
+    'AC4*' 'AO4*' 'AC3*' 'AO3*' 'AP3*' 'AO7 ' 'AO8 ' 'AO9 ' 'AC2*' 'AO2*' -
+    'AC1*' 'AN9 ' 'AC8 ' 'AN7 ' 'AC5 ' 'AC6 ' 'AN6 ' 'AN1 ' 'AC2 ' 'AN3 ' -
+    'AC4 ' 'PC3 ' 'PN4 ' 'PC5 ' 'PO5 ' 'PC6 ' 'PC7 ' 'PN8 ' 'PC9 ' 'PO9 ' -
+    'PC10' 'PO10' 'PC11' 'PC13' 'PC14' 'PC12'
+END
+RNG COA  6.AN9 .AC8 .AN7 .AC5 .AC4 .AN9
+RNG COA  7.AC5 .AC4 .AN3 .AC2 .AN1 .AC6 .AC5
+!
+RES CYN cyanide ion
+TYP organic
+SCH ' C  ' ' N  '
+END
+!
+RES MAL d-malate
+TYP organic
+SCH ' C1 ' ' O1A' ' O1B' ' C2 ' ' O2 ' ' C3 ' ' C4 ' ' O4A' ' O4B'
+END
+!
+RES DHF dihydrofolate
+TYP organic
+SCH ' C4 ' ' C4A' ' C8A' ' N1 ' ' C2 ' ' N3 ' ' N5 ' ' C6 ' ' C7 ' ' N8 ' -
+    ' C9 ' ' NA2' ' OA4' ' N10' ' C11' ' C13' ' C14' ' C15' ' C16' ' C12' -
+    ' C  ' ' N  ' ' CA ' ' CT ' ' O1 ' ' O  ' ' O2 ' ' CB ' ' CG ' ' CD ' -
+    ' OE1' ' OE2'
+END
+! RNG TO DO !
+!
+RES DMS dimethyl sulfoxide
+TYP organic
+SCH ' S  ' ' O  ' ' C1 ' ' C2 '
+END
+!
+RES EOH ethanol
+TYP organic
+SCH ' C1 ' ' C2 ' ' O  '
+END
+!
+RES FMN flavin mononucleotide
+TYP organic
+SCH ' N1 ' ' C2 ' ' O2 ' ' N3 ' ' C4 ' ' O4 ' ' C4A' ' N5 ' ' C5A' ' C6 ' -
+    ' C7 ' ' C7M' ' C8 ' ' C8M' ' C9 ' ' C9A' ' N10' ' C10' ' C1*' ' C2*' -
+    ' O2*' ' C3*' ' O3*' ' C4*' ' O4*' ' C5*' ' O5*' ' P  ' ' O1P' ' O2P' -
+    ' O3P'
+END
+! RNG TO DO !
+!
+RES FAD flavin-adenine dinucleotide
+TYP organic
+SCH 'AP  ' 'AO1 ' 'AO2 ' 'AO5*' 'AC5*' 'AC4*' 'AO4*' 'AC3*' 'AO3*' 'AC2*' -
+    'AO2*' 'AC1*' 'AN9 ' 'AC8 ' 'AN7 ' 'AC5 ' 'AC6 ' 'AN6 ' 'AN1 ' 'AC2 ' -
+    'AN3 ' 'AC4 ' ' O3 ' ' N1 ' ' C2 ' ' O2 ' ' N3 ' ' C4 ' ' O4 ' ' C4A' -
+    ' N5 ' ' C5A' ' C6 ' ' C7 ' ' C7M' ' C8 ' ' C8M' ' C9 ' ' C9A' ' N10' -
+    ' C10' ' C1*' ' C2*' ' O2*' ' C3*' ' O3*' ' C4*' ' O4*' ' C5*' ' O5*' -
+    ' P  ' ' OP1' ' OP2'
+END
+! RNG TO DO !
+!
+RES FOL folate
+TYP organic
+SCH ' N1 ' ' C2 ' ' NA2' ' N3 ' ' C4 ' ' OH4' ' C4A' ' N5 ' ' C6 ' ' C7 ' -
+    ' N8 ' ' C8A' ' C9 ' ' N10' ' C11' ' C12' ' C13' ' C14' ' C15' ' C16' -
+    ' C  ' ' O  ' ' N  ' ' CA ' ' CB ' ' CG ' ' CD ' ' OE1' ' OE2' ' CT ' -
+    ' O1 ' ' O2 '
+END
+! RNG TO DO !
+!
+RES GTT glutathione
+TYP organic
+SCH ' N1 ' ' CA1' ' C1 ' ' O11' ' O12' ' CB1' ' CG1' ' CD1' ' OE1' ' N2 ' -
+    ' CA2' ' C2 ' ' O2 ' ' CB2' ' SG2' ' N3 ' ' CA3' ' C3 ' ' O31' ' O32'
+END
+!
+RES GOL glycerol
+TYP organic
+SCH ' C1 ' ' O1 ' ' C2 ' ' O2 ' ' C3 ' ' O3 '
+END
+!
+RES IPA isopropyl alcohol
+TYP organic
+SCH ' C1 ' ' C2 ' ' C3 ' ' O  '
+END
+!
+RES MOH methanol
+TYP organic
+SCH ' C  ' ' O  '
+END
+!
+RES NAD nad co-enzyme
+TYP organic
+SCH 'AP  ' 'AO1 ' 'AO2 ' 'AO5*' 'AC5*' 'AC4*' 'AO4*' 'AC3*' 'AO3*' 'AC2*' -
+    'AO2*' 'AC1*' 'AN9 ' 'AC8 ' 'AN7 ' 'AC5 ' 'AC6 ' 'AN6 ' 'AN1 ' 'AC2 ' -
+    'AN3 ' 'AC4 ' ' O3 ' 'NP  ' 'NO1 ' 'NO2 ' 'NO5*' 'NC5*' 'NC4*' 'NO4*' -
+    'NC3*' 'NO3*' 'NC2*' 'NO2*' 'NC1*' 'NN1 ' 'NC2 ' 'NC3 ' 'NC7 ' 'NO7 ' -
+    'NN7 ' 'NC4 ' 'NC5 ' 'NC6 '
+END
+! RNG TO DO !
+!
+RES NDP nadp(+/h)
+TYP organic
+AKA NAP
+SCH 'AP  ' 'AO1 ' 'AO2 ' 'AO5*' 'AC5*' 'AC4*' 'AO4*' 'AC3*' 'AO3*' 'AC2*' -
+    'AO2*' 'AC1*' 'AN9 ' 'AC8 ' 'AN7 ' 'AC5 ' 'AC6 ' 'AN6 ' 'AN1 ' 'AC2 ' -
+    'AN3 ' 'AC4 ' ' O3 ' 'NP  ' 'NO1 ' 'NO2 ' 'NO5*' 'NC5*' 'NC4*' 'NO4*' -
+    'NC3*' 'NO3*' 'NC2*' 'NO2*' 'NC1*' 'NN1 ' 'NC2 ' 'NC3 ' 'NC7 ' 'NO7 ' -
+    'NN7 ' 'NC4 ' 'NC5 ' 'NC6 ' 'AP2*' 'AOP1' 'AOP2' 'AOP3'
+END
+! RNG TO DO !
+!
+RES OLA oleate
+TYP organic
+SCH ' CA ' ' C  ' ' O  ' ' OXT' ' C3 ' ' C4 ' ' C5 ' ' C6 ' ' C7 ' ' C8 ' -
+    ' C9 ' ' C10' ' C11' ' C12' ' C13' ' C14' ' C15' ' C16' ' C17' ' C18'
+END
+!
+RES OXL oxalate ion
+TYP organic
+SCH ' C1 ' ' C2 ' ' O1 ' ' O2 ' ' O3 ' ' O4 '
+END
+!
+RES EDO 1,2-ethanediol
+TYP organic
+SCH ' C1 ' ' C2 ' ' O1 ' ' O2 '
+END
+!
+RES EGL ethyleneglycol
+TYP organic
+SCH ' C1 ' ' C2 ' ' O1 ' ' O2 '
+END
+!
+RES OAA oxaloacetate
+TYP organic
+SCH ' O1 ' ' O2 ' ' O5 ' ' O6 ' ' O7 ' ' C1 ' ' C2 ' ' C3 ' ' C6 '
+END
+!
+RES OXM oxamate
+TYP organic
+SCH ' C1 ' ' N1 ' ' O1 ' ' C2 ' ' O2 ' ' O3 '
+END
+!
+RES PHB p-hydroxybenzoate
+TYP organic
+SCH ' C1*' ' O1*' ' O2*' ' C1 ' ' C2 ' ' C3 ' ' C4 ' ' O4 ' ' C5 ' ' C6 '
+END
+RNG PHB  7. C1 . C2 . C3 . C4 . C5 . C6 . C1
+!
+RES RET retinal
+TYP organic
+SCH ' C1 ' ' C2 ' ' C3 ' ' C4 ' ' C5 ' ' C6 ' ' C7 ' ' C8 ' ' C9 ' ' C10' -
+    ' C11' ' C12' ' C13' ' C14' ' C15' ' C16' ' C17' ' C18' ' C19' ' C20' -
+    ' O21'
+END
+RNG RET  7. C1 . C2 . C3 . C4 . C5 . C6 . C1
+!
+RES REA retinoic acid
+TYP organic
+SCH ' C1 ' ' C2 ' ' C3 ' ' C4 ' ' C5 ' ' C6 ' ' C7 ' ' C8 ' ' C9 ' ' C10' -
+    ' C11' ' C12' ' C13' ' C14' ' C15' ' C16' ' C17' ' C18' ' C19' ' C20' -
+    ' O1 ' ' O2 '
+END
+RNG REA  7. C1 . C2 . C3 . C4 . C5 . C6 . C1
+!
+RES RTL retinol
+TYP organic
+SCH ' C1 ' ' C2 ' ' C3 ' ' C4 ' ' C5 ' ' C6 ' ' C7 ' ' C8 ' ' C9 ' ' C10' -
+    ' C11' ' C12' ' C13' ' C14' ' C15' ' C16' ' C17' ' C18' ' C19' ' C20' -
+    ' OR '
+END
+RNG RTL  7. C1 . C2 . C3 . C4 . C5 . C6 . C1
+!
+RES MYR myristate
+TYP organic
+SCH ' C  ' ' CA ' ' C3 ' ' C4 ' ' C5 ' ' C6 ' ' C7 ' ' C8 ' ' C9 ' ' C10' -
+    ' C11' ' C12' ' C13' ' C14' ' O  ' ' OXT'
+END
+!
+RES SPM SPERMINE
+TYP organic
+SCH ' N1 ' ' C2 ' ' C3 ' ' C4 ' ' N5 ' ' C6 ' ' C7 ' ' C8 ' ' C9 ' ' N10' -
+    ' C11' ' C12' ' C13' ' N14'
+END
+!
+RES RUB ribulose-1,5-bisphosphate
+TYP organic
+SCH ' C1 ' ' C2 ' ' C3 ' ' C4 ' ' C5 ' ' O1 ' ' O2 ' ' O3 ' ' O4 ' ' O5 ' -
+    ' P1 ' ' P2 ' ' O1P' ' O2P' ' O3P' ' O4P' ' O5P' ' O6P'
+END
+!
+RES SIA sialic acid (n-acetyl-neuraminic acid)
+TYP organic
+SCH ' C1 ' ' C2 ' ' C3 ' ' C4 ' ' C5 ' ' C6 ' ' C7 ' ' C8 ' ' C9 ' ' C10' -
+    ' C11' ' N1 ' ' O1A' ' O1B' ' O2 ' ' O4 ' ' O6 ' ' O7 ' ' O8 ' ' O9 ' -
+    ' O10'
+END
+RNG SIA  7. C2 . C3 . C4 . C5 . C6 . O6 . C2
+!
+RES TRS tris tris(hydroxymethyl)-aminomethane
+TYP organic
+SCH ' O1 ' ' C2 ' ' C3 ' ' C4 ' ' O5 ' ' C6 ' ' O7 ' ' N8 '
+END
+!
+RES ATP adenosine-tri-phosphate
+TYP organic
+MCH ' PA ' ' O1A' ' O2A' ' O5*' ' C5*' ' C4*' ' O4*' ' C3*' ' O3*' -
+    ' C2*' ' O2*' ' C1*' ' O3A' ' PB ' ' O1B' ' O2B' ' O3B' ' PG ' -
+    ' O1G' ' O2G' ' O3G'
+SCH ' N9 ' ' C8 ' ' N7 ' ' C5 ' ' C6 ' ' N6 ' ' N1 ' ' C2 ' ' N3 ' ' C4 '
+END
+RNG ATP  6. N9 . C8 . N7 . C5 . C4 . N9
+RNG ATP  7. C5 . C4 . N3 . C2 . N1 . C6 . C5
+!
+RES ADP adenosine-di-phosphate
+TYP organic
+MCH ' PA ' ' O1A' ' O2A' ' O5*' ' C5*' ' C4*' ' O4*' ' C3*' ' O3*' -
+    ' C2*' ' O2*' ' C1*' ' O3A' ' PB ' ' O1B' ' O2B' ' O3B'
+SCH ' N9 ' ' C8 ' ' N7 ' ' C5 ' ' C6 ' ' N6 ' ' N1 ' ' C2 ' ' N3 ' ' C4 '
+END
+RNG ADP  6. N9 . C8 . N7 . C5 . C4 . N9
+RNG ADP  7. C5 . C4 . N3 . C2 . N1 . C6 . C5
+!
+RES AMP adenosine-mono-phosphate
+TYP organic
+MCH ' PA ' ' O1A' ' O2A' ' O5*' ' C5*' ' C4*' ' O4*' ' C3*' ' O3*' -
+    ' C2*' ' O2*' ' C1*' ' O3A'
+SCH ' N9 ' ' C8 ' ' N7 ' ' C5 ' ' C6 ' ' N6 ' ' N1 ' ' C2 ' ' N3 ' ' C4 '
+END
+RNG AMP  6. N9 . C8 . N7 . C5 . C4 . N9
+RNG AMP  7. C5 . C4 . N3 . C2 . N1 . C6 . C5
+!
+RES PLP pyridoxal-5p-phosphate
+TYP organic
+SCH ' N1 ' ' C2 ' ' C3 ' ' C4 ' ' N5 ' ' C6 ' ' C2A' ' O3 ' ' C4A' -
+    ' C5A' ' O4P' ' P  ' ' O1P' ' O2P' ' O3P'
+END
+RNG PLP  7. N1 . C2 . C3 . C4 . C5 . C6 . N1
+!
+RES GTP guanosine-5p-triphosphate
+TYP organic
+MCH ' PA ' ' O1A' ' O2A' ' O5*' ' C5*' ' C4*' ' O4*' ' C3*' ' O3*' -
+    ' C2*' ' O2*' ' C1*' ' PB ' ' O1B' ' O2B' ' O3B' ' PG ' -
+    ' O1G' ' O2G' ' O3G'
+SCH ' N9 ' ' C8 ' ' N7 ' ' C5 ' ' C6 ' ' O6 ' ' N1 ' ' C2 ' ' N2 ' -
+    ' N3 ' ' C4 '
+END
+RNG GTP  6. N9 . C8 . N7 . C5 . C4 . N9
+RNG GTP  7. C5 . C4 . N3 . C2 . N1 . C6 . C5
+!
+RES GDP guanosine-5p-diphosphate
+TYP organic
+MCH ' PA ' ' O1A' ' O2A' ' O5*' ' C5*' ' C4*' ' O4*' ' C3*' ' O3*' -
+    ' C2*' ' O2*' ' C1*' ' PB ' ' O1B' ' O2B' ' O3B'
+SCH ' N9 ' ' C8 ' ' N7 ' ' C5 ' ' C6 ' ' O6 ' ' N1 ' ' C2 ' ' N2 ' -
+    ' N3 ' ' C4 '
+END
+RNG GDP  6. N9 . C8 . N7 . C5 . C4 . N9
+RNG GDP  7. C5 . C4 . N3 . C2 . N1 . C6 . C5
+!
+RES GMP guanosine-5p-monophosphate
+TYP organic
+MCH ' PA ' ' O1A' ' O2A' ' O5*' ' C5*' ' C4*' ' O4*' ' C3*' ' O3*' -
+    ' C2*' ' O2*' ' C1*'
+SCH ' N9 ' ' C8 ' ' N7 ' ' C5 ' ' C6 ' ' O6 ' ' N1 ' ' C2 ' ' N2 ' -
+    ' N3 ' ' C4 '
+END
+RNG GMP  6. N9 . C8 . N7 . C5 . C4 . N9
+RNG GMP  7. C5 . C4 . N3 . C2 . N1 . C6 . C5
+!

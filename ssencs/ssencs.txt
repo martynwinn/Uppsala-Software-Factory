@@ -1,0 +1,399 @@
+
+ ** SSENCS - GENERAL INFORMATION
+
+ Program : SSENCS
+ Version : 060503
+ Author  : Gerard J. Kleywegt & T. Alwyn Jones,
+           Dept. of Cell and Molecular Biology,
+           Uppsala University, Biomedical Centre, Box 596,
+           SE-751 24 Uppsala, SWEDEN
+ E-mail  : gerard@xray.bmc.uu.se
+ Purpose : find NCS operators in sets of SSEs
+ Package : RAVE
+
+ ** REFERENCES
+
+ Reference(s) for this program:
+
+ *  1 * Kleywegt, G.J., Zou, J.Y., Kjeldgaard, M. & Jones, T.A. (2001).
+        Around O. In: "International Tables for Crystallography, Vol. F.
+        Crystallography of Biological Macromolecules" (Rossmann, M.G.
+        & Arnold, E., Editors). Chapter 17.1, pp. 353-356, 366-367.
+        Dordrecht: Kluwer Academic Publishers, The Netherlands.
+
+ ** VERSION HISTORY
+
+ 2001-02-22 - 0.1  - first version
+ 2002-02-14 - 0.1  - second version
+ 2006-05-03 - 0.3  - first released version
+
+ ** DESCRIPTION
+
+ SSENCS takes as input a file that contains SSEs (secondary structure
+   elements, i.e., helices and strands) in DEJAVU format, and tries
+   to find NCS operators relating subsets of the SSEs. It was written
+   back in 2001 and not released until five years later. I have never
+   tested it on real cases, so I make no claims as to its utility.
+   There are newer and much cleverer programs around. The idea here
+   is to use the SSEs out of some map-interpretation program (even
+   something as simple as ESSENS) and look for NCS relationships.
+   If you have a partial model you can also generate an SSE file
+   from that using GETSSE (part of the DEJAVU package). Well, even
+   if this program shouldn't be of any use, at least it's very
+   fast so you won't waste too much time ;-)
+
+ The format of a DEJAVU-style SSE file is as follows (only lines
+   starting with 'ALPHA ' or 'BETA  ' will actually be read):
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+!
+! ===  USER
+!
+MOL    USER
+NOTE   ...
+PDB    out.pdb
+!
+BETA  'B1' 'A7' 'A9' 3 38.13 60.88 26.31 37.92 59.82 33.10
+BETA  'B2' 'A12' 'A14' 3 41.80 55.71 40.85 47.53 57.22 44.53
+ALPHA 'A1' 'A16' 'A23' 8 48.95 62.56 44.43 56.05 70.11 43.42
+ALPHA 'A2' 'A27' 'A35' 9 47.41 73.53 50.82 39.03 66.36 45.37
+[...]
+BETA  'B129' 'C90' 'C97' 8 71.17 7.48 35.54 55.09 17.18 22.49
+ENDMOL
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ So there is one line for each SSE, starting (in column 1-6) with
+   the type (ALPHA or BETA) and followed by: a name (arbitrary),
+   first and last residue name (arbitrary), the number of
+   residues in it, and the XYZ coordinates of the first and the
+   last CA atom in it.
+
+ ** ALGORITHM
+
+ The algorithm proceeds in a number of steps:
+
+ (1) Finding seed SSEs.
+ The first step is to find SSEs that are suitable as seeds to
+   start generating RT operators in the next step. Such SSEs
+   should have at least one "partner" SSE that is of the same
+   type (helix/strand), has a similar length and a similar
+   number of residues. For each SSE, all such partners are
+   enumerated, and if the SSE also has a nearby neighbour
+   (of any type), it is stored in a list of seed SSEs.
+
+ (2) Generating RT operators and SSE triples.
+ Each pair of seed and partner SSEs is enumerated, and investigated
+   if their nearest neighbour is of the same type. Since each SSE
+   has a start and end point, we obtain a set of four points for
+   each SSE plus neighbours, to be compared to four points in the
+   partner and its neighbour. Since the directionality of the SSEs
+   may be uncertain, all four possible ways of matching these four
+   points are attempted (quaternion least-squares fitting routine), and
+   the combination that gives the smallest RMSD is kept, as is the
+   corresponding RT operator (and start/end coordinates will be swapped
+   if necessary). If the RMSD does not exceed a user-supplied
+   cut-off, the operator is applied to all remaining SSEs to identify
+   a further SSE that is a neighbour of the original partner, and that
+   (after applying the RT operator) has a centre-to-centre distance
+   that is smaller than a certain cut-off. (If there is more than one,
+   the SSE that gives the smallest such distance is used.) If this
+   step is successfull, this provides an RT operator that relates
+   (at least) a triple of SSE centres with a relatively small RMSD.
+   However, in this way many operators would be generated more than
+   once. Therefore, if an operator is similar to a previously
+   generated one, it will be discarded. This is done by applying
+   the operators to a fixed test vector t (e.g., (100 100 100)) and
+   to measure the distance between RTi(t) and RTj(t) for two operators
+   "i" and "j". If this distance is smaller than a certain cut-off,
+   the operators are considered to be identical.
+
+ (3) Evaluating the RT operators.
+ In the final step, each of the operators is applied to all of the
+   SSEs, and pairs of SSEs are gathered that are of the same type,
+   and whose centre-to-centre distance (after applying the operator
+   to one of them) is smaller than a cut-off. In addition, their
+   start-to-start and end-to-end point distances must be smaller
+   than the same cut-off (again, start and end will be swapped if
+   this gives the better fit). If at least two matching SSEs are
+   found, their start and end points are used to calculate a new
+   operator, and the new operator is applied to all SSEs again,
+   etc. until the number of SSEs that obey the operator does no
+   longer increase. At that stage the operator, the number of matching
+   SSEs, and the RMSD of their start and end points are stored.
+   Finally, the operators are sorted by the number of SSEs that
+   obey them, and the top solutions are listed.
+
+ ** EXAMPLE
+
+ The following is a synthetic example. It uses SSEs generated from
+   1PMP, expanded under space-group symmetry, and only keeping the
+   SSEs that are entirely within the unit cell [0,1][0,1][0,1],
+   and using default input parameters.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ % 938 gerard sarek 16:58:32 average/test > ../6d/6D_SSENCS 
+
+ *** SSENCS *** SSENCS *** SSENCS *** SSENCS *** SSENCS *** SSENCS *** 
+
+ Version  - 060503/0.3
+ (c) 1992-2005 Gerard J. Kleywegt, Dept. Cell Mol. Biol., Uppsala (SE)
+ User I/O - routines courtesy of Rolf Boelens, Univ. of Utrecht (NL)
+ Others   - T.A. Jones, G. Bricogne, Rams, W.A. Hendrickson
+ Others   - W. Kabsch, CCP4, PROTEIN, E. Dodson, etc. etc.
+
+ Started  - Wed May 3 17:07:17 2006
+ User     - gerard
+ Mode     - interactive
+ Host     - sarek (Irix/SGI)
+ ProcID   - 16641
+ Tty      - /dev/ttyq5
+
+ *** SSENCS *** SSENCS *** SSENCS *** SSENCS *** SSENCS *** SSENCS *** 
+
+ Reference(s) for this program:
+
+ *  1 * G.J. Kleywegt (1992-2005).
+        Uppsala University, Uppsala, Sweden.
+        Unpublished program.
+
+ *  2 * Kleywegt, G.J., Zou, J.Y., Kjeldgaard, M. & Jones, T.A. (2001).
+        Around O. In: "International Tables for Crystallography, Vol. F.
+        Crystallography of Biological Macromolecules" (Rossmann, M.G.
+        & Arnold, E., Editors). Chapter 17.1, pp. 353-356, 366-367.
+        Dordrecht: Kluwer Academic Publishers, The Netherlands.
+
+ ==> For manuals and up-to-date references, visit:
+ ==>     http://xray.bmc.uu.se/usf
+ ==> For reprints, visit:
+ ==>     http://xray.bmc.uu.se/gerard
+ ==> For downloading up-to-date versions, visit:
+ ==>     ftp://xray.bmc.uu.se/pub/gerard
+
+ *** SSENCS *** SSENCS *** SSENCS *** SSENCS *** SSENCS *** SSENCS *** 
+
+
+ Max nr of SSEs in total : (       1000) 
+ Max nr of NCS molecules : (         60) 
+
+ Input SSE file ? (user.sse) p2disturbed.sse
+ Input SSE file : (p2disturbed.sse) 
+ > (!) 
+ > (! ===  USER) 
+ > (!) 
+ > (MOL    USER) 
+ > (NOTE   ...) 
+ > (PDB    out.pdb) 
+ > (!) 
+ > (BETA  'B1' 'A7' 'A9' 3 38.13 60.88 26.31 37.92 59.82 33.10) 
+ > (BETA  'B2' 'A12' 'A14' 3 41.80 55.71 40.85 47.53 57.22 44.53) 
+ > (ALPHA 'A1' 'A16' 'A23' 8 48.95 62.56 44.43 56.05 70.11 43.42) 
+
+ [...]
+
+ > (BETA  'B129' 'C90' 'C97' 8 71.17 7.48 35.54 55.09 17.18 22.49) 
+ > (ENDMOL) 
+
+ Nr of SSEs read : (         62) 
+
+ Min nr of molecules to look for : (          2) 
+ Max nr of molecules to look for : (         60) 
+ Nr of molecules to look for ? (          2) 3
+ Nr of molecules to look for : (          3) 
+ Average nr of SSEs per molecule : (  20.667) 
+
+ A core is a set of SSEs that matches another
+ set after applying an RT operator. This cut-off
+ only affects the output of RT operators.
+ Min nr of SSEs in core ? (          5) 
+ Min nr of SSEs in core : (          5) 
+ Total nr of SSEs in core : (         15) 
+
+ Max nr of solutions to print ? (         30) 
+ Max nr of solutions to print : (         30) 
+
+ Potentially matchable SSEs may contain
+ different numbers of residues.
+ Mismatch nr of residues ? (          3) 
+ Mismatch nr of residues : (          3) 
+
+ Potentially matchable SSEs may have
+ different lengths.
+ Mismatch length (A) ? (   9.000) 
+ Mismatch length (A) : (   9.000) 
+
+ SSE pairs to test should be close in space
+ (centre-of-gravity distance).
+ Max nbr distance (A) ? (   8.000) 
+ Max nbr distance (A) : (   8.000) 
+
+ For two pairs of SSEs to be considered
+ matchable, the RMSD of the 4 end-points
+ should not be too high (all 4 combinations
+ of matching them will be tried).
+ Max initial RMSD (A) ? (   3.000) 
+ Max initial RMSD (A) : (   3.000) 
+
+ To extend a matching pair into a triple,
+ their superimposed C-of-Gs should be close.
+ Max deviation 3rd SSE (A) ? (   3.000) 
+ Max deviation 3rd SSE (A) : (   3.000) 
+
+ Distance between RT(test_vector) to decide
+ if two operators are essentially identical.
+ Max projection distance (A) ? (   3.000) 
+ Max projection distance (A) : (   3.000) 
+
+ Distance cut-off to decide if SSEs obey an
+ RT operator in the evaluation step.
+ Max RT(SSE) distance (A) ? (   3.000) 
+ Max RT(SSE) distance (A) : (   3.000) 
+
+ Point for testing equivalence of operators
+ Test vector ? ( 100.000  100.000  100.000) 
+ Test vector : ( 100.000  100.000  100.000) 
+
+ Looking for seed SSEs ...
+ Nr of seed SSEs to try : (         51) 
+
+ Generating RT operators and SSE triples ...
+ Nr of operators generated : (        111) 
+ Nr of unique solutions    : (         62) 
+
+ Evaluating RT operators ...
+ #     1 Operator     1 Iterations   2 Multiplicity   3 Matched SSEs    11 RMSD (A)     0.15
+      SSE B1    B2    A1    A2    B4    B5    B6    B7    B8    B10   B11   
+  RT(SSE) B12   B13   A3    A4    B15   B16   B17   B18   B19   B21   B22   
+
+ #     2 Operator     2 Iterations   2 Multiplicity   7 Matched SSEs    12 RMSD (A)     0.17
+      SSE B1    B2    A1    B3    B4    B5    B6    B7    B8    B9    B10   B11   
+  RT(SSE) B23   B24   A5    B25   B26   B27   B28   B29   B30   B31   B32   B33   
+
+ #     3 Operator     3 Iterations   2 Multiplicity   2 Matched SSEs     6 RMSD (A)     0.14
+      SSE B1    A2    B3    B4    B5    B6    
+  RT(SSE) B56   A12   B58   B59   B60   B61   
+
+ #     4 Operator     4 Iterations   2 Multiplicity   4 Matched SSEs    11 RMSD (A)     0.14
+      SSE B1    B2    A1    A2    B4    B5    B6    B8    B9    B10   B11   
+  RT(SSE) B78   B79   A15   A16   B81   B82   B83   B85   B86   B87   B88   
+
+ #     5 Operator     5 Iterations   2 Multiplicity   2 Matched SSEs    11 RMSD (A)     0.15
+      SSE B1    B2    A1    A2    B4    B5    B6    B7    B8    B10   B11   
+  RT(SSE) B12   B13   A3    A4    B15   B16   B17   B18   B19   B21   B22   
+
+ #     6 Operator     6 Iterations   2 Multiplicity   1 Matched SSEs     3 RMSD (A)     0.09
+ #     7 Operator     7 Iterations   2 Multiplicity   2 Matched SSEs     5 RMSD (A)     2.00
+      SSE B7    B8    B9    B10   B11   
+  RT(SSE) B33   B32   B31   B30   B29   
+
+ #     8 Operator     8 Iterations   2 Multiplicity   1 Matched SSEs     3 RMSD (A)     0.95
+ #     9 Operator     9 Iterations   2 Multiplicity   2 Matched SSEs    11 RMSD (A)     0.14
+      SSE B1    B2    A1    A2    B4    B5    B6    B8    B9    B10   B11   
+  RT(SSE) B78   B79   A15   A16   B81   B82   B83   B85   B86   B87   B88   
+
+ #    10 Operator    10 Iterations   2 Multiplicity   1 Matched SSEs     3 RMSD (A)     1.93
+ #    11 Operator    11 Iterations   2 Multiplicity   1 Matched SSEs     3 RMSD (A)     1.93
+ #    12 Operator    12 Iterations   2 Multiplicity   1 Matched SSEs    11 RMSD (A)     0.15
+      SSE B12   B13   A3    A4    B15   B16   B17   B18   B19   B21   B22   
+  RT(SSE) B1    B2    A1    A2    B4    B5    B6    B7    B8    B10   B11   
+
+ [...]
+
+ #    61 Operator    61 Iterations   2 Multiplicity   1 Matched SSEs     3 RMSD (A)     0.16
+ #    62 Operator    62 Iterations   2 Multiplicity   1 Matched SSEs     3 RMSD (A)     0.00
+
+ Sorting RT operators ...
+
+ RT Sol #     1 =    18 Matched SSEs =    15 RMSD =    0.004 A
+.LSQ_RT_SSENCS R 12 (3f15.8)
+    -1.00000000     0.00002639     0.00001457
+     0.00002639     1.00000000    -0.00002597
+    -0.00001458    -0.00002597    -1.00000000
+    91.79798889   -49.74928665    84.75167847
+
+ RT Sol #     2 =    45 Matched SSEs =    15 RMSD =    0.004 A
+.LSQ_RT_SSENCS R 12 (3f15.8)
+    -1.00000000     0.00002639    -0.00001458
+     0.00002639     1.00000000    -0.00002597
+     0.00001457    -0.00002597    -1.00000000
+    91.79806519    49.74906540    84.75173187
+
+ RT Sol #     3 =     2 Matched SSEs =    12 RMSD =    0.165 A
+.LSQ_RT_SSENCS R 12 (3f15.8)
+    -0.30227932    -0.29197252    -0.90740246
+    -0.86662900    -0.31225231     0.38916922
+    -0.39696521     0.90401912    -0.15864441
+   106.60652161    56.27408981    36.24006271
+
+ RT Sol #     4 =    28 Matched SSEs =    12 RMSD =    0.165 A
+.LSQ_RT_SSENCS R 12 (3f15.8)
+    -0.30227932    -0.86662900    -0.39696521
+    -0.29197252    -0.31225231     0.90401912
+    -0.90740246     0.38916922    -0.15864441
+    81.53976440    95.85650635    -2.80449057
+
+ RT Sol #     5 =    54 Matched SSEs =    11 RMSD =    0.139 A
+.LSQ_RT_SSENCS R 12 (3f15.8)
+    -0.38814914     0.08495209    -0.91767275
+    -0.11433673     0.98361063     0.13941732
+     0.91447651     0.15903842    -0.37207448
+    26.96672440    15.38965416    90.64928436
+
+ [...]
+
+ RT Sol #    29 =    36 Matched SSEs =     5 RMSD =    2.004 A
+.LSQ_RT_SSENCS R 12 (3f15.8)
+     0.07493574     0.17322579    -0.98202741
+     0.47415605     0.86015493     0.18790947
+     0.87724626    -0.47971529    -0.01767969
+   -46.11037445    -2.29586029    67.70594788
+
+ RT Sol #    30 =    40 Matched SSEs =     5 RMSD =    0.132 A
+.LSQ_RT_SSENCS R 12 (3f15.8)
+    -0.68033922     0.72705460     0.09235962
+     0.45273247     0.31781441     0.83308303
+     0.57634360     0.60859323    -0.54538280
+    27.63309097   -28.98375893   -12.04719353
+
+ Nr of RT operators listed : (         30) 
+
+
+ *** SSENCS *** SSENCS *** SSENCS *** SSENCS *** SSENCS *** SSENCS *** 
+
+ Version - 060503/0.3
+ Started - Wed May 3 17:07:17 2006
+ Stopped - Wed May 3 17:07:43 2006
+
+ CPU-time taken :
+ User    -      1.0 Sys    -      0.2 Total   -      1.2
+
+ *** SSENCS *** SSENCS *** SSENCS *** SSENCS *** SSENCS *** SSENCS *** 
+
+ >>>>>>>>>>>>>> USF .... Uppsala Software Factory <<<<<<<<<<<<<<
+ >>>>>>>>>> This program: (c) 1992-2005, G J Kleywegt <<<<<<<<<<
+ >>>>>>>>>>>>>>>> E-mail: gerard@xray.bmc.uu.se <<<<<<<<<<<<<<<<
+ >>>>>>>>>>>>>>>>>> http://xray.bmc.uu.se/usf <<<<<<<<<<<<<<<<<<
+
+ *** SSENCS *** SSENCS *** SSENCS *** SSENCS *** SSENCS *** SSENCS *** 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Note: the first two operators are pure spacegroup symmetry operators.
+   In general the operators will be combinations of SGS and NCS operators
+   (both sets include the Identity operator, of course).
+
+ Note: several operators are identical in the output list. This is
+   probably due to the iterative operator evaluation. They were
+   probably slightly different to begin with, but not similar
+   enough to be caught by the test-vector filter. But in the iterative
+   evaluation procedure they "catch" the same set of SSEs and end
+   up being identical anyway.
+
+ Note: for each operator that is obeyed by the minimum number of SSEs
+   required, up to 15 of the matching SSE pairs are printed, so
+   the user can search for operators that relate to the same
+   set of SSEs. In a real case, one could generate a quick and dirty
+   mask at that stage (e.g., using Randy Read's method as implemented
+   in COMA) and throw it into IMP to improve the operators.
+
+ ** KNOWN BUGS
+
+ None, at present.

@@ -1,0 +1,30 @@
+
+OBJ=	dataman.o dataman_subs.o ../gklib/osx_kleylib
+#OBJ=	dataman.o dataman_subs.o fmalloc.o ../gklib/osx_kleylib
+INCL=	dataman.incl dataman_dim.incl
+
+fc =	 g77
+
+exec =	OSX_DATAMAN
+
+# for development work use:
+# opt = -Olimit 3000 -v -check_bounds -w0 -d_lines
+# opt = -Olimit 3000 -v -check_bounds -u -w0
+# opt = -Olimit 3000 -O2 -v -check_bounds -u -w0
+# opt= -Olimit 3000 -C -O -u -v -recursive -check underflow -check overflow
+#opt= -Olimit 3000 -C -O -u -v -check_bounds
+opt= -DOSX -O -u -check_bounds
+link= -O
+
+#fmalloc.o:	fmalloc.c
+#	cc -c -g -DOSX fmalloc.c
+
+$(exec):	$(OBJ)
+	$(fc) $(link) -o $(exec) $(OBJ) ; strip $(exec)
+
+dataman.o:	dataman.f $(INCL)
+	$(fc) $(opt) -c dataman.F 
+
+dataman_subs.o:	dataman_subs.f $(INCL)
+	$(fc) $(opt) -c dataman_subs.f
+

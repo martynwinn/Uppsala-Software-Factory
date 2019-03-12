@@ -1,0 +1,57 @@
+c
+c ... mama.incl
+c
+ccc      implicit none
+c
+      include 'maxdim.incl'
+c
+      integer   mxumsk,maxsym,maxncs
+      parameter (mxumsk=maxgk3)
+      parameter (maxsym=maxgk2, maxncs=maxgk2)
+c
+common variables ...
+c
+      real cell(6,mxumsk),newcel(6),newrt(12),newrad
+      real symmop(12,maxsym),rtncs(12,maxncs),rtinv(12,maxncs)
+c
+ccc      real buffer(maxpnt),rshad(maxpnt)
+c
+ccc      integer mask(maxpnt,maxmsk),shadow(maxpnt),ibuff(maxpnt)
+c
+      integer origin(3,mxumsk),extent(3,mxumsk),newpad(3)
+      integer grid(3,mxumsk),newori(3),newext(3),newgrd(3)
+      integer asuori(3),asuext(3)
+c
+      integer unt(mxumsk),npnt(mxumsk),nset(mxumsk)
+c
+      integer nmask,nsymop,nrtncs
+c
+      logical incore(mxumsk),change(mxumsk),select(mxumsk)
+c
+      character*80 file(mxumsk),name(mxumsk),commnt(mxumsk)
+      character*10 ovmode
+c
+c equivalence
+c
+ccc      equivalence (buffer(1),ibuff(1))
+ccc      equivalence (rshad(1),shadow(1))
+c
+common blocks ...
+c
+      common /mamar1/ cell,newcel,newrt,symmop,rtncs,rtinv
+      common /mamar3/ newrad
+c
+ccc      common /mamai0/ mask
+ccc      common /mamai1/ shadow,ibuff
+      common /mamai2/ origin,extent,grid,newori,newext,newgrd,
+     +                newpad,asuori,asuext
+      common /mamai3/ unt,npnt,nset
+      common /mamai4/ nmask,nsymop,nrtncs
+c
+      common /mamal1/ incore,change,select
+c
+      common /mamac1/ file,name,commnt
+      common /mamac2/ ovmode
+c
+c
+c

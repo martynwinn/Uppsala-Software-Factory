@@ -1,0 +1,73 @@
+#!/bin/csh -f
+
+# make a new subroutine library
+
+set echo
+
+set int_size = "32"
+set OS = "OSX"
+
+if ($#argv > 0) then
+    set OS = $argv[1]
+endif
+
+if ($#argv > 1) then
+    set int_size = $argv[2]
+endif
+
+set OS = `echo $OS | tr '[a-z]' '[A-Z]'`
+
+set sys=`uname -s`
+if ("$OS" == "OSX" && $sys != Darwin) then
+  echo ERROR ... this is not a $OS box
+  exit -1
+endif
+
+#################################################################################
+
+set lib=osx_kleylib
+set subdir=os
+
+set fort="gfortran -D$OS -m$int_size -O -u -check_bounds -std=legacy -ffixed-line-length-132"
+
+set ccom="gcc -c -g -D$OS -m$int_size"
+
+# backup existing library
+if (-e $lib) mv $lib {$lib}.ckp
+
+if (! -d $subdir) then
+  echo WARNING ... creating subdirectory $subdir
+  mkdir $subdir
+endif
+
+cd $subdir
+
+echo Compiling ...
+
+$fort -c *.f |& tee compilation.log | grep -i error
+grep -i warn compilation.log
+grep -i info compilation.log
+
+if ("$OS" == "OSX") then
+  echo Compiling fmalloc.c ...
+  $ccom fmalloc.c
+endif
+
+ar rsv ../$lib *.o
+ranlib ../$lib
+
+cd ..
+
+##touch make_fresh_osxlib
+
+# NOTE: if the creation of the library fails try this:
+#
+# cd osx
+# ar rsv /Volumes/GERARD/$lib *.o
+# ranlib /Volumes/GERARD/$lib
+# ls /Volumes/GERARD/$lib
+# cd ..
+# cp /Volumes/GERARD/$lib .
+
+exit 0
+

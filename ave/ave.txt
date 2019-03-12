@@ -1,0 +1,275 @@
+
+ ** AVE - GENERAL INFORMATION
+
+ Program : AVE
+ Version : 080625
+ Author  : Gerard J. Kleywegt & T. Alwyn Jones,
+           Dept. of Cell and Molecular Biology,
+           Uppsala University, Biomedical Centre, Box 596,
+           SE-751 24 Uppsala, SWEDEN
+ E-mail  : gerard@xray.bmc.uu.se
+ Purpose : single- or multiple-domain, single-crystal averaging of
+           electron-density maps
+ Package : RAVE
+
+ ** REFERENCES
+
+ Reference(s) for this program:
+
+ *  1 * T.A. Jones (1992). A, yaap, asap, @#*?  A set of averaging
+        programs. In "Molecular Replacement", edited by E.J. Dodson,
+        S. Gover and W. Wolf. SERC Daresbury Laboratory, Warrington,
+        pp. 91-105.
+
+ *  2 * G.J. Kleywegt & T.A. Jones (1994).  Halloween ... Masks and
+        Bones. In "From First Map to Final Model", edited by
+        S. Bailey, R. Hubbard and D. Waller.  SERC Daresbury
+        Laboratory, Warrington, pp. 59-66.
+        [http://xray.bmc.uu.se/gerard/papers/halloween.html]
+
+ *  3 * G.J. Kleywegt & R.J. Read (1997). Not your average density.
+        Structure 5, 1557-1569.
+        [http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=PubMed&cmd=Retrieve&list_uids=9438862&dopt=Citation]
+
+ *  4 * R.J. Read & G.J. Kleywegt (2001). Density modification:
+        theory and practice. In: "Methods in Macromolecular
+        Crystallography" (D Turk & L Johnson, Eds.), IOS Press,
+        Amsterdam, pp. 123-135.
+
+ *  5 * Kleywegt, G.J., Zou, J.Y., Kjeldgaard, M. & Jones, T.A. (2001).
+        Around O. In: "International Tables for Crystallography, Vol. F.
+        Crystallography of Biological Macromolecules" (Rossmann, M.G.
+        & Arnold, E., Editors). Chapter 17.1, pp. 353-356, 366-367.
+        Dordrecht: Kluwer Academic Publishers, The Netherlands.
+
+ ** VERSION HISTORY
+
+ 930331 - 0.0 - empty manual
+ 930505 - 1.1 - basic manual
+ 930602 - 1.2 - new version; decouple average and expand
+                steps for proper symmetry buffs; calculate
+                and print the correlation coefficient for
+                each of the operators
+ 930603 - 1.3 - check that map and mask have same cell and grid
+ 930615 - 2.0 - new production version
+ 931216 - 3.0 - implemented positivity and multiple-domain
+                averaging
+ 940113 -3.0.2- minor changes
+ 950118 - 3.1 - sensitive to environment variable CCP4_OPEN
+ 951022 - 3.2 - made sensitive to OSYM
+ 951030 - 3.3 - enable reading of one OR MANY NCS operators
+                from each file
+ 951121 - 3.4 - included mask-less averaging
+ 960412 - 3.5 - echo all input to help debug scripts
+ 961122 - 4.0 - dynamic memory allocation at last; bug fix (wrong
+                interpolation routine was called ;-()
+ 970523 -4.0.1- print solvent fraction in expansion step (when
+                calculating solvent density)
+ 010122 - 5.0 - use C routines to do dynamic memory allocation 
+                and port to Linux
+ 040701 -5.0.1- changed checks of dynamic memory allocation to allow
+                for pointers with negative values as returned by
+                some recent Linux versions
+ 080625 -5.0.2- suppress error messages if more than 10 of them
+
+ ** MAP AND MASK SIZE
+
+ From version 4.0 onward, AVE allocates memory for maps and
+   masks dynamically.  This means that you can increase the size
+   of maps and masks that the program can handle on the fly:
+
+ 1 - through the environment variables MAPSIZE and MASKSIZE (must be
+     in capital letters !), for example put the following in your
+     .cshrc file or your RAVE script:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ setenv MAPSIZE 8000000
+ setenv MASKSIZE 3000000
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ 2 - by using command-line arguments MAPSIZE and MASKSIZE (need not
+     be in capitals), for example in your RAVE script:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ run ave -b mapsize 10000000 masksize 5000000 < ave.inp >& ave.out
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Note that command-line arguments take precedence over environment
+   variables.  So you can set the environment variables in your .cshrc
+   file to "typical" values, and if you have to deal with a map and/or
+   mask which is bigger than that, you can use the command-line argument(s).
+
+ If sufficient memory cannot be allocated, the program will print
+   a message and quit.  In that case, increase the amount of virtual
+   memory (this will not help, of course, if you try to allocate more
+   memory than can be addressed by your machine (for 32-bit machines,
+   something 2**32-1 bytes, I think), or reduce the size requirements.
+
+ AVE needs space for 2 maps and 1 mask.
+
+ ** NOTES
+
+ NOTE: this program is now sensitive to the environment variable
+       CCP4_OPEN.  If this variable has *not* been set, you will
+       not be able to create any CCP4 maps.  If this happens, the
+       program will abort execution on startup.  To fix this,
+       put the following line in your .login or .cshrc file:
+       setenv CCP4_OPEN UNKNOWN
+
+ NOTE: this program is sensitive to the environment variable OSYM.
+   It should point to your local copy of $ODAT/symm, the directory
+   which contains the spacegroup symmetry operators in O format.
+   When asked for a file with spacegroup operators in O format,
+   you may either provide a filename, or the name of a sapcegroup
+   (including blanks if you like, case doesn't matter).  The program
+   will try to open the following files, assuming that STRING is the
+   what you input:
+ (1) open a file called STRING
+ (2) if this fails, check if OSYM is defined and open $OSYM/STRING
+ (3) if this fails, open $OSYM/string.sym
+ (4) if this fails, open $OSYM/string.o
+ Hint: if you make soft links in the OSYM directory, you can also type
+   spacegroup numbers (e.g.: \ln -s p212121.sym 19.sym).
+
+ NOTE: from version 3.3 onwards, you may choose to enter NCS operators
+       either one by one (as it used to be), or all in one go (by
+       putting them all in one file), or a mixtur of this.
+
+ NOTE: THIS IS BASICALLY A NEW VERSION OF ALWYN'S OLD
+       es_average PROGRAM.
+
+ NOTE: from version 1.2 onwards the input has changed
+       since you can now run average and expand separately.
+       THIS MEANS YOU HAVE TO CHANGE OLD COMMAND FILES !!!
+
+ You may use this program to:
+ - average density onto a mask
+ - expand density into an asymmetric unit or unit cell
+ - do both in one go (usual m.o.)
+
+ These two steps need to be separated if yoy want to employ
+   proper symmetry.  For example, you have a tetramer with
+   proper 222 symmetry; in that case proceed as follows:
+ - make a mask around the whole tetramer
+ - average with this mask and the four NCS operators
+ - expand with ONLY the unit NCS operator
+
+ ** INPUT
+
+ Input items:
+
+ task = both
+ unaveraged map
+ mask file
+ output averaged & expanded map
+ spacegroup symmetry operators
+ NCS operators
+
+ task = average
+ unaveraged map
+ mask file
+ output averaged map
+ spacegroup symmetry operators
+ NCS operators
+
+ task = expand
+ example map (comprising one ASU or unit cell)
+ mask file
+ averaged map (on the same grid as the mask)
+ output expanded map (same grid as example map)
+ spacegroup symmetry operators
+ NCS operators
+
+ NOTES:
+ - all maps are in CCP4 binary format
+ - masks may come in any format supported by MAMA
+ - spacegroup symmetry and NCS operators should be
+   provided as "O" datablock files
+ - the NCS operators would normally explicitly
+   include the UNIT OPERATOR !
+ - signal the end of the NCS input by an empty line
+
+ ** ERRORS
+
+ - if you get "severe FRCSYM errors" during the averaging
+   step, your map probably does not encompass N asymmetric
+   units PLUS ONE POINT ON ALL SIDES
+
+ - if you get "interpolation errors" during the expansion
+   step, your mask probably extends too close to the
+   border(s) of its grid (use MAMA to test and remedy this)
+
+ ** UPDATES
+
+ ## Version 3.0
+
+ You are now presented with the following options on startup:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Which task ?
+  A = Average (normal)
+  E = Expand (normal)
+  B = Both average and expand (normal)
+  Q = Quit right now
+  T = Test interpolation
+  P = Average; enforce positivity
+  R = Average and expand; enforce positivity
+  X = Expand; keep zero background
+  Y = Average and expand; keep zero background
+  Z = Average and expand; zero back; positivity
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ If you want, you may enforce positivity of the density inside
+   the mask.  In this case, all mask points which receive an
+   average density <= zero will be set to an arbitrary small
+   positive value instead.
+
+ In addition, you can now use AVE to do multiple domain NCS
+   averaging.  For example, if you have a hetero-dimer in
+   which each monomer has its own mask and NCS operators,
+   you could proceed as follows:
+
+ * calculate a map
+ * for each domain, average and expand, BUT keep the
+   background density at zero (e.g. with option Y or Z)
+ * combine the individual expanded map with COMDEM
+   (NOT with COMAP); this will add all contributions
+   together and afterwards calculate the average background
+   density to which all the points which were still at
+   zero will be set
+ * calculate structure factors, scale them against Fobs and
+   calculate a new map
+ * average and expand each domain separately again, etc.
+
+ ## Version 3.4
+
+ A new option has been implemented, namely mask-less averaging.
+   This can be used when the boundaries of your molecule are not
+   clear yet (i.e., the extent of the cell where the local
+   (NCS) symmetery operators apply).  Probably the way to use
+   it is:
+ - provide a map around your N-mer (e.g., tetramer)
+ - run one cycle of mask-less averaging (without expansion !)
+ - check where in the map density survives and where it doesn't
+ 
+ With improper NCS, only density for one molecule should remain;
+   with proper NCS the boundaries of the whole N-mer should become
+   visible.  In the latter case, you can then either use a mask
+   which covers the entire N-mer, or a mask which covers an
+   *arbitrary* 1/N-th of the complete N-mer.  However, beware
+   that "proper" symmetry can sometimes be a trifle improper
+   (e.g., a 222 tetramer with small translational components);
+   in such a case, the assumptions break down.  In general, it
+   is therefore safest to assume improper symmetry in all cases
+   (my humble opinion).
+
+ With mask-less averaging, the major loop is not over mask points, but
+   over points in your asymmetric unit or unit cell.  For each point,
+   all NCS operators are applied, and the density is averaged.  This
+   means that there are no separate averaging and expansion steps !
+ The input to the program is the same as usual, except that you don't
+   need to supply a mask file (obviously).
+
+ ** KNOWN BUGS
+
+ None, at present.

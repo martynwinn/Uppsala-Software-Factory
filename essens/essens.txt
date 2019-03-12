@@ -1,0 +1,1338 @@
+
+ ** ESSENS - GENERAL INFORMATION
+
+ Program : ESSENS
+ Version : 040701
+ Author  : Gerard J. Kleywegt & T. Alwyn Jones,
+           Dept. of Cell and Molecular Biology,
+           Uppsala University, Biomedical Centre, Box 596,
+           SE-751 24 Uppsala, SWEDEN
+ E-mail  : gerard@xray.bmc.uu.se
+ Purpose : structural feature detection; real-space phased
+           molecular replacement calculations
+ Package : RAVE
+
+ ** REFERENCES
+
+ Reference(s) for this program:
+
+ *  1 * T.A. Jones (1992). A, yaap, asap, @#*?  A set of averaging
+        programs. In "Molecular Replacement", edited by E.J. Dodson,
+        S. Gover and W. Wolf. SERC Daresbury Laboratory, Warrington,
+        pp. 91-105.
+
+ *  2 * G.J. Kleywegt & T.A. Jones (1994).  Halloween ... Masks and
+        Bones. In "From First Map to Final Model", edited by
+        S. Bailey, R. Hubbard and D. Waller.  SERC Daresbury
+        Laboratory, Warrington, pp. 59-66.
+        [http://xray.bmc.uu.se/gerard/papers/halloween.html]
+
+ *  3 * M. Harel, G.J. Kleywegt, R.B.G. Ravelli, I. Silman & J.L.
+        Sussman (1995). Crystal structure of an acetylcholinesterase-
+        fasciculin complex: interaction of a three-fingered toxin
+        from snake venom with its target. Structure 3, 1355-1366.
+        [http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=PubMed&cmd=Retrieve&list_uids=8747462&dopt=Citation]
+
+ *  4 * G.J. Kleywegt & T.A. Jones (1997). Taking the fun out of map
+        interpretation. CCP4/ESF-EACBM Newsletter on Protein
+        Crystallography 33, January 1997, pp. 19-21.
+        [http://xray.bmc.uu.se/usf/factory_7.html]
+
+ *  5 * G.J. Kleywegt & T.A. Jones (1997).  Template convolution to
+        enhance or detect structural features in macromolecular
+        electron-density maps. Acta Cryst D53, 179-185.
+        [http://scripts.iucr.org/cgi-bin/paper?gr0647]
+
+ *  6 * G.J. Kleywegt & R.J. Read (1997). Not your average density.
+        Structure 5, 1557-1569.
+        [http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=PubMed&cmd=Retrieve&list_uids=9438862&dopt=Citation]
+
+ *  7 * R.J. Read & G.J. Kleywegt (2001). Density modification:
+        theory and practice. In: "Methods in Macromolecular
+        Crystallography" (D Turk & L Johnson, Eds.), IOS Press,
+        Amsterdam, pp. 123-135.
+
+ *  8 * Kleywegt, G.J., Zou, J.Y., Kjeldgaard, M. & Jones, T.A. (2001).
+        Around O. In: "International Tables for Crystallography, Vol. F.
+        Crystallography of Biological Macromolecules" (Rossmann, M.G.
+        & Arnold, E., Editors). Chapter 17.1, pp. 353-356, 366-367.
+        Dordrecht: Kluwer Academic Publishers, The Netherlands.
+
+ ** VERSION HISTORY
+
+ 950710 - 0.01 - first version (from ncs6d.f)
+ 950723 - 0.08 - first production version (Uppsala)
+ 951215 - 0.13 - changes (use internal mask; divide by number of
+                 summation points such that output map is on a
+                 similar scale as the input map)
+ 951229 - 0.14 - calc min, max, average and sigma for masked points only
+ 960116 - 0.15 - optional use of a mask; increase max nr of atoms to 1000;
+                 store some statistics in best-fitting PDB output file
+ 960117 - 0.16 - minor changes; improve use of mask
+ 960124 - 0.17 - bug fix (sometimes unset mask points left at -1.0E4)
+ (** yet another disk crash **)
+ 960207 - 0.18 - restore changes made on 960124 (hopefully ...);
+                 flush output after every 1% of the rotations (needed
+                 for SGI Impact)
+ 960418 - 0.19 - minor bug fix (determine safety borders by explicit
+                 pre-rotation of the molecule; this is only needed
+                 for large search models in non-orthorhombic cells,
+                 but it doesn't do any harm for other cases (just
+                 a few CPU seconds); call best-fit file bestfit1.pdb
+                 unless that already exists, then call it bestfit2.pdb,
+                 unless ... etc., until max. bestfit999.pdb
+ 960723 - 1.0  - increased max. number of atoms to 5000; first public
+                 release; extended HINTS section (check it out before
+                 you use the program !)
+ 960730 - 1.1  - implemented Morten's idea for scoring after promising
+                 tests on P2 myelin; added practical advice w.r.t.
+                 parameter choices etc. in the manual
+ 960802 - 1.1.1 - oops, fixed bug in M option (didn't ask for the value
+                 of K in the K-minimum sum function), thanks to Jeroen
+                 Brandsen
+ 960804 - 1.1.2 - fixed default value for K to really be 60% of the
+                 atoms as promised in the manual, thanks to Dave Garboczi
+ 961228 - 2.0   - completely new version for public release: uses dynamic
+                 memory allocation; code and input cleaned up; always do
+                 K-minimum sum function and get Morten's method for free;
+                 accompanying program SOLEX to extract solutions afterwards
+ 990126 - 2.0.1 - added check to see if allocated maximum mask size
+                 is sufficient for (internally used) mask
+ 990503 -       - added a section to this manual describing how to
+                  artificially enlarge a map file for use with ESSENS
+ 990802 - 2.1   - implemented option to only do the calculations for
+                  local electron density maxima (reduces the number of
+                  points to examine by a factor of 10-100 !); also fixed
+                  a little bug in "Morten's trick"
+ 991203 - 2.2   - Kay Diederichs' code optimisation incorporated
+ 010122 - 3.0   - use C routines to do dynamic memory allocation 
+                  and port to Linux
+ 010219 - 3.0.1 - changes to parallelisation calls
+ 010220 - 3.0.2 - changes to parallelisation calls - no longer compiled !
+ 010220 - 3.0.3 - final changes to parallelisation calls; put Kay
+                  Diederichs' compiled version on the ftp server
+ 011019 - 3.0.4 - give more output when checking if the probe can be
+                  rotated inside the map
+ 040701 -3.0.5- changed checks of dynamic memory allocation to allow
+                for pointers with negative values as returned by
+                some recent Linux versions
+
+ ** NOTES
+
+ NOTE: ESSENS 2.0 is drastically different from earlier versions.  In
+       particular, the input is different, so you may have to update
+       script files you used earlier.  Also, the program now allocates
+       memory dynamically (see below).
+
+ NOTE: This program is sensitive to the environment variable
+       CCP4_OPEN.  If this variable has *not* been set, you will
+       not be able to create any CCP4 maps.  If this happens, the
+       program will abort execution on startup.  To fix this,
+       put the following line in your .login or .cshrc file:
+       setenv CCP4_OPEN UNKNOWN
+
+ ** MAP AND MASK SIZE
+
+ From version 2.0 onward, ESSENS allocates memory for maps and
+   masks dynamically.  This means that you can increase the size
+   of maps and masks that the program can handle on the fly:
+
+ 1 - through the environment variables MAPSIZE and MASKSIZE (must be
+     in capital letters !), for example put the following in your
+     .cshrc file or your ESSENS script:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ setenv MAPSIZE 8000000
+ setenv MASKSIZE 3000000
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ 2 - by using command-line arguments MAPSIZE and MASKSIZE (need not
+     be in capitals), for example in your ESSENS script:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ run essens -b mapsize 10000000 masksize 5000000 < essens.inp >& essens.out
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Note that command-line arguments take precedence over environment
+   variables.  So you can set the environment variables in your .cshrc
+   file to "typical" values, and if you have to deal with a map and/or
+   mask which is bigger than that, you can use the command-line argument(s).
+
+ If sufficient memory cannot be allocated, the program will print
+   a message and quit.  In that case, increase the amount of virtual
+   memory (this will not help, of course, if you try to allocate more
+   memory than can be addressed by your machine (for 32-bit machines,
+   something 2**32-1 bytes, I think), or reduce the size requirements.
+
+ ESSENS needs space for 2 maps and 2 masks.
+
+ ** DESCRIPTION
+
+ In "feature extraction mode", the idea of ESSENS is to carry out
+   the following process:
+
+ - take an experimental (e.g., MIR) map (the best you can produce,
+   i.e. after solvent flattening, averaging etc.)
+ - take a structural template (e.g., a 5-residue Alanine helix)
+ - for each point in the map, carry out a complete rotational
+   search to find the orientation in which the template best fits
+   the density
+ - store the best score for each point
+ - contour the resulting map to reveal places in the map where
+   the template might be located
+
+ Alternatively, the program can be used for "phased molecular
+   replacement" calculations, where you have a map in which you
+   want to position an entity of which you know the structure
+   but not the orientation and/or position.  In that case, use
+   the coordinates of (part of) this entity as the template.
+   The best orientation will be saved in a new PDB file.
+
+ You may use a mask (optional) to tell the program which parts of
+   the input map it should include in the calculations.
+
+ ** STARTUP
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ *** ESSENS *** ESSENS *** ESSENS *** ESSENS *** ESSENS *** ESSENS *** 
+
+ Version  - 990802/2.1
+ (C) 1992-1999 Gerard J. Kleywegt & T. Alwyn Jones, BMC, Uppsala (S)
+ User I/O - routines courtesy of Rolf Boelens, Univ. of Utrecht (NL)
+ Others   - T.A. Jones, G. Bricogne, Rams, W.A. Hendrickson
+ Others   - W. Kabsch, CCP4, PROTEIN, E. Dodson, etc. etc.
+
+ Started  - Mon Oct 11 19:09:04 1999
+ User     - gerard
+ Mode     - interactive
+ Host     - sarek
+ ProcID   - 12724
+ Tty      - /dev/ttyq12
+
+ *** ESSENS *** ESSENS *** ESSENS *** ESSENS *** ESSENS *** ESSENS *** 
+
+ Reference(s) for this program:
+
+ *  1 * T.A. Jones (1992). A, yaap, asap, @#*?  A set of averaging
+        programs. In "Molecular Replacement", edited by E.J. Dodson,
+        S. Gover and W. Wolf. SERC Daresbury Laboratory, Warrington,
+        pp. 91-105.
+
+ *  2 * G.J. Kleywegt & T.A. Jones (1994).  Halloween ... Masks and
+        Bones. In "From First Map to Final Model", edited by
+        S. Bailey, R. Hubbard and D. Waller.  SERC Daresbury
+        Laboratory, Warrington, pp. 59-66.
+        [http://xray.bmc.uu.se/gerard/papers/halloween.html]
+
+ *  3 * M. Harel, G.J. Kleywegt, R.B.G. Ravelli, I. Silman & J.L.
+        Sussman (1995). Crystal structure of an acetylcholinesterase-
+        fasciculin complex: interaction of a three-fingered toxin
+        from snake venom with its target. Structure 3, 1355-1366.
+        [http://www.ncbi.nlm.nih.gov/htbin-post/Entrez/query?uid=8747462&form=6&db=m&Dopt=r]
+
+ *  4 * G.J. Kleywegt & T.A. Jones (1997). Taking the fun out of map
+        interpretation. CCP4/ESF-EACBM Newsletter on Protein
+        Crystallography 33, January 1997, pp. 19-21.
+        [http://xray.bmc.uu.se/usf/factory_7.html]
+
+ *  5 * G.J. Kleywegt & T.A. Jones (1997).  Template convolution to
+        enhance or detect structural features in macromolecular
+        electron-density maps. Acta Cryst D53, 179-185.
+        [http://www.iucr.ac.uk/journals/acta/tocs/actad/1997/actad5302.html]
+
+ *  6 * G.J. Kleywegt & R.J. Read (1997). Not your average density.
+        Structure 5, 1557-1569.
+        [http://www4.ncbi.nlm.nih.gov/htbin-post/Entrez/query?uid=9438862&form=6&db=m&Dopt=r]
+
+ *  7 * G.J. Kleywegt & T.A. Jones (2037 ?). Convenient single and
+        multiple crystal real-space averaging. To be published ???
+
+ *  8 * G.J. Kleywegt, J.Y. Zou, M. Kjeldgaard & T.A. Jones (1999 ?).
+        Chapter 25.2.6.  Around O. Int. Tables for
+        Crystallography, Volume F. Submitted.
+
+ ==> For manuals and up-to-date references, visit:
+ ==> http://xray.bmc.uu.se/usf
+
+ *** ESSENS *** ESSENS *** ESSENS *** ESSENS *** ESSENS *** ESSENS *** 
+
+ Allocate maps of size  : (    5000000) 
+ Allocate masks of size : (    3000000) 
+ Max nr of atoms : (      10000) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** INPUT
+
+ ## experimental map
+
+ Give the name of your experimental map (must be in CCP4 format; use
+   MAPMAN to convert maps from other programs).  If you know where your
+   molecule is, use MAMA to generate a mask for that area and cut
+   out the density inside the mask with AVE.  This speeds up the
+   calculations considerably !
+
+ For typical experimental maps (~3 A), a 1 A grid spacing of the map
+   is good enough.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Input CCP4 map file ? ( ) /home/gerard/essens/p2ave/p2_10_mola.E
+ Input CCP4 map file : (/home/gerard/essens/p2ave/p2_10_mola.E) 
+ Read header
+ Input map : (/home/gerard/essens/p2ave/p2_10_mola.E) 
+ FORMATTED      OLD     file opened on unit  11
+ Logical name: /home/gerard/essens/p2ave/p2_10_mola.E, Full name: /home/gerard/essens/p2ave/p2_10_mola.E
+
+  (Q)QOPEN allocated #  1
+ User:   gerard               Logical Name: /home/gerard/essens/p2ave/p2_10_mola.E
+ Status: READONLY   Filename: /home/gerard/essens/p2ave/p2_10_mola.E
+
+  File name for input map file on unit  11 : /home/gerard/essens/p2ave/p2_10_mola.E
+                               file size = 3276224  ;  logical name /home/gerard/essens/p2ave/p2_10_
+
+
+           Number of columns, rows, sections ...............  100   89   92
+           Map mode ........................................    2
+           Start and stop points on columns, rows, sections   -12   87   11   99   23  114
+           Grid sampling on x, y, z ........................  100  110   64
+           Cell dimensions .................................  91.80000  99.50000  56.50000  90.00000  90.00000  90.00000
+           Fast, medium, slow axes .........................    Z    X    Y
+           Minimum density .................................   -63.22697
+           Maximum density .................................    86.82116
+           Mean density ....................................     0.00280
+           Rms deviation from mean density .................     4.05358
+           Space-group .....................................   19
+           Number of titles ................................    3
+
+ Titles :
+           new 2Fo-Fc map                                                                  
+           Created by AVE V. 931216/3.0 at Wed Dec 22 18:45:45 1993 for user gerard        
+           Created by AVE V. 950118/3.1 at Mon Jul 17 19:04:35 1995 for user gerard        
+
+
+ Parameters as read from the map file
+ Origin ......................         11        23       -12
+ Extent ......................         89        92       100
+ Grid ........................        100       110        64
+ Cell axes ...................      91.80     99.50     56.50
+ Cell angles .................      90.00     90.00     90.00
+ UVW (fast, medium, slow) ....          Z         X         Y
+
+ Header done
+ Map read OK
+ Closing BINARY CCP4 map on unit : (      11) 
+ Cell axes   (A) : (  91.800   99.500   56.500) 
+ Cell angles (d) : (  90.000   90.000   90.000) 
+ Grid axes (pts) : (     100      110       64) 
+ Origin    (pts) : (      11       23      -12) 
+ Extent    (pts) : (      89       92      100) 
+ Grid spacing (A): (   0.918    0.905    0.883) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## mask file
+
+ Supply the name of a mask file (in any MAMA/O format) or hit return
+   if you don't want to use a mask.  If you use a mask, only points
+   set in the mask are candidates for evaluation (if they satisfy the
+   density cut-off and are not too close to the border of the map).
+
+ Note that for "real-space molecular replacement" calculations, your
+   mask need only cover the part of space where you think that the
+   centre-of-gravity of the molecule could be located !! This is
+   typically a *much* smaller portion of the map than the volume
+   *occupied* by the entire molecule !
+
+ For locating helices and strands, use a mask correspoding to the volume
+   of your molecule.  For locating a ligand, simply use the part of
+   space where you think your ligand could be.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Mask is *OPTIONAL* !
+ Input O/MAMA mask file ? ( ) /home/gerard/essens/p2ave/p2a.mask
+ Input O/MAMA mask file : (/home/gerard/essens/p2ave/p2a.mask) 
+ Reading mask (compressed format)
+ Grid points : (     818800) 
+ Stretches   : (       2508) 
+ Mask points : (      88991) 
+ Number of points in mask : (      88991) 
+ Cell axes   (A) : (  91.800   99.500   56.500) 
+ Cell angles (d) : (  90.000   90.000   90.000) 
+ Grid axes (pts) : (     100      110       64) 
+ Origin    (pts) : (      11       23      -12) 
+ Extent    (pts) : (      89       92      100) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## template PDB file (or search model for "phased Molecular Replacement" calculations)
+
+ Provide the name of a (small) PDB file containing your template or
+   (partial) search model.
+
+ If you use ESSENS to detect helices and strands, using penta-Alanine
+   templates worked well for us.  If you use very short templates, you
+   will get more noise.  If you use very long templates, you may only
+   get signal for the central parts of your secondary structure
+   elements.  In addition, if your strand template is long, you may
+   miss curved strands completely.
+
+ If you use ESSENS to locate larger motifs, domains or entire molecules,
+   generate a poly-Ala of the parts of your template that can be expected
+   to be rigid (e.g., remove loops and turns).
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Name of template PDB file ? (alpha.pdb) /home/gerard/progs/average/essens_beta.pdb
+ Name of template PDB file : (/home/gerard/progs/average/essens_beta.pdb) 
+ Number of atoms  : (         25) 
+ Nr of H stripped : (          0) 
+ Centre of gravity of atoms : (   0.000    0.000    0.000) 
+ Using central CA atom as pivot point
+ Atom : (ATOM 12 CA ALA 3 -0.650 -0.185 -0.410 1.00 20.00) 
+ Pivot point : (  -0.650   -0.185   -0.410) 
+ Furthest atom (A): (   7.883) 
+ Safety border X/Y/Z =  10 10 10
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ If you use an entire molecule or domain, the map needs to be big
+   enough to allow rotation of the model in all three dimensions:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Name of template PDB file ? (alpha.pdb) p2_mol_a.pdb
+ Name of template PDB file : (p2_mol_a.pdb) 
+ Number of atoms  : (       1039) 
+ Nr of H stripped : (          0) 
+
+ Centre of gravity of atoms : (  49.647   64.627   32.916) 
+ Using central CA atom as pivot point
+ Atom : (ATOM 813 CA ILE A 104 54.892 61.786 33.360 1.00 22.50 AAAA) 
+ Pivot point : (  54.892   61.786   33.360) 
+
+ Furthest atom (A): (  26.954) 
+ Atom : (ATOM 350 NZ LYS A 45 42.208 70.031 11.052 1.00 29.91 AAAA) 
+
+ Safety border NX/NY/NZ =  31 31 32
+ Check if probe can be rotated in map ...
+ X - extent    100 >= 2*NX+1 =     63 ?
+ Y - extent    110 >= 2*NY+1 =     63 ?
+ Z - extent     64 >= 2*NZ+1 =     65 ?
+ ERROR --- Not enough points along Z
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ When looking for entire domains or molecules, Kay Diederichs suggests
+   that CA-only models suffice:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ We just placed a CA model of a known protein (350 residues) into a solomon
+ density using 14 hours and 8 processors of an Origin 2000. It seems to
+ fit quite well! 
+
+ A hint at only using CA for real-space MR could go into the manual.
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## rotation angles
+
+ You may carry out the rotational search using Euler or Polar angles
+   (CCP4 definition).
+
+ The default Euler angle ranges comprise an asymmetric unit of
+   rotational space in P1.  If your template has rotational symmetry
+   itself (e.g., a haem group), you can scan a smaller part of
+   rotational space.
+
+ Usually, 10 or 20 degree step sizes will be good enough; sometimes
+   you may even get away with 30 degrees (27 times faster than 10
+   degrees, so this is useful for quick-and-dirty test runs). In general,
+   the bigger the template, the finer you ought to sample the rotations.
+
+ For "real-space molecular replacement", you can do an initial run with
+   ten degree steps, and -if the solution looks promising- do a search
+   with a smaller step size around the maximum found in the first run.
+   (Note that you must input the *original* -unrotated and untranslated-
+   PDB file again since the solution rotation was relative to that
+   model !)  You could also make a little mask containing only the
+   points near the maximum found in the first run.  This makes that
+   only those points will be scanned in the second pass, making the
+   operation much faster.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Rotations may be in Euler or Polar angles
+ Use Euler angles (Y/N) ? (Y) 
+ Rotations are Euler angles in degrees
+ Rotation ALPHA start, end, step ? (   0.000  359.000   10.000) 
+ Rotation BETA  start, end, step ? (   0.000  179.000   10.000) 
+ Rotation GAMMA start, end, step ? (   0.000  359.000   10.000) 
+ Rotation ALPHA start, end, step : (   0.000  359.000   20.000) 
+ Rotation BETA  start, end, step : (   0.000  179.000   20.000) 
+ Rotation GAMMA start, end, step : (   0.000  359.000   20.000) 
+ Number of rotations : (       3610) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## scoring method
+
+ In the original ESSENS program, you had a choice of scoring functions.
+   However, since the K-minimum sum function is so much superior to any
+   of the other functions, this is now the only available function.
+   However, you do now also get a map using "Morten's method", which
+   previously required a separate run of the program, at no noticeable
+   extra cost of CPU time !
+
+ The K-minimum sum function works as follows:
+     for each rotation, for each map point, for each atom, the average
+     of the 8 nearest grid points is calculated; the values of the
+     "K" weakest atoms are summed (K should be ~1/2 to 2/3 the number of
+     atoms).  This is a slow method (since the values must be
+     sorted), but also the best.  All values are divided by "K".
+
+ Morten's variant entails:
+     the function is the same, but instead of assigning the score only
+     to the pivot point, it gets assigned to *all* grid points near
+     atoms in the template.  This means that if a fragment fits
+     well, an entire image of it is "imprinted" in the score map,
+     which upon contouring will not only show where the template
+     fitted the map, but also *how* it fitted (i.e., in which
+     orientation).  Initial experiments show that you really get
+     nice strands and helices in which even the CB atoms can be
+     discerned (making it easy to see the directionality of alpha
+     helices due to their typical "Christmas-tree" shape, with
+     the sidechains pointing "down" toward the N-terminus).
+     From version 2.0 onwards, "Morten's method" is applied a posteriori,
+     which means that it is extremely cheap in terms of CPU time to
+     calculate both the original and Morten's function !
+
+ For both methods, you need to define the value of "K",
+   i.e. the number of worst-fitting atoms whose density will be
+   summed.  As a rule, use something like 1/2 to 2/3 of the total
+   number of atoms in the template (the default from version 1.1
+   onwards is to use ~60%).  Smaller numbers mean that it is more
+   likely to miss features with weak density; larger numbers mean
+   more noise.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ K = Nr of atoms to sum in K-minimum sum function
+ Value of K ? (      15) 
+ K : (      15) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## density cut-off
+
+ To reduce the computational burden, you may opt to only calculate
+   scores for map points whose density exceeds a certain value (the
+   default is the minimum value in the map, i.e. scrutinise all points).
+
+ Note that for input models which do not contain CA atoms, the pivot
+   point will be the centre-of-gravity of the model - this is probably
+   *NOT* an atom, so using a density cut-off is dangerous in such cases !
+   A simple solution is to rename one (more or less central) atom
+   to " CA ", so that it will be used as the pivot.
+   
+ We recommend you use a cut-off of zero (if your map is on an absolute
+   scale you will have to find another cut-off yourself).
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Minimum density in input map     : ( -6.323E+01) 
+ Lower density cut-off ? ( -6.323E+01) 
+ Lower density cut-off : (  1.000E-03) 
+ Grid points in map     : (     818800) 
+ Grid points >= cut-off : (      21728) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## local maxima
+
+ This option is new in version 2.1 of ESSENS. You may now opt to have
+   ESSENS do its calculations only for points that are local maxima
+   in the input electron density map. This typically reduces the
+   number of points (and, hence, the CPU time) by a factor of 10 to
+   100 !
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## output maps
+
+ Provide the name of the output files (also CCP4 maps).  From version 2.0
+   onwards, you will get *two* output maps:
+ - a "score map", which is the result of the original K-minimum sum
+   function calculations.  This map is useful for subsequent solution
+   extraction calculations with the accompanying program SOLEX.
+ - a "display map", which is the result of "Morten's method".  This map
+   is especially well-suited for display purposes since it brings out
+   the features so well.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Output score map file ? (score.E) score_b20.E
+ Output score map file : (score_b20.E) 
+
+ Output display map file ? (display.E) display_b20.E
+ Output display map file : (display_b20.E) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## rotation file
+
+ A new feature in version 2.0 and onwards is the use of a "rotation file"
+   to store the best-fitting orientations for every grid point in the map.
+   This (ASCII) file is read again by SOLEX, a new program which can be
+   used to extract the best solution(s) from an ESSENS run (see the manual
+   for this program).
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Output rotation file ? (temp.rot) b20.rot
+ Output rotation file : (b20.rot) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ The rotation file is a simple ASCII file which may look as follows:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ROTATION_MAP_ESSENS Created by ESSENS V. 961120/2.0 at Thu Nov 21 23:03:49 1996 for user gerard
+EULER angles
+  2.843797E+00  3.031950E+00 AVE SDV
+   11   23  -12 Origin
+   89   92  100 Extent
+  100  110   64 Grid
+   91.8000   99.5000   56.5000   90.0000   90.0000   90.0000 Cell
+-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+...
+-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 705331732 621363992
+600433432 642315052 621404972 -1 -1 -1 -1 -1 -1 -1 -1 -1
+-1 -1 -1 -1 -1 -1 -1 684257832 663265852 -1 -1 -1
+-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+...
+-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+-1 -1 -1 -1
+CHECKSUM          -2025145252
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ At grid points which were not evaluated, the value "-1" is stored;
+   at other grid points an integer is stored which encodes the three
+   angles which gave the best fit at that point.  The encoding mechanism
+   makes that:
+ - only *integer* angles can be stored
+ - only angles with values in between (roughly) -500 and +500 can be used
+   (so don't use angle ranges such as from 360 to 720)
+
+ ** OUTPUT
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Initialising output map ...
+
+ Determining safety borders ...
+ Safety border X/Y/Z =  10 10 10
+ CPU total/user/sys :       1.9       1.6       0.3
+
+ Setting up mask ...
+ Grid points inside mask and map : (      88991) 
+
+ Applying density cut-off ...
+
+ Marking grid points to use ...
+ After density cut-off and borders : (      21728) 
+ CPU total/user/sys :       0.6       0.6       0.0
+
+ Please be patient for a while ...
+
+
+ Atom : (       1) 
+ XYZ  : (  -5.311   -4.551    2.894) 
+ ROT  : (  -5.311   -4.551    2.894) 
+ delI : (      -5       -5        3) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ After every 1% of the rotations has been carried out, the program
+   prints a message and an estimate of the remaining amount of CPU
+   time required.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Rotation #       36 --- % =    1.0
+ Angles  :     0.00   20.00  320.00
+ CPU total/user/sys :      34.9      34.9       0.0
+ Expected CPU time left (s, m, h) :     3453.6      57.6       1.0
+
+ Rotation #       72 --- % =    2.0
+ Angles  :     0.00   60.00  280.00
+ CPU total/user/sys :      35.7      35.7       0.0
+ Expected CPU time left (s, m, h) :     3499.5      58.3       1.0
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ When the work is done, all points not considered are set to the
+   minimum value observed for the points that were considered.  Then
+   the output map is written (mappage with MAPMAN; use the RAnge
+   command to only mappage high values of the score map to allow
+   better discrimination with contour levels).  Statistics pertaining
+   only to the points in the map actually evaluated are also listed.
+
+ For the K-minimum sum function, positive values indicate possible success
+   if the input map had an average value of zero for the whole unit cell
+   (i.e., not on an absolute scale).
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Rotation #     3600 --- % =   99.7
+ Angles  :   360.00  180.00  160.00
+ CPU total/user/sys :      35.6      35.6       0.0
+ Expected CPU time left (s, m, h) :        9.9       0.2       0.0
+
+ Done all rotations ... post-processing ...
+ CPU total/user/sys :      10.9      10.9       0.0
+
+ Getting statistics ...
+
+ Nr of points in masked map : (      21728) 
+ Nr of points with positive signal : (      19177) 
+ Nr of points with negative signal : (       2501) 
+
+ Minimum signal in masked map : ( -5.838E+00) 
+ Maximum signal in masked map : (  2.392E+01) 
+
+ Average signal in masked map : (  2.844E+00) 
+
+ St.dev. signal in masked map : (  3.032E+00) 
+ ( Max - Ave ) / St.dev.      : (  6.953E+00) 
+
+ Resetting all unset points to minimum ...
+
+ CPU total/user/sys :       0.6       0.6       0.0
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Next, the rotation file is written.  Then Morten's method is applied
+   and statistics are calculated again as above.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Writing rotation map ...
+
+ CPU total/user/sys :      26.7      22.8       3.9
+
+ Applying Morten's trick ...
+
+ CPU total/user/sys :       5.3       5.3       0.0
+
+ Getting statistics ...
+
+ Nr of points in masked map : (      21728) 
+ Nr of points with positive signal : (      21677) 
+ Nr of points with negative signal : (         24) 
+
+ Minimum signal in masked map : ( -1.940E-01) 
+ Maximum signal in masked map : (  2.392E+01) 
+
+ Average signal in masked map : (  9.067E+00) 
+
+ St.dev. signal in masked map : (  4.705E+00) 
+ ( Max - Ave ) / St.dev.      : (  3.158E+00) 
+
+ Resetting all unset points to minimum ...
+
+ CPU total/user/sys :       0.2       0.2       0.0
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Finally, the two new maps are written to disk.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Writing convolution (score) map ...
+ Stamp : (Created by ESSENS V. 961120/2.0 at Thu Nov 21 23:04:40 1996 for 
+  user gerard) 
+  (Q)QOPEN allocated #  1
+ User:   gerard               Logical Name: score_b20.E
+ Status: UNKNOWN    Filename: score_b20.E
+
+  File name for output map file on unit  11 : score_b20.E
+     logical name score_b20.E
+
+
+   Minimum density in map  =       -5.83801   Maximum density         =       23.92435
+   Mean density            =       -5.58603
+   Rms deviation from mean =        1.53606
+
+ Map written out
+
+ Writing display (Morten) map ...
+ Stamp : (Created by ESSENS V. 961120/2.0 at Thu Nov 21 23:04:49 1996 for 
+  user gerard) 
+  (Q)QOPEN allocated #  1
+ User:   gerard               Logical Name: display_b20.E
+ Status: UNKNOWN    Filename: display_b20.E
+
+  File name for output map file on unit  11 : display_b20.E
+     logical name display_b20.E
+
+
+   Minimum density in map  =       -0.19399   Maximum density         =       23.92435
+   Mean density            =        0.05104
+   Rms deviation from mean =        1.66892
+
+ Map written out
+
+
+ *** ESSENS *** ESSENS *** ESSENS *** ESSENS *** ESSENS *** ESSENS *** 
+
+ Version - 961120/2.0
+ Started - Thu Nov 21 21:58:31 1996
+ Stopped - Thu Nov 21 23:05:01 1996
+
+ CPU-time taken :
+ User    -   3622.6 Sys    -      5.4 Total   -   3628.0
+
+ *** ESSENS *** ESSENS *** ESSENS *** ESSENS *** ESSENS *** ESSENS *** 
+
+ >>> This program (C) 1992-96, GJ Kleywegt & TA Jones <<<
+ E-mail: "gerard@xray.bmc.uu.se" or "alwyn@xray.bmc.uu.se"
+
+ *** ESSENS *** ESSENS *** ESSENS *** ESSENS *** ESSENS *** ESSENS *** 
+
+... Toodle pip ...
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** WHAT NEXT ?
+
+ If you look for helices or strands, mappage the display map, start up O,
+   and find a contouring level at which you see the helices/strands
+   reasonably well, without too much (connected) noise.  Then either
+   start building your model, or use the accompanying program SOLEX
+   to extract (and possibly auto-build) the best solutions.
+
+ If you look for ligands or sidechains, go through the same procedure.
+
+ If you use the program for phased Molecular Replacement calculations, use
+   the accompanying program SOLEX to extract the best solution(s), and check
+   with O how well they fit your map.
+
+ See the SOLEX manual for more details.
+
+ ** EXAMPLE BATCH JOB FILE
+
+ The following is an example job file.  If you call it "a5.com",
+   submit it using (for instance): "nohup a5.com &".  To follow the
+   output, use: "tail -f rot20_alpha5.log".
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+#!/bin/csh -f
+
+cd /your/essens/directory
+
+# this assumes that you have a copy of the "run" script
+# (pub/gerard/extras/scripts/run from xray.bmc.uu.se)
+# if not, use something like: al_essens -b ...
+# or: /nfs/public/packages/rave/bin/essens -b ...
+# when in doubt, ask your helpful system manager
+
+run essens -b << EOF >& rot20_alpha5.log
+your_ccp4_map.E
+your_mama.mask
+essens_alpha.pdb
+yes euler
+0 359 20
+0 179 20
+0 359 20
+15 value of k
+0.001 cut-off
+score_r20a5.E
+display_r20a5.E
+r20a5.rot
+EOF
+
+mail your_username@machine.node.domain << EOF
+
+ESSENS job XXXXXXX has finished (or crashed ...)
+
+EOF
+
+exit 0
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** TEMPLATES
+
+ The following templates may be useful.  If you find others useful,
+   please mail a copy to gerard@xray.bmc.uu.se so they can be
+   distributed to other users !
+
+ ## essens_alpha.pdb - penta-Alanine in alpha-helical conformation
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+REMARK Ideal penta-alanine in alpha helix conformation
+REMARK Force CA of residue 3 to be pivot point by making it the
+REMARK only atom with name " CA "
+REMARK
+REMARK Gerard Kleywegt @ 960201
+REMARK
+ATOM      1  N   ALA     1       2.913   0.343   3.341  1.00 20.00   7
+ATOM      2  CAX ALA     1       1.564   0.972   3.412  1.00 20.00   6
+ATOM      3  C   ALA     1       1.107   1.341   2.016  1.00 20.00   6
+ATOM      4  O   ALA     1      -0.073   1.210   1.632  1.00 20.00   8
+ATOM      5  CB  ALA     1       1.609   2.134   4.406  1.00 20.00   6
+ATOM      6  N   ALA     2       2.029   1.821   1.182  1.00 20.00   7
+ATOM      7  CAX ALA     2       1.778   2.222  -0.196  1.00 20.00   6
+ATOM      8  C   ALA     2       1.411   0.949  -0.982  1.00 20.00   6
+ATOM      9  O   ALA     2       0.450   1.010  -1.787  1.00 20.00   8
+ATOM     10  CB  ALA     2       2.910   3.085  -0.817  1.00 20.00   6
+ATOM     11  N   ALA     3       2.222  -0.082  -0.864  1.00 20.00   7
+ATOM     12  CA  ALA     3       1.948  -1.374  -1.538  1.00 20.00   6
+ATOM     13  C   ALA     3       0.544  -1.896  -1.207  1.00 20.00   6
+ATOM     14  O   ALA     3      -0.197  -2.320  -2.147  1.00 20.00   8
+ATOM     15  CB  ALA     3       3.096  -2.372  -1.248  1.00 20.00   6
+ATOM     16  N   ALA     4       0.188  -1.905   0.076  1.00 20.00   7
+ATOM     17  CAX ALA     4      -1.163  -2.386   0.419  1.00 20.00   6
+ATOM     18  C   ALA     4      -2.232  -1.574  -0.302  1.00 20.00   6
+ATOM     19  O   ALA     4      -3.169  -2.087  -0.911  1.00 20.00   8
+ATOM     20  CB  ALA     4      -1.420  -2.339   1.945  1.00 20.00   6
+ATOM     21  N   ALA     5      -2.096  -0.254  -0.178  1.00 20.00   7
+ATOM     22  CAX ALA     5      -3.075   0.688  -0.781  1.00 20.00   6
+ATOM     23  C   ALA     5      -3.243   0.385  -2.254  1.00 20.00   6
+ATOM     24  O   ALA     5      -4.394   0.324  -2.721  1.00 20.00   8
+ATOM     25  CB  ALA     5      -2.700   2.106  -0.485  1.00 20.00   6
+END   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## essens_beta.pdb - penta-Alanine in beta-strand conformation
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+REMARK Ideal penta-alanine in beta strand conformation
+REMARK Force CA of residue 3 to be pivot point by making it the
+REMARK only atom with name " CA "
+REMARK
+REMARK Gerard Kleywegt @ 960201
+REMARK
+ATOM      1  N   ALA     1      -5.961  -4.736   2.484  1.00 20.00
+ATOM      2  CAX ALA     1      -4.471  -4.736   2.484  1.00 20.00
+ATOM      3  C   ALA     1      -3.923  -3.323   2.484  1.00 20.00
+ATOM      4  O   ALA     1      -4.633  -2.319   2.243  1.00 20.00
+ATOM      5  CB  ALA     1      -3.943  -5.474   1.235  1.00 20.00
+ATOM      6  N   ALA     2      -2.620  -3.235   2.713  1.00 20.00
+ATOM      7  CAX ALA     2      -1.905  -1.967   2.717  1.00 20.00
+ATOM      8  C   ALA     2      -1.283  -1.783   1.324  1.00 20.00
+ATOM      9  O   ALA     2      -0.884  -2.781   0.674  1.00 20.00
+ATOM     10  CB  ALA     2      -0.833  -1.910   3.801  1.00 20.00
+ATOM     11  N   ALA     3      -1.201  -0.552   0.898  1.00 20.00
+ATOM     12  CA  ALA     3      -0.650  -0.185  -0.410  1.00 20.00
+ATOM     13  C   ALA     3       0.363   0.947  -0.214  1.00 20.00
+ATOM     14  O   ALA     3      -0.062   1.960   0.447  1.00 20.00
+ATOM     15  CB  ALA     3      -1.819   0.211  -1.349  1.00 20.00
+ATOM     16  N   ALA     4       1.501   0.861  -0.842  1.00 20.00
+ATOM     17  CAX ALA     4       2.543   1.888  -0.708  1.00 20.00
+ATOM     18  C   ALA     4       3.070   2.393  -2.039  1.00 20.00
+ATOM     19  O   ALA     4       3.533   1.635  -2.897  1.00 20.00
+ATOM     20  CB  ALA     4       3.765   1.357   0.119  1.00 20.00
+ATOM     21  N   ALA     5       2.980   3.736  -2.186  1.00 20.00
+ATOM     22  CAX ALA     5       3.520   4.331  -3.437  1.00 20.00
+ATOM     23  C   ALA     5       5.043   4.522  -3.161  1.00 20.00
+ATOM     24  O   ALA     5       5.502   4.320  -2.011  1.00 20.00
+ATOM     25  CB  ALA     5       2.367   4.841  -4.370  1.00 20.00
+END   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## essens_phe.pdb - Phenylalanine ring plus the CB atom
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ATOM     20  CB  PHE     1       1.522   1.831   0.751  1.00 20.00           242
+ATOM     21  CG  PHE     1       0.625   0.697   0.313  1.00 20.00           243
+ATOM     22  CD1 PHE     1      -0.382   0.215   1.144  1.00 20.00           244
+ATOM     23  CD2 PHE     1       0.741   0.157  -0.962  1.00 20.00           245
+ATOM     24  CE1 PHE     1      -1.248  -0.769   0.712  1.00 20.00           246
+ATOM     25  CE2 PHE     1      -0.136  -0.837  -1.396  1.00 20.00           247
+ATOM     26  CZ  PHE     1      -1.124  -1.294  -0.559  1.00 20.00           248
+END   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## essens_ala.pdb - single Alanine residue
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ATOM      1  N   ALA     1       2.913   0.343   3.341  1.00 20.00   7
+ATOM      2  CA  ALA     1       1.564   0.972   3.412  1.00 20.00   6
+ATOM      3  C   ALA     1       1.107   1.341   2.016  1.00 20.00   6
+ATOM      4  O   ALA     1      -0.073   1.210   1.632  1.00 20.00   8
+ATOM      5  CB  ALA     1       1.609   2.134   4.406  1.00 20.00   6
+END   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## essens_dipep.pdb - an Alanine-Glycine dipeptide
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ATOM      1  N   ALA     1      -5.961  -4.736   2.484  1.00 20.00
+ATOM      2  CA  ALA     1      -4.471  -4.736   2.484  1.00 20.00
+ATOM      3  C   ALA     1      -3.923  -3.323   2.484  1.00 20.00
+ATOM      4  O   ALA     1      -4.633  -2.319   2.243  1.00 20.00
+ATOM      5  CB  ALA     1      -3.943  -5.474   1.235  1.00 20.00
+ATOM      6  N   GLY     2      -2.620  -3.235   2.713  1.00 20.00
+ATOM      7  CA  GLY     2      -1.905  -1.967   2.717  1.00 20.00
+ATOM      8  C   GLY     2      -1.283  -1.783   1.324  1.00 20.00
+END   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## alpha7.pdb - hepta-Alanine alpha helix
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ATOM      1  N   ALA Z   1      -0.266   1.436   0.237  1.00 20.00
+ATOM      2  CAX ALA Z   1       0.000   0.000   0.000  1.00 20.00
+ATOM      3  C   ALA Z   1       1.130  -0.161  -1.004  1.00 20.00
+ATOM      4  O   ALA Z   1       2.058  -0.958  -0.775  1.00 20.00
+ATOM      5  CB  ALA Z   1      -1.309  -0.683  -0.392  1.00 20.00
+ATOM      6  N   ALA Z   2       1.037   0.534  -2.138  1.00 20.00
+ATOM      7  CAX ALA Z   2       2.082   0.450  -3.183  1.00 20.00
+ATOM      8  C   ALA Z   2       3.419   0.902  -2.619  1.00 20.00
+ATOM      9  O   ALA Z   2       4.442   0.222  -2.822  1.00 20.00
+ATOM     10  CB  ALA Z   2       1.726   1.353  -4.390  1.00 20.00
+ATOM     11  N   ALA Z   3       3.442   2.065  -1.969  1.00 20.00
+ATOM     12  CAX ALA Z   3       4.691   2.598  -1.380  1.00 20.00
+ATOM     13  C   ALA Z   3       5.236   1.624  -0.349  1.00 20.00
+ATOM     14  O   ALA Z   3       6.443   1.318  -0.359  1.00 20.00
+ATOM     15  CB  ALA Z   3       4.435   3.958  -0.686  1.00 20.00
+ATOM     16  N   ALA Z   4       4.386   1.181   0.577  1.00 20.00
+ATOM     17  CA  ALA Z   4       4.813   0.230   1.628  1.00 20.00
+ATOM     18  C   ALA Z   4       5.319  -1.054   0.992  1.00 20.00
+ATOM     19  O   ALA Z   4       6.392  -1.557   1.374  1.00 20.00
+ATOM     20  CB  ALA Z   4       3.633  -0.118   2.568  1.00 20.00
+ATOM     21  N   ALA Z   5       4.539  -1.626   0.075  1.00 20.00
+ATOM     22  CAX ALA Z   5       4.936  -2.879  -0.606  1.00 20.00
+ATOM     23  C   ALA Z   5       6.242  -2.672  -1.356  1.00 20.00
+ATOM     24  O   ALA Z   5       7.159  -3.506  -1.250  1.00 20.00
+ATOM     25  CB  ALA Z   5       3.852  -3.322  -1.619  1.00 20.00
+ATOM     26  N   ALA Z   6       6.319  -1.610  -2.158  1.00 20.00
+ATOM     27  CAX ALA Z   6       7.545  -1.315  -2.934  1.00 20.00
+ATOM     28  C   ALA Z   6       8.721  -1.113  -1.992  1.00 20.00
+ATOM     29  O   ALA Z   6       9.805  -1.681  -2.220  1.00 20.00
+ATOM     30  CB  ALA Z   6       7.365  -0.030  -3.778  1.00 20.00
+ATOM     31  N   ALA Z   7       8.546  -0.269  -0.976  1.00 20.00
+ATOM     32  CAX ALA Z   7       9.626   0.000   0.000  1.00 20.00
+ATOM     33  C   ALA Z   7      10.030  -1.289   0.697  1.00 20.00
+ATOM     34  O   ALA Z   7      11.234  -1.582   0.816  1.00 20.00
+ATOM     35  CB  ALA Z   7       9.159   1.014   1.072  1.00 20.00
+END   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## beta7.pdb - hepta-Alanine beta strand
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ATOM      1  N   ALA Z   1      -1.214   0.818   0.081  1.00 20.00
+ATOM      2  CAX ALA Z   1       0.000   0.000   0.000  1.00 20.00
+ATOM      3  C   ALA Z   1       1.211   0.931  -0.081  1.00 20.00
+ATOM      4  O   ALA Z   1       1.155   1.974  -0.778  1.00 20.00
+ATOM      5  CB  ALA Z   1      -0.004  -0.896  -1.251  1.00 20.00
+ATOM      6  N   ALA Z   2       2.094   0.808   0.892  1.00 20.00
+ATOM      7  CAX ALA Z   2       3.305   1.633   0.948  1.00 20.00
+ATOM      8  C   ALA Z   2       4.521   0.708   1.035  1.00 20.00
+ATOM      9  O   ALA Z   2       4.477  -0.322   1.750  1.00 20.00
+ATOM     10  CB  ALA Z   2       3.225   2.671   2.093  1.00 20.00
+ATOM     11  N   ALA Z   3       5.395   0.819   0.052  1.00 20.00
+ATOM     12  CAX ALA Z   3       6.610  -0.001  -0.001  1.00 20.00
+ATOM     13  C   ALA Z   3       7.821   0.927  -0.114  1.00 20.00
+ATOM     14  O   ALA Z   3       7.765   1.945  -0.847  1.00 20.00
+ATOM     15  CB  ALA Z   3       6.525  -1.060  -1.126  1.00 20.00
+ATOM     16  N   ALA Z   4       8.704   0.838   0.863  1.00 20.00
+ATOM     17  CA  ALA Z   4       9.914   1.664   0.890  1.00 20.00
+ATOM     18  C   ALA Z   4      11.131   0.744   1.009  1.00 20.00
+ATOM     19  O   ALA Z   4      11.086  -0.261   1.760  1.00 20.00
+ATOM     20  CB  ALA Z   4       9.834   2.743   1.998  1.00 20.00
+ATOM     21  N   ALA Z   5      12.005   0.820   0.023  1.00 20.00
+ATOM     22  CAX ALA Z   5      13.219  -0.001  -0.001  1.00 20.00
+ATOM     23  C   ALA Z   5      14.430   0.923  -0.146  1.00 20.00
+ATOM     24  O   ALA Z   5      14.374   1.914  -0.914  1.00 20.00
+ATOM     25  CB  ALA Z   5      13.135  -1.099  -1.089  1.00 20.00
+ATOM     26  N   ALA Z   6      15.313   0.868   0.833  1.00 20.00
+ATOM     27  CAX ALA Z   6      16.524   1.695   0.832  1.00 20.00
+ATOM     28  C   ALA Z   6      17.740   0.780   0.983  1.00 20.00
+ATOM     29  O   ALA Z   6      17.696  -0.198   1.768  1.00 20.00
+ATOM     30  CB  ALA Z   6      16.443   2.811   1.901  1.00 20.00
+ATOM     31  N   ALA Z   7      18.614   0.821  -0.005  1.00 20.00
+ATOM     32  CAX ALA Z   7      19.829   0.000   0.000  1.00 20.00
+ATOM     33  C   ALA Z   7      21.040   0.918  -0.178  1.00 20.00
+ATOM     34  O   ALA Z   7      20.983   1.882  -0.980  1.00 20.00
+ATOM     35  CB  ALA Z   7      19.745  -1.135  -1.049  1.00 20.00
+END   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** HINTS !!!
+
+ * If you use ESSENS to find helices and strands, use the OMAC macros
+   qalpha.omac and qbeta.omac to quickly generate stretches of ideal
+   poly-Ala helix or strand in the correct places (you may have to
+   guess their direction at first).  This requires access to MOLEMAN
+   and a set of bones (or atoms or peaks), which you can get from
+   your original map or from skeletonising the ESSENS output map(s).
+
+ * If you use ESSENS to do "real-space molecular replacement" with
+   a ligand etc., spend some time to see if the ligand contains
+   (approximate) internal symmetry.  For instance, if the ligand
+   is roughly two-fold symmetric, you only need to search half
+   an asymmetric unit of rotational space.
+
+ * if you have NCS or multiple crystal forms, but do not know the
+   operators yet, run ESSENS on an asymmetric unit(s) (using the solvent
+   mask to exclude the bulk-solvent region) and look for recurring
+   patterns (e.g., helix-turn-helix, or a beta sheet); quickly build
+   a few atoms and use your favourite least-squares superpositioning
+   program to get the operator(s).
+
+ * a beta penta-Alanine is *roughly* two-fold symmetric in the
+   central CA atom.  In one case I compared the result of using
+   BETA 0-180 and 0-90, and the resulting maps were very similar
+   indeed (P2 myelin averaged 2.7 A map as input).  This means
+   that beta-strand detection runs can be run twice as fast as
+   those for helices by searching only half of rotational space !
+
+ * for small fragments (helices, strands), you can often search in
+   larger steps without too much degradation of the results.  For
+   example, if you search in steps of 20 degrees instead of 10, the
+   calculations will be 8 times faster !  For an initial, quick-and-dirty
+   run, this is good enough probably.
+
+ * for real-space molecular replacement with large molecules, use
+   only the parts of the model you think are more or less rigid,
+   e.g. a poly-Ala trace without the loops.
+
+ * if you want to experiment with different length helices or strands,
+   use MOLEMAN2 (AUto SPink command) to generate such templates
+   automatically.  We have found penta-Alanines to work quite well;
+   shorter templates generate more noise, longer ones don't usually
+   fit at the ends of helices and strands.
+
+ * if you look for helices and strands, we recommend the following set
+   of input:
+ - map - your best experimental map; grid spacing ~1 A (1/3 of the
+   high-resolution limit)
+ - mask - helps speed up things, so use one
+ - templates - 5 or 7 residue oligo-Ala in alpha or beta conformation
+ - Euler angle search in 20 degree steps
+ - use about 60% of the atoms used to compute the K-minimum sum function
+   (i.e., 15 atoms for penta-Ala, or 21 for hepta-Ala)
+ - density cut-off of 0.0 provided the average density in your
+   (unit cell) map is zero
+
+ * there has been some confusion as to which map points ESSENS will
+   actually use in the calculations.  It only uses grid points which
+   satisfy the following three criteria:
+ - at each point, the template must be completely rotatable without
+   sticking out of the map boundaries at any orientation (if this
+   were allowed, you wouldn't be able to calculate the fit of the
+   template to the density).  The program prints out what the "safety
+   limits" are in each of the three directions
+ - each point must lie inside the mask (if you supplied one)
+ - each point must have a density value that exceeds the lower limit
+   that you supply
+
+ * ESSENS doesn't use crystallographic symmetry, so if you want to run it
+   on a complete unit cell, give it a map which contains that unit cell
+   PLUS the safety limits on all sides, don't use a mask and use a
+   density cut-off lower than the minimum density value inside your map.
+   Of course, if your spacegroup is not P1, it is much faster to run
+   the program on an asymmetric unit (PLUS safety limits) and use
+   CCP4 programs to reconstruct an arbitrary part of space.
+
+ ** HOW TO "ENLARGE" A MAP FOR ESSENS
+
+ ESSENS wants to rotate your template, which means that if
+   map points close to the borders of the map cannot be
+   scrutinised (since some atoms would "stick out" of the map).
+   You can artifically increase the size of your map (and
+   fill the extra parts with large negative numbers) if
+   you wish.
+
+ (1) Read your ESSENS template into MOLEMAN2, for instance,
+   and use the STats command to find out how large the template
+   is:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+       Item        Average         St.Dev            Min            Max
+       ----        -------         ------            ---            ---
+    X-coord          0.000          6.874         -9.839         10.614
+    Y-coord          0.000          5.172         -6.597         10.349
+    Z-coord          0.000          4.952         -9.017         10.114
+   B-factor         20.000          0.000         20.000         20.000
+    Occpncy          1.000          0.000          1.000          1.000
+
+ Radius of gyration (A) : (   9.926) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ So in this case, enlarging the map by some 10 \A in all directions
+   should enable most map points near the map border to be included.
+
+ (2) Read your map into MAPMAN, and use the LIst command to figure
+   out some of the map parameters:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Map   1     = M1
+ File        = alwyn_trn.E
+ Grid        =        216       216       480
+ Origin      =         81       -39       -45
+ Extent      =        116       157       157
+ Cell        =    102.500   102.500   234.363    90.000    90.000    90.000
+ UVW         =          2         1         3
+ Spcgrp      =          1      Nr of points =    2859284
+ Density min = -4.625E+00      Max          =  1.192E+01
+ Average     = -3.173E-02      Sigma        =  1.048E+00
+ Variance    =  1.099E+00
+ Mappage Prod=  1.541E+01      Plus         =         71
+ Dyn. range  = -4.607E+00      To           =  1.194E+01
+ Cell vol.   =  2.462E+06      Voxel vol.   =  1.099E-01
+ Grid vol.   =  3.144E+05      %Cell vol.   =      12.77
+ Origin frac =    0.37500  -0.18056  -0.09375
+ Origin Cart =     38.438   -18.507   -21.971
+ Top frac    =    0.90741   0.54167   0.23125
+ Top Cart    =     93.009    55.521    54.196
+ Spacing     =      0.475     0.475     0.488
+ Top         =        196       117       111
+ Changes     = F
+ Label       = Read from alwyn_trn.omap
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ The grid spacing is ~0.5 \A in all three directions, so that an
+   extra 20 grid points need to be added on all (six !) sides of
+   the map to get an extra 10 \A border.  This means that the
+   origin in each direction has to be decreased by 20 grid points,
+   and the extent by 2 * 20 = 40 grid points in each direction.
+
+ (3) So what we need to make is a map with grid 216,216,480, origin
+   at 60,-60,-65, and extent 160,200,200 (roughly), and with
+   the same cell as the current map.
+
+ This we do with the NEw commands in MAPMAN, as follows:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > re m1 alwyn_trn.E ccp4
+ MAPMAN > new same m1
+ MAPMAN > new ori 60 -60 -65
+ MAPMAN > new ext 160 200 200
+ MAPMAN > new ?
+ Command > (new ?) 
+
+ Current defaults for the next NEW map:
+ Grid    =        216       216       480
+ Origin  =         60       -60       -65
+ Extent  =        160       200       200
+ Cell    =    102.500   102.500   234.363    90.000    90.000    90.000
+ Nr of points =    6400000 Max =    8000000
+ MAPMAN > new make m2
+ Command > (new make m2) 
+ WARNING --- All map points have identical values !
+ Requested dynamic range :  0.0000E+00  0.0000E+00
+ Value of Prod and Plus  :  1.0000E+00       0
+ Actual dynamic range    :  0.0000E+00  2.5500E+02
+ New (empty) map created (P1) !
+ MAPMAN > li m2
+ Command > (li m2) 
+ Nr of maps in memory : (       2) 
+
+ Map   2     = M2
+ File        = not_defined
+ Grid        =        216       216       480
+ Origin      =         60       -60       -65
+ Extent      =        160       200       200
+ Cell        =    102.500   102.500   234.363    90.000    90.000    90.000
+ UVW         =          1         2         3
+ Spcgrp      =          1      Nr of points =    6400000
+ Density min =  0.000E+00      Max          =  0.000E+00
+ Average     =  0.000E+00      Sigma        =  0.000E+00
+ Variance    =  0.000E+00
+ Mappage Prod=  1.000E+00      Plus         =          0
+ Dyn. range  =  0.000E+00      To           =  2.550E+02
+ Cell vol.   =  2.462E+06      Voxel vol.   =  1.099E-01
+ Grid vol.   =  7.037E+05      %Cell vol.   =      28.58
+ Origin frac =    0.27778  -0.27778  -0.13542
+ Origin Cart =     28.472   -28.472   -31.737
+ Top frac    =    1.01389   0.64352   0.27917
+ Top Cart    =    103.924    65.961    65.426
+ Spacing     =      0.475     0.475     0.488
+ Top         =        219       139       134
+ Changes     = T
+ Label       = Created from scratch with NEw MAke
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ (4) Now we have an empty map that has extended borders on all sides.
+   However, there's no point in ESSENS trying to look for anything in
+   the empty regions, so we'll use a little trick.
+
+ The minimum density in the original map is -4.6, so we'll set all
+   points outside the original map in the new map to a number that
+   is smaller than that, e.g. -100.  In order to do this, we will:
+ - use the PLus command to add 100 to the original map
+ - use the ADd command to copy the original map into the empty
+ - use the PLus command to subtract 100 from the resulting map
+ After this, the original map should be restored, whereas the
+   border regions are all set to -100 ! When running ESSENS,
+   simply tell it to ignore all grid points with a map value
+   of less than -10, for example.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > plus m1 100
+ Command > (plus m1 100) 
+ Plus : (M1) 
+ Requested dynamic range :  9.5375E+01  1.1192E+02
+ Value of Prod and Plus  :  1.5410E+01   -1470
+ Actual dynamic range    :  9.5390E+01  1.1194E+02
+ MAPMAN > add m2 m1
+ Command > (add m2 m1) 
+ Add to Map : (M2) 
+ Map to Add : (M1) 
+ Lower limits common volume : (      81      -39      -45) 
+ Upper limits common volume : (     196      117      111) 
+ Limits first  map  : (      22      137       22      178       21      
+  177) 
+ Limits second map  : (       1      116        1      157        1      
+  157) 
+ Number of common map points : (    2859284) 
+ Requested dynamic range :  0.0000E+00  1.1192E+02
+ Value of Prod and Plus  :  2.2784E+00       0
+ Actual dynamic range    :  0.0000E+00  1.1192E+02
+ CPU total/user/sys :       8.5       8.4       0.1
+ MAPMAN > plus m2 -100
+ Command > (plus m2 -100) 
+ Plus : (M2) 
+ Requested dynamic range : -1.0000E+02  1.1922E+01
+ Value of Prod and Plus  :  2.2784E+00     228
+ Actual dynamic range    : -1.0007E+02  1.1851E+01
+ CPU total/user/sys :       1.1       1.1       0.0
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ (5) Use the LIst command to see if everything makes sense (note that
+   the use of -100 for large parts of the new map will distort the
+   average and sigma level of the map). And don't forget to save the
+   extended map !
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAPMAN > li m2
+ Command > (li m2) 
+ Nr of maps in memory : (       2) 
+
+ Map   2     = M2
+ File        = not_defined
+ Grid        =        216       216       480
+ Origin      =         60       -60       -65
+ Extent      =        160       200       200
+ Cell        =    102.500   102.500   234.363    90.000    90.000    90.000
+ UVW         =          1         2         3
+ Spcgrp      =          1      Nr of points =    6400000
+ Density min = -1.000E+02      Max          =  1.192E+01
+ Average     = -5.534E+01      Sigma        =  4.970E+01
+ Variance    =  2.471E+03
+ Mappage Prod=  2.278E+00      Plus         =        228
+ Dyn. range  = -1.001E+02      To           =  1.185E+01
+ Cell vol.   =  2.462E+06      Voxel vol.   =  1.099E-01
+ Grid vol.   =  7.037E+05      %Cell vol.   =      28.58
+ Origin frac =    0.27778  -0.27778  -0.13542
+ Origin Cart =     28.472   -28.472   -31.737
+ Top frac    =    1.01389   0.64352   0.27917
+ Top Cart    =    103.924    65.961    65.426
+ Spacing     =      0.475     0.475     0.488
+ Top         =        219       139       134
+ Changes     = T
+ Label       = Created from scratch with NEw MAke
+ MAPMAN > wr m2 big_trna.E ccp4
+ Command > (wr m2 big_trna.E ccp4) 
+ Writing CCP4 map ...
+ Stamp : (Created by MAPMAN V. 990503/5.7 at Mon May 3 17:45:01 1999 for 
+  gerard) 
+  (Q)QOPEN allocated #  1
+ User:   gerard               Logical Name: big_trna.E
+ Status: UNKNOWN    Filename: big_trna.E
+
+  File name for output map file on unit   1 : big_trna.E
+     logical name big_trna.E
+
+
+   Minimum density in map  =     -100.00000   Maximum density         =       11.92182
+   Mean density            =      -53.51890
+   Rms deviation from mean =       52.22906
+
+ Map written out
+ CPU total/user/sys :       3.5       2.6       0.9
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** KNOWN BUGS
+
+ None, at present.

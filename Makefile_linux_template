@@ -1,0 +1,23 @@
+#
+OBJ=	PROGRAMNAME.o ../gklib/linux_kleylib  ../ccp4libs_latest_m32_linux/libccp4f.a  ../ccp4libs_latest_m32_linux/libccp4c.a
+EXEC =	PROGRAMNAME
+INCL=	Makefile_linux
+SUBS = 
+STATIC = 
+##SUBS## SUBS = PROGRAMNAME_subs.o
+##INCL## INCL = Makefile_linux PROGRAMNAME.incl
+##STATIC## STATIC = -static
+
+fc =	 gfortran -DLINUX -m32
+
+opt= -O -u -check_bounds -ffixed-line-length-132 -I..
+link= -O
+
+$(EXEC):	$(OBJ) $(SUBS)
+	$(fc) $(link) -o $(EXEC) $(SUBS) $(OBJ) $(STATIC) ; strip $(EXEC)
+
+PROGRAMNAME.o:	PROGRAMNAME.fpp $(INCL)
+	$(fc) $(opt) -c PROGRAMNAME.fpp
+
+##SUBS## PROGRAMNAME_subs.o:	PROGRAMNAME_subs.fpp $(INCL)
+##SUBS## 			$(fc) $(opt) -c PROGRAMNAME_subs.fpp

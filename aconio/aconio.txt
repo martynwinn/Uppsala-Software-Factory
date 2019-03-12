@@ -1,0 +1,740 @@
+
+ ** ACONIO - GENERAL INFORMATION
+
+ Program : ACONIO
+ Version : 081202
+ Author  : Gerard J. Kleywegt, Dept. of Cell and Molecular Biology,
+           Uppsala University, Biomedical Centre, Box 596,
+           SE-751 24 Uppsala, SWEDEN
+ E-mail  : gerard@xray.bmc.uu.se
+ Purpose : convert PDB files with alternative conformations to/from O
+ Package : (none; freeby)
+
+ ** REFERENCES
+
+ Reference(s) for this program:
+
+ *  1 * G.J. Kleywegt (1992-2004).
+        Uppsala University, Uppsala, Sweden.
+        Unpublished program.
+
+ *  2 * Kleywegt, G.J., Zou, J.Y., Kjeldgaard, M. & Jones, T.A. (2001).
+        Around O. In: "International Tables for Crystallography, Vol. F.
+        Crystallography of Biological Macromolecules" (Rossmann, M.G.
+        & Arnold, E., Editors). Chapter 17.1, pp. 353-356, 366-367.
+        Dordrecht: Kluwer Academic Publishers, The Netherlands.
+
+ ** VERSION HISTORY
+
+ 970818 - 0.1 - first version
+ 980909 - 1.0 - added option to merge ANISOUs back in since O
+                ignores them at present; serious debugging;
+                added occupancy filter and main-chain filter;
+                updated this manual and added worked example;
+                implemented simple X-PLOR/CNS I/O as well;
+                first public release
+ 990129 -1.0.1- fixed small bug in reading X-PLOR/CNS files (if only
+                one residue had an alt. conf., the program refused
+                to help you)
+ 081102 -1.0.3- increased max nr of atoms with alt. conf. to 1 million
+
+
+ ** INTRODUCTION
+
+ This program converts PDB files containing alternative conformations
+   from/to O-style multiple PDB files.  Anisotropic temperature
+   factors can also be maintained (not for CNS or X-PLOR files).
+
+ O treats alternative conformations by reading in separate molecules.
+   The first should contain all atoms which occur in only one
+   conformation, plus the first conformation of those that have
+   multiple conformations.  The second file should contain *all*
+   atoms of the second conformation of all residues, etc.
+
+ ** PDB to O
+
+ This will work with pure PDB files, as well as those produced by
+   TNT, CCP4 (incl. PROLSQ and REFMAC), and SHELX.  It will produce
+   multiple PDB files for O.  If at all possible, avoid HETATM
+   cards and use ATOM cards for all atoms in the input file (see
+   the worked example for the type of problems you may otherwise
+   run in to).
+
+ The program reads one residue at a time, and when finished will:
+ - write the atoms with blank alternative conformation flag to
+   the first O file
+ - write the atoms with the first non-blank type of alternative
+   conformation flag to the first O file
+ - write the atoms with the second type of alternative conformation
+   flag to the second O file (together with atoms of this residue
+   which occur in only one conformation !)
+ - etc. for possible other alternative conformations
+
+ When the entire input file has been processed, alternative
+   conformation files to which no atoms have been written will
+   automatically be deleted.
+
+ SCALE*, ORIGX*, and CRYST1 cards are echoed to all output PDB
+   files; all other non-ATOM|HETATM|ANISOU cards are ignored.
+
+ NOTE that your disordered residues must be numbered sequentially.
+   E.g. if you have a loop with two disordered residues, 54 and 55,
+   in the PDB file they must come in the order A54, B54, A55, B55.
+   (If you have them as A54, A55, B54, B55 it will not work !).
+
+ NOTE that the files with alternative conformations will contain
+   ALL atoms of any residue which has an alternative conformation
+   for AT LEAST ONE atom !  This is done so that most of the
+   standard O tools (which expect all atoms of a residue to be present)
+   can be used !  It also means that when the separate files are
+   merged back into one big file, such atoms have to be removed
+   again (see "O to PDB" below) !
+
+ NOTE also that NO alternative conformation flags are used in the
+   separate files produced by ACONIO.  This is because O does not
+   like them (it appends them to the atom name if possible) and
+   gets terribly confused !
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ *** ACONIO *** ACONIO *** ACONIO *** ACONIO *** ACONIO *** ACONIO *** 
+
+ Version  - 980909/1.0
+ (C) 1992-98 Gerard J. Kleywegt, Dept. Mol. Biology, BMC, Uppsala (S)
+ User I/O - routines courtesy of Rolf Boelens, Univ. of Utrecht (NL)
+ Others   - T.A. Jones, G. Bricogne, Rams, W.A. Hendrickson
+ Others   - W. Kabsch, CCP4, PROTEIN, E. Dodson, etc. etc.
+
+ Started  - Wed Sep 9 20:59:31 1998
+ User     - gerard
+ Mode     - interactive
+ Host     - sarek
+ ProcID   - 970
+ Tty      - /dev/ttyq27
+
+ *** ACONIO *** ACONIO *** ACONIO *** ACONIO *** ACONIO *** ACONIO *** 
+
+ Reference(s) for this program:
+
+ *  1 * G.J. Kleywegt (1992-1999).
+        Uppsala University, Uppsala, Sweden.
+        Unpublished program.
+
+ *  2 * G.J. Kleywegt, J.Y. Zou, M. Kjeldgaard & T.A. Jones (1999 ?).
+        Chapter 25.2.6.  Around O. Int. Tables for
+        Crystallography, Volume F. Submitted.
+
+ ==> For manuals and up-to-date references, visit:
+ ==> http://xray.bmc.uu.se/usf
+
+ *** ACONIO *** ACONIO *** ACONIO *** ACONIO *** ACONIO *** ACONIO *** 
+
+ Max nr of atoms per residue     : (       1000) 
+ Max nr of alt. confns.          : (          5) 
+ Max nr of atoms with alt. conf. : (      10000) 
+
+ Supported operations:
+ (1) PDB, SHELX, CCP4, TNT ---> O
+ (2) X-PLOR, CNS ---> O
+ (3) O ---> PDB, SHELX, CCP4, TNT
+ (4) O ---> X-PLOR, CNS
+ (5) Re-associate ANISOU cards (quick-n-dirty)
+
+ Operation (1,2,3,4,5) ? (          1) 1
+
+ Input PDB file name ? (m1.pdb) 1ctj.pdb
+
+ Base name of output PDB files ? (m2) 2ctj
+
+ Open PDB file : (2ctj_2.pdb) 
+ Open PDB file : (2ctj_3.pdb) 
+ Open PDB file : (2ctj_4.pdb) 
+ Open PDB file : (2ctj_5.pdb) 
+ Open PDB file : (2ctj_6.pdb) 
+ Open PDB file : (2ctj_1.pdb) 
+
+ Residue : ( N  AGLU     1) 
+ Add insert : (A) 
+ Alt. conf. : (B) 
+ Residue : ( N  AALA     2) 
+ Add insert : (A) 
+ Alt. conf. : (B) 
+ Residue : ( N   ASP     3) 
+ Residue : ( N   LEU     4) 
+ Residue : ( N   ALA     5) 
+ Residue : ( N   LEU     6) 
+ Residue : ( N   GLY     7) 
+ Residue : ( N   LYS     8) 
+ Add insert : (A) 
+ Alt. conf. : (B) 
+ Residue : ( N   ALA     9) 
+ Residue : ( N   VAL    10) 
+
+ [...]
+
+ Residue : ( O   HOH   259) 
+ Residue : ( O   HOH   301) 
+
+ Delete unused file : (2ctj_3.pdb) 
+ Delete unused file : (2ctj_4.pdb) 
+ Delete unused file : (2ctj_5.pdb) 
+ Delete unused file : (2ctj_6.pdb) 
+
+ All done !
+
+
+ *** ACONIO *** ACONIO *** ACONIO *** ACONIO *** ACONIO *** ACONIO *** 
+
+ Version - 980909/1.0
+ Started - Wed Sep 9 20:59:31 1998
+ Stopped - Wed Sep 9 20:59:38 1998
+
+ CPU-time taken :
+ User    -      0.2 Sys    -      0.1 Total   -      0.3
+
+ *** ACONIO *** ACONIO *** ACONIO *** ACONIO *** ACONIO *** ACONIO *** 
+
+ >>>>>> This program: (C) 1992-98, GJ Kleywegt & TA Jones <<<<<<
+ >>>> E-mail: gerard@xray.bmc.uu.se or alwyn@xray.bmc.uu.se <<<<
+ >>>>>>>>>>>>>>>>>> http://xray.bmc.uu.se/usf <<<<<<<<<<<<<<<<<<
+
+ *** ACONIO *** ACONIO *** ACONIO *** ACONIO *** ACONIO *** ACONIO *** 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** CNS to O
+
+ This converts PDB files produced by CNS or X-PLOR.  Since these programs
+   use the SEGIDs to flag alternative conformations, the program needs
+   some help (otherwise, it wouldn't know if a different SEGID signifies
+   a hetero-compound, an NCS-related molecule, or an alternative
+   conformation).  SEGIDs are case-sensitive, and make sure that any
+   spaces are in the correct position (e.g., a leading space in " AC1").
+
+ NOTE that the files with alternative conformations will contain
+   ALL atoms of any residue which has an alternative conformation
+   for AT LEAST ONE atom !  This is done so that most of the
+   standard O tools (which expect all atoms of a residue to be present)
+   can be used !  It also means that when the separate files are
+   merged back into one big file, such atoms have to be removed
+   again (see "O to PDB" below) !
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Supported operations:
+ (1) PDB, SHELX, CCP4, TNT ---> O
+ (2) X-PLOR, CNS ---> O
+ (3) O ---> PDB, SHELX, CCP4, TNT
+ (4) O ---> X-PLOR, CNS
+ (5) Re-associate ANISOU cards (quick-n-dirty)
+
+ Operation (1,2,3,4,5) ? (          1) 2
+
+ Input PDB file name ? (m1.pdb) alternate.pdb
+
+ SEGID of *main* conformation ? ( AC1) 
+ Alt. SEGID (<CR> to end) ? ( AC2) 
+ Alt. SEGID (<CR> to end) ? ( )  AC3
+ Alt. SEGID (<CR> to end) ? ( ) 
+
+ Base name of output PDB files ? (m2) cns
+
+ Open PDB file : (cns_2.pdb) 
+ Open PDB file : (cns_3.pdb) 
+ Open PDB file : (cns_1.pdb) 
+
+ Residue with alt. conf. : (SER    10) 
+ Residue with alt. conf. : (TYR    20) 
+
+ Nr of residues with alt. confs. : (          2) 
+
+ Writing file for SEGID : ( AC2) 
+ Writing file for SEGID : ( AC3) 
+
+ All done !
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** O to PDB
+
+ This will generate a single PDB file that ought to be compatible
+   with the PDB format, TNT, CCP4 (incl. PROLSQ and REFMAC), and SHELX.
+
+ The program will first read all the files containing alternative
+   conformations, and store all atoms found in them (while assigning
+   them alt. conf. markers as provided by the user, usually B, C, ..).
+
+ Subsequently, the program will process the main PDB file.  For every
+   atom it will check the set of alt. conf. atoms to find its mates
+   (these must have the same atom name, column 13-16, and the same
+   residue name and type, column 18-27).  However, since O required
+   complete residues, some of the atoms in alt. conf. file(s) may
+   not represent alt. conf. at all (see "PDB to O" above).  In order
+   to try and figure out if an atom is simply a duplicate of a
+   main-conformation atom, or whether it is a genuine alt. conf. atom,
+   three heuristics can be used:
+
+ - main-chain filter: if your alt. confs. are limited to side-chain
+   atoms, then it must mean that all main-chain atoms in the alt.
+   conf. files can safely be ignored
+
+ - occupancy filter: if the main-conformation atom has an occupancy
+   greater than, say, 0.99, its mates in alt. confs. can be ignored
+
+ - distance filter: if an alt. conf. atom is very close to its
+   main-conformation mate it can perhaps be ignored
+
+ Usually, the occupancy filter is the simplest and safest to use.
+   You will be asked if you want to use the main-chain filter.
+   If you want to use the occupancy filter, use a cut-off of, say,
+   0.99.  If you do NOT want to use it, use a cut-off greater
+   than 1.0.  If you want to use the distance filter, use a safe
+   value (e.g., 0.01 A); if you don't want to use it, use a value
+   less than 0.0 A.
+
+ All cases where duplicate atoms occur wil be listed by the programme,
+   and the reason for ignoring or accepting the alt. confs. will be
+   printed as well.  If an atom has (apparently) genuine alt. confs.,
+   the main conformation will get an alt. conf. indicator (usually, A),
+   and all of them will be written to the output PDB file.
+
+ Any "orphaned" alt. conf. atoms (i.e., present in one of the
+   alt. conf. file, but not in the main file) will be listed at
+   the end (there shouldn't be any !).
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Supported operations:
+ (1) PDB, SHELX, CCP4, TNT ---> O
+ (2) X-PLOR, CNS ---> O
+ (3) O ---> PDB, SHELX, CCP4, TNT
+ (4) O ---> X-PLOR, CNS
+ (5) Re-associate ANISOU cards (quick-n-dirty)
+
+ Operation (1,2,3,4,5) ? (          1) 3
+
+ Input PDB file from O (<CR> to end) ? ( ) m2a.pdb
+ Input PDB file from O (<CR> to end) ? ( ) m2b.pdb
+ Input PDB file from O (<CR> to end) ? ( ) 
+ Nr of PDB files from O : (          2) 
+
+ Alt. conf. flags ? (ABCDEF) 
+
+ Alternative conformations for all main-chain
+ atoms can be ignored if you like.
+ Ignore alt. main-chain conformations ? ( Y) n
+
+ An alternative conformation for an atom is
+ ignored if the occupancy of its main-
+ conformation partner is high.
+ Cut-off occupancy ? (   0.990) 
+
+ An alternative conformation for an atom is
+ ignored if it lies very close to its main-
+ conformation partner.
+ Cut-off distance ? (  -1.000) 
+
+ Output PDB file name ? (m2.pdb) m2all.pdb
+
+ File #   : (          2) 
+ # AC now : (        105) 
+
+ AC : (ATOM      1  N   GLU     1       4.127  26.179  -7.903  0.49 57.53) 
+    : (ATOM      1  N  BGLU     1       3.535  25.488 -12.889  0.51 54.52) 
+ Alt. conf.: main occupancy  0.49 and main-alt atom distance  5.07 A
+
+[...]
+
+ AC : (ATOM     48  N   LYS     8      11.650  32.326 -19.080  1.00 16.64) 
+    : (ATOM     20  N  BLYS     8      11.650  32.326 -19.080  1.00 16.64) 
+ Merged; main occupancy : (   1.000) 
+
+[...]
+
+ AC : (ATOM    514  OE2 GLU    70      -5.159  35.424 -19.094  0.49 44.32) 
+    : (ATOM    101  OE2BGLU    70      -5.632  35.772 -16.130  0.51 48.51) 
+ Alt. conf.: main occupancy  0.49 and main-alt atom distance  3.02 A
+
+ Nr of "orphans" : (          0) 
+
+ All done !
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** O to CNS
+
+ This will generate a single PDB file that is compatible with CNS
+   and X-PLOR (hopefully).
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Supported operations:
+ (1) PDB, SHELX, CCP4, TNT ---> O
+ (2) X-PLOR, CNS ---> O
+ (3) O ---> PDB, SHELX, CCP4, TNT
+ (4) O ---> X-PLOR, CNS
+ (5) Re-associate ANISOU cards (quick-n-dirty)
+
+ Operation (1,2,3,4,5) ? (          1) 4
+
+ Input PDB file from O (<CR> to end) ? ( ) m4a.pdb
+ Input PDB file from O (<CR> to end) ? ( ) m4b.pdb
+ Input PDB file from O (<CR> to end) ? ( ) m4c.pdb
+ Input PDB file from O (<CR> to end) ? ( ) 
+ Nr of PDB files from O : (          3) 
+
+ SEGID #  1 ? ( AC1) 
+ SEGID #  2 ? ( AC2) 
+ SEGID #  3 ? ( AC3) 
+
+ Alternative conformations for all main-chain
+ atoms can be ignored if you like.
+ Ignore alt. main-chain conformations ? ( Y) n
+
+ An alternative conformation for an atom is
+ ignored if the occupancy of its main-
+ conformation partner is high.
+ Cut-off occupancy ? (   0.990) 
+
+ An alternative conformation for an atom is
+ ignored if it lies very close to its main-
+ conformation partner.
+ Cut-off distance ? (  -1.000) 
+
+ Output PDB file name ? (m2.pdb) m4abc.pdb
+
+ File #   : (          2) 
+ # AC now : (         18) 
+ File #   : (          3) 
+ # AC now : (         36) 
+
+ AC : (ATOM     64  N   SER    10       0.411  25.125  21.340  1.00 15.00) 
+    : (ATOM      3  N  BSER    10       0.397  25.123  21.326  1.00 15.00) 
+ Merged; main occupancy : (   1.000) 
+
+[...]
+
+ AC : (ATOM     66  CB  SER    10       0.467  26.015  23.570  0.33 15.00) 
+    : (ATOM      1  CB BSER    10       0.515  26.082  23.582  0.33 15.00) 
+ Alt. conf.: main occupancy  0.33 and main-alt atom distance  0.08 A
+
+[...]
+
+ AC : (ATOM    161  O   TYR    20      18.052  26.483  15.027  1.00 15.00) 
+    : (ATOM     18  O  CTYR    20      18.052  26.483  15.027  1.00 15.00) 
+ Merged; main occupancy : (   1.000) 
+
+ SEGID : ( AC2) 
+ Nr of atoms : (         10) 
+ SEGID : ( AC3) 
+ Nr of atoms : (         10) 
+
+ Nr of "orphans" : (          0) 
+
+ All done !
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** Salvage ANISOU cards
+
+ Since at present O ignores anisotropic temperature factor cards,
+   the output PDB files from O will not contain these records.
+   This option provides a quick-and-dirty way to salvage the
+   ANISOU cards by stealing them from an older PDB file of your
+   model.  The only prerequisite is that the names and order of
+   the ATOMs and HETATMs is exactly the same in both PDB files.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Supported operations:
+ (1) PDB, SHELX, CCP4, TNT ---> O
+ (2) X-PLOR, CNS ---> O
+ (3) O ---> PDB, SHELX, CCP4, TNT
+ (4) O ---> X-PLOR, CNS
+ (5) Re-associate ANISOU cards (quick-n-dirty)
+
+ Operation (1,2,3,4,5) ? (          1) 5
+
+ Current PDB file name ? (m1.pdb) 5ctj.pdb
+
+ Old PDB file name with ANISOU ? (m2.pdb) 1ctj.pdb
+
+ Output PDB file name ? (m3.pdb) 7ctj.pdb
+
+ Working ...
+ Nr of atoms processed : (        918) 
+
+ All done !
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** EXAMPLE
+
+ Just to see how all this is now supposed to work, using the PDB entry
+   1CTJ (so you can try this at home as well !).
+
+ (1) Split PDB file into separate files for O
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Supported operations:
+ (1) PDB, SHELX, CCP4, TNT ---> O
+ (2) X-PLOR, CNS ---> O
+ (3) O ---> PDB, SHELX, CCP4, TNT
+ (4) O ---> X-PLOR, CNS
+ (5) Re-associate ANISOU cards (quick-n-dirty)
+ Operation (1,2,3,4,5) ? (          1) 1
+ Input PDB file name ? (m1.pdb) 1ctj.pdb
+ Base name of output PDB files ? (m2) 2ctj
+ Open PDB file : (2ctj_2.pdb) 
+ Open PDB file : (2ctj_3.pdb) 
+ Open PDB file : (2ctj_4.pdb) 
+ Open PDB file : (2ctj_5.pdb) 
+ Open PDB file : (2ctj_6.pdb) 
+ Open PDB file : (2ctj_1.pdb) 
+ Residue : ( N  AGLU     1) 
+ Add insert : (A) 
+ Alt. conf. : (B) 
+ Residue : ( N  AALA     2) 
+ Add insert : (A) 
+ Alt. conf. : (B) 
+ Residue : ( N   ASP     3) 
+ Residue : ( N   LEU     4) 
+ Residue : ( N   ALA     5) 
+...
+ Residue : ( O   HOH   259) 
+ Residue : ( O   HOH   301) 
+ Delete unused file : (2ctj_3.pdb) 
+ Delete unused file : (2ctj_4.pdb) 
+ Delete unused file : (2ctj_5.pdb) 
+ Delete unused file : (2ctj_6.pdb) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ (2) Do your stuff in O
+
+ Read in the "main" molecule
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+s_a_i 2ctj_1.pdb m2a 
+ Sam> File type is PDB
+ Sam>  Database compressed.
+ Sam> Space for    285492 atoms
+ Sam> Space for     10000 residues
+ Sam> Molecule M2A contained 241 residues and 853 atoms
+mol m2a zo ; end
+ Sam>  Current molecule  has not been loaded.
+ Mol> No connectivity Db for M2A
+ Mol>  Nothing marked for deletion, so no compression.
+ mol connectivity is        1378
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Read in the residues with alternative conformations and draw them.
+   You may want to colour them differently from the usual yellow
+   for carbons, etc., e.g. using the OMAC macro alt_colours.omac
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+s_a_i 2ctj_2.pdb m2b
+ Sam> File type is PDB
+ Sam>  Database compressed.
+ Sam> Space for    283549 atoms
+ Sam> Space for     10000 residues
+ Sam> Molecule M2B contained 12 residues and 105 atoms
+@omac/alt_colours.omac
+ As3> Macro in computer file-system.
+ As3>  Which molecule ? m2b
+ Paint>                green
+ Paint>                 cyan
+ Paint>              magenta
+ Paint>               yellow
+mol m2b zo ; end
+ Mol> No connectivity Db for M2B
+ Mol>  Nothing marked for deletion, so no compression.
+ mol connectivity is         141
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Now you can rebuild your molecule (and the residues with alternative
+   conformations) using the regular O tools (rotamers, torsions,
+   real-space refinement, etc.)
+
+ When you're done, write out the modified molecules:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+s_a_o m2a.pdb m2a ;;;;;
+ Sam> Coordinate file type assumed from file name is PDB
+ Sam>        853 atoms written out.
+s_a_o m2b.pdb m2b ;;;;;
+ Sam> Coordinate file type assumed from file name is PDB
+ Sam>        105 atoms written out.
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ (3) Merge the various PDB files into one file again
+
+ Since there are a few residues with alternative main-chain conformations,
+   we cannot use the main-chain filter.  So, we will use the occupancy
+   filter to remove atoms without real alternative conformations.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Supported operations:
+ (1) PDB, SHELX, CCP4, TNT ---> O
+ (2) X-PLOR, CNS ---> O
+ (3) O ---> PDB, SHELX, CCP4, TNT
+ (4) O ---> X-PLOR, CNS
+ (5) Re-associate ANISOU cards (quick-n-dirty)
+ Operation (1,2,3,4,5) ? (          1) 3
+ Input PDB file from O (<CR> to end) ? ( ) m2a.pdb
+ Input PDB file from O (<CR> to end) ? ( ) m2b.pdb
+ Input PDB file from O (<CR> to end) ? ( ) 
+ Nr of PDB files from O : (          2) 
+ Alt. conf. flags ? (ABCDEF) 
+
+ Alternative conformations for all main-chain
+ atoms can be ignored if you like.
+ Ignore alt. main-chain conformations ? ( Y) n
+
+ An alternative conformation for an atom is
+ ignored if the occupancy of its main-
+ conformation partner is high.
+ Cut-off occupancy ? (   0.990)   
+
+ An alternative conformation for an atom is
+ ignored if it lies very close to its main-
+ conformation partner.
+ Cut-off distance ? (   0.010) -1
+ Output PDB file name ? (m2.pdb) 
+ File #   : (          2) 
+ # AC now : (        105) 
+
+ AC : (ATOM      1  N   GLU     1       4.127  26.179  -7.903  0.49 57.53) 
+    : (ATOM      1  N  BGLU     1       3.535  25.488 -12.889  0.51 54.52) 
+ Alt. conf.: main occupancy  0.49 and main-alt atom distance  5.07 A
+...
+ AC : (ATOM     48  N   LYS     8      11.650  32.326 -19.080  1.00 16.64) 
+    : (ATOM     20  N  BLYS     8      11.650  32.326 -19.080  1.00 16.64) 
+ Merged; main occupancy : (   1.000) 
+...
+ AC : (ATOM    199  CB  HIS    30      18.297  50.130 -11.517  0.35 19.99) 
+    : (ATOM     32  CB BHIS    30      18.331  50.149 -11.568  0.65 20.69) 
+ Alt. conf.: main occupancy  0.35 and main-alt atom distance  0.06 A
+...
+ AC : (ATOM    514  OE2 GLU    70      -5.159  35.424 -19.094  0.49 44.32) 
+    : (ATOM    101  OE2BGLU    70      -5.632  35.772 -16.130  0.51 48.51) 
+ Alt. conf.: main occupancy  0.49 and main-alt atom distance  3.02 A
+
+ All done !
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ (4) Salvage ANISOU records
+
+ Now steal the old ANISOU cards and merge them into the new model's
+   PDB file:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Supported operations:
+ (1) PDB, SHELX, CCP4, TNT ---> O
+ (2) X-PLOR, CNS ---> O
+ (3) O ---> PDB, SHELX, CCP4, TNT
+ (4) O ---> X-PLOR, CNS
+ (5) Re-associate ANISOU cards (quick-n-dirty)
+ Operation (1,2,3,4,5) ? (          1) 5
+ Current PDB file name ? (m1.pdb) m2.pdb
+ Old PDB file name with ANISOU ? (m2.pdb) 1ctj.pdb
+ Output PDB file name ? (m3.pdb) m2u.pdb
+ Working ...
+ ERROR --- ANISOU card not found !
+ For atom : ( OE2BGLU    48) 
+ Order/names of atoms differ ???
+ FATAL ERROR --- ANISOU card not found ! - execution aborted !
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Oops !  What went wrong here ? Check out this residue in the original
+   1CTJ file:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ATOM    389  OE1AGLU    48       4.664  39.738  -3.496  0.60 37.58           O  
+ANISOU  389  OE1AGLU    48     4398   6201   3327   1416   2837   1504       O  
+ATOM    390  OE1BGLU    48       4.223  42.919  -3.223  0.40 37.99           O  
+ANISOU  390  OE1BGLU    48     5524   4869   3686   2025   1198   2721       O  
+ATOM    391  OE2BGLU    48       3.739  41.355  -1.834  0.40 29.72           O  
+ANISOU  391  OE2BGLU    48     3278   4237   3499    282   2215   1265       O  
+ATOM    392  OE2AGLU    48       2.819  39.905  -2.380  0.60 33.01           O  
+ANISOU  392  OE2AGLU    48     4577   3632   4021   1247   3110    557       O  
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ The OE2 atoms are sorted B-A here, which confuses ACONIO since it
+  expects the same order as in our file "m2.pdb", which is A-B.
+  So, edit the file 1ctj.pdb to reverse the order and run again:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Supported operations:
+ (1) PDB, SHELX, CCP4, TNT ---> O
+ (2) X-PLOR, CNS ---> O
+ (3) O ---> PDB, SHELX, CCP4, TNT
+ (4) O ---> X-PLOR, CNS
+ (5) Re-associate ANISOU cards (quick-n-dirty)
+ Operation (1,2,3,4,5) ? (          1) 5
+ Current PDB file name ? (m1.pdb) m2.pdb
+ Old PDB file name with ANISOU ? (m2.pdb) 1ctj.pdb
+ Output PDB file name ? (m3.pdb) m2u.pdb
+ Working ...
+ ERROR --- ANISOU card not found !
+ For atom : ( OE1BGLU    70) 
+ Order/names of atoms differ ???
+ FATAL ERROR --- ANISOU card not found ! - execution aborted !
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Same problem again, now for Glu 70.  Fix in 1ctj.pdb and same player
+   shoots again:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Supported operations:
+ (1) PDB, SHELX, CCP4, TNT ---> O
+ (2) X-PLOR, CNS ---> O
+ (3) O ---> PDB, SHELX, CCP4, TNT
+ (4) O ---> X-PLOR, CNS
+ (5) Re-associate ANISOU cards (quick-n-dirty)
+ Operation (1,2,3,4,5) ? (          1) 5
+ Current PDB file name ? (m1.pdb) m2.pdb
+ Old PDB file name with ANISOU ? (m2.pdb) 1ctj.pdb
+ Output PDB file name ? (m3.pdb) m2u.pdb
+ Working ...
+ ERROR --- ANISOU card not found !
+ For atom : (FE   HEM $  91) 
+ Order/names of atoms differ ???
+ FATAL ERROR --- ANISOU card not found ! - execution aborted !
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ This problem has to do with the fact that O doesn't like HETATM cards
+   (it writes them out as ATOM cards and uses a "$" sign as the chain
+   identifier).  However, the output file "m2u.pdb" contains all of
+   the protein, and the rest can be added either by cut-and-paste,
+   or by renaming the HETATMs to ATOMs in 1ctj.pdb, and replacing the
+   "$" signs by spaces in m2.pdb and re-running ACONIO.  However,
+   normally I suspect all your HETATMs will be called ATOMs to
+   begin with, so this problem wouldn't arise in the first place.
+
+ The output PDB file should start like this approximately:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+REMARK Written by O version 6.2.3
+REMARK Wed Sep  9 15:47:09 1998
+CRYST1   40.430   40.430   40.430  80.25  80.25  80.25
+ORIGX1      1.000000  0.000000  0.000000        0.00000
+ORIGX2      0.000000  1.000000  0.000000        0.00000
+ORIGX3      0.000000  0.000000  1.000000        0.00000
+SCALE1      0.024734 -0.004251 -0.003674        0.00000
+SCALE2      0.000000  0.025097 -0.003674        0.00000
+SCALE3      0.000000  0.000000  0.025364        0.00000
+ATOM      1  N  AGLU     1       4.127  26.179  -7.903  0.49 57.53   7
+ANISOU    1  N  AGLU     1     9336   7394   4591      4   2737   2771       N
+ATOM      1  N  BGLU     1       3.535  25.488 -12.889  0.51 54.52   7
+ANISOU    2  N  BGLU     1     8406   5015   6783   -887   3093    161       N
+ATOM      2  CA AGLU     1       5.490  26.607  -8.207  0.49 52.50   6
+ANISOU    3  CA AGLU     1     9283   5563   4611   -256   2331   1241       C
+ATOM      2  CA BGLU     1       2.754  26.395 -12.051  0.51 51.27   6
+ANISOU    4  CA BGLU     1     7663   5124   6212   -653   2258    184       C
+...
+ATOM     31  N   ALA     5      10.452  27.940 -17.673  1.00 25.52   7
+ANISOU   45  N   ALA     5     3717   2003   3736   -373    183    681       N
+ATOM     32  CA  ALA     5      10.822  27.868 -19.105  1.00 24.02   6
+ANISOU   46  CA  ALA     5     3151   1934   3815   -179    147    403       C
+...
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Good luck !!!
+
+ ** KNOWN BUGS
+
+ None, at present ("peppar, peppar").
+
+ ** UNKNOWN BUGS
+
+ Does not compute.

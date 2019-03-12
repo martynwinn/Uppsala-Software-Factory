@@ -1,0 +1,89 @@
+c
+c --- include file for XPS routines
+c
+      implicit none
+c
+c *** PARAMETERS ***
+c
+      character psrout*20,psvers*15
+c
+      parameter (psrout = ' => XPS_GRAF - GJK')
+c
+ccc      parameter (psvers = '3.1 @ 981207')
+ccc      parameter (psvers = '19981216/3.1.2')
+      parameter (psvers = '20051205/3.1.3')
+c
+c ... area of A4 paper that will be used for the actual plot
+c     (note: labels are OUTSIDE this area !!!)
+c
+      real psxmin,psxmax,psymin,psymax
+      parameter (psxmin =  50.00, psxmax = 500.00)
+      parameter (psymin = 250.00, psymax = 700.00)
+c
+c ... max nr of text labels for legend
+c
+      integer maxtxt
+      parameter (maxtxt=10)
+c
+c ... max nr of tick marks along X and Y axes
+c
+      integer maxtix,maxtiy
+      parameter (maxtix=10, maxtiy=15)
+c
+c ... sizes of tick marks along X and Y axes
+c
+      real psxtsi,psytsi
+      parameter (psxtsi=7.0, psytsi=7.0)
+c
+c ... fudge parameters for centering axis labels
+c
+      real fudge1,fudge2,fudge3
+      parameter (fudge1=3.0, fudge2=2.0, fudge3=3.0)
+c
+c ... some handy parameters
+c
+      integer    no_error
+      parameter (no_error=0)
+c
+c ... conversion of radians to degrees and back
+c
+      real circle,tupi,degtor,rtodeg,pi
+      parameter (circle = 360.0)
+      parameter (tupi   = 6.2831853071796)
+      parameter (degtor = tupi / circle)
+      parameter (rtodeg = circle / tupi)
+      parameter (pi     = 0.5  * tupi)
+c
+c *** VARIABLES ***
+c
+      integer psunit,pserror,length,psnuml,psdash,pscolr,psntxt
+c
+      real psxsca,psysca,psrxin,psryin,psrxax,psryax,psx,psy
+      real psxoff,psyoff,poxmin,poxmax
+c
+      logical psinit,psopen,pspola,pshide
+c
+      character*120 psfile,psprog,psxlab,psylab,psline
+      character psdate*24,psuser*40,pstext(maxtxt)*100
+c
+c
+c *** COMMON BLOCKS ***
+c
+c /XPSCBI/ - integer variables
+c
+      common /xtxcbi/ psunit,psnuml,psdash,pscolr,psntxt
+c
+c /XTXCBR/ - real variables
+c
+      common /xtxcbr/ psxsca,psysca,psrxin,psryin,psrxax,psryax,
+     +                psxoff,psyoff,poxmin,poxmax
+c
+c /XTXCBL/ - logical variables
+c
+      common /xtxcbl/ psinit,psopen,pspola,pshide
+c
+c /XTXCBC/ - character variables
+c
+      common /xtxcbc/ psfile,psprog,psxlab,psylab,psdate,psuser,
+     +                pstext
+c

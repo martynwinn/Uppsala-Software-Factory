@@ -1,0 +1,17 @@
+#
+OBJ=	aconio.o ../gklib/osx_kleylib
+INCL=	Makefile_osx
+
+fc =	 g77
+
+exec =	aconio
+
+opt= -C -O -u -check_bounds
+link= -O
+
+$(exec):	$(OBJ)
+	$(fc) $(link) -o $(exec) $(OBJ) ; strip $(exec)
+
+aconio.o:	aconio.f $(INCL)
+	$(fc) $(opt) -c aconio.f
+

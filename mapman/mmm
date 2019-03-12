@@ -1,0 +1,17 @@
+#
+OBJ=	mapman.o ../gklib/osx_kleylib
+INCL=	Makefile_osx mapman.incl
+
+fc =	 g77
+
+exec =	mapman
+
+opt= -C -O -u -check_bounds
+link= -O
+
+$(exec):	$(OBJ)
+	$(fc) $(link) -o $(exec) $(OBJ) ; strip $(exec)
+
+mapman.o:	mapman.f $(INCL)
+	$(fc) $(opt) -c mapman.f
+

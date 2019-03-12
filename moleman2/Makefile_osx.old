@@ -1,0 +1,39 @@
+
+OBJ=	moleman2.o mole1_subs.o mole2_subs.o mole3_subs.o \
+	mole2_gen.o ../gklib/osx_kleylib
+
+INCL=	Makefile_osx moleman2.incl
+
+fc =	g77
+
+exec =	moleman2
+
+# for development work use:
+# opt =	-Olimit 3000 -v -check_bounds -w0 -d_lines
+# opt =	-Olimit 3000 -v -check_bounds -u -w0
+# opt =	-Olimit 3000 -O2 -v -check_bounds -u -w0
+#opt= -Olimit 3000 -O -C -u -v 
+#opt= -C -O -u -check_bounds -fno-globals -Wno-globals
+opt= -C -O -u -check_bounds
+link= -O
+
+
+$(exec):	$(OBJ)
+	$(fc) $(link) -o $(exec) $(OBJ) ; strip $(exec)
+
+
+moleman2.o:	moleman2.fpp $(INCL)
+	$(fc) $(opt) -c moleman2.fpp
+
+mole1_subs.o:	mole1_subs.fpp $(INCL)
+	$(fc) $(opt) -c mole1_subs.fpp
+
+mole2_subs.o:	mole2_subs.fpp $(INCL)
+	$(fc) $(opt) -c mole2_subs.fpp
+
+mole3_subs.o:	mole3_subs.fpp $(INCL)
+	$(fc) $(opt) -c mole3_subs.fpp
+
+mole2_gen.o:	mole2_gen.fpp
+	$(fc) $(opt) -c mole2_gen.fpp
+

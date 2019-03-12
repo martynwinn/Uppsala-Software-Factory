@@ -1,0 +1,31 @@
+
+#OBJ=	lsqman.o  lsqman_subs.o fmalloc.o  ../gklib/osx_kleylib
+OBJ=	lsqman.o  lsqman_subs.o ../gklib/osx_kleylib
+INCL=	lsqman.incl
+
+fc =	g77
+
+exec =	OSX_LSQMAN
+
+# for development work use:
+# opt =	-Olimit 3000 -v -check_bounds -w0 -d_lines
+# opt =	-Olimit 3000 -v -check_bounds -u -w0
+# opt =	-Olimit 3000 -O2 -v -check_bounds -u -w0
+# opt= -Olimit 3000 -C -O -u -v -recursive -check underflow -check overflow
+#opt= -Olimit 1000 -C -O -u -v -check_bounds
+#opt= -Olimit 1000 -C -O -u -check_bounds -w0
+opt= -DOSX -O -u -check_bounds
+link= -O
+
+#fmalloc.o:	fmalloc.c
+#	cc -c -g -DOSX fmalloc.c
+
+$(exec):	$(OBJ)
+	$(fc) $(link) -o $(exec) $(OBJ) ; strip $(exec)
+
+lsqman.o:	lsqman.f $(INCL)
+	$(fc) $(opt) -c lsqman.F
+
+lsqman_subs.o:	lsqman_subs.f $(INCL)
+	$(fc) $(opt) -c lsqman_subs.f
+

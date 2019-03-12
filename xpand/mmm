@@ -1,0 +1,16 @@
+
+OBJ=	xpand.o  ../gklib/osx_kleylib
+INCL=	xpand.incl
+
+fc =	 g77
+
+exec =	xpand
+
+opt= -C -O -u -check_bounds
+link= -O
+
+$(exec):	$(OBJ)
+	$(fc) $(link) -o $(exec) $(OBJ) ; strip $(exec)
+
+xpand.o:	xpand.f $(INCL)
+	$(fc) $(opt) -c xpand.f

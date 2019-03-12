@@ -1,0 +1,20 @@
+
+OBJ=	seaman.o  seaman_subs.o  ../gklib/osx_kleylib
+INCL=	seaman.incl
+
+fc =	 g77
+
+exec =	seaman
+
+opt= -C -O -u -check_bounds
+link= -O
+
+$(exec):	$(OBJ)
+	$(fc) $(link) -o $(exec) $(OBJ) ; strip $(exec)
+
+seaman.o:	seaman.f $(INCL)
+	$(fc) $(opt) -c seaman.f
+
+seaman_subs.o:	seaman_subs.f $(INCL)
+	$(fc) $(opt) -c seaman_subs.f
+

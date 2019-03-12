@@ -1,0 +1,229 @@
+
+ ** COMAP - GENERAL INFORMATION
+
+ Program : COMAP
+ Version : 040701
+ Author  : Gerard J. Kleywegt & T. Alwyn Jones,
+           Dept. of Cell and Molecular Biology,
+           Uppsala University, Biomedical Centre, Box 596,
+           SE-751 24 Uppsala, SWEDEN
+ E-mail  : gerard@xray.bmc.uu.se
+ Purpose : combine maps for multiple-crystal averaging of
+           electron-density maps
+ Package : RAVE
+
+ ** REFERENCES
+
+ Reference(s) for this program:
+
+ *  1 * T.A. Jones (1992). A, yaap, asap, @#*?  A set of averaging
+        programs. In "Molecular Replacement", edited by E.J. Dodson,
+        S. Gover and W. Wolf. SERC Daresbury Laboratory, Warrington,
+        pp. 91-105.
+
+ *  2 * G.J. Kleywegt & T.A. Jones (1994).  Halloween ... Masks and
+        Bones. In "From First Map to Final Model", edited by
+        S. Bailey, R. Hubbard and D. Waller.  SERC Daresbury
+        Laboratory, Warrington, pp. 59-66.
+        [http://xray.bmc.uu.se/gerard/papers/halloween.html]
+
+ *  3 * G.J. Kleywegt & R.J. Read (1997). Not your average density.
+        Structure 5, 1557-1569.
+        [http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=PubMed&cmd=Retrieve&list_uids=9438862&dopt=Citation]
+
+ *  4 * R.J. Read & G.J. Kleywegt (2001). Density modification:
+        theory and practice. In: "Methods in Macromolecular
+        Crystallography" (D Turk & L Johnson, Eds.), IOS Press,
+        Amsterdam, pp. 123-135.
+
+ *  5 * Kleywegt, G.J., Zou, J.Y., Kjeldgaard, M. & Jones, T.A. (2001).
+        Around O. In: "International Tables for Crystallography, Vol. F.
+        Crystallography of Biological Macromolecules" (Rossmann, M.G.
+        & Arnold, E., Editors). Chapter 17.1, pp. 353-356, 366-367.
+        Dordrecht: Kluwer Academic Publishers, The Netherlands.
+
+ ** VERSION HISTORY
+
+ 930316 - 0.1 - initial version from map_add.f
+ 930615 - 1.0 - new production version
+ 931217 - 1.1 - minor changes
+ 940113 -1.1.1- check that at least two maps entered
+ 950118 - 1.2 - sensitive to environment variable CCP4_OPEN
+ 960412 - 1.3 - echo all input to help debug scripts
+ 961122 - 2.0 - dynamic memory allocation
+ 010122 - 3.0 - use C routines to do dynamic memory allocation 
+                and port to Linux
+ 040701 -3.0.1- changed checks of dynamic memory allocation to allow
+                for pointers with negative values as returned by
+                some recent Linux versions
+
+ ** MAP SIZE
+
+ From version 2.0 onward, COMAP allocates memory for its maps
+   dynamically.  This means that you can increase the size
+   that the program can handle on the fly:
+
+ 1 - through the environment variable MAPSIZE (must be in capital
+     letters !), for example put the following in your .cshrc file
+     or your script:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ setenv MAPSIZE 8000000
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ 2 - by using command-line argument MAPSIZE (need not be in capitals),
+     for example in your script:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ run comap mapsize 10000000
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Note that command-line argument takes precedence over the environment
+   variable.  So you can set the environment variable in your .cshrc
+   file to a "typical" value, and if you have to deal with maps
+   which are bigger than that, you can use the command-line argument.
+
+ If sufficient memory cannot be allocated, the program will print
+   a message and quit.  In that case, increase the amount of virtual
+   memory (this will not help, of course, if you try to allocate more
+   memory than can be addressed by your machine (for 32-bit machines,
+   something 2**32-1 bytes, I think), or reduce the size requirements.
+
+ COMAP needs space for 3 maps.
+
+ ** NOTES
+
+ NOTE: this program is now sensitive to the environment variable
+       CCP4_OPEN.  If this variable has *not* been set, you will
+       not be able to create any CCP4 maps.  If this happens, the
+       program will abort execution on startup.  To fix this,
+       put the following line in your .login or .cshrc file:
+       setenv CCP4_OPEN UNKNOWN
+
+ ** DESCRIPTION
+
+ With COMAP you can combine and scale various maps to
+   produce a weighted, averaged map.  COMAP is a more
+   general version of Alwyn's map_add program.
+
+ COMAP allows you to combine ANY number of maps,
+   provided all have the same grid, origin, extent and
+   unit cells (within 0.01 A or degree).  The final
+   map contains the following density:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Ecombi (x,y,z) = W * SUM (weight(i)*scale(i)*map(i)(x,y,z))
+                      i=1,
+                      NMAP
+
+ - weight (i) = weight for map nr I, defined by the user
+
+              / 1.0,           if I = 1
+ - scale (i) = 
+              \ VAR(1)/VAR(I), if I > 1 (VAR = variance of the map)
+
+ - W = 1.0 / (SUM (weight(i)*scale(i)))
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Note that by clever choices of the weights, COMAP can be
+   used to add or subtract maps.  The scale factors are
+   computed by the program and will ensure that (if the Fobs
+   used to produce the maps have been scaled appropriately)
+   the individual maps are scaled together properly.
+
+ ** EXAMPLE
+
+ The following example shows how to add two maps
+   with weights 1.0 and 2.0:
+
+ Start the program and provide the name of the first map
+   and its weight:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+...
+ Reference map : av_0.E
+...
+ Map nr   1      Size     352000
+ ED min, max, total  -6.2134E+01  9.3133E+01  2.6856E+00
+ ED ave, var, stdev   7.6294E-06  1.9540E+02  1.3978E+01
+
+ Scale  : (   1.000)
+ Weight ? (   1.000) 1
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Now give the name of the second file and its weight:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Map nr : (       2)
+ Map b: scr.E
+   Read header.
+...
+ Map nr   2      Size     352000
+ ED min, max, total  -3.6909E+02  5.0000E+02  2.4826E-02
+ ED ave, var, stdev   7.0529E-08  6.0782E+03  7.7963E+01
+
+ Scale  : (   0.032)
+ Weight ? (   1.000) 2.0
+ Multiplier : (  6.429E-02)
+ RMSD map A / B : (  6.676E+01)
+ Shape similarity A / B : (   0.834)
+ Busy ...
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Note that several statistics are printed: minimum, maximum
+   and integrated electron density, the average density, the
+   variance (used for scaling) and the standard deviation (the
+   square root of the variance).
+
+ In addition, the RMS difference between this map and the
+   first one is printed, as is the "shape similarity index"
+   (values from -1 to +1; +1 means that the two maps have
+   identical shapes, irrespective of the scales they are on).
+
+ If you want to combine more masks, just keep supplying file
+   names to the program.  Hit [RETURN] to indicate that there
+   are no more maps to be added.
+
+ Note that COMAP actually checks if the maps are on the same
+   grid etc. as the first one:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Map nr : (       3)
+ Map b: av_2x.E
+   Read header.
+...
+   Map read OK.
+ Grid   : (        100         110          64)
+ Origin : (         31          45           8)
+ Extent : (         48          53          61)
+ Cell   : (  91.800   99.500   56.500   90.000   90.000   90.000)
+ ERROR --- Different origin, extent, grid, cell
+ ERROR --- This map will NOT be added
+
+ Map nr : (       3)
+ Map b:
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ After all maps have been added, statistics for the combined
+   map are printed and you are asked to supply the name of the
+   output file:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Map nr : (       3)
+ Map b:
+ No more maps to add
+
+ Sum of weights and scales : (  1.064E+00)
+ Map nr   0      Size     352000
+ ED min, max, total  -7.7514E+01  1.1771E+02  9.8195E-01
+ ED ave, var, stdev   2.7896E-06  2.9797E+02  1.7262E+01
+
+ New summed CCP4 map: sum.E
+...
+   Map written out.
+...
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** KNOWN BUGS
+
+ None, at present.

@@ -1,0 +1,992 @@
+
+ ** SOD - GENERAL INFORMATION
+
+ Program : SOD
+ Version : 030313
+ Author  : Gerard J. Kleywegt, Dept. of Cell and Molecular Biology,
+           Uppsala University, Biomedical Centre, Box 596,
+           SE-751 24 Uppsala, SWEDEN
+ E-mail  : gerard@xray.bmc.uu.se
+ Purpose : manipulate O datablocks
+ Package : X-UTIL
+
+ ** REFERENCES
+
+ Reference(s) for this program:
+
+ *  1 * G.J. Kleywegt (1997). Les amis d"O. CCP4/ESF-EACBM
+        Newsletter on Protein Crystallography 34, September 1997,
+        pp. 5-8.
+        [http://xray.bmc.uu.se/usf/factory_8.html]
+
+ *  2 * Kleywegt, G.J., Zou, J.Y., Kjeldgaard, M. & Jones, T.A. (2001).
+        Around O. In: "International Tables for Crystallography, Vol. F.
+        Crystallography of Biological Macromolecules" (Rossmann, M.G.
+        & Arnold, E., Editors). Chapter 17.1, pp. 353-356, 366-367.
+        Dordrecht: Kluwer Academic Publishers, The Netherlands.
+
+ ** VERSION HISTORY
+
+ 930917 - 0.1 - first version (task = MULT, format = MEGA)
+ 930919 - 0.2 - added EMBL format
+ 930920 - 0.3 - added PIR and EXPL formats; added INIT and
+                PAIR tasks
+ 940412 - 0.4 - implemented HOMOlogy task
+ 950204 - 0.5 - create datablock _RESIDUE_ALIGNED in MULT task
+ 970221 - 0.6 - fixed bug in EXPL format read
+ 980202 - 0.7 - bug fix which affected ALPHAs but not SGIs
+ 020508 - 0.8 - minor change so that the macro created by MULT will
+                also work with the Linux version of O
+ 030313 - 0.9 - calculate entropy for each alignment position in task MULT
+
+ ** INTRODUCTION
+
+ SOD is a program which helps you create O datablocks and macros
+   based on (aligned) sequences in one-letter code.
+
+ At present, SOD can be used to perform the following TASKs:
+ 1 - MULT - analyse multiple aligned sequences
+ 2 - INIT - create residue-type datablocks
+ 3 - PAIR - do pair-wise comparisons of aligned sequences
+ 4 - HOMO - generate an O macro to build a homology model
+
+ Data can be read in the following FORMats:
+ 1 - MEGA - multiple aligned sequences in MegAlign format
+ 2 - EMBL - multiple aligned sequences in the format returned
+            by PredictProtein from EMBL/Heidelberg
+ 3 - PIR  - multiple sequences, PIR format, read one at a time
+ 4 - EXPL - explicit format, read one at a time
+
+ SOD is a non-interactive program; you feed it an input file
+   (and, sometimes, a library file) and you obtain an output
+   file in O datablock format containing one or more O datablocks
+   and sometimes one or more O macros.
+
+ The input file consists of two parts:
+ 1 - an initial key-worded part which sets parameters
+ 2 - a sequence part, terminated by an end-of-file
+
+ In the first part, most lines are either empty, comments or
+   of the type "keyword parameter_1 [parameter_2 ...]".  SOD is
+   case-insensitive except where file names are concerned.
+ The first FOUR characters of keywords and most parameters
+   are unique.
+
+ ** KEYWORDS
+
+ The following keywords are recognised:
+
+ ## ! any text
+ this is a comment line which will be ignored
+
+ ## TASK my_task
+ select the task you want to execute
+
+ ## FORMat format_type [explicit_format]
+ define the type of format for reading the sequence(s);
+   in case of an explicit format, supply the format for
+   reading ONE LINE from a sequence
+
+ ## REMArk any_text
+ the line contains a remark that will be printed in the output
+
+ ## MOLName name
+ the name of the molecule (inside O); this is used for
+   generating the appropriate datablock names (and sometimes
+   in macros)
+ 
+ ## PREFix x
+ one character which should be 'glued' to the residue
+   numbers in order to get appropriate residue identifiers in O
+   (i.e., if you named your residues A1 .. A222 the enter A as
+   the prefix)
+
+ ## OFIRst n
+ the actual NUMBER of YOUR first residue inside O; default
+   is '1', but if your residues start at A87, include a line
+   OFIRst 87
+
+ ## REFErence n
+ the number of YOUR sequence in the list of input sequences
+
+ ## LIBFile filename
+ the name of a SOD library file (needed for some options)
+
+ ## OUTFile filename
+ the name of the output ODB file
+
+ ## NAME nr my_name
+ the name of sequence 'nr'; use concise names WITHOUT spaces;
+   used by some options to generate datablock names
+
+ ## KEEP parameters
+ select which residues in the REFErence sequence correspond
+   to those in your molecule inside O; possible options:
+ 1 - KEEP ALL - keep all residues
+ 2 - KEEP RANGe Nlo Nhi - keep all residues in between
+               number Nlo and Nhi, both borders included
+ 3 - KEEP MARKer x - where 'x' is a symbolic character
+               such as $, *, @ (do NOT use characters, !, - or +);
+               in this case you must supply an extra DUMMY sequence
+               which contains two characters 'x' which mark the
+               start and end of your sequence
+
+ ## REPLace mode
+ only used for task HOMO; mode "ALL" will generate an
+   O macro in which all differing residues are replaced
+   by the appropriate residue type; for generating
+   Molecular Replacement models, this is not so clever;
+   in that case, "mode" may be the name of an amino-acid
+   type which is to replace differing residues (e.g.,
+   Ala, Gly or Ser)
+
+ ## DELEte yes|no
+ only used for task HOMO; if YES, Mutate_delete instructions
+   will be written to the macro (otherwise, they will be
+   commented out)
+
+ ## INSErt yes|no
+ only used for task HOMO; if YES, Mutate_insert instructions
+   will be written to the macro (otherwise, they will be
+   commented out); this would not be used when generating
+   a Molecular Replacement model
+
+ ** SEQUENCE FORMATS
+
+ The sequences are bounded by one line containing the keyword SEQUences
+   and by the end of your input file.
+
+ The following FORMats may be used:
+
+ ## MEGA
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ SEQUences
+ (any number of blank lines)
+ (any number of comment lines starting with '!' in column 1)
+ [sequence_1(1:N)
+  sequence_2(1:N)
+  ...
+  sequence_M(1:N)
+  at least one blank line; comment lines may be mixed in]
+ (any number of blank lines)
+ (any number of comment lines starting with '!' in column 1)
+ [sequence_1(N:P)
+  sequence_2(N:P)
+  ...
+  sequence_M(N:P)
+  at least one blank line; comment lines may be mixed in]
+ END-OF-FILE
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+!
+SEQUences
+
+marker                   *
+M--------YRKLAVISAFLATARAQSACTLQSETHPPLTWQKCSSGGTCTQQTGSVVID
+M--------YQKLALISAFLATARAQSACTLQAETHPPLTWQKCSSGGTCTQQTGSVVID
+! MKGSISYQIYKGALLLSALLNSVSAQQVGTLTAETHPALTWSKCTAGX-CSQVSGSVVID
+MRTA-------KFATLAALVASAAAQQACSLTTERHPSLSWNKCTAGGQCQTVQASITLD
+
+marker                                                            *
+SGNSLSI-GFVTQSAQK--NVGARLYLMASDTTYQEFTLLGNEFSFDVDVSQLPCGLNGALYFVSMD
+SADSLSI-GFVTQSAQK--NVGARLYLMASDTTYQEFTLLGNEFSFDVDVSQLPCGLNGALYFVSMDADGGV
+! SGNSLRI-NFVTTASQK--NIGSRLYLLENDTTYQKFNLLNQEFTFDVDVSNLPCGLNGAL
+NGDSLSL-KFVTKGQHS-TNVGSRTYLMDGEDKYQTFELLGNEFTFDVDVSNIGCGLNGALYFVSM
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## EMBL
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ SEQUences
+ (any number of blank lines)
+ (any number of comment lines starting with '!' in column 1)
+ [one line for each residue; may be mixed with comment and empty lines]
+ END-OF-FILE
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+sequences
+
+!## ALIGNMENTS    1 -    7
+! SeqNo  PDBNo AA STRUCTURE BP1 BP2  ACC NOCC  VAR  ....:....1....:....2....:....3....:....4....:....5....:....6....:....7
+!23456789+123456789+123456789+123456789+123456789+123456789+123456789+
+     1        M  U           0   0    0    2    0  MM
+     2        Y  U           0   0    0    2    0  YY
+[...]
+    17        A  U           0   0    0    5   12  AAAGa
+!
+!   18        Q  U           0   0    0    5    0  QQQQQ
+!
+    18        Q  U           0   0    0    5    0  *QQQQ
+[...]
+   450        S  U           0   0    0    5   48  SSLTT
+!
+!  451        G  U           0   0    0    5   41  GGPVA
+!
+   451        G  U           0   0    0    5   41  *GPVA
+[...]
+   513        L  U           0   0    0    7   19  LLLYLLI
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## PIR
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ SEQUences
+ (any number of blank lines)
+ (any number of comment lines starting with '!' in column 1)
+ [sequence_1; comment and empty lines may be mixed in]
+ (any nr of empty or comment lines)
+ [sequence_2]
+ [...]
+ END-OF-FILE
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+SEQUences
+
+! SQ   SEQUENCE   221 AA;  25402 MW;  252596 CN;
+!23456789+123456789+
+      1  AGKPVLHYFN ARGRMECIRW LLAAAGVEFE EKFIQSPEDL EKLKKDGNLM FDQVPMVEID 
+     61  GMKLVQTRAI LNYIATKYDL YGKDMKERAL IDMYTEGILD LTEMIGQLVL CPPDQREAKT 
+    121  ALAKDRTKNR YLPAFEKVLK SHGQDYLVGN RLTRVDVHLL ELLLYVEELD ASLLTPFPLL 
+    181  KAFKSRISSL PNVKKFLQPG SQRKPPLDAK QIEEARKVFK F
+
+! SQ   SEQUENCE   222 AA;  25477 MW;  248168 CN;
+      1  AGKPVLHYFN ARGRMECIRW LLAAAGVEFE EKFIQSPEDL EKLKKDGNLM FDQVPMVEID 
+     61  GMKLAQTRAI LNYIATKYDL YGKDMKERAL IDMYSEGILD LTEMIGQLVL CPPDQREAKT 
+    121  ALAKDRTKNR YLPAFEKVLK SHGQDYLVGN RLTRVDIHLL EVLLYVEEFD ASLLTPFPLL 
+    181  KAFKSRISSL PNVKKFLQPG SQRKPPMDAK QIQEARKAFK IQ
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## EXPL
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ SEQUences
+ (any number of blank lines)
+ (any number of comment lines starting with '!' in column 1)
+ [sequence_1
+  at least one empty line; comment lines may be mixed in]
+ [sequence_2
+  at least one empty line; comment lines may be mixed in]
+ [...]
+ END-OF-FILE
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+format expl (6(10a1,1x))
+[...]
+SEQUences
+
+! SEQUEN 'GTH1_HUMAN' 1 221 '(6(10a1,1x))'
+AEKPKLHYFN ARGRMESTRW LLAAAGVEFE EKFIKSAEDL DKLRNDGYLM FQQVPMVEID 
+GMKLVQTRAI LNYIASKYNL YGKDIKERAL IDMYIEGIAD LGEMILLLPV CPPEEKDAKL 
+ALIKEKIKNR YFPAFEKVLK SHGQDYLVGN KLSRADIHLV ELLYYVEELD SSLISSFPLL 
+KALKTRISNL PTVKKFLQPG SPRKPPMDEK SLEEARKIFR F
+
+! sequence with deletion at position 180
+! SEQUEN 'GTH2_HUMAN' 1 221 '(6(10a1,1x))'
+AEKPKLHYSN IRGRMESIRW LLAAAGVEFE EKFIKSAEDL DKLRNDGYLM FQQVPMVEID 
+GMKLVQTRAI LNYIASKYNL YGKDIKEKAL IDMYIEGIAD LGEMILLLPF TQPEEQDAKL 
+ALIQEKTKNR YFPAFEKVLK SHGQDYLVGN KLSRADIHLV ELLYYVEELD SSLISSFPL- 
+KALKTRISNL PTVKKFLQPG SPRKPPMDEK SLEESRKIFR F 
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## processing of sequences
+
+ Once all sequences have been read, the following is done:
+
+ 1) if you used KEEP RANGe or KEEP MARKer, the appropriate
+    residues are selected and the others are discarded;
+    if you used KEEP MARKer, the dummy sequence is deleted
+
+ 2) for each sequence, all 'space' before and after the sequence
+    are replaced by '+'
+
+ 3) for each sequence, all internal 'spaces' are replaces by '-'
+
+ 4) all deletions in your REFErence sequences are removed from
+    ALL sequences (sequences that have insertions relative to
+    yours are marked with a lowercase residue name at the start
+    of the insertion)
+
+ For example, suppose we input the following two sequences:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+SGNSLSI-GFVTQSAQK--NVGARLYLMAS--TYQEFTLLGNEF
+   SLSI-GFVTQSAQK--NVGARLY-MASDTTYQEFTLL
+ *    dummy marker sequence               *
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ After step (1):
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ GNSLSI-GFVTQSAQK--NVGARLYLMAS--TYQEFTLLGNE 
+   SLSI-GFVTQSAQK--NVGARLY-MASDTTYQEFTLL
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ After step (2) and (3):
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ GNSLSI-GFVTQSAQK--NVGARLYLMAS--TYQEFTLLGNE 
+ ++SLSI-GFVTQSAQK--NVGARLY-MASDTTYQEFTLL+++
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ After step (4):
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ GNSLSIGFVTQSAQKNVGARLYLMASTYQEFTLLGNE 
+ ++SLSIGFVTQSAQKNVGARLY-MAsTYQEFTLL+++
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** LIBRARY FILE
+
+ For some options you may need to read a library file; this file
+   contains information about amino-acid names etc.  Example:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+!
+! sod.lib - gerard kleywegt @ 930920
+!
+resi a ala alanine
+resi g gly glycine
+resi l leu leucine
+resi p pro proline
+resi t thr threonine
+resi c cys cysteine
+resi h his histidine
+resi i ile isoleucine
+resi m met methionine
+resi s ser serine
+resi v val valine
+resi f phe phenylalanine
+resi r arg arginine
+resi y tyr tyrosine
+resi w trp tryptophan
+resi d asp "aspartic acid"
+resi n asn asparagine
+resi e glu "glutamic acid"
+resi q gln glutamine
+resi k lys lysine
+!
+resi b asn "asx = EITHER asp OR asn; assuming ASN !!!"
+resi z gln "glx = EITHER glu OR gln; assuming GLN !!!"
+resi x ala "xxx = UNKNOWN amino acid; assuming ALA !!!"
+!
+end
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** TASK = MULT
+
+ ## purpose
+
+ This will produce datablocks and macros to help you with analysing
+   multiple aligned sequences.  If your molecule name is 'M1' then the
+   following datablocks are created:
+
+ M1_RESIDUE_POSSIBLE - listing all residue types encountered for
+   every residue ('-' and '+' are residue types as well !)
+
+ M1_RESIDUE_CONSERVED - degree of conservation (%) of each residue
+   type in your sequence
+
+ M1_RESIDUE_VARIATION - a count of the number of different residue
+   types observed at each position
+
+ M1_RESIDUE_ENTROPY - the entropy of each residue in the multiple
+   sequence alignment (defined as the sum over the residue types that
+   occur in the position of that residue of [- p log2 (p)], where
+   p is the frequency of occurence of that residue type, and where
+   a gap is considered to be a residue type as well). This has been
+   implemented in version 0.9 of SOD.
+
+ .ID_SOD - a temporary .id_template showing the above properties
+           when you click on an atom
+
+ @M1_SOD - a macro to produce three objects from your molecule:
+ CONS - CA-trace ramped by M1_RESIDUE_CONSERVED
+ VARI - CA-trace ramped by M1_RESIDUE_VARIATION
+ ENTR - CA-trace ramped by M1_RESIDUE_ENTROPY
+ GRAD - CA-trace coloured in steps according to M1_RESIDUE_CONSERVED
+
+ All you have to do now is to start O, read the SOD output file
+   and execute the macro (or edit it first, if you like).
+
+ ## example
+
+ The following is an example input file:
+ 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+TASK multi
+OUTFil cbh1_sod.odb
+FORMat megalign
+REMArk SOD test using CBH1 MegAlign data
+MOLNam A16
+PREFix A
+NAME 1 dummy
+NAME 2 gux1_trire
+NAME 3 gux1_trivi
+NAME 4 pjcgh1ge_1
+NAME 5 gux1_humgr
+NAME 6 gux1_phach
+NAME 7 pccellug_2
+NAME 8 pccellug_1
+NAME 9 gun1_trire
+NAME 10 tle14bg_1
+REFEr 2
+KEEP marker *
+OFIRst 1
+SEQUences
+[...]
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## output
+
+ The following is an example of the output obtained with the above input:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ *** SOD *** SOD *** SOD *** SOD *** SOD *** SOD *** SOD *** SOD *** SOD *** 
+
+ Version  - 930920/0.3
+ (C) 1993 - Gerard J. Kleywegt, Dept. Mol. Biology, BMC, Uppsala (S)
+ User I/O - routines courtesy of Rolf Boelens, Univ. of Utrecht (NL)
+ Others   - T.A. Jones, G. Bricogne, Rams & W.A. Hendrickson
+ Others   - CCP4, PROTEIN, etc. etc.
+
+ Started  - Mon Sep 20 19:49:07 1993
+ User     - gerard
+ Mode     - interactive
+ Host     - rigel
+ ProcID   - 414
+ Not using a tty as input device
+
+ *** SOD *** SOD *** SOD *** SOD *** SOD *** SOD *** SOD *** SOD *** SOD *** 
+
+ Max nr of sequences ......... : (         50) 
+ Max nr of residues .......... : (       5000) 
+ Max nr of residue types ..... : (         50) 
+ Max length of input lines ... : (        128) 
+
+ Reading input file ...
+ TASK > MULT
+ OUTF > cbh1_sod.odb                                                                    
+ FORM > MEGA
+ > REMArk SOD test using CBH1 MegAlign data
+ MOLN > A16   
+ PREF > A
+ LIBF > sod.lib                                                                         
+ NAME   1 > dummy
+ NAME   2 > gux1_trire
+ NAME   3 > gux1_trivi
+ NAME   4 > pjcgh1ge_1
+ NAME   5 > gux1_humgr
+ NAME   6 > gux1_phach
+ NAME   7 > pccellug_2
+ NAME   8 > pccellug_1
+ NAME   9 > gun1_trire
+ NAME  10 > tle14bg_1
+ REFE > 2   
+ KEEP > MARK *        
+ OFIR > 1   
+ Reading sequences (MEGA format) ...
+ Nr of sequences detected : (         10) 
+ Nr of residues so far : (        111) 
+ Nr of residues so far : (        222) 
+ Nr of residues so far : (        333) 
+ Nr of residues so far : (        444) 
+ Nr of sequences read : (         10) 
+ Nr of residues total : (        547) 
+
+ Nr of lines read     : (        107) 
+
+ Task .................. : (MULT) 
+ Format ................ : (MEGA) 
+ Molecule name in O .... : (A16) 
+ Residue prefix in O ... : (A) 
+ First residue in O .... : (1) 
+ Library file name  .... : (sod.lib) 
+ Output file name  ..... : (cbh1_sod.odb) 
+ Keep mode ............. : ( MARK *) 
+ Reference sequence .... : (2) 
+
+ Nr of sequences read : (         10) 
+ Nr of residues read  : (        547) 
+
+ Keeping residues by MARKER
+ Marker : (*) 
+ Searching for marker
+ Found first marker in sequence : (          1) 
+ Found second marker as well
+ Nr of sequences left   : (          9) 
+ Index of first residue : (         26) 
+ Index of last  residue : (        484) 
+ Number of residues now : (        459) 
+ Reference sequence nr  : (          1) 
+
+    Sequence name      !N-term  !C-term     Ndel     Nres
+    =============      =======  =======     ====     ====
+ gux1_trire                  0        0       25      434
+ gux1_trivi                  0        0       25      434
+ pjcgh1ge_1                  0        0        9      450
+ gux1_humgr                  0        0       12      447
+ gux1_phach                  0        0       23      436
+ pccellug_2                  0        0       31      428
+ pccellug_1                  0        6       23      430
+ gun1_trire                  0        0       84      375
+ tle14bg_1                   0        0       80      379
+
+ Removing deletions in reference sequence ...
+ Nr of residues left : (        434) 
+
+ Starting task MULT ...
+ Writing datablock : (A16_RESIDUE_POSSIBLE C 434 (A)) 
+
+  Index ResNam S % cons  Nr Possible
+ ====== ====== = ======  == ========
+      1 A1     Q 100.00   1 Q
+      2 A2     S  22.22   2 SQ
+      3 A3     A  44.44   3 AVP
+      4 A4     C  33.33   2 CG
+      5 A5     T  88.89   2 TS
+      6 A6     L  44.44   5 LNIYS
+      7 A7     Q  22.22   3 QTI
+      8 A8     S  11.11   4 SATP
+      9 A9     E  88.89   2 ER
+[...]
+    430 A430   G  44.44   5 GTS+A
+    431 A431   N  22.22   7 NTGSA+-
+    432 A432   P  22.22   7 PTNSL+-
+    433 A433   S  44.44   6 SNF+-P
+    434 A434   G  33.33   7 GKVS+-P
+
+ Writing datablock : (A16_RESIDUE_CONSERVED R 434 (10F6.2)) 
+ Writing datablock : (A16_RESIDUE_VARIATION I 434 (25I3)) 
+ Writing datablock : (.ID_SOD T 4 40) 
+ Writing datablock : (@A16_SOD T 15 80) 
+
+
+ *** SOD *** SOD *** SOD *** SOD *** SOD *** SOD *** SOD *** SOD *** SOD *** 
+
+ Version - 930920/0.3
+ Started - Mon Sep 20 19:49:07 1993
+ Stopped - Mon Sep 20 19:49:27 1993
+
+ CPU-time taken :
+ User    -     18.6 Sys    -      0.5 Total   -     19.1
+
+ *** SOD *** SOD *** SOD *** SOD *** SOD *** SOD *** SOD *** SOD *** SOD *** 
+
+ >>> This program is (C) 1993, GJ Kleywegt & TA Jones <<<
+ E-mail: "gerard@xray.bmc.uu.se" or "alwyn@xray.bmc.uu.se"
+
+ *** SOD *** SOD *** SOD *** SOD *** SOD *** SOD *** SOD *** SOD *** SOD *** 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## O datablock
+
+ The O datablock file looks as follows:
+ 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+! Created by SOD V. 930920/0.3 at Mon Sep 20 19:49:08 1993 for user gerard
+!
+!
+! datablock A16_RESIDUE_POSSIBLE
+! list of possible types for each residue
+A16_RESIDUE_POSSIBLE C 434 (A)
+Q
+SQ
+AVP
+CG
+TS
+LNIYS
+QTI
+[...]
+SNF+-P
+GKVS+-P
+!
+! datablock A16_RESIDUE_CONSERVED
+! list of percentage sequence conservation
+A16_RESIDUE_CONSERVED R 434 (10F6.2)
+100.00 22.22 44.44 33.33 88.89 44.44 22.22 11.11 88.89 44.44
+100.00100.00 22.22100.00 77.78 44.44 55.56 77.78100.00 22.22
+[...]
+ 22.22 22.22 44.44 33.33
+!
+! datablock A16_RESIDUE_VARIATION
+! nr of possible types for each residue
+A16_RESIDUE_VARIATION I 434 (25I3)
+  1  2  3  2  2  5  3  4  2  5  1  1  6  1  3  4  4  3  1  2  5  2  2  4  1
+  5  5  4  5  4  2  2  2  2  1  4  1  3  2  2  5  1  4  3  4  3  3  2  2  1
+[...]
+  2  2  2  1  5  7  7  6  7
+!
+! datablock .ID_SOD
+! replaces your .id_template
+! reset with: copy_db .id_template .id_old
+.ID_SOD T 4 40
+%RESNAM
+residue_conserved
+residue_variation
+residue_possible
+!
+! macro @A16_SOD
+! does the work for you
+@A16_SOD T 15 80
+mol A16 delete cons vari grad ;
+paint_ramp RESIDUE_CONSERVED ; red blue
+object cons ca ; end
+paint_ramp RESIDUE_VARIATION ; blue red
+object vari ca ; end
+paint_prop RESIDUE_CONSERVED > -1 red
+paint_prop RESIDUE_CONSERVED > 20 orange
+paint_prop RESIDUE_CONSERVED > 40 green
+paint_prop RESIDUE_CONSERVED > 60 steel_blue
+paint_prop RESIDUE_CONSERVED > 80 blue
+object grad ca ; end
+centre_zone A16 A1 A434
+copy_db .id_old .id_template
+copy_db .id_template .id_sod
+bell message Done
+!
+! File read OK
+!
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** TASK = INIT
+
+ ## purpose
+
+ At last, there is a quick way to generate your XXX_RESIDUE_TYPE
+   datablock from scratch.  You need this datablock to create space
+   for a new molecule prior to building it (sam_init_db in O).
+
+ ## example
+
+ Example input:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+task   init
+format pir
+remark test sod using gst pir data
+molnam m11a
+prefix A
+ofirst 1
+libfil sod.lib
+outfil gst_pir_sod.odb
+reference 1
+keep all
+name 1 GTA1_MOUSE
+name 2 GTA2_MOUSE
+
+SEQUences
+[...]
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## output
+
+ Example output:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+[...]
+ Nr of sequences read : (          2) 
+ Nr of residues read  : (        222) 
+
+ Keeping ALL residues
+
+    Sequence name      !N-term  !C-term     Ndel     Nres
+    =============      =======  =======     ====     ====
+ GTA1_MOUSE                  0        0        0      221
+ GTA2_MOUSE                  0        0        0      221
+
+ Removing deletions in reference sequence ...
+ Nr of residues left : (        221) 
+
+ Starting task INIT ...
+
+ Opening library file > (sod.lib) 
+ Reading library file ...
+ Nr of lines read    : (         29) 
+ Nr of residue types : (         23) 
+
+  Nr Codes Comments
+  == ===== ========
+   1 A ALA alanine
+   2 G GLY glycine
+   3 L LEU leucine
+[...]
+  22 Z GLN glx = EITHER glu OR gln; assuming GLN !!!
+  23 X ALA xxx = UNKNOWN amino acid; assuming ALA !!!
+
+ Writing datablock : (M11A_RESIDUE_TYPE C 221 (12A)) 
+[...]
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## O datablock
+
+ Example datablock produced:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+! Created by SOD V. 930920/0.3 at Mon Sep 20 20:04:31 1993 for user gerard
+!
+! datablock M11A_RESIDUE_TYPE
+M11A_RESIDUE_TYPE C 221 (12A)
+ALA   GLY   LYS   PRO   VAL   LEU   HIS   TYR   PHE   ASN   ALA   ARG
+GLY   ARG   MET   GLU   CYS   ILE   ARG   TRP   LEU   LEU   ALA   ALA
+[...]
+LYS   VAL   PHE   LYS   PHE
+!
+! File read OK
+!
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** TASK = PAIR
+
+ ## purpose
+ 
+ This option compares your REFErence sequence with each of the others
+   in turn and produces one datablock for each comparison.  This
+   datablock contains an integer code for each residue:
+
+ 0 = identical residues
+ 1 = mutation
+ 2 = insertion in other sequence
+ 3 = deletion in other sequence
+ 4 = outside other sequence
+
+ You can use this datablock to colour your molecule, e.g. using
+   the paint_case command; if you then make a CA-trace, the colours
+   show where in your protein mutations, insertions and deletions
+   occur.
+
+ NOTE: this task basically replaces the older program OST.
+
+ ## example
+
+ Example input:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+task   pair
+outfil gst_expl_pair.odb
+format expl (6(10a1,1x))
+remark test sod using gst explicit data
+molnam m11a
+reference 2
+name 1 GTH1_HUMAN
+name 2 GTH2_HUMAN
+
+SEQUences
+[...]
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## output
+
+ Example output:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+[...]
+ Nr of sequences read : (          2) 
+ Nr of residues read  : (        221) 
+
+ Keeping ALL residues
+
+    Sequence name      !N-term  !C-term     Ndel     Nres
+    =============      =======  =======     ====     ====
+ GTH1_HUMAN                  0        0        0      221
+ GTH2_HUMAN                  0        0        1      220
+
+ Removing deletions in reference sequence ...
+ Nr of residues left : (        220) 
+
+ Starting task PAIR ...
+ Writing datablock : (M11A_RESIDUE_VS_GTH1_HUMAN I 220 (35I2)) 
+[...]
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## O datablock
+
+ Example datablock produced:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+! Created by SOD V. 930920/0.3 at Mon Sep 20 20:17:11 1993 for user gerard
+!
+! pair-wise sequence comparisons
+! codes (use with paint_case) :
+! 0 = identical residues
+! 1 = mutation
+! 2 = insertion in other sequence
+! 3 = deletion in other sequence
+! 4 = outside other sequence
+!
+! datablock M11A_RESIDUE_VS_GTH1_HUMAN
+! pair-wise comparison with GTH1_HUMAN
+M11A_RESIDUE_VS_GTH1_HUMAN I 220 (35I2)
+ 0 0 0 0 0 0 0 0 1 0 1 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 1 1 1 0 0 0 1 0 0 0 0 0 0 0 1 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 2 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 1 0 0 0 0 0 0
+!
+! File read OK
+!
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** TASK = HOMO
+
+ ## purpose
+
+ This option ONLY looks at sequences 1 and 2; it will generate
+   an O macro file which, when executed, mutates molecule 2 into 1.
+   Use this for:
+ - homology modelling
+ - generating a Molecular Replacement search model
+
+ SOD will compare the sequences and generate Mutate_replace,
+   Mutate_delete and Mutate_insert instructions.  For homology
+   modelling, you would typically use something like this:
+
+ ## example (homology modelling)
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+task   homo
+outfil test_homo.omac
+format expl (6(10a1,1x))
+molnam m11a
+prefix A
+ofirst 1
+libfil sod.lib
+keep all
+
+replace all
+delete  yes
+insert  yes
+
+SEQUences
+
+AER--VHFFN AR-RMEST 
+
+-EKPKLHYSN I---MESIRW
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## O macro
+
+ Note that Mutate_insert instructions for the N-terminus are
+    always commented out, since they require some extra work
+    (see the FAQ).  In this case, one would expect SOD to
+    generate instructions to delete A3, A4, A15 and A16, to
+    insert two residues after A10 and to replace A2, A5, A7,
+    A8, A14:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+! Created by SOD V. 940412/0.4 at Tue Apr 12 20:21:32 1994 for user gerard
+!
+bell message NOTE
+print ... Insert N-terminus yourself !!!
+! mutate_insert M11A A0 X1 ALA ;
+mutate_replace M11A A2 ARG ;
+mutate_delete M11A A3 ;
+mutate_delete M11A A4 ;
+mutate_replace M11A A5 VAL ;
+mutate_replace M11A A7 PHE ;
+mutate_replace M11A A8 PHE ;
+mutate_replace M11A A10 ALA ;
+mutate_insert M11A A10 X2 ARG ;
+mutate_insert M11A X2 X3 ARG ;
+mutate_replace M11A A14 THR ;
+mutate_delete M11A A15 ;
+mutate_delete M11A A16 ;
+!
+bell message Done
+!
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Note that SOD correctly inserts X3 after X2 and not after A10 !
+
+ ## example (molecular replacement search model)
+
+ If we wanted to generate a Molecular Replacement search model
+   FROM the second molecule FOR the first, the input might change
+   as follows:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+replace ALA
+delete  YES
+insert  NO
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## O macro
+
+ Now the O macro looks as follows:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+! Created by SOD V. 940412/0.4 at Tue Apr 12 20:26:44 1994 for user gerard
+!
+bell message NOTE
+print ... Insert N-terminus yourself !!!
+! mutate_insert M11A A0 X1 ALA ;
+mutate_replace M11A A2 ALA ;
+mutate_delete M11A A3 ;
+mutate_delete M11A A4 ;
+mutate_replace M11A A5 ALA ;
+mutate_replace M11A A7 ALA ;
+mutate_replace M11A A8 ALA ;
+mutate_replace M11A A10 ALA ;
+! mutate_insert M11A A10 X2 ARG ;
+! mutate_insert M11A X2 X3 ARG ;
+mutate_replace M11A A14 ALA ;
+mutate_delete M11A A15 ;
+mutate_delete M11A A16 ;
+!
+bell message Done
+!
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Note that even GLYCINES in the target sequence will be
+    replaced by ALANINES !!!
+ Hint: if you suspect certain loops etc to be different in
+    your new structure, replace the residues concerned by "-"
+    (i.e., flag them as if they were deletions).
+ Note: if you have unusual residue types, don't forget to
+    update the library file (sod.lib).
+ Note: if you only want to generate a poly-Ala model, simply
+    read the PDB file into MOLEMAN and select option P(oly-Ala)
+    when you write it out again.
+
+ ## in practice
+
+ So, how to go about in practice ?  Get an alignment of your
+   new sequence and that of a similar protein.  Run SOD with
+   task HOMO.  Start up O; read in the existing protein, but
+   give it the name of your new one (keyword MOLNam in the SOD
+   input file).  Execute the macro produced by SOD.  Touch up
+   the result (sam_rename, insert at the N-terminus, Lego_loop
+   etc. to get coordinates for the inserted residues, Lego_side_ch
+   to remove any clashes between sidechains, etc.).
+
+ The output from O while it executes the macro is a trifle
+   boring:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+  O > @crabp_homo.omac
+  O > Macro in computer file-system.
+ Mut>  There are     1 mutations
+  O >  Mut>  There are     1 mutations
+ Mut>  The Rotamer_DB is now being loaded.
+  O >  Mut>  There are     1 mutations
+  O >  Mut>  There are     1 mutations
+  O >  Mut>  There are     1 mutations
+...
+  O >  Mut>  There are     1 mutations
+  O >  Mut>  There are     1 mutations
+  O >   O >   O >   O >  
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** KNOWN BUGS
+
+ None, at present.

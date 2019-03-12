@@ -1,0 +1,29 @@
+!
+! sod.lib - gerard kleywegt @ 930920
+!
+resi a ala alanine
+resi g gly glycine
+resi l leu leucine
+resi p pro proline
+resi t thr threonine
+resi c cys cysteine
+resi h his histidine
+resi i ile isoleucine
+resi m met methionine
+resi s ser serine
+resi v val valine
+resi f phe phenylalanine
+resi r arg arginine
+resi y tyr tyrosine
+resi w trp tryptophan
+resi d asp "aspartic acid"
+resi n asn asparagine
+resi e glu "glutamic acid"
+resi q gln glutamine
+resi k lys lysine
+!
+resi b asn "asx = EITHER asp OR asn; assuming ASN !!!"
+resi z gln "glx = EITHER glu OR gln; assuming GLN !!!"
+resi x ala "xxx = UNKNOWN amino acid; assuming ALA !!!"
+!
+end

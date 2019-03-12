@@ -1,0 +1,23 @@
+
+OBJ=	oops.o ../gklib/osx_kleylib
+INCL=	oops.incl
+
+fc =	 g77
+
+exec =	oops
+
+# for development work use:
+# opt = -Olimit 3000 -v -check_bounds -w0 -d_lines
+# opt = -Olimit 3000 -v -check_bounds -u -w0
+# opt = -Olimit 3000 -O2 -v -check_bounds -u -w0
+# opt= -Olimit 3000 -C -O -u -v -recursive -check underflow -check overflow
+#opt= -Olimit 3000 -C -O -u -v -check_bounds
+opt= -C -O -u -check_bounds
+link= -O
+
+$(exec):	$(OBJ)
+	$(fc) $(link) -o $(exec) $(OBJ) ; strip $(exec)
+
+oops.o:	oops.f $(INCL)
+	$(fc) $(opt) -c oops.f
+

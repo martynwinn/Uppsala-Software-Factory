@@ -1,0 +1,91 @@
+c
+c ... seaman.incl - include file for program SEAMAN
+c
+c ... Gerard Kleywegt @ 950622
+c
+      implicit NONE
+c
+c PARAMETERS
+c
+      character*12 prognm,vers
+      parameter (prognm = 'SEAMAN', vers = '041001/1.5')
+c
+c ... MAXATM must be >= 5* MAXRES for buffer arrays
+c
+      integer maxres,maxatm,maxatp
+      parameter (maxres=10000, maxatm=100000, maxatp=15)
+c
+c ... MAXCHN is FIXED at 26 !!! Do NOT change this number !!!
+c     (it is used hard-coded in a few places)
+c
+      integer maxtyp,maxchn
+      parameter (maxtyp=20, maxchn=26)
+c
+      real twopi,pi,degtor,rtodeg,circle
+      parameter (twopi=6.2831853071796)
+      parameter (pi=0.50*twopi)
+      parameter (circle=360.0)
+      parameter (degtor=twopi/circle)
+      parameter (rtodeg=circle/twopi)
+c
+      real zero,half,one,two
+      parameter (zero=0.00, half=0.50, one=1.00, two=2.00)
+c
+      real small
+      parameter (small = 0.00001)
+c
+c ... max allowed CA-CA distance for them to be considered to
+c     be connected
+c
+      real cacamx
+      parameter (cacamx=4.5)
+c
+c ... tolerance for YASSPA alpha-helix and beta-strand
+c
+      real alpyas,betyas
+      parameter (alpyas=0.5,betyas=0.8)
+c
+c ... max distance to look for neighbour atoms of side chains
+c
+      real nbrdst
+      parameter (nbrdst=4.0)
+c
+c ... max distance for a covalent bond
+c
+      real bondis
+      parameter (bondis=2.0)
+c
+c COMMON VARIABLES
+c
+      real atmxyz(3,maxatm),cell(6),qatom(maxatm),batom(maxatm)
+      real typxyz(3,maxatp,maxtyp),avbres(maxres)
+      real defq,defb
+c
+      integer iresid(maxatm),chnptr(2,maxchn),resptr(2,maxres)
+      integer captr(maxres),natype(maxtyp),natres(maxres)
+      integer natoms,nchain,ntype,nres
+c
+      logical conect(0:maxres),surfac(maxres),delatm(maxatm)
+      logical select(maxatm),selres(maxres)
+      logical lcell
+c
+      character atmnam(maxatm)*4,resnam(maxatm)*3
+      character achain(maxatm)*1,typnam(maxtyp)*3
+      character chname(maxchn)*1,typanm(maxatp,maxtyp)*4
+      character namres(maxres)*6,struct(0:maxres+1)*6
+c
+c COMMON BLOCKS
+c
+      common /lmanr1/ atmxyz,typxyz
+      common /lmanr2/ qatom,batom,cell,avbres
+      common /lmanr3/ defb,defq
+c
+      common /lmani1/ iresid,chnptr,natype,resptr,captr,natres
+      common /lmani2/ natoms,nchain,ntype,nres
+c
+      common /lmanl1/ conect,surfac,delatm,select,selres
+      common /lmanl2/ lcell
+c
+      common /lmanc1/ atmnam,resnam,achain,chname,typanm,typnam,
+     +                namres,struct
+c

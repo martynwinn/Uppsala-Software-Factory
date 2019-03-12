@@ -1,0 +1,146 @@
+c
+c --- o2d.incl
+c
+c --- general parameters for use with program O2D
+c
+c --- G J Kleywegt
+c
+c --- created @ 920511
+c
+      implicit none
+c
+      integer o2dinp,o2dout
+      parameter (o2dinp=5, o2dout=6)
+c
+      integer o2dbug
+      parameter (o2dbug = 0)
+c
+      integer maxpnt, maxtxt, maxext
+      parameter (maxpnt = 100000, maxtxt=100, maxext=1000)
+c
+c ... window/viewport management
+c
+c ... REMWIN - max nr of windows
+c     REMCOL - max nr of vpt columns
+c     REMROW - max nr of vpt rows
+c     MAWIPX - max nr of peaks per window (old NMR code ...)
+c
+      integer   remwin, remcol, remrow, mawipx
+      parameter (remwin=8, remcol=1, remrow=1, mawipx=20000)
+c
+      integer   not_open,open,no_plot,plot_1d,plot_2d,scatter
+      integer   histo,topo,pie
+      integer   define_popups,delete_popups
+c
+      parameter (not_open=0, open=1)
+      parameter (no_plot=0,plot_1d=1,plot_2d=2,scatter=3)
+      parameter (histo=4, topo=5, pie=6)
+      parameter (define_popups=-1,delete_popups=-2)
+c
+c ... MAXLEV = max nr of contour levels
+c
+      integer   maxlev
+      parameter (maxlev = 50)
+c
+c ... contour level options
+c
+      integer   single,multiply,distance,log_spaced
+      parameter (single=1,multiply=2,distance=3,log_spaced=4)
+c
+c ... contour colour options
+c
+      integer   same,pos_neg,automatic
+      parameter (same=1,pos_neg=2,automatic=3)
+c
+c ... some handy values
+c
+      integer nought,no_error,no_debug
+      parameter (nought = 0, no_error = 0, no_debug=0)
+c
+      real zero,one,two,three,four,five,six,seven,eight,ten
+      real twenty,fifty,hundrd,thousd,half,one3rd,one6th
+      real smally,biggie
+c
+      parameter (zero = 0.0, one = 1.0, two = 2.0, three = 3.0)
+      parameter (four = 4.0, five = 5.0, six = 6.0, seven = 7.0)
+      parameter (eight = 8.0, ten = 10.0, twenty = 20.0)
+      parameter (fifty = 50.0, hundrd = 100.0, thousd = 1000.0)
+      parameter (half = 0.5, one3rd = 1.0/3.0, one6th = 1.0/6.0)
+      parameter (smally = 1.0e-5, biggie = 1.0e15)
+c
+      real circle,tupi,degtor,rtodeg,pi
+      parameter (circle = 360.0)
+      parameter (tupi   = 6.2831853071796)
+      parameter (degtor = tupi / circle)
+      parameter (rtodeg = circle / tupi)
+      parameter (pi     = 0.5  * tupi)
+c
+c
+c
+      real x1d(maxpnt,0:remwin),y1d(maxpnt,0:remwin)
+      real extras(4,maxext)
+c
+      character labels(maxpnt,0:remwin)*80
+      character typext(maxext)*1
+c
+c ... level management
+c
+c     LEVINT (i) = contour level intensity
+c     LEVCOL (i) = contour level colour
+c     NLEVEL     = nr of levels
+c
+      integer nlevel,levcol(maxlev)
+      real    levint(maxlev)
+c
+c ... MAXWIN - actual max nr of windows (min of O2D and XTX windows)
+c     MAXCOL - ditto, vpt columns
+c     MAXROW - ditto, vpt rows
+c
+      integer maxwin,maxcol,maxrow
+c
+c ... NUMWIN - nr of open windows
+c     NOWWIN - currently active window
+c     NOWCOL - currently active vpt column
+c     NOWROW - currently active vpt row
+c
+      integer numwin,nowwin,nowcol,nowrow
+c
+c ... WISTAT (iwin) - status of window IWIN (open or not_open)
+c     WINCOL (iwin) - nr of vpt columns of window IWIN
+c     WINROW (iwin) - nr of vpt columns of window IWIN
+c     WINDIM (iwin) - graphics dimension of window IWIN (1,2, or 3)
+c     WINTYP (iwin) - window type
+c     WINPNT (iwin) - nr of points
+c     WICOL1 (iwin) - background colour
+c     WICOL2 (iwin) - drawing colour
+c     WOBNUM (iwin) - main object number
+c
+      integer wincol(remwin),winrow(remwin),windim(remwin)
+      integer wintyp(remwin),winpnt(remwin),wistat(remwin)
+      integer wicol1(remwin),wicol2(remwin),wobnum(remwin)
+c
+c ... WINLIM (4,iwin) - original viewport limits (world coordinates)
+c
+      real winlim (4,remwin)
+c
+c ... LAST2X, LAST2Y - nr of X & Y points of *last* 2D plot
+c     LAST2W - nr of window of *last* 2D plot
+c
+      integer last2x,last2y,last2w
+c
+      logical linter,xinter
+c
+c
+common blocks
+c
+      common /cbgrfi/ nlevel,levcol,
+     +                maxwin,maxcol,maxrow,wistat,numwin,nowwin,nowcol,
+     +  nowrow,wincol,winrow,windim,wintyp,winpnt,wicol1,wicol2,wobnum,
+     +  last2x,last2y,last2w
+c
+      common /cbgrfr/ x1d,y1d,winlim,levint,extras
+c
+      common /cbgrfl/ linter
+c
+      common /cbgrfc/ labels,typext
+c

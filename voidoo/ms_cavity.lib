@@ -1,0 +1,130 @@
+REMA
+REMA *************************************************************
+REMA
+REMA ms_cavity.lib - library of Vanderwaals radii and residue types
+REMA                 used by program VOIDOO; this version emulates
+REMA                 Connolly's MS program
+REMA
+REMA *************************************************************
+REMA
+REMA *** elements *** TWO characters; RIGHT justified
+REMA
+ELEM ' N' 1.85
+ELEM ' C' 1.95
+ELEM ' O' 1.70
+ELEM ' S' 2.10
+REMA
+REMA ELEM ' H' 1.00
+REMA ELEM ' P' 2.10
+REMA 
+REMA ELEM 'NA' 0.95
+REMA ELEM 'MG' 0.65
+REMA ELEM 'CL' 1.80
+REMA ELEM 'CA' 1.00
+REMA ELEM 'MN' 1.10
+REMA ELEM 'FE' 1.10
+REMA ELEM 'ZN' 1.20
+REMA ELEM 'CD' 1.20
+REMA
+REMA *************************************************************
+REMA
+REMA *** atom types *** FOUR characters; element is first TWO
+REMA
+ATOM ' CA ' 1.95
+ATOM ' CB ' 2.02
+ATOM ' CG ' 1.95
+ATOM ' CG1' 2.10
+ATOM ' CG2' 2.10
+ATOM ' CD ' 1.95
+ATOM ' CD1' 2.10
+ATOM ' CD2' 2.10
+ATOM ' CE ' 2.10
+ATOM ' CE1' 1.95
+ATOM ' CE2' 1.95
+ATOM ' CE3' 1.95
+ATOM ' CZ ' 1.95
+ATOM ' CZ2' 1.95
+ATOM ' CZ3' 1.95
+ATOM ' CH2' 1.95
+REMA
+ATOM ' NE ' 1.95
+ATOM ' NH1' 1.95
+ATOM ' NH2' 1.95
+ATOM ' NZ ' 1.95
+REMA
+ATOM ' OG ' 1.75
+ATOM ' OG1' 1.75
+ATOM ' OG2' 1.75
+ATOM ' OH ' 1.75
+ATOM ' OT1' 1.75
+REMA
+REMA *************************************************************
+REMA
+REMA *** residue/atom combinations *** EIGHT characters: RRR*AAAA
+REMA first three=residue, four=anything, five-eight=atom name
+REMA
+SPAT 'GLY* CA ' 2.02
+REMA
+SPAT 'VAL* CB ' 1.95
+SPAT 'ILE* CB ' 1.95
+SPAT 'THR* CB ' 1.95
+SPAT 'ALA* CB ' 2.10
+REMA
+SPAT 'GLU* CG ' 2.02
+SPAT 'GLN* CG ' 2.02
+SPAT 'LYS* CG ' 2.02
+SPAT 'ARG* CG ' 2.02
+SPAT 'PRO* CG ' 2.02
+SPAT 'MET* CG ' 2.02
+SPAT 'ILE* CG1' 2.02
+REMA
+SPAT 'LYS* CD ' 2.02
+SPAT 'PRO* CD ' 2.02
+SPAT 'ARG* CD ' 2.02
+SPAT 'TRP* CD1' 1.95
+SPAT 'PHE* CD1' 1.95
+SPAT 'TYR* CD1' 1.95
+SPAT 'TRP* CD2' 1.95
+SPAT 'PHE* CD2' 1.95
+SPAT 'TYR* CD2' 1.95
+SPAT 'HIS* CD2' 1.95
+REMA
+SPAT 'LYS* CE ' 2.02
+REMA
+REMA
+REMA *************************************************************
+REMA
+REMA atom type 'TEST' is used for testing the accuracy and
+REMA precision of the volume calculations
+REMA
+ATOM 'TEST' 1.00
+REMA
+REMA *************************************************************
+REMA
+REMA *** allowed residue types ***
+REMA
+RESI 'ALA'
+RESI 'ARG'
+RESI 'ASN'
+RESI 'ASP'
+RESI 'CYS'
+RESI 'GLN'
+RESI 'GLU'
+RESI 'GLY'
+RESI 'HIS'
+RESI 'ILE'
+RESI 'LEU'
+RESI 'LYS'
+RESI 'MET'
+RESI 'PHE'
+RESI 'PRO'
+RESI 'SER'
+RESI 'THR'
+RESI 'TRP'
+RESI 'TYR'
+RESI 'VAL'
+RESI 'CPR'  ! cis-Proline
+REMA
+REMA *************************************************************
+REMA
+END 

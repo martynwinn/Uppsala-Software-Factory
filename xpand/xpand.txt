@@ -1,0 +1,1428 @@
+
+ ** XPAND - GENERAL INFORMATION
+
+ Program : XPAND
+ Version : 050427
+ Author  : Gerard J. Kleywegt, Dept. of Cell and Molecular Biology,
+           Uppsala University, Biomedical Centre, Box 596,
+           SE-751 24 Uppsala, SWEDEN
+ E-mail  : gerard@xray.bmc.uu.se
+ Purpose : symmetry and NCS expansion of molecules
+ Package : X-UTIL
+
+ ** REFERENCES
+
+ Reference(s) for this program:
+
+ *  1 * G.J. Kleywegt (1992-2004).
+        Uppsala University, Uppsala, Sweden.
+        Unpublished program.
+
+ *  2 * Kleywegt, G.J., Zou, J.Y., Kjeldgaard, M. & Jones, T.A. (2001).
+        Around O. In: "International Tables for Crystallography, Vol. F.
+        Crystallography of Biological Macromolecules" (Rossmann, M.G.
+        & Arnold, E., Editors). Chapter 17.1, pp. 353-356, 366-367.
+        Dordrecht: Kluwer Academic Publishers, The Netherlands.
+
+ ** VERSION HISTORY
+
+ 940512 - 0.1 - first version
+ 940513 - 0.2 - a bit more
+ 941219 - 0.3 - added X-PLOR (X)NCS option
+ 950109 - 0.4 - started BONDAGE option
+ 950130 - 0.5 - remove all duplicate operators in X option
+ 950220 - 0.6 - added Water scrutinizer option
+ 951022 - 0.7 - made sensitive to OSYM
+ 951030 - 1.0 - added command to generate PDB MTRIX cards;
+                enable reading of one OR MANY NCS operators
+                from each file for options N, M, B, and X
+ 951127 - 1.1 - changed Water command such that the output can be
+                written to a log file and (optionally) the waters
+                which look okay can be written to a new PDB file
+ 980311 - 1.2 - print error message if something goes wrong
+ 980901 - 1.3 - added Invert command to invert O-style Cartesian
+                space RT operators
+ 981124 -1.3.1- minor bug fix (if all atoms have identical
+                coordinates, the program used to crash)
+ 010628 - 1.4 - added C option to generate CNS (X)NCS blurb for
+                "ncs.def" file
+ 010905 -1.4.1- bug fix in C option (format was wrong and limited
+                the nr of nb_ncs_matrix_* to 9)
+ 020208 -1.4.2- bug fix in B option (nothing serious, but crashed
+                on Linux)
+ 020308 -1.4.3- increased max nr of NCS operators to 180, and max nr
+                of atoms to 100000
+ 020309 -1.4.4- option to auto-generate chain IDs in mode 'N' (handy
+                if you have 180-fold NCS ...)
+ 031223 - 1.5 - new command "A" to expand under SGS around a point
+ 040224 -1.5.1- minor bug fix (for Alpha version)
+ 040318 -1.5.2- minor changes
+ 040917 - 1.6 - added a new option to command "F" that enables the user
+                to either do fractional expansion of the molecule as a
+                whole, or of each atom individually;
+                new command "D" to extract the default cell constants
+                and spacegroup name from a PDB file (saves you some
+                typing
+ 041001 - 1.7 - replaced Kabsch' routine U3BEST by quaternion-based
+                routine (U3QION) to do least-squares superpositioning
+ 050331 -1.7.1- modified the "F" command; it now first asks if you
+                want to expand the Molecule or the individual Atoms.
+                If you select Atoms, the allowed fractional expansion
+                range now runs from -1 to +2 in all three directions !
+ 050425 -1.7.2- fixed a nasty bug in the "F" command (thanks to Charlie
+                Bond for pointing out the problem)
+ 050427 - 1.8 - new commands O and R to convert PDB-style MTRIX and
+                "REMARK 350 BIOMT" operators to O format
+
+ ** INTRODUCTION
+
+ XPAND is a simple little program that can be used in conjunction
+   with the SYMMETRY commands in O.  The output PDB files can be
+   used for investigating crystal contacts, packing etc.
+
+ At present, the following options exist:
+
+ - N = expand a PDB file under NCS;
+ instead of doing lots of "sam_at_in" and "lsq_mol"
+       inside O, you can use this option to apply each
+       of your NCS operators to your structure.  The output
+       is a PDB file containing all NCS-related molecules.
+
+ - E = expand into a sphere under SGS;
+ this generates all symmetry-related atoms whose distance
+       to the centre-of-gravity of your molecule is less than
+       (RADMAX + MARGIN), where RADMAX is the maximum distance
+       of any atom inside your structure to the centre-of-gravity,
+       and MARGIN is a number you provide (e.g., 5 A).  The output
+       is a PDB file containing all these atoms.  This option
+       is a useful substitute for the "SYMM_SPHERE" command in O,
+       since you now get one PDB file (and, therefore, one
+       molecule in O, and only one graphics object) containing
+       all nearby symmetry-related atoms.
+       NOTE: if multiple copies of a residue exist within this
+       symmetry object you can NOT use the second (or later)
+       instances for centering or getting distances; however,
+       you WILL be able to identify them (and that's what's
+       usually the most important).
+
+ - P = expand PDB file under SGS;
+ simply apply each and every one of your spacegroup's
+       symmetry operators to your structure (not very useful).
+
+ - F = expand fractional under SGS;
+ generate all molecules which have their centre-of-gravity
+       inside the unit cell [0,+1> (or a smaller part of it).
+       This can be used to look at packing, for example.  In that
+       case, you may only want to use the CA atoms; use something
+       like: "grep ATOM m9abcd.pdb | grep CA > cas.pdb" to
+       extract the CA atom cards.
+       As of version 1.6, you can also apply this operation to
+       all the atoms individually, e.g. to fill a unit cell or
+       asymmetric unit with atoms (whose connectivity may be
+       screwed up in O, and some of which may have duplicate
+       names - the user beware !)
+
+ - A = expand around a point under SGS;
+ apply each and every one of your spacegroup's
+       symmetry operators to your structure, but translate by
+       an integer number of unit cells along a/b/c so as to
+       bring the centre-of-gravity of the transformed molecules
+       as close a spossible to a certain point (defined by
+       fractional or cartesian coordinates).
+
+ - X = generate complete X-PLOR (X)NCS file;
+ generates all XNCS *AND* NCS relations required for proper
+       evaluation of crystal contacts in case strict NCS is used
+       in X-PLOR.  Supply all NCS operators, the SGS operators,
+       the cell constants and a margin (1-10 A).
+       The program loops over all NCS-related molecules, and for
+       generates all NCS & SGS related molecules whose centre-of-
+       gravity is nearby.  Each such molecule gives an NCS relation
+       for the X-PLOR include file.  The program filters out:
+       - operators which are identical to an XNCS operator, &
+       - operators which are identical to the *inverse* of a
+         previously generated XNCS or NCS operator.
+       See also chapter 20.2 of the X-PLOR manual.
+ NOTE: I *think*, but am *not sure*, that the algorithm works
+       correctly.  Send bug reports to "gerard@xray.bmc.uu.se".
+
+ - C = generate CNS (X)NCS blurb for "ncs.def" file;
+ very similar to option X, except that the output file
+       needs to be inserted into the example ncs.def file of CNS
+
+ - B = bondage;
+ generate a list of all short contacts between atoms which
+       are close in space due to NCS and/or SGS.  Supply all NCS
+       operators, the SGS operators, the cell constants and a cut-off
+       distance for the contacts (e.g., 2.4 A for too close contacts,
+       3.6 A for salt links and potential hydrogen bonds, or ~4.5-5 A
+       to include hydrophobic interactions).
+
+ - W = water scrutinizer;
+ checks neighbours of all waters and assesses if waters could
+       be something else (~iso-electronic) such as NH4+, F-, Na+
+       or Mg++.
+
+ - M = generate PDB MTRIX cards;
+ generates NCS MTRIX cards for PDB files from a set of O-style
+       NCS-operators.
+
+ - O = convert PDB MTRIX records to O-style RT operator(s);
+ read a PDB file, extract any and all RT operators from PDB MTRIX
+       records, and save them to an O-style operator file
+
+ - R = convert PDB REMARK 350 records to O-style RT operator(s);
+ read a PDB file, extract any and all RT operators from PDB
+       "REMARK 350 BIOMT" records, and save them to an O-style
+       operator file. This option, followed by "N" can be used
+       to generate relevant biomolecules (e.g., entire virus
+       particles) from a PDB file
+
+ - I = invert O-style RT operator(s);
+ read O-style Cartesian space RT-operators (e.g., NCS) from
+       one or more files, invert the operators, and write them to
+       a new file
+
+ - D = get Default unit cell and spacegroup from PDB file;
+ to prevent you from having to type the cell constants and spacegroup
+       name you can extract their default values from a PDB file with
+       this command. When you are subsequently asked by another
+       command to supply these items, you can simply hit RETURN.
+       Of course, this only works if your PDB file contains a
+       proper CRYST1 card
+
+ NOTE: this program is sensitive to the environment variable OSYM.
+   It should point to your local copy of $ODAT/symm, the directory
+   which contains the spacegroup symmetry operators in O format.
+   When asked for a file with spacegroup operators in O format,
+   you may either provide a filename, or the name of a sapcegroup
+   (including blanks if you like, case doesn't matter).  The program
+   will try to open the following files, assuming that STRING is the
+   what you input:
+ (1) open a file called STRING
+ (2) if this fails, check if OSYM is defined and open $OSYM/STRING
+ (3) if this fails, open $OSYM/string.sym
+ (4) if this fails, open $OSYM/string.o
+ Hint: if you make soft links in the OSYM directory, you can also type
+   spacegroup numbers (e.g.: \ln -s p212121.sym 19.sym).
+
+ NOTE: from version 0.8 onwards, you may choose to enter NCS operators
+       either one by one (as it used to be), or all in one go (by
+       putting them all in one file), or a mixture of this.  The
+       following options are affected: B, M, N, I, and X.
+
+ ** STARTUP
+
+ When you start the program, you'll see something like this:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ % 106 gerard sarek 15:53:18 xpand/test > ../6d/6D_XPAND
+
+ *** XPAND *** XPAND *** XPAND *** XPAND *** XPAND *** XPAND *** XPAND *** 
+
+ Version  - 050427/1.8
+ (c) 1992-2005 Gerard J. Kleywegt, Dept. Cell Mol. Biol., Uppsala (SE)
+ User I/O - routines courtesy of Rolf Boelens, Univ. of Utrecht (NL)
+ Others   - T.A. Jones, G. Bricogne, Rams, W.A. Hendrickson
+ Others   - W. Kabsch, CCP4, PROTEIN, E. Dodson, etc. etc.
+
+ Started  - Wed Apr 27 17:47:46 2005
+ User     - gerard
+ Mode     - interactive
+ Host     - sarek (Irix/SGI)
+ ProcID   - 18794
+ Tty      - /dev/ttyq12
+
+ *** XPAND *** XPAND *** XPAND *** XPAND *** XPAND *** XPAND *** XPAND *** 
+
+ Reference(s) for this program:
+
+ *  1 * G.J. Kleywegt (1992-2005).
+        Uppsala University, Uppsala, Sweden.
+        Unpublished program.
+
+ *  2 * Kleywegt, G.J., Zou, J.Y., Kjeldgaard, M. & Jones, T.A. (2001).
+        Around O. In: "International Tables for Crystallography, Vol. F.
+        Crystallography of Biological Macromolecules" (Rossmann, M.G.
+        & Arnold, E., Editors). Chapter 17.1, pp. 353-356, 366-367.
+        Dordrecht: Kluwer Academic Publishers, The Netherlands.
+
+ ==> For manuals and up-to-date references, visit:
+ ==>     http://xray.bmc.uu.se/usf
+ ==> For reprints, visit:
+ ==>     http://xray.bmc.uu.se/gerard
+ ==> For downloading up-to-date versions, visit:
+ ==>     ftp://xray.bmc.uu.se/pub/gerard
+
+ *** XPAND *** XPAND *** XPAND *** XPAND *** XPAND *** XPAND *** XPAND *** 
+
+ Max nr of input atoms   = (     100000) 
+ Max nr of SGS operators = (         96) 
+ Max nr of NCS operators = (        360) 
+
+ ==> SGS = Space Group Symmetry
+ ==> NCS = Non-Crystallographic Symmetry
+  
+ N = expand PDB file under NCS
+ E = expand into a sphere under SGS
+ P = expand PDB file under SGS
+ F = expand fractional under SGS
+ A = expand around a point under SGS
+ X = generate complete X-PLOR (X)NCS file
+ C = generate CNS (X)NCS blurb for "ncs.def" file
+ B = generate non-bonded contacts (NCS+SGS)
+ W = water scrutinizer
+ M = generate PDB MTRIX records
+ O = convert PDB MTRIX records to O-style RT operator(s)
+ R = convert PDB REMARK 350 records to O-style RT operator(s)
+ I = invert O-style RT operator(s)
+ D = get default unit cell and spacegroup from PDB file
+ ? = print this list of options
+ Q = quit
+
+ Task ? (N) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** EXAMPLES
+
+ ## N = expand PDB file under NCS
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Task ? (N) ncs
+ Input  PDB file ? (in.pdb) m9a.pdb
+ Output PDB file ? (out.pdb) q.pdb
+  
+ Enter the names of all NCS operator files
+ including the unit operator; finish with <CR>
+
+ NCS operator file  1 ? ( ) m9a_to_a.o
+ Opening O datablock : (m9a_to_a.o) 
+ Datablock : (.LSQ_RT_M9A_TO_A) 
+ Data type : (R) 
+ Number    : (12) 
+ Format    : ((3F15.7)) 
+ Chain ID for this operator ? (A) 
+
+ ...
+
+ NCS operator file  5 ? ( ) 
+
+
+ Nr of NCS operators :   4
+ NCSOP  1 =     1.0000000    0.0000000    0.0000000                  0.000
+                0.0000000    1.0000000    0.0000000                  0.000
+                0.0000000    0.0000000    1.0000000                  0.000
+ Determinant of rotation matrix =   1.000000
+ Rotation angle                 =   0.000000
+ NCSOP  2 =    -0.9551680    0.2573400   -0.1463910                167.543
+                0.2482270    0.4265990   -0.8697110                 -4.093
+               -0.1613620   -0.8670580   -0.4713520                 41.981
+ Determinant of rotation matrix =   1.000000
+ Rotation angle                 = 179.490646
+ NCSOP  3 =    -0.9942670   -0.0465330   -0.0962680                176.737
+               -0.0654140   -0.4474780    0.8918990                 27.418
+               -0.0845800    0.8930830    0.4418690                 -5.859
+ Determinant of rotation matrix =   0.999999
+ Rotation angle                 = 179.362045
+ NCSOP  4 =     0.9474510   -0.2256360    0.2267720                  7.428
+               -0.2222160   -0.9741420   -0.0408460                 58.262
+                0.2301240   -0.0116930   -0.9730910                 -5.618
+ Determinant of rotation matrix =   1.000001
+ Rotation angle                 = 179.154190
+
+ Reading PDB file ...
+
+ Nr of lines read : (       1296) 
+ Nr of atoms read : (       1281) 
+
+ NCS expansion for operator : (       1) 
+ NCS expansion for operator : (       2) 
+ NCS expansion for operator : (       3) 
+ NCS expansion for operator : (       4) 
+
+ Nr of atoms generated : (       5124) 
+ Nr of lines written   : (       5167) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## E = expand into a sphere under SGS
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Task ? (N) e
+ Input  PDB file ? (in.pdb) m9abcd.pdb
+ Output PDB file ? (out.pdb) q.pdb
+ SGS operator file ? (p1.sym) p212121.o
+ Opening O datablock : (p212121.o) 
+ Datablock : (A_SYMMOP) 
+ Data type : (R) 
+ Number    : (48) 
+ Format    : ((3F10.4)) 
+ Nr of SGS operators : (          4) 
+
+ Nr of spacegroup symmetry operators :   4
+ SYMOP  1 =        1.0000       0.0000       0.0000                  0.000
+                   0.0000       1.0000       0.0000                  0.000
+                   0.0000       0.0000       1.0000                  0.000
+
+ ...
+
+ Cell constants ? ( 100.000  100.000  100.000   90.000   90.000   90.000) 106.820 62.340 114.190 90.00 90.00 90.00
+ Shell radius (A) ? (   5.000) 4
+
+ Reading PDB file ...
+
+ Nr of lines read : (       5167) 
+ Nr of atoms read : (       5124) 
+
+ Min XYZ : (  54.235  -15.476  -30.211) 
+ Max XYZ : ( 118.858   51.801   40.164) 
+ Centre  : (  87.727   19.607    7.399) 
+ Fractl  : (   0.821    0.315    0.065) 
+ Farthest atom : ( 4888  OD1 ASP D 133      65.325  17.120 -28.506) 
+ Distance : (  42.394) 
+ Max centre distance : (  88.787) 
+
+ ...
+
+ Checking operator : (       4) 
+
+ Translation           -1           0           0
+ Distance : (  56.003) 
+ Nr of atoms found : (       1098) 
+
+ Translation           -1           1           0
+ Distance : (  77.587) 
+ Nr of atoms found : (         38) 
+
+ Translation            0           0           0
+ Distance : (  56.003) 
+ Nr of atoms found : (       1155) 
+
+ Translation            0           1           0
+ Distance : (  77.587) 
+ Nr of atoms found : (          0) 
+
+ Nr of atoms written : (       4553) 
+ Nr of lines written : (       4651) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## P = expand PDB file under SGS
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Task ? (E) p
+ Input  PDB file ? (m9abcd.pdb) cas.pdb
+ Output PDB file ? (q.pdb) qq.pdb
+ SGS operator file ? (p212121.o) 
+ Opening O datablock : (p212121.o) 
+ Datablock : (A_SYMMOP) 
+ Data type : (R) 
+ Number    : (48) 
+ Format    : ((3F10.4)) 
+ Nr of SGS operators : (          4) 
+
+ Nr of spacegroup symmetry operators :   4
+ SYMOP  1 =        1.0000       0.0000       0.0000                  0.000
+                   0.0000       1.0000       0.0000                  0.000
+                   0.0000       0.0000       1.0000                  0.000
+ Determinant of rotation matrix =   1.000000
+ Rotation angle                 =   0.000000
+
+ ...
+
+ Cell constants ? ( 106.820   62.340  114.190   90.000   90.000   90.000) 
+
+ Reading PDB file ...
+
+ Nr of lines read : (        648) 
+ Nr of atoms read : (        632) 
+
+ Generating operator : (       2) 
+
+ Generating operator : (       3) 
+
+ Generating operator : (       4) 
+
+ Nr of atoms written : (       2528) 
+ Nr of lines written : (       2554) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## F = expand fractional under SGS
+
+ Here you can choose to expand a Molecule (which means its centre
+   of gravity is used to decide which symmetry-related copies are
+   to be generated), or all Atoms individually. In the former case,
+   the allowed fractional expansion range is [0,+1> in all three
+   directions. If you expand all atoms, however, the allowed range
+   is [-1,+2>. You could use this, for instance, to generate slightly
+   more than an asymmetric unit or unit cell of atoms and use the
+   output file to generate a solvent-flattening mask with MAMA.
+
+ In this example we take a set of peaks and map them into an asymmetric
+   unit of spacegroup P21212:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Task ? (F) Fractional
+ Input  PDB file ? (iod.pdb) sortedpeaks.pdb
+ Output PDB file ? (out.pdb) out.pdb
+ SGS operator file ? (/home/gerard/oinfo/symm/p21212.sym) p21212
+ OSYM : (/home/gerard/oinfo/symm/) 
+ Opened file : (/home/gerard/oinfo/symm/p21212.sym) 
+ Opening O datablock : (/home/gerard/oinfo/symm/p21212.sym) 
+ O-style symm-ops for spacegroup P21212
+ 18 4 4 P21212 PG222 ORTHORHOMBIC 'P 21 21 2'
+ Datablock : (.SPACE_GROUP_OPERATORS) 
+ Data type : (R) 
+ Number    : (48) 
+ Format    : ((3F15.6)) 
+ Nr of SGS operators : (          4) 
+
+ Nr of spacegroup symmetry operators :   4
+
+ [...]
+
+ Determinant of rotation matrix =   1.000000
+ Rotation angle                 = 180.000000
+ Cell constants ? ( 164.577  110.980   56.295   90.000   90.000   90.000) 164.577 110.98 56.295 90 90 90
+ Max allowed fractional range [0,+1>
+ Fractional lower limits ? (   0.000    0.000    0.000) 0.5 0.5 0
+ Fractional upper limits ? (   1.000    1.000    1.000) 1 1 1
+ Select option:
+ M = apply to the Molecule as a whole
+ A = apply to each Atom individually
+ Option (M/A) ? (M) atoms
+
+ Reading PDB file ...
+
+ Nr of lines read : (         52) 
+ Nr of atoms read : (         52) 
+
+ Nr of atoms written : (         52) 
+ Nr of lines written : (         53) 
+
+ Off-spring counts :
+ Nr of atoms with      1 off-spring =     52
+ Nr of atoms with      0 off-spring =      0
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ And here we expand into slightly more than an asymmetric unit in
+   P212121:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Task ? (D) f
+ Input  PDB file ? (1pmp.pdb) 
+ Output PDB file ? (out.pdb) asu.pdb
+ SGS operator file ? (p212121.sym) 
+ OSYM : (/home/gerard/oinfo/symm/) 
+ Opened file : (/home/gerard/oinfo/symm/p212121.sym) 
+ Opening O datablock : (/home/gerard/oinfo/symm/p212121.sym) 
+ O-style symm-ops for spacegroup P212121
+ 19 4 4 P212121 PG222 ORTHORHOMBIC 'P 21 21 21'
+ Datablock : (.SPACE_GROUP_OPERATORS) 
+ Data type : (R) 
+ Number    : (48) 
+ Format    : ((3F15.6)) 
+ Nr of SGS operators : (          4) 
+
+ Nr of spacegroup symmetry operators :   4
+
+ [...]
+
+ Cell constants ? (  91.800   99.500   56.500   90.000   90.000   90.000) 
+ Select option:
+ M = apply to the Molecule as a whole
+ A = apply to each Atom individually
+ Option (M/A) ? (M) a
+ Max allowed fractional range [-1,+2>
+ Fractional lower limits ? (   0.000    0.000    0.000) -0.1 -0.1 -0.1
+ Fractional upper limits ? (   1.000    1.000    1.000) 1.1 1.1 0.35
+
+ Reading PDB file ...
+
+ Nr of lines read : (       3440) 
+ Nr of atoms read : (       3192) 
+
+ Nr of atoms written : (       8367) 
+ Nr of lines written : (       8615) 
+
+ Off-spring counts :
+ Nr of atoms with      6 off-spring =     59
+ Nr of atoms with      5 off-spring =     87
+ Nr of atoms with      4 off-spring =    375
+ Nr of atoms with      3 off-spring =   1084
+ Nr of atoms with      2 off-spring =   1239
+ Nr of atoms with      1 off-spring =    348
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## A = expand around a point under SGS
+
+ To define the point in terms of fractional coordinates, enter the
+   fractional coordinates and, when prompted for the Cartesian oness,
+   simply hit RETURN. To define the point in terms of Cartesian
+   coordinates, hit RETURN when asked for the fractional coordinates
+   and enter the desired coordinates when asked for the Cartesian
+   ones.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Task ? (N) a
+ Input  PDB file ? (in.pdb) 1cbq.pdb
+ Output PDB file ? (out.pdb) test.pdb
+ SGS operator file ? (p1.sym) p213.o
+ Opened file : (p213.o) 
+ Opening O datablock : (p213.o) 
+ Datablock : (.SPACE_GROUP_OPERATORS) 
+ Data type : (R) 
+ Number    : (144) 
+ Format    : ((3F10.5)) 
+ Nr of SGS operators : (         12) 
+
+ Nr of spacegroup symmetry operators :  12
+
+ SYMOP  1 =        1.0000       0.0000       0.0000                  0.000
+                   0.0000       1.0000       0.0000                  0.000
+                   0.0000       0.0000       1.0000                  0.000
+ Determinant of rotation matrix =   1.000000
+ Rotation angle                 =   0.000000
+
+ [...]
+
+ SYMOP 12 =        0.0000       0.0000      -1.0000                  0.500
+                  -1.0000       0.0000       0.0000                  0.000
+                   0.0000       1.0000       0.0000                  0.500
+ Determinant of rotation matrix =   1.000000
+ Rotation angle                 = 120.000000
+ Cell constants ? ( 100.000  100.000  100.000   90.000   90.000   90.000) 81.04 81.04 81.04
+ Fractional point to expand around ? (   0.000    0.000    0.000) 0 0 0
+ Cartesian point to expand around ? (   0.000    0.000    0.000) 
+ Fractional : (   0.000    0.000    0.000) 
+ Cartesian  : (   0.000    0.000    0.000) 
+
+ Reading PDB file ...
+
+ Nr of lines read : (       1432) 
+ Nr of atoms read : (       1169) 
+ Centre  : (  65.687   29.626   36.810) 
+ Fractl  : (   0.811    0.366    0.454) 
+
+ Checking operator : (       1) 
+ Minimal distance (A) : (  49.683) 
+ t1=-1 t2= 0 t3= 0
+
+ Checking operator : (       2) 
+ Minimal distance (A) : (  19.187) 
+ t1= 1 t2=-1 t3= 0
+
+ Checking operator : (       3) 
+ Minimal distance (A) : (  45.903) 
+ t1=-1 t2= 0 t3= 0
+
+ Checking operator : (       4) 
+ Minimal distance (A) : (  39.050) 
+ t1= 0 t2= 0 t3=-1
+
+ Checking operator : (       5) 
+ Minimal distance (A) : (  49.683) 
+ t1= 0 t2= 0 t3=-1
+
+ Checking operator : (       6) 
+ Minimal distance (A) : (  39.050) 
+ t1= 0 t2=-1 t3= 0
+
+ Checking operator : (       7) 
+ Minimal distance (A) : (  19.187) 
+ t1=-1 t2= 0 t3= 1
+
+ Checking operator : (       8) 
+ Minimal distance (A) : (  45.903) 
+ t1= 0 t2= 0 t3=-1
+
+ Checking operator : (       9) 
+ Minimal distance (A) : (  49.683) 
+ t1= 0 t2=-1 t3= 0
+
+ Checking operator : (      10) 
+ Minimal distance (A) : (  45.903) 
+ t1= 0 t2=-1 t3= 0
+
+ Checking operator : (      11) 
+ Minimal distance (A) : (  39.050) 
+ t1=-1 t2= 0 t3= 0
+
+ Checking operator : (      12) 
+ Minimal distance (A) : (  19.187) 
+ t1= 0 t2= 1 t3=-1
+
+ Nr of atoms written : (      14028) 
+ Nr of lines written : (      14375) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## C = generate CNS (X)NCS blurb for "ncs.def" file
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Task ? (N) c
+ Input  PDB file ? (in.pdb) 
+ Output NCS file ? (cns_ncs.def_blurb) 
+  
+ Enter the names of all NCS operator files
+ including the unit operator; finish with <CR>
+ File with NCS operator(s) ? ( ) q.o
+...
+ File with NCS operator(s) ? ( ) 
+...
+ SGS operator file ? (p1.sym) p43212
+ OSYM : (/home/gerard/oinfo/symm/) 
+ Opened file : (/home/gerard/oinfo/symm/p43212.sym) 
+ Opening O datablock : (/home/gerard/oinfo/symm/p43212.sym) 
+...
+ Cell constants ? ( 100.000  100.000  100.000   90.000   90.000   90.000) 110.600  110.600  160.300  90
+
+ Shell radius (A) ? (   5.000) 
+
+ Reading PDB file ...
+
+ Nr of lines read : (       2099) 
+ Nr of atoms read : (       2089) 
+
+ Min XYZ : (   0.367  -44.954  -29.546) 
+ Max XYZ : (  50.004   30.905   13.471) 
+ Centre  : (  28.234   -6.171   -7.861) 
+ Fractl  : (   0.255   -0.056   -0.049) 
+ Farthest atom : (  246  OE1 GLU A  32      44.421 -42.326 -26.544) 
+ Distance : (  43.798) 
+ Max centre distance : (  92.596) 
+
+ Distance : (  89.596) 
+ New NCS op : (   0.000    1.000    0.000   -1.000    0.000    0.000    
+  0.000    0.000    1.000  -55.300  -55.300  -40.075) 
+ From NCS #  1 -> NCS #  1 SGS #  3 T=( -1, -1, -1) DIST =     89.6 A
+
+...
+
+ Nr of NCSRel generated : (         42) 
+ Nr of operators tested : (      10976) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ The output file will look like this:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+{* Created by XPAND V. 20010628/1.4 at Thu Jun 28 20:34:56 2001 for gerard *}
+
+{=============== strict NCS (X-ray and nonbonded terms) ==============}
+
+{* these operators are used to generate the complete asymmetric unit for
+   structure factor and nonbonded energy calculations *}
+
+{* NCS operator    1 *}
+
+{* use this operator *}
+{+ choice: true false +}
+{===>} ncs_op_1=true;
+
+{* real-space rotation matrix *}
+{===>}    ncs_matrix_1 = (      1.000000      0.000000      0.000000 )
+                         (      0.000000      1.000000      0.000000 )
+                         (      0.000000      0.000000      1.000000 );
+
+{* real-space translation vector *}
+{===>} ncs_vector_1 = (        0.0000        0.0000        0.0000 );
+
+{* NCS operator    2 *}
+
+{* use this operator *}
+{+ choice: true false +}
+{===>} ncs_op_2=true;
+
+{* real-space rotation matrix *}
+{===>}    ncs_matrix_2 = (     -0.700965     -0.700575     -0.133576 )
+                         (     -0.708592      0.662871      0.241869 )
+                         (     -0.080904      0.264192     -0.961071 );
+
+{* real-space translation vector *}
+{===>} ncs_vector_2 = (       75.4608       34.1665      -13.4335 );
+
+
+{=============== strict NCS (nonbonded terms only) ==============}
+
+{* these operators can be used to generate the full
+   nonbonded environment around the protomer *}
+
+{* NCS nonbonded operator    1 *}
+
+{* from NCS #  1 -> NCS #  1 SGS #  3 T=( -1, -1, -1) DIST =     89.6 A *}
+
+{* use this operator *}
+{+ choice: true false +}
+{===>} nb_ncs_op_1=true;
+
+{* real-space rotation matrix *}
+{===>} nb_ncs_matrix_1 = (     -0.000002     -1.000000      0.000001 )
+                         (      1.000000     -0.000002      0.000001 )
+                         (     -0.000001      0.000001      1.000000 );
+
+{* real-space translation vector *}
+{===>} nb_ncs_vector_1 = (      -55.2999      -55.3000      -40.0749 );
+
+{* NCS nonbonded operator    2 *}
+
+{* from NCS #  1 -> NCS #  1 SGS #  3 T=(  0, -1, -1) DIST =     56.1 A *}
+
+{* use this operator *}
+{+ choice: true false +}
+{===>} nb_ncs_op_2=true;
+
+{* real-space rotation matrix *}
+{===>} nb_ncs_matrix_2 = (     -0.000002     -1.000000      0.000000 )
+                         (      1.000000     -0.000002      0.000001 )
+                         (     -0.000001      0.000000      1.000000 );
+
+{* real-space translation vector *}
+{===>} nb_ncs_vector_2 = (       55.3001      -55.3000      -40.0750 );
+
+...
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## X = generate complete X-PLOR (X)NCS file
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Task ? (N) x
+ Input  PDB file ? (in.pdb) a2u.pdb
+ Output NCS file ? (xplor_ncs.include) ncs.include
+  
+ Enter the names of all NCS operator files
+ including the unit operator; finish with <CR>
+
+ NCS operator file  1 ? ( ) ncs1.o
+ Opening O datablock : (ncs1.o) 
+ Datablock : (.LSQ_RT_M9A_TO_A) 
+ Data type : (R) 
+ Number    : (12) 
+ Format    : ((3F15.8)) 
+...
+ NCS operator file  5 ? ( ) 
+
+ Nr of NCS operators :   4
+...
+ SGS operator file ? (p1.sym) p212121.o
+ Opening O datablock : (p212121.o) 
+ Datablock : (A_SYMMOP) 
+ Data type : (R) 
+ Number    : (48) 
+ Format    : ((3F10.4)) 
+ Nr of SGS operators : (          4) 
+
+ Nr of spacegroup symmetry operators :   4
+...
+ Cell constants ? ( 100.000  100.000  100.000   90.000   90.000   90.000) 106.820   62.340  114.190  90.00  90.00  90.00
+
+ Margin (A) ? (   5.000) 2
+
+ Reading PDB file ...
+
+ Nr of lines read : (       1325) 
+ Nr of atoms read : (       1314) 
+
+ Min XYZ : (  53.679    0.947    1.697) 
+ Max XYZ : (  92.818   41.123   39.202) 
+ Centre  : (  72.401   20.465   22.262) 
+ Fractl  : (   0.678    0.328    0.195) 
+ Farthest atom : (  501  OE2 GLU A  63      92.818   6.635  29.563) 
+ Distance : (  25.718) 
+ Max centre distance : (  53.436) 
+
+ Distance : (  50.718) 
+ New NCS op : (  -1.000    0.000    0.000    0.000    1.000    0.000    
+  0.000    0.000   -1.000  106.820  -31.170   57.095) 
+ From NCS #  1 -> NCS #  1 SGS #  4 T=(  1, -1,  0) DIST =     50.7 A
+...
+ Distance : (  38.577) 
+ NCS = XNCS : (  -0.955    0.248   -0.161    0.257    0.427   -0.867   
+  -0.146   -0.870   -0.471  167.543   -4.093   41.981) 
+...
+ Distance : (  38.842) 
+ NCS = XNCS : (  -0.953    0.241   -0.181    0.270    0.414   -0.869   
+  -0.135   -0.878   -0.460  167.320   -3.427   43.549) 
+
+ Distance : (  35.837) 
+ New NCS op : (   0.953   -0.241   -0.181   -0.270   -0.414   -0.869    
+  0.135    0.878   -0.460   -7.090   65.767  -13.546) 
+ From NCS #  4 -> NCS #  3 SGS #  4 T=(  1,  1, -1) DIST =     35.8 A
+
+ Nr of NCS operators :   1
+
+ NCSOP  1 =     0.9533499   -0.2702062    0.1345823                 -7.090
+               -0.2412489   -0.4140138    0.8777195                 65.767
+               -0.1814464   -0.8692417   -0.4598870                -13.546
+ Determinant of rotation matrix =   1.000000
+ Crowther Alpha Beta Gamma              81.28262   117.37982   -78.20933
+ Spherical polars Omega Phi Chi         89.06552   169.74599   117.40488
+ Direction cosines of rotation axis     -0.98390     0.17799     0.01631
+ Dave Smith                           -117.65260   100.45403    15.82423
+ Rotation angle                 = 117.404884
+
+ Nr of NCSRel generated : (         22) 
+ Nr of operators tested : (      12005) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+REMARK Created by XPAND V. 941219/0.3 at Tue Dec 20 01:49:21 1994 for user gerard
+
+ { Invoke strict non-crystallographic symmetry }
+
+ ncs strict
+
+   { ==> Assuming identity skew matrix }
+
+   skew
+     matrix = ( 1.000000 0.000000 0.000000 )
+              ( 0.000000 1.000000 0.000000 )
+              ( 0.000000 0.000000 1.000000 )
+     translation = ( 0.0000 0.0000 0.0000 )
+   end
+
+   xncsrel { #  1 }
+     matrix      = (      1.000000     0.000000     0.000000 )
+                 = (      0.000000     1.000000     0.000000 )
+                 = (      0.000000     0.000000     1.000000 )
+     translation = (        0.0000       0.0000       0.0000 )
+   end { xncsrel  #  1 }
+
+ ...
+
+   { xncsrel end }
+
+   ncsrel { #  1 }
+     { from NCS #  1 -> NCS #  1 SGS #  4 T=(  1, -1,  0) DIST =     50.7 A }
+     matrix      = (     -1.000000     0.000001     0.000000 )
+                 = (      0.000001     1.000000     0.000001 )
+                 = (      0.000000     0.000001    -1.000000 )
+     translation = (      106.8200     -31.1701      57.0950 )
+   end { ncsrel  #  1 }
+
+   ncsrel { #  2 }
+     { from NCS #  1 -> NCS #  1 SGS #  4 T=(  1,  0,  0) DIST =     50.7 A }
+     matrix      = (      1.000000     0.000001    -0.000008 )
+                 = (      0.000001    -1.000000     0.000001 )
+                 = (     -0.000008    -0.000001    -1.000000 )
+     translation = (      160.2302      31.1699       0.0005 )
+   end { ncsrel  #  2 }
+
+ ...
+
+   ncsrel { # 22 }
+     { from NCS #  4 -> NCS #  3 SGS #  4 T=(  1,  1, -1) DIST =     35.8 A }
+     matrix      = (      0.953350    -0.270206     0.134582 )
+                 = (     -0.241249    -0.414014     0.877720 )
+                 = (     -0.181446    -0.869242    -0.459887 )
+     translation = (       -7.0905      65.7665     -13.5464 )
+   end { ncsrel  # 22 }
+
+   { ncsrel end }
+
+   ?
+
+ end {ncs strict}
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## B = generate non-bonded contacts (NCS+SGS)
+ Use this command to analyse symmetry contacts due to NCS and SGS.
+
+ If you don't have NCS, supply the identity operator as the
+       only "NCS operator".  The contacts are classified by the
+       program if they involve only C, N, O and S atoms (using a
+       set of simple hard-coded rules).  Interactions between
+       symmetry-related copies of a residue (same residue type,
+       number, chain and insert) are flagged with the word "SELF".
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Task ? (N) b
+ Input  PDB file ? (in.pdb) a2u.pdb
+  
+ Enter the names of all NCS operator files
+ including the unit operator; finish with <CR>
+
+ NCS operator file  1 ? ( ) ncs1.o
+ Opening O datablock : (ncs1.o) 
+...
+ SGS operator file ? (p1.sym) p212121.o
+ Opening O datablock : (p212121.o) 
+...
+ Cell constants ? ( 100.000  100.000  100.000   90.000   90.000   90.000) 106.820 62.340 114.1
+
+ Enter maximum distance for NCS+SGS interactions
+ E.g., 2.4 A for bad contacts, 3.6 A for hydrogen
+ bonds and salt links, or 4.5 A to include
+ hydrophobic interactions
+ Max contact distance (A) ? (   5.000) 
+
+ Reading PDB file ...
+
+ Nr of lines read : (       1325) 
+ Nr of atoms read : (       1314) 
+
+ Min XYZ : (  53.679    0.947    1.697) 
+ Max XYZ : (  92.818   41.123   39.202) 
+ Centre  : (  72.401   20.465   22.262) 
+ Fractl  : (   0.678    0.328    0.195) 
+ Farthest atom : (  501  OE2 GLU A  63      92.818   6.635  29.563) 
+ Distance : (  25.718) 
+ Max centre distance : (  56.436) 
+
+ From NCS #  1 -> NCS #  1 SGS #  3 T=(  1, -1,  0) DIST =     50.7 A
+ Pure SGS interaction
+ Nr of contacts : (          0) 
+...
+
+ From NCS #  1 -> NCS #  4 SGS #  1 T=(  0,  0,  0) DIST =     33.4 A
+ Mixed NCS and SGS interaction
+  CD  GLU A  49   --->   OD1 ASN A 110   =      4.55 A -
+  OE1 GLU A  49   --->   OD1 ASN A 110   =      3.86 A -
+  OE2 GLU A  49   --->   OD1 ASN A 110   =      4.88 A -
+  CB  ASN A  50   --->   CE2 PHE A 108   =      4.80 A -
+  CG  ASN A  50   --->   CD2 PHE A 108   =      4.81 A -
+  CG  ASN A  50   --->   CE2 PHE A 108   =      4.41 A hydrophobic interaction
+...
+  OD1 ASN A  50   --->   CE2 PHE A 108   =      3.58 A ==> (too ?) close contact !
+...
+  OD1 ASN A  50   --->   N   ASN A 110   =      3.20 A potential hydrogen bond ?
+  OD1 ASN A  50   --->   CA  ASN A 110   =      3.79 A ?
+...
+  OE1 GLU A  79   --->   OE1 GLU A  79   =      4.90 A SELF -
+  OE1 GLU A  79   --->   O1  HOH B 212   =      4.61 A -
+  OE1 GLU A  79   --->   OE2 GLU A  76   =      4.60 A -
+  CB  PHE A  81   --->   CB  PHE A  81   =      4.42 A SELF hydrophobic interaction
+  CB  PHE A  81   --->   CG  PHE A  81   =      4.05 A SELF hydrophobic interaction
+  CB  PHE A  81   --->   CD1 PHE A  81   =      4.17 A SELF hydrophobic interaction
+  CB  PHE A  81   --->   CE1 PHE A  81   =      4.53 A SELF -
+...
+  O1  HOH B 227   --->   CD  LYS A 153   =      1.88 A ==> BAD contact !
+...
+  NH1 ARG A  29   --->   NZ  LYS A 124   =      3.51 A ==> (too ?) close positive charges ?
+...
+  OD1 ASP A  77   --->   OE2 GLU A   2   =      3.22 A ==> (too ?) close negative charges ?
+...
+ From NCS #  4 -> NCS #  3 SGS #  4 T=( -1,  1,  0) DIST =     48.3 A
+ Mixed NCS and SGS interaction
+ Nr of contacts : (          0) 
+
+ Total nr of contacts : (       4270) 
+ Every contact should occur twice !
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## W = water scrutinizer
+ If you want to include symmetry-related atoms, first expand
+       into a shell; then use MOLEMAN to reset the chain name in
+       that PDB file to ' Z' for example; then read the original
+       PDB file into MOLEMAN and APPEnd the shell PDB file to get
+       a sphere PDB file.
+
+ If you have many waters, you can write the output to a log file
+   instead of to the screen (version 1.1).
+
+ If you want to use XPAND as a "filter" to screen potential waters
+   picked in a difference map, you can write out all waters except
+   those that appear not to be tightly bound (but note that symmetry
+   is not taken into account) to a new PDB file (version 1.1).
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Task ? (N) w
+ Input PDB file ? (in.pdb) 1cbs_sphere.pdb
+ Log file (RETURN for screen output) ? ( ) 
+ Output PDB file (RETURN to skip) ? ( ) 
+
+ Max interaction distance : (   3.400) 
+ Min bad-charge  distance : (   3.000) 
+ Max good-charge distance : (   2.400) 
+ Min contact     distance : (   1.800) 
+
+ Reading PDB file ...
+
+ Nr of lines read : (       3610) 
+ Nr of atoms read : (       3600) 
+
+ => Water #     1 = HOH-   300 atom  O  
+    Nbr ARG-   111- NE  @   3.12 A
+    Nbr HOH-   309- O   @   2.74 A
+    Nr + charges   0 | Nr - charges   0
+    Nr Hb donors   0 | Nr Hb accept   0 | Nr don/acc     2
+    Nr CYS S       0 | Nr MET S       0
+    This could be HOH
+
+ => Water #     2 = HOH-   301 atom  O  
+    Nbr LYS-    66- N   @   2.88 A
+    Nbr LYS-    66- O   @   3.35 A
+    Nbr GLU-    69- O   @   2.87 A
+    Nbr HOH-   335- O   @   2.81 A
+    Nr + charges   0 | Nr - charges   0
+    Nr Hb donors   1 | Nr Hb accept   2 | Nr don/acc     1
+    Nr CYS S       0 | Nr MET S       0
+    This could be HOH
+...
+ => Water #    12 = HOH-   311 atom  O  
+    Nbr LYS-    30- O   @   2.84 A
+    Nr + charges   0 | Nr - charges   0
+    Nr Hb donors   0 | Nr Hb accept   1 | Nr don/acc     0
+    Nr CYS S       0 | Nr MET S       0
+    Does *not* look like a tightly bound water !
+...
+ => Water #   302 = HOH- Z 397 atom  O  
+    Nbr ARG- Z  29- NH2 @   3.07 A
+    Nbr HOH- Z 387- O   @   3.14 A
+    Nbr GLU- Z  69- OE2 @   3.22 A
+    Nr + charges   1 | Nr - charges   1
+    Nr Hb donors   1 | Nr Hb accept   1 | Nr don/acc     1
+    Nr CYS S       0 | Nr MET S       0
+    This could be HOH
+
+ Nr of waters scrutinized : (        302) 
+ # ? NH4+ (or other small cation with H)     : (          0) 
+ # ? F-   (or other small anion)             : (          0) 
+ # ? Na+  (or other small monovalent cation) : (          0) 
+ # ? Mg++ (or other small divalent cation)   : (          0) 
+ # ? HOH  (with reasonable neighbours)       : (        229) 
+ # non-tightly bound water molecules         : (         73) 
+
+ Task ? (W) q
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Task ? (N) w
+ Input PDB file ? (in.pdb) /nfs/pdb/full/1cbs.pdb
+ Log file (RETURN for screen output) ? ( ) 1cbs_waters.log
+ Output PDB file (RETURN to skip) ? ( ) 1cbs_ok.pdb
+
+ Max interaction distance : (   3.500) 
+ Min bad-charge  distance : (   3.500) 
+ Max good-charge distance : (   2.800) 
+ Min contact     distance : (   1.800) 
+
+ Reading PDB file ...
+
+ Nr of lines read : (       1459) 
+ Nr of atoms read : (       1213) 
+
+ Nr of waters scrutinized : (        100) 
+ # ? NH4+ (or other small cation with H)     : (          1) 
+ # ? F-   (or other small anion)             : (          3) 
+ # ? Na+  (or other small monovalent cation) : (          2) 
+ # ? Mg++ (or other small divalent cation)   : (          0) 
+ # ? HOH  (with reasonable neighbours)       : (         71) 
+ # non-tightly bound water molecules         : (         26) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## M = generate PDB MTRIX records
+ If you want to generate MTRIX cards (e.g., for depositioning coordinates
+   with the PDB), use this command.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Task ? (N) m
+ Output MTRIX file ? (out.pdb) mtrix.pdb
+  
+ Enter the names of all NCS operator files
+ including the unit operator; finish with <CR>
+
+ NCS operator file  1 ? ( ) ncs1.o
+ Opening O datablock : (ncs1.o) 
+ Datablock : (.LSQ_RT_M9A_TO_A) 
+ Data type : (R) 
+ Number    : (12) 
+ Format    : ((3F15.8)) 
+
+ ...
+
+ NCS operator file  5 ? ( ) 
+
+
+ Nr of NCS operators :   4
+
+ NCSOP  1 =     1.0000000    0.0000000    0.0000000                  0.000
+                0.0000000    1.0000000    0.0000000                  0.000
+                0.0000000    0.0000000    1.0000000                  0.000
+ Determinant of rotation matrix         1.000000
+ ...
+ Dave Smith                             -2.40361   -76.69563  -166.60451
+ Rotation angle                       179.154190
+
+ Task ? (M) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ The generated file may look as follows:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+REMARK 
+REMARK NCS MTRX CARDS
+REMARK GENERATED BY : XPAND               
+REMARK VERSION      : 951022/0.7          
+REMARK DATE         : Mon Oct 30 18:19:29 1995
+REMARK 
+MTRIX1   1  1.000000  0.000000  0.000000        0.00000
+MTRIX2   1  0.000000  1.000000  0.000000        0.00000
+MTRIX3   1  0.000000  0.000000  1.000000        0.00000
+MTRIX1   2 -0.955168  0.257340 -0.146391      167.54320
+MTRIX2   2  0.248227  0.426599 -0.869711       -4.09250
+MTRIX3   2 -0.161362 -0.867058 -0.471352       41.98070
+MTRIX1   3 -0.994267 -0.046533 -0.096268      176.73730
+MTRIX2   3 -0.065414 -0.447478  0.891899       27.41760
+MTRIX3   3 -0.084580  0.893083  0.441869       -5.85930
+MTRIX1   4  0.947451 -0.225636  0.226772        7.42830
+MTRIX2   4 -0.222216 -0.974142 -0.040846       58.26170
+MTRIX3   4  0.230124 -0.011693 -0.973091       -5.61790
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## O = convert PDB MTRIX records to O-style RT operator(s)
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Task ? (N) o
+ Input PDB file ? (in.pdb) 2bny.pdb
+ Output file with NCS operator(s) ? ( ) mtrix.rt
+ MTRIX nr : (          1) 
+ MTRIX nr : (          2) 
+
+ [...]
+
+ MTRIX nr : (         10) 
+ Nr of lines read : (       4317) 
+ Operators read   : (         10) 
+ Writing : (.LSQ_RT_1) 
+ Writing : (.LSQ_RT_2) 
+
+ [...]
+
+ Writing : (.LSQ_RT_10) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## R = convert PDB REMARK 350 records to O-style RT operator(s)
+
+ Use this command to extract and convert the BIOMT operators from
+   a PDB file. Subsequently, generate the complete biologically
+   relevant assembly with the option "N" of this program.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Task ? (O) r
+ Input PDB file ? (2bny.pdb) 
+ Output file with NCS operator(s) ? ( ) biomt.rt
+ BioMT nr : (          1) 
+ BioMT nr : (          2) 
+
+ [...]
+
+ BioMT nr : (         60) 
+ Nr of lines read : (       4317) 
+ Operators read   : (         60) 
+ Writing : (.LSQ_RT_1) 
+ Writing : (.LSQ_RT_2) 
+
+ [...]
+
+ Writing : (.LSQ_RT_60) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Generating the entire assembly (in this case, a virus particle)
+   with the "N" option:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Task ? (R) n
+ Input  PDB file ? (2bny.pdb) 2bny_ca.pdb
+ Output PDB file ? (out.pdb) biomt.pdb
+  
+ Enter the names of the O-style NCS operator files
+ including the unit operator; finish with <CR>
+ File with NCS operator(s) ? ( ) biomt.rt
+
+ [...]
+
+ ==> Read NCS operator : (.LSQ_RT_60) 
+
+ Nr of RT operators :   1
+
+ RT-OP  1 =    -0.5000030   -0.6455010    0.5773450                  0.000
+               -0.6454900   -0.1666690   -0.7453520                  0.000
+                0.5773500   -0.7453630   -0.3333360                  0.000
+ Determinant of rotation matrix         1.000000
+ Column-vector products (12,13,23)      0.000000   -0.000008    0.000007
+ ERROR --- WARNING - Non-orthogonal column vectors
+ Crowther Alpha Beta Gamma               127.761    -109.471      52.239
+ Spherical polars Omega Phi Chi           54.736     -52.239     179.838
+ Direction cosines of rotation axis     0.499999   -0.645496    0.577349
+ X-PLOR polars Phi Psi Kappa              45.155    -107.845     180.000
+ Lattmann Theta+ Theta2 Theta-           180.000     109.471    -104.478
+ WARNING - cosine of rot angle not in [-1,+1] : (  -1.000) 
+ Reset to : (  -1.000) 
+ Rotation angle                             180.000
+
+ Nr of NCS operators now : (         60) 
+ File with NCS operator(s) ? ( ) 
+
+ Select:
+ A = automatic generation of chain IDs
+ M = enter chain IDs manually
+ Option (A/M) ? (A) 
+
+ Reading PDB file ...
+
+ Nr of lines read : (        407) 
+ Nr of atoms read : (        387) 
+
+ NCS expansion for operator #      1 with chain ID |A|
+ NCS expansion for operator #      2 with chain ID |B|
+
+ [...]
+
+ NCS expansion for operator #     60 with chain ID |H|
+
+ Nr of atoms generated : (      23220) 
+ Nr of lines written   : (      23661) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## I = invert O-style RT operator(s)
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Task ? (N) i
+ Output RT file ? (inverted.rt) 
+  
+ Enter the names of all NCS operator files
+ including the unit operator; finish with <CR>
+ File with NCS operator(s) ? ( ) q.o
+
+ ==> Read NCS operator : (.LSQ_RT_UNIT) 
+
+ Nr of RT operators :   1
+
+ [...]
+
+ Nr of NCS operators now : (          2) 
+ File with NCS operator(s) ? ( ) 
+
+
+ ***** Operator nr   1 *****
+
+
+ Nr of RT operators :   1
+
+ RT-OP  1 =     1.0000000    0.0000000    0.0000000                  0.000
+                0.0000000    1.0000000    0.0000000                  0.000
+                0.0000000    0.0000000    1.0000000                  0.000
+ Determinant of rotation matrix         1.000000
+ Column-vector products (12,13,23)      0.000000    0.000000    0.000000
+ Crowther Alpha Beta Gamma                 0.000       0.000       0.000
+ Spherical polars Omega Phi Chi            0.000 *undefined*       0.000
+ Direction cosines of rotation axis     0.000000    0.000000    0.000000
+ X-PLOR polars Phi Psi Kappa         *undefined* *undefined*       0.000
+ Lattmann Theta+ Theta2 Theta-       *undefined*       0.000 *undefined*
+ Rotation angle                               0.000
+
+ ***** INVERSE Operator nr   1 *****
+
+
+ Nr of RT operators :   1
+
+ RT-OP  1 =     1.0000000    0.0000000    0.0000000                  0.000
+                0.0000000    1.0000000    0.0000000                  0.000
+                0.0000000    0.0000000    1.0000000                  0.000
+ Determinant of rotation matrix         1.000000
+ Column-vector products (12,13,23)      0.000000    0.000000    0.000000
+ Crowther Alpha Beta Gamma                 0.000       0.000       0.000
+ Spherical polars Omega Phi Chi            0.000 *undefined*       0.000
+ Direction cosines of rotation axis     0.000000    0.000000    0.000000
+ X-PLOR polars Phi Psi Kappa         *undefined* *undefined*       0.000
+ Lattmann Theta+ Theta2 Theta-       *undefined*       0.000 *undefined*
+ Rotation angle                               0.000
+
+ ***** Operator nr   2 *****
+
+
+ Nr of RT operators :   1
+
+ RT-OP  1 =    -0.7009653   -0.7005748   -0.1335759                 75.461
+               -0.7085917    0.6628705    0.2418688                 34.167
+               -0.0809036    0.2641924   -0.9610707                -13.434
+ Determinant of rotation matrix         1.000000
+ Column-vector products (12,13,23)      0.000000    0.000000    0.000000
+ Crowther Alpha Beta Gamma               118.910     163.960      72.974
+ Spherical polars Omega Phi Chi           97.977     -67.032     178.345
+ Direction cosines of rotation axis     0.386420   -0.911755   -0.138772
+ X-PLOR polars Phi Psi Kappa            -160.246      24.243     178.345
+ Lattmann Theta+ Theta2 Theta-          -191.884     163.960    -134.063
+ Rotation angle                             178.345
+
+ ***** INVERSE Operator nr   2 *****
+
+
+ Nr of RT operators :   1
+
+ RT-OP  1 =    -0.7009654   -0.7085918   -0.0809037                 76.019
+               -0.7005748    0.6628705    0.2641924                 33.767
+               -0.1335759    0.2418687   -0.9610708                -11.095
+ Determinant of rotation matrix         1.000000
+ Column-vector products (12,13,23)      0.000000    0.000000    0.000000
+ Crowther Alpha Beta Gamma               107.026     163.960      61.090
+ Spherical polars Omega Phi Chi           82.022     112.968     178.345
+ Direction cosines of rotation axis    -0.386477    0.911884    0.138794
+ X-PLOR polars Phi Psi Kappa              19.755     -24.243     178.345
+ Lattmann Theta+ Theta2 Theta-          -168.116     163.960    -134.063
+ Rotation angle                             178.345
+
+ Nr of NCS operators written : (          2) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ The original operators:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+.lsq_rt_unit R 12 (3f15.7)
+      1.0000000      0.0000000      0.0000000
+      0.0000000      1.0000000      0.0000000
+      0.0000000      0.0000000      1.0000000
+      0.0000000      0.0000000      0.0000000
+.lsq_rt_m7a_tom7b r 12 (3f15.7)
+     -0.7009653     -0.7085917     -0.0809036
+     -0.7005748      0.6628705      0.2641924
+     -0.1335759      0.2418688     -0.9610707
+     75.4608154     34.1665306    -13.4335337
+! Created by LSQMAN V. 931027/1.1 at Wed Nov 3 19:04:00 1993 for user gerard
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ The inverted operators:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+! Created by XPAND V. 031223/1.5 at Tue Dec 23 20:00:56 2003 for gerard
+!
+.LSQ_RT_1  R  12  (3f15.8)
+     1.00000000     0.00000000     0.00000000
+     0.00000000     1.00000000     0.00000000
+     0.00000000     0.00000000     1.00000000
+     0.00000000     0.00000000     0.00000000
+!
+.LSQ_RT_2  R  12  (3f15.8)
+    -0.70096540    -0.70057476    -0.13357593
+    -0.70859176     0.66287047     0.24186872
+    -0.08090368     0.26419240    -0.96107078
+    76.01872253    33.76699829   -11.09464264
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## D = get Default unit cell and spacegroup from PDB file
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Task ? (N) Defaults
+ Input  PDB file ? (in.pdb) ../structures/1cbs_holo_crabp_ii.pdb
+
+ Reading PDB file ...
+ CRYST1 card found : (CRYST1   45.650   47.560   77.610  90.00  90.00  
+  90.00 P 21 21 21    4  1CBS 216) 
+ Cell axes (A)     : (  45.650   47.560   77.610) 
+ Cell angles (deg) : (  90.000   90.000   90.000) 
+ Spacegroup name   : (P 21 21 21) 
+ SGS operator file : (p212121.sym) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** NOTES
+
+ - all SGS and NCS operators must be in O datablock format
+
+ - extra REMARK cards are added to the output PDB files to
+   mark the start of new NCS/SGS-related molecules/atoms
+
+ - if you plan to use an option which produces a lot of output,
+   use the Unix "tee" command to copy the output both to the
+   screen and to a file: run xpand |& tee xpand.log
+
+ ** KNOWN BUGS
+
+ None, at present.

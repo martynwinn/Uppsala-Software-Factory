@@ -1,0 +1,17 @@
+
+OBJ=	sod.o ../gklib/osx_kleylib
+
+fc =	 g77
+
+exec =	sod
+
+opt= -C -O -u -check_bounds
+link= -O
+
+$(exec):	$(OBJ)
+	$(fc) $(link) -o $(exec) $(OBJ); strip $(exec)
+
+sod.o:	sod.f sod.incl
+	$(fc) $(opt) -c sod.f
+
+

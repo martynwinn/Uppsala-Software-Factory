@@ -1,0 +1,33 @@
+
+OBJ=	cavity.o cavity_subs.o ../gklib/osx_kleylib
+OBJ2=	flood.o ../gklib/osx_kleylib ../lib/libccp4_osx.a
+INCL=	cavity.incl
+
+fc =	g77
+
+exec =	OSX_VOIDOO
+exec2 =	OSX_FLOOD
+
+# for development work use:
+# opt = -Olimit 3000 -v -check_bounds -w0 -d_lines
+# opt = -Olimit 3000 -v -check_bounds -u -w0
+# opt = -Olimit 3000 -O2 -v -check_bounds -u -w0
+# opt= -Olimit 3000 -C -O -u -v -recursive -check underflow -check overflow
+#opt= -Olimit 1500 -C -O -u -v -check_bounds
+#opt= -Olimit 1000 -C -O -u -check_bounds -w0
+opt= -C -O -u -check_bounds
+link= -O
+
+$(exec):	$(OBJ) $(OBJ2)
+		$(fc) $(link) -o $(exec) $(OBJ) ; strip $(exec) ; $(fc) $(link) -o $(exec2) $(OBJ2) ; strip $(exec2)
+
+
+cavity.o:	cavity.f $(INCL)
+		$(fc) $(opt) -c cavity.f
+
+cavity_subs.o:	cavity_subs.f $(INCL)
+		$(fc) $(opt) -c cavity_subs.f
+
+flood.o:	flood.f
+		$(fc) $(opt) -c flood.f
+

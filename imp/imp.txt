@@ -1,0 +1,551 @@
+
+ ** IMP - GENERAL INFORMATION
+
+ Program : IMP
+ Version : 080626
+ Author  : Gerard J. Kleywegt & T. Alwyn Jones,
+           Dept. of Cell and Molecular Biology,
+           Uppsala University, Biomedical Centre, Box 596,
+           SE-751 24 Uppsala, SWEDEN
+ E-mail  : gerard@xray.bmc.uu.se
+ Purpose : improve NCS-operators for single-crystal averaging
+ Package : RAVE
+
+ ** REFERENCES
+
+ Reference(s) for this program:
+
+ *  1 * T.A. Jones (1992). A, yaap, asap, @#*?  A set of averaging
+        programs. In "Molecular Replacement", edited by E.J. Dodson,
+        S. Gover and W. Wolf. SERC Daresbury Laboratory, Warrington,
+        pp. 91-105.
+
+ *  2 * G.J. Kleywegt & T.A. Jones (1994).  Halloween ... Masks and
+        Bones. In "From First Map to Final Model", edited by
+        S. Bailey, R. Hubbard and D. Waller.  SERC Daresbury
+        Laboratory, Warrington, pp. 59-66.
+        [http://xray.bmc.uu.se/gerard/papers/halloween.html]
+
+ *  3 * G.J. Kleywegt & R.J. Read (1997). Not your average density.
+        Structure 5, 1557-1569.
+        [http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=PubMed&cmd=Retrieve&list_uids=9438862&dopt=Citation]
+
+ *  4 * R.J. Read & G.J. Kleywegt (2001). Density modification:
+        theory and practice. In: "Methods in Macromolecular
+        Crystallography" (D Turk & L Johnson, Eds.), IOS Press,
+        Amsterdam, pp. 123-135.
+
+ *  5 * Kleywegt, G.J., Zou, J.Y., Kjeldgaard, M. & Jones, T.A. (2001).
+        Around O. In: "International Tables for Crystallography, Vol. F.
+        Crystallography of Biological Macromolecules" (Rossmann, M.G.
+        & Arnold, E., Editors). Chapter 17.1, pp. 353-356, 366-367.
+        Dordrecht: Kluwer Academic Publishers, The Netherlands.
+
+ ** VERSION HISTORY
+
+ 0.1 - 930308 - first version working with automatic option
+                and interpolation
+ 0.2 - 930316 - implemented new mask-read routines; improved
+                automatic option; removed "border-bug" as
+                in average; made it a bit more user-friendly;
+                more tests; updated manual
+ 0.3 - 930331 - speed up algorithm by a factor of 2
+ 0.4 - 930401 - optional "quick-and-dirty" interpolation
+ 1.0 - 930615 - new production version
+ 1.1 - 930616 - 6D-search options
+ 1.2 - 930726 - bug hunt
+ 1.3 - 930817 - added List_status option
+ 1.4 - 931217 - more error checks
+ 1.5 - 950116 - new parameter to select Complete (27-point) or
+                Quick (8-point) search in options T, R and A
+ 1.5.1 - 950208 - removed bug introduced by implementation of
+                the Quick scan option
+ 1.6 - 951022 - made sensitive to OSYM
+ 1.7 - 960412 - echo all input to help debug scripts
+ 2.0 - 961122 - dynamic memory allocation
+ 3.0 - 010122 - use C routines to do dynamic memory allocation 
+                and port to Linux
+ 040701 -3.0.1- changed checks of dynamic memory allocation to allow
+                for pointers with negative values as returned by
+                some recent Linux versions
+ 080626 -3.0.2- suppress error messages if more than 10 of them
+
+
+ ** MAP AND MASK SIZE
+
+ From version 2.0 onward, IMP allocates memory for maps and
+   masks dynamically.  This means that you can increase the size
+   of maps and masks that the program can handle on the fly:
+
+ 1 - through the environment variables MAPSIZE and MASKSIZE (must be
+     in capital letters !), for example put the following in your
+     .cshrc file or your RAVE script:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ setenv MAPSIZE 8000000
+ setenv MASKSIZE 3000000
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ 2 - by using command-line arguments MAPSIZE and MASKSIZE (need not
+     be in capitals), for example in your RAVE script:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ run imp mapsize 10000000 masksize 5000000
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Note that command-line arguments take precedence over environment
+   variables.  So you can set the environment variables in your .cshrc
+   file to "typical" values, and if you have to deal with a map and/or
+   mask which is bigger than that, you can use the command-line argument(s).
+
+ If sufficient memory cannot be allocated, the program will print
+   a message and quit.  In that case, increase the amount of virtual
+   memory (this will not help, of course, if you try to allocate more
+   memory than can be addressed by your machine (for 32-bit machines,
+   something 2**32-1 bytes, I think), or reduce the size requirements.
+
+ IMP needs space for 2 maps and 1 mask.
+
+ ** INTRODUCTION
+
+ This a new version of Alwyn's old program a_rt_improve.  It can
+   be used to improve NCS-operators for real-space averaging
+   purposes.  It works by adding small rotations and translations
+   to the current NCS-operator and maximising the correlation
+   coefficient between the density inside the mask and that
+   inside the mask after application of the NCS-operator.
+
+ You supply the program with: an electron density map, a mask,
+   a set of symmetry operators for your spacegroup in "O" format
+   and an initial NCS-operator (also in "O" format).
+
+ You may then either apply small rotations and translations
+   yourself, or you may use the automatic improvement option.
+
+ Things to remember:
+ - with a "good" mask you win a few percentage points in the attainable
+   correlation coefficient (the same holds during averaging)
+ - the use of a rather coarse sampling (density = 5) doesn't hamper
+   the finding of the maximum
+
+ NOTE: this program is sensitive to the environment variable OSYM.
+   It should point to your local copy of $ODAT/symm, the directory
+   which contains the spacegroup symmetry operators in O format.
+   When asked for a file with spacegroup operators in O format,
+   you may either provide a filename, or the name of a sapcegroup
+   (including blanks if you like, case doesn't matter).  The program
+   will try to open the following files, assuming that STRING is the
+   what you input:
+ (1) open a file called STRING
+ (2) if this fails, check if OSYM is defined and open $OSYM/STRING
+ (3) if this fails, open $OSYM/string.sym
+ (4) if this fails, open $OSYM/string.o
+ Hint: if you make soft links in the OSYM directory, you can also type
+   spacegroup numbers (e.g.: \ln -s p212121.sym 19.sym).
+
+ ** RUNNING THE PROGRAM
+
+ ## input
+
+ When you start the program, you are prompted for the necessary input:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+...
+ Map file ? ( ) p2test_0.E
+ Read header
+...
+ Map read OK
+ Cell axes   (A) : (  91.800   99.500   56.500) 
+ Cell angles (d) : (  90.000   90.000   90.000) 
+ Grid axes (pts) : (     100      110       64) 
+ Origin    (pts) : (       0        0        0) 
+ Extent    (pts) : (     100      110       64) 
+
+ Mask file ? ( ) p2_example_comp.mask
+ Reading mask (compressed format)
+ Grid points : (     360594) 
+ Stretches   : (       1458) 
+ Mask points : (      30854) 
+ Number of points in mask : (      30854) 
+ Cell axes   (A) : (  91.800   99.500   56.500) 
+ Cell angles (d) : (  90.000   90.000   90.000) 
+ Grid axes (pts) : (     100      110       64) 
+ Origin    (pts) : (      21       34       -1) 
+ Extent    (pts) : (      67       69       78) 
+
+ File with symmetry operators ("O"-style) ? ( ) p212121.o
+ Opening O datablock : (p212121.o) 
+ Datablock : (A_SYMMOP) 
+...
+
+ File with NCS operator ("O" style) ? ( ) rt_a_to_b_wrong.o
+ Opening O datablock : (rt_a_to_b_wrong.o) 
+ Datablock : (.LSQ_RT_AV) 
+ Data type : (R) 
+ Number    : (12) 
+ Format    : ((5F13.5)) 
+
+ Nr of NCS operators :   1
+ NCSOP  1 =         0.263        0.221       -0.939                 66.582
+                    0.296        0.908        0.297                -42.407
+                    0.918       -0.356        0.173                 12.414
+ Determinant of rotation matrix =   1.000003
+ Rotation angle                 =  80.078430
+
+ CPU total/user/sys :       7.1       5.3       1.8
+  
+ Select one of the following options:
+ Q = save current operator and quit
+ L = list settings
+ N = save current operator and read in a new one
+ T = do a 3D translation search
+ R = do a 3D rotation search
+ A = do an automatic R/T-search
+ P = do a pseudo-6D R/T-search
+ 6 = do a complete 6D R/T-search
+  
+ Option ? (A) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Next, you have to select an option
+
+ ## manual rotation search
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (A) r
+ Step size ? (   0.500) 
+ Enter the sample density; 1 means: use all
+ points, 3 means: use every third point etc.
+ Higher value -> faster (but less accurate)
+ Sample density ? (       4) 6
+ Proper interpolation = 64-point spline
+ Q-n-D  interpolation = nearest grid point
+ Proper or Quick-n-Dirty interpolation (P/Q) ? (P) 
+ Precomputing density inside mask
+ FORGN : (   0.000    0.000    0.000) 
+ FEXT  : (   0.990    0.991    0.984) 
+ GEXT  : (   0.980    0.982    0.969) 
+ Nr of mask points with density : (      30854) 
+ Rotation origin at    -16.375    28.184    72.959
+ Centre of mask     49.572    64.223    32.664
+ Shift=   -0.500000   -0.500000   -0.500000 | Corr coeff=   -0.003885
+ Shift=   -0.500000   -0.500000    0.000000 | Corr coeff=   -0.010241
+ Shift=   -0.500000   -0.500000    0.500000 | Corr coeff=   -0.016865
+ Shift=   -0.500000    0.000000   -0.500000 | Corr coeff=   -0.004243
+ Shift=   -0.500000    0.000000    0.000000 | Corr coeff=   -0.010661
+ Shift=   -0.500000    0.000000    0.500000 | Corr coeff=   -0.017322
+ Shift=   -0.500000    0.500000   -0.500000 | Corr coeff=   -0.004429
+ Shift=   -0.500000    0.500000    0.000000 | Corr coeff=   -0.010877
+ Shift=   -0.500000    0.500000    0.500000 | Corr coeff=   -0.017561
+ Shift=    0.000000   -0.500000   -0.500000 | Corr coeff=   -0.001616
+ Shift=    0.000000   -0.500000    0.000000 | Corr coeff=   -0.008102
+ Shift=    0.000000   -0.500000    0.500000 | Corr coeff=   -0.014891
+ Shift=    0.000000    0.000000   -0.500000 | Corr coeff=   -0.001852
+ Shift=    0.000000    0.000000    0.000000 | Corr coeff=   -0.008404
+ Shift=    0.000000    0.000000    0.500000 | Corr coeff=   -0.015237
+ Shift=    0.000000    0.500000   -0.500000 | Corr coeff=   -0.001922
+ Shift=    0.000000    0.500000    0.000000 | Corr coeff=   -0.008505
+ Shift=    0.000000    0.500000    0.500000 | Corr coeff=   -0.015363
+ Shift=    0.500000   -0.500000   -0.500000 | Corr coeff=    0.000633
+ Shift=    0.500000   -0.500000    0.000000 | Corr coeff=   -0.005995
+ Shift=    0.500000   -0.500000    0.500000 | Corr coeff=   -0.012910
+ Shift=    0.500000    0.000000   -0.500000 | Corr coeff=    0.000480
+ Shift=    0.500000    0.000000    0.000000 | Corr coeff=   -0.006216
+ Shift=    0.500000    0.000000    0.500000 | Corr coeff=   -0.013182
+ Shift=    0.500000    0.500000   -0.500000 | Corr coeff=    0.000539
+ Shift=    0.500000    0.500000    0.000000 | Corr coeff=   -0.006189
+ Shift=    0.500000    0.500000    0.500000 | Corr coeff=   -0.013187
+ Nr of mask points checked :        5142
+ Best Rotation Matrix
+     0.257708    0.285708    0.923020
+     0.232290    0.908940   -0.346210
+    -0.937887    0.303631    0.167874
+ Best Translation
+    66.115669  -42.185253   11.724941
+ Correlation Coefficient =     0.000633
+
+ CPU total/user/sys :     146.2     135.7      10.5
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## manual translation search
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (R) t
+ Step size ? (   0.500) 1
+ Sample density ? (       6) 
+ Proper or Quick-n-Dirty interpolation (P/Q) ? (P) 
+ Rotation origin at    -15.808    27.045    72.849
+ Centre of mask     49.572    64.223    32.664
+ Shift=   -1.000000   -1.000000   -1.000000 | Corr coeff=    0.035482
+ Shift=   -1.000000   -1.000000    0.000000 | Corr coeff=    0.063183
+...
+ Shift=    1.000000    1.000000    0.000000 | Corr coeff=   -0.053370
+ Shift=    1.000000    1.000000    1.000000 | Corr coeff=   -0.092078
+ Nr of mask points checked :        5142
+ Best Rotation Matrix
+     0.257708    0.285708    0.923020
+     0.232290    0.908940   -0.346210
+    -0.937887    0.303631    0.167874
+ Best Translation
+    65.115669  -43.185253   11.724941
+ Correlation Coefficient =     0.063183
+
+ CPU total/user/sys :     125.9     122.7       3.2
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## automatic search
+
+ The parameters are:
+
+ - Initial translation step size = start shift to try in translation searches
+
+ - Convergence when step size    = when the translation shift becomes smaller
+                                   than this value, no more translation searches
+                                   will be done
+
+ - Initial rotation step size    = start shift to try in rotation searches
+
+ - Convergence when step size    = when the rotation shift becomes smaller
+                                   than this value, no more rotation searches
+                                   will be done
+
+ - Change for swapping R <-> T   = when the maximum does not end up at (0,0,0),
+                                   the program checks if the improvement of
+                                   the corr. coeff. exceeds this value; if it
+                                   does NOT, then it switches from a rotation
+                                   to a translation or vice versa.  Note that
+                                   by giving a small value, you disable this
+                                   feature and by giving a very large value
+                                   you force the program to alternate between
+                                   translation and rotation searches
+
+ - Change for cc convergence     = when the change in corr. coeff. becomes
+                                   less than this value, the automatic search
+                                   stops (also when both the translation and
+                                   the rotation shifts are less than there
+                                   convergence limits) 
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (T) a
+ Initial translation step size ? (   0.500) 2
+ Convergence when step size    ? (   0.020) 0.1
+ Initial rotation step size    ? (   2.000) 
+ Convergence when step size    ? (   0.100) 
+ Change for swapping R <-> T   ? (  2.000E-03) 0.01
+ Change for cc convergence     ? (  1.000E-05) 
+ Sample density ? (       6) 10
+ Proper or Quick-n-Dirty interpolation (P/Q) ? (P) 
+
+ Automatic Improvement ... Cycle   1
+ Translation step, target     2.000000    0.100000
+ Rotation    step, target     2.000000    0.100000
+ This cycle: Translation refinement
+ Rotation origin at    -15.265    28.186    72.215
+ Centre of mask     49.572    64.223    32.664
+ Shift=   -2.000000   -2.000000   -2.000000 | Corr coeff=   -0.061035
+ Shift=   -2.000000   -2.000000    0.000000 | Corr coeff=   -0.058183
+ Shift=   -2.000000   -2.000000    2.000000 | Corr coeff=   -0.032468
+...
+ Shift=    2.000000    2.000000   -2.000000 | Corr coeff=    0.007568
+ Shift=    2.000000    2.000000    0.000000 | Corr coeff=   -0.035995
+ Shift=    2.000000    2.000000    2.000000 | Corr coeff=   -0.122310
+ Nr of mask points checked :        3085
+ Best Rotation Matrix
+     0.257708    0.285708    0.923020
+     0.232290    0.908940   -0.346210
+    -0.937887    0.303631    0.167874
+ Best Translation
+    65.115669  -45.185253   13.724941
+ Correlation Coefficient =     0.100384
+
+ Automatic Improvement ... Cycle   2
+ Translation step, target     2.000000    0.100000
+ Rotation    step, target     2.000000    0.100000
+ This cycle: Translation refinement
+ Rotation origin at    -16.539    30.697    72.486
+ Centre of mask     49.572    64.223    32.664
+ Shift=   -2.000000   -2.000000   -2.000000 | Corr coeff=   -0.069345
+ Shift=   -2.000000   -2.000000    0.000000 | Corr coeff=   -0.062198
+...
+ Shift=    2.000000    2.000000    2.000000 | Corr coeff=   -0.072367
+ Nr of mask points checked :        3085
+ Best Rotation Matrix
+     0.257708    0.285708    0.923020
+     0.232290    0.908940   -0.346210
+    -0.937887    0.303631    0.167874
+ Best Translation
+    65.115669  -45.185253   15.724941
+ Correlation Coefficient =     0.102550
+...
+ Automatic Improvement ... Cycle  18
+ Translation step, target     0.031892    0.100000
+ Rotation    step, target     1.198211    0.100000
+ This cycle: Rotation refinement
+...
+ Shift=    1.198211    1.198211    1.198211 | Corr coeff=    0.660161
+ Nr of mask points checked :        3085
+ Central value    0.68384 at    0.00000   0.00000   0.00000
+ Interpolated     0.68385 at    0.00029   0.01905   0.02878
+ Best Rotation Matrix
+     0.392253    0.084996    0.915927
+     0.111075    0.984055   -0.138891
+    -0.913129    0.156218    0.376558
+ Best Translation
+    64.826019  -34.335335   -5.969826
+ Predicted Correlation Coefficient =     0.683845
+ Correlation coefficient converged
+
+ CPU total/user/sys :    1636.9    1582.7      54.3
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## list current settings
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (A) l
+
+ STATUS:
+ Current map : (p2test_0.E) 
+ Shift for options T and R : (   1.198) 
+ Translation step (A/P/6)  : (   0.032) 
+ Rotation    step (A/P/6)  : (   1.198) 
+ Sample density            : (      10) 
+ Interpolation method      : (P) 
+ Nr of NCS operators :   1
+ NCSOP  1 =         0.392        0.111       -0.913                 64.826
+                    0.085        0.984        0.156                -34.335
+                    0.916       -0.139        0.377                 -5.970
+ Determinant of rotation matrix =   1.000003
+ Rotation angle                 =  67.887085
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## save current operator and start improving a new one
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (L) n
+
+ File to store CURRENT operator ? (rt_improved.o) rt_a_to_b_imp.o       
+
+ File with NCS operator ("O" style) ? ( ) rt_a_to_c.o
+ Opening O datablock : (rt_a_to_c.o) 
+ Datablock : (.LSQ_RT_A_TO_C) 
+ Data type : (R) 
+ Number    : (12) 
+ Format    : ((5F13.5)) 
+
+ Nr of NCS operators :   1
+ NCSOP  1 =        -0.303       -0.288       -0.908                 81.394
+                   -0.868       -0.310        0.388                 95.831
+                   -0.393        0.906       -0.156                 -3.107
+ Determinant of rotation matrix =   0.999998
+ Rotation angle                 = 152.198669
+
+ CPU total/user/sys :       0.1       0.0       0.1
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## quit
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (A) q
+
+ File for new operator ? (rt_improved.o) 
+
+
+ *** IMP *** IMP *** IMP *** IMP *** IMP *** IMP *** IMP *** IMP *** IMP *** 
+
+ Version - 931217/1.4
+ Started - Fri Dec 17 15:44:00 1993
+ Stopped - Fri Dec 17 16:33:53 1993
+
+ CPU-time taken :
+ User    -   1846.4 Sys    -     69.9 Total   -   1916.4
+
+ *** IMP *** IMP *** IMP *** IMP *** IMP *** IMP *** IMP *** IMP *** IMP *** 
+
+ >>> This program is (C) 1993, GJ Kleywegt & TA Jones <<<
+ E-mail: "gerard@xray.bmc.uu.se" or "alwyn@xray.bmc.uu.se"
+
+ *** IMP *** IMP *** IMP *** IMP *** IMP *** IMP *** IMP *** IMP *** IMP *** 
+
+STOP ... Toodle pip ... statement executed
+1846.829u 69.993s 49:53.77 64.0% 0+0k 356+3io 220pf+0w
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## pseudo-6D search
+
+ This option simultaneously varies the translation and the
+   rotation, but the variations are coupled so the program
+   still needs to compute only 27 different orientations.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (6) p
+ Translation step size ? (   1.000) 2
+ Rotation step size    ? (   2.000) 4
+ Sample density ? (       5) 
+ Proper or Quick-n-Dirty interpolation (P/Q) ? (P) 
+ Rotation origin at    -14.013    23.708    72.503
+ Centre of mask     49.572    64.223    32.664
+ T= -2.0000 -2.0000 -2.0000 R= -4.0000 -4.0000 -4.0000 | CC=  0.008418
+ T= -2.0000 -2.0000  0.0000 R= -4.0000 -4.0000  0.0000 | CC=  0.004284
+ T= -2.0000 -2.0000  2.0000 R= -4.0000 -4.0000  4.0000 | CC= -0.017102
+...
+ T=  2.0000  0.0000  2.0000 R=  4.0000  0.0000  4.0000 | CC= -0.005312
+ T=  2.0000  2.0000 -2.0000 R=  4.0000  4.0000 -4.0000 | CC=  0.053361
+ T=  2.0000  2.0000  0.0000 R=  4.0000  4.0000  0.0000 | CC=  0.034914
+ T=  2.0000  2.0000  2.0000 R=  4.0000  4.0000  4.0000 | CC= -0.011931
+ Nr of mask points checked :        6170
+ Best Rotation Matrix
+     0.252408    0.172391    0.952145
+     0.328746    0.910187   -0.251947
+    -0.910065    0.376609    0.173066
+ Best Translation
+    59.274971  -39.031750    4.057766
+ Correlation Coefficient =     0.055415
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## full 6D search
+
+ Now the translations and rotations are varied independently.
+   A total of 729 different orientations are tried (this may take
+   some time; use a sample density of 5 or more).
+ In order to prevent you from drowning in the output, only
+   orientations which give a higher correlation coefficient
+   than all the previous orientations are printed; thus, the
+   last orientation printed gives the best set of rotations and
+   translations.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (A) 6
+ Translation step size ? (   0.500) 1
+ Rotation step size    ? (   2.000) 
+ Enter the sample density; 1 means: use all
+ points, 3 means: use every third point etc.
+ Higher value -> faster (but less accurate)
+ Sample density ? (       4) 5
+ Proper interpolation = 64-point spline
+ Q-n-D  interpolation = nearest grid point
+ Proper or Quick-n-Dirty interpolation (P/Q) ? (P) p
+ Precomputing density inside mask
+ FORGN : (   0.000    0.000    0.000) 
+ FEXT  : (   0.990    0.991    0.984) 
+ GEXT  : (   0.980    0.982    0.969) 
+ Nr of mask points with density : (      30854) 
+ Rotation origin at    -16.375    28.184    72.959
+ Centre of mask     49.572    64.223    32.664
+ T= -1.0000 -1.0000 -1.0000 R= -2.0000 -2.0000 -2.0000 | CC=  0.004784
+ T= -1.0000 -1.0000 -1.0000 R=  0.0000 -2.0000 -2.0000 | CC=  0.018788
+ T= -1.0000 -1.0000 -1.0000 R=  0.0000  0.0000 -2.0000 | CC=  0.018874
+ T= -1.0000 -1.0000 -1.0000 R=  2.0000 -2.0000 -2.0000 | CC=  0.029319
+ Nr of mask points checked :        6170
+ Nr of orientations tried  :         729
+ Best Rotation Matrix
+     0.239768    0.255533    0.936602
+     0.264455    0.911060   -0.316268
+    -0.934119    0.323521    0.150866
+ Best Translation
+    64.816208  -41.475262    9.684332
+ Correlation Coefficient =     0.029319
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** KNOWN BUGS
+
+ None, at present.

@@ -1,0 +1,19 @@
+
+OBJ=	o2d.o xtx_dummy.o ../gklib/osx_kleylib
+
+fc =	g77
+
+exec =	o2d
+
+opt= -DOSX -O -u -check_bounds
+link= -O
+
+$(exec):	$(OBJ)
+	$(fc) $(link) -o $(exec) $(OBJ) ; strip $(exec)
+
+o2d.o:	o2d.f o2d.incl
+	$(fc) $(opt) -c o2d.F
+
+xtx_dummy.o:	xtx_dummy.f
+	$(fc) $(opt) -c xtx_dummy.f
+

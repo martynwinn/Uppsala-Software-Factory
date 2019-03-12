@@ -1,0 +1,60 @@
+c
+c ... NOTE!!! IF YOU CHANGE THIS FILE YOU MUST *COPY* IT INTO
+c             THE 6d alpha lx AND osx DIRECTORIES!!!
+c
+c ... maxdim.incl - max dimensioning for RAVE programs
+c
+c ... MAXGK1 - max size of maps and masks in most RAVE programs
+c
+      integer maxgk1
+      parameter (maxgk1 = 4*1024*1024)
+c
+c ... MAXGK2 - max nr of NCS/SGS operators
+c     970429 - increased to 120 for Lars ...
+c     000622 - increased to 180 for Michael Chapman ...
+c     080619 - increased to 600 (need 240 for Pavel Plevka ...)
+c
+      integer maxgk2
+      parameter (maxgk2 = 600)
+c
+c ... MAXGK3 - MAX max nr of masks in MAMA
+c
+      integer maxgk3
+      parameter (maxgk3 = 100)
+c
+c ... MAXGK4 - MAX max nr of maps in MAPMAN
+c
+      integer maxgk4
+      parameter (maxgk4 = 100)
+c
+c ... MINSIZ - *minimum* size of masks and maps
+c
+      integer minsiz
+      parameter (minsiz = 100000)
+c
+c ... WRDBYT - number of bytes per word (4 or 8)
+c
+      integer wrdbyt
+      parameter (wrdbyt = 4)
+c
+c ... WARNING!!! MACHINE-DEPENDENT PARAMETER: RECORD LENGTH
+c
+c     6d ==> krecl = 128
+c     alpha ==> krecl = 128
+c     lx ==> krecl = 512
+c     osx ==> krecl = 512
+c
+c     Switch for changing version: set here
+c     krecl, record length for output direct access file
+c     = 128 words = 512 bytes
+c     mmxrec = max nr of records in a dsn67/brix file (PDP11 ! obsolete !)
+c
+      integer krecl,krbyte
+c      integer mmxrec
+c
+      parameter (krecl=512)
+c
+      parameter (krbyte=4)
+c
+c      parameter (mmxrec=32767)
+c

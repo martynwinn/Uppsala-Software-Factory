@@ -1,0 +1,17 @@
+#
+OBJ=	ave.o ../gklib/osx_kleylib
+INCL=	Makefile_osx
+
+fc =	 g77
+
+exec =	ave
+
+opt= -C -O -u -check_bounds
+link= -O
+
+$(exec):	$(OBJ)
+	$(fc) $(link) -o $(exec) $(OBJ) ; strip $(exec)
+
+ave.o:	ave.f $(INCL)
+	$(fc) $(opt) -c ave.f
+

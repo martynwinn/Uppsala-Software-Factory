@@ -1,0 +1,620 @@
+
+ ** SOLEX - GENERAL INFORMATION
+
+ Program : SOLEX
+ Version : 050622
+ Author  : Gerard J. Kleywegt & T. Alwyn Jones,
+           Dept. of Cell and Molecular Biology,
+           Uppsala University, Biomedical Centre, Box 596,
+           SE-751 24 Uppsala, SWEDEN
+ E-mail  : gerard@xray.bmc.uu.se
+ Purpose : extraction of top solutions from ESSENS runs
+ Package : RAVE
+
+ ** REFERENCES
+
+ Reference(s) for this program:
+
+ *  1 * T.A. Jones (1992). A, yaap, asap, @#*?  A set of averaging
+        programs. In "Molecular Replacement", edited by E.J. Dodson,
+        S. Gover and W. Wolf. SERC Daresbury Laboratory, Warrington,
+        pp. 91-105.
+
+ *  2 * G.J. Kleywegt & T.A. Jones (1994).  Halloween ... Masks and
+        Bones. In "From First Map to Final Model", edited by
+        S. Bailey, R. Hubbard and D. Waller.  SERC Daresbury
+        Laboratory, Warrington, pp. 59-66.
+        [http://xray.bmc.uu.se/gerard/papers/halloween.html]
+
+ *  3 * G.J. Kleywegt & T.A. Jones (1997). Taking the fun out of map
+        interpretation. CCP4/ESF-EACBM Newsletter on Protein
+        Crystallography 33, January 1997, pp. 19-21.
+        [http://xray.bmc.uu.se/usf/factory_7.html]
+
+ *  4 * G.J. Kleywegt & T.A. Jones (1997).  Template convolution to
+        enhance or detect structural features in macromolecular
+        electron-density maps. Acta Cryst D53, 179-185.
+        [http://scripts.iucr.org/cgi-bin/paper?gr0647]
+
+ *  5 * G.J. Kleywegt & R.J. Read (1997). Not your average density.
+        Structure 5, 1557-1569.
+        [http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=PubMed&cmd=Retrieve&list_uids=9438862&dopt=Citation]
+
+ *  6 * R.J. Read & G.J. Kleywegt (2001). Density modification:
+        theory and practice. In: "Methods in Macromolecular
+        Crystallography" (D Turk & L Johnson, Eds.), IOS Press,
+        Amsterdam, pp. 123-135.
+
+ *  7 * Kleywegt, G.J., Zou, J.Y., Kjeldgaard, M. & Jones, T.A. (2001).
+        Around O. In: "International Tables for Crystallography, Vol. F.
+        Crystallography of Biological Macromolecules" (Rossmann, M.G.
+        & Arnold, E., Editors). Chapter 17.1, pp. 353-356, 366-367.
+        Dordrecht: Kluwer Academic Publishers, The Netherlands.
+
+ ** VERSION HISTORY
+
+ 961120 - 0.1  - first version
+ 961228 - 1.0  - first production version
+ 990126 - 1.0.1- if rotation file too big, tell the user how much
+                 memory should be allocated to it (MASKSIZE)
+ 010122 - 2.0 - use C routines to do dynamic memory allocation 
+                and port to Linux
+ 040701 -2.0.1- changed checks of dynamic memory allocation to allow
+                for pointers with negative values as returned by
+                some recent Linux versions
+ 050622 -2.0.2- increased dimensioning of major arrays in TRACER routine
+
+
+ ** NOTES
+
+ NOTE: This program is sensitive to the environment variable
+       CCP4_OPEN.  If this variable has *not* been set, you will
+       not be able to create any CCP4 maps.  If this happens, the
+       program will abort execution on startup.  To fix this,
+       put the following line in your .login or .cshrc file:
+       setenv CCP4_OPEN UNKNOWN
+
+ ** MAP AND MASK SIZE
+
+ SOLEX allocates memory for maps and masks dynamically.  This means that
+   you can increase the size of maps and masks that the program can handle
+   on the fly:
+
+ 1 - through the environment variables MAPSIZE and MASKSIZE (must be
+     in capital letters !), for example put the following in your
+     .cshrc file:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ setenv MAPSIZE 8000000
+ setenv MASKSIZE 3000000
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ 2 - by using command-line arguments MAPSIZE and MASKSIZE (need not
+     be in capitals), for example:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ run solex mapsize 10000000 masksize 5000000 |& tee solex.out
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Note that command-line arguments take precedence over environment
+   variables.  So you can set the environment variables in your .cshrc
+   file to "typical" values, and if you have to deal with a map and/or
+   mask which is bigger than that, you can use the command-line argument(s).
+
+ If sufficient memory cannot be allocated, the program will print
+   a message and quit.  In that case, increase the amount of virtual
+   memory (this will not help, of course, if you try to allocate more
+   memory than can be addressed by your machine (for 32-bit machines,
+   something 2**32-1 bytes, I think), or reduce the size requirements.
+
+ SOLEX needs space for 1 map and 1 mask.
+
+ ** DESCRIPTION
+
+ In the original version of ESSENS, the program could save the best-
+   fitting orientation of a search fragment or molecule to a PDB
+   file, but extracting the second-best solution etc. was tedious
+   to say the least.  In addition, in feature extraction mode, all
+   you got was a map showing where helices or strands might fit,
+   but the information regarding the best orientation was lost.
+
+ From version 2.0 onwards, ESSENS saves two maps (a "score map" and a
+   "display map"), as well as a "rotation file" which contains the
+   Euler or polar angles which gave the best fit of the template
+   to your electron density.
+
+ This new program SOLEX (SOLution EXtractor) uses these files to
+   extract the best solution(s).  For alpha-helices and beta-strands
+   it can even attempt to auto-trace (but this is still an experimental
+   piece of code !!!).
+
+ ** STARTUP
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ *** SOLEX *** SOLEX *** SOLEX *** SOLEX *** SOLEX *** SOLEX *** SOLEX *** 
+
+ Version  - 990126/1.0.1
+ (C) 1992-1999 Gerard J. Kleywegt & T. Alwyn Jones, BMC, Uppsala (S)
+ User I/O - routines courtesy of Rolf Boelens, Univ. of Utrecht (NL)
+ Others   - T.A. Jones, G. Bricogne, Rams, W.A. Hendrickson
+ Others   - W. Kabsch, CCP4, PROTEIN, E. Dodson, etc. etc.
+
+ Started  - Mon Oct 11 19:16:53 1999
+ User     - gerard
+ Mode     - interactive
+ Host     - sarek
+ ProcID   - 12924
+ Tty      - /dev/ttyq12
+
+ *** SOLEX *** SOLEX *** SOLEX *** SOLEX *** SOLEX *** SOLEX *** SOLEX *** 
+
+ Reference(s) for this program:
+
+ *  1 * T.A. Jones (1992). A, yaap, asap, @#*?  A set of averaging
+        programs. In "Molecular Replacement", edited by E.J. Dodson,
+        S. Gover and W. Wolf. SERC Daresbury Laboratory, Warrington,
+        pp. 91-105.
+
+ *  2 * G.J. Kleywegt & T.A. Jones (1994).  Halloween ... Masks and
+        Bones. In "From First Map to Final Model", edited by
+        S. Bailey, R. Hubbard and D. Waller.  SERC Daresbury
+        Laboratory, Warrington, pp. 59-66.
+        [http://xray.bmc.uu.se/gerard/papers/halloween.html]
+
+ *  3 * G.J. Kleywegt & T.A. Jones (1997). Taking the fun out of map
+        interpretation. CCP4/ESF-EACBM Newsletter on Protein
+        Crystallography 33, January 1997, pp. 19-21.
+        [http://xray.bmc.uu.se/usf/factory_7.html]
+
+ *  4 * G.J. Kleywegt & T.A. Jones (1997).  Template convolution to
+        enhance or detect structural features in macromolecular
+        electron-density maps. Acta Cryst D53, 179-185.
+        [http://www.iucr.ac.uk/journals/acta/tocs/actad/1997/actad5302.html]
+
+ *  5 * G.J. Kleywegt & R.J. Read (1997). Not your average density.
+        Structure 5, 1557-1569.
+        [http://www4.ncbi.nlm.nih.gov/htbin-post/Entrez/query?uid=9438862&form=6&db=m&Dopt=r]
+
+ *  6 * G.J. Kleywegt & T.A. Jones (2037 ?). Convenient single and
+        multiple crystal real-space averaging. To be published ???
+
+ *  7 * G.J. Kleywegt, J.Y. Zou, M. Kjeldgaard & T.A. Jones (1999 ?).
+        Chapter 25.2.6.  Around O. Int. Tables for
+        Crystallography, Volume F. Submitted.
+
+ ==> For manuals and up-to-date references, visit:
+ ==> http://xray.bmc.uu.se/usf
+
+ *** SOLEX *** SOLEX *** SOLEX *** SOLEX *** SOLEX *** SOLEX *** SOLEX *** 
+
+ Allocate maps of size  : (    5000000) 
+ Allocate masks of size : (    3000000) 
+ Max nr of atoms : (      10000) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** INPUT
+
+ ## ESSENS score map
+
+ Give the name of your "score map" (*not* the "display map" !) from a
+   previous ESSENS run.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Input ESSENS score map file ? ( ) score_b20.E
+ Input ESSENS score map file : (score_b20.E) 
+ Read header
+ Input map : (score_b20.E) 
+ FORMATTED      OLD     file opened on unit  11
+ Logical name: score_b20.E, Full name: score_b20.E
+
+  (Q)QOPEN allocated #  1
+ User:   gerard               Logical Name: score_b20.E
+ Status: READONLY   Filename: score_b20.E
+
+  File name for input map file on unit  11 : score_b20.E
+                               file size = 3276224  ;  logical name score_b20.E
+
+
+           Number of columns, rows, sections ...............  100   89   92
+           Map mode ........................................    2
+           Start and stop points on columns, rows, sections   -12   87   11   99   23  114
+
+           Grid sampling on x, y, z ........................  100  110   64
+           Cell dimensions .................................  91.80000  99.50000  56.50000
+  90.00000  90.00000  90.00000
+           Fast, medium, slow axes .........................    Z    X    Y
+           Minimum density .................................    -5.83801
+           Maximum density .................................    23.92435
+           Mean density ....................................    -5.58603
+           Rms deviation from mean density .................     1.53606
+           Space-group .....................................   19
+           Number of titles ................................    4
+
+ Titles :
+           new 2Fo-Fc map                                                                 
+           Created by AVE V. 931216/3.0 at Wed Dec 22 18:45:45 1993 for user gerard       
+           Created by AVE V. 950118/3.1 at Mon Jul 17 19:04:35 1995 for user gerard       
+           Created by ESSENS V. 961120/2.0 at Thu Nov 21 23:04:40 1996 for user gerard    
+
+ Parameters as read from the map file
+ Origin ......................         11        23       -12
+ Extent ......................         89        92       100
+ Grid ........................        100       110        64
+ Cell axes ...................      91.80     99.50     56.50
+ Cell angles .................      90.00     90.00     90.00
+ UVW (fast, medium, slow) ....          Z         X         Y
+
+ Header done
+ Map read OK
+ Closing BINARY CCP4 map on unit : (      11) 
+ Cell axes   (A) : (  91.800   99.500   56.500) 
+ Cell angles (d) : (  90.000   90.000   90.000) 
+ Grid axes (pts) : (     100      110       64) 
+ Origin    (pts) : (      11       23      -12) 
+ Extent    (pts) : (      89       92      100) 
+ Grid spacing (A): (   0.918    0.905    0.883) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## ESSENS rotation file
+
+ Supply the name of the rotation file (produced in a previous run of
+   ESSENS).
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Input ESSENS rotation file ? ( ) b20.rot
+ Input ESSENS rotation file : (b20.rot) 
+ Reading rotation file ...
+ Cell axes   (A) : (  91.800   99.500   56.500) 
+ Cell angles (d) : (  90.000   90.000   90.000) 
+ Grid axes (pts) : (     100      110       64) 
+ Origin    (pts) : (      11       23      -12) 
+ Extent    (pts) : (      89       92      100) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## template PDB file
+
+ Provide the name of the PDB file containing your template or
+   (partial) search model.  This must be *exactly* the same PDB file
+   as the one you used in the ESSENS calculations !
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Name of template PDB file ? (alpha.pdb) /home/gerard/progs/average/essens_beta.pdb
+ Name of template PDB file : (/home/gerard/progs/average/essens_beta.pdb) 
+ Number of atoms  : (         25) 
+ Nr of H stripped : (          0) 
+ Centre of gravity of atoms : (   0.000    0.000    0.000) 
+ Using central CA atom as pivot point
+ Atom : (ATOM 12 CA ALA 3 -0.650 -0.185 -0.410 1.00 20.00) 
+ Pivot point : (  -0.650   -0.185   -0.410) 
+ Furthest atom (A): (   7.883) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## extraction mode
+
+ Select one of the four possible solution extraction modes.  Note that
+   the auto-trace facility is very experimental !
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ SOLEX can extract top solutions in one of 3 modes:
+ 1 = each to a separate file (e.g., domain)
+ 2 = all to one file (e.g., ligand)
+ 3 = try to trace alpha-helices
+ 4 = try to trace beta-strands
+ Solution extraction mode ? (       1) 4
+ Solution extraction mode : (       4) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## output PDB file(s)
+
+ For extraction mode 1, provide the basename of the output PDB files
+   (e.g., a basename "essens" will give you PDB files which are called
+   "essens1.pdb", "essens2.pdb", etc.).
+
+ For the other extraction modes, provide the name of the new PDB file.
+
+ NOTE - For mode 2, you will get multiple copies of the template
+   residues with the same residue numbers. A simple way to renumber
+   the residues is in O (sam_rename) or MOLEMAN2 (PDb NUmber command) !
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Name for output PDB file ? (solex.pdb) btrace.pdb
+ Name for output PDB file : (btrace.pdb) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## output DEJAVU SSE file
+
+ For extraction modes 3 and 4 only, a DEJAVU SSE file will be created.
+   This can be used as input to DEJAVU (operating in "Bones search"
+   mode) to look for any other proteins in the PDB which have a
+   similar set of strands/helices.  If you have run ESSENS/SOLEX
+   for both helices and strands, merge the two SSE files before
+   running DEJAVU.  See the DEJAVU manual for more details.
+
+ For extraction modes 3 and 4, you may have renamed all but one of
+   your CA atoms (e.g., to " CAX") in order to force ESSENS to use
+   a particular CA atoms as the pivot point.  SOLEX will rename such
+   atoms to " CA ".
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Name for output DEJAVU SSE file ? (beta.sse) beta.sse
+ Name for output DEJAVU SSE file : (beta.sse) 
+
+ Renaming " CA?" atoms to " CA " ...
+ Removing all but " CA " atoms ...
+ Nr of remaining atoms : (       5) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## cut-off score
+
+ Provide the lowest value for acceptable/interesting solutions.  You
+   obtain this number for helices/strands by contouring the ESSENS
+   "display map" at a level where you can see the strands/helices
+   clearly, and not too much (connected) noise.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Cut-off score for top solutions ? (  8.908E+00) 13.0
+ Cut-off score for top solutions : (  1.300E+01) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## maximum number of solutions
+
+ Provide the maximum number of solutions you want SOLEX to generate.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Max nr of top solutions ? (      25) 50
+ Max nr of top solutions : (      50) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** OUTPUT
+
+ The output below is for a run in which beta-strands are extracted,
+   and where SOLEX tries to trace them.
+
+ First, the top solutions are located:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Extracting solutions ...
+ Sol #      1 Value   2.3924E+01 @     32    49    49 Rot    340   100   140
+ Sol #      2 Value   1.8874E+01 @     44    40    58 Rot    100    60    20
+ Sol #      3 Value   1.8343E+01 @     44    41    52 Rot    260    60   100
+ ...
+ Sol #     50 Value   1.3056E+01 @     37    51    65 Rot    200    60   120
+ Max number of solutions done ...
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Subsequently, the auto-tracing routine kicks in:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Nr of CA atoms generated : (        250) 
+ Trying to connect them ...
+
+ Starting TRACER ...
+ Nr of solutions : (      50) 
+ Max allowed     : (     500) 
+
+ Calculate vectors, angles and distances ...
+ Try to extend bits ...
+ Prepend            4 at N-terminus of            1
+
+ Calculate vectors, angles and distances ...
+ Try to extend bits ...
+ Invert            5 for use with            1
+ Append            5 at C-terminus of            1
+
+ Calculate vectors, angles and distances ...
+ Try to extend bits ...
+ Invert           10 for use with            1
+ Prepend           10 at N-terminus of            1
+
+ ...
+
+ Calculate vectors, angles and distances ...
+ Try to extend bits ...
+
+ Could not extend any further
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ This part of the program tries to merge bits of strand/helix that
+   are parallel and lie close in space.  Only the CA atoms are retained !
+
+ When it is finished, all stretches which have been extended by at least
+   one CA atom are written to the PDB file (with residues renumbered to
+   1, 2, 3, ...).  The occupancy of each CA atom is replaced by the
+   number of the solution (1, 2, ...), and the B-factor by the score
+   of the solution in the "score map" (i.e., higher values, better fits).
+   Simultaneously, an SSE file for DEJAVU is created.
+
+ For PDB files created by extraction mode 1 and 2, the occupancy is again
+   the number of the solution (but divided by 100), and the B-factor is
+   set to: score - average_score / standard_deviation_score (i.e., higher
+   numbers mean better fits).
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Nr of stretches left : (      19) 
+ Stretch            1 has           12 atoms (solution            2 )
+ Stretch            2 has            9 atoms (solution            1 )
+ Stretch            3 has            8 atoms (solution            7 )
+ Stretch            4 has            8 atoms (solution            9 )
+ Stretch            5 has            8 atoms (solution           23 )
+ Stretch            6 has            7 atoms (solution            3 )
+ Stretch            7 has            7 atoms (solution           12 )
+ Stretch            8 has            6 atoms (solution           13 )
+ Written PDB file
+ Written DEJAVU SSE file
+
+ CPU total/user/sys :       6.6       6.3       0.3
+
+
+ *** SOLEX *** SOLEX *** SOLEX *** SOLEX *** SOLEX *** SOLEX *** SOLEX *** 
+
+ Version - 961228/1.0
+ Started - Sat Dec 28 23:15:34 1996
+ Stopped - Sat Dec 28 23:15:56 1996
+
+ CPU-time taken :
+ User    -      6.3 Sys    -      0.3 Total   -      6.6
+
+ *** SOLEX *** SOLEX *** SOLEX *** SOLEX *** SOLEX *** SOLEX *** SOLEX *** 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Note that this operation hardly takes any CPU time !  Of course, the
+   results are not necessarily fantastic.  We have tested it only with
+   20-degree rotation angles so far and what happens is (in the case
+   of P2 myelin) is that SOLEX finds large bits of many strands, but
+   not all of them run in the correct direction.  So: beware !
+
+ ** WHAT NEXT ?
+
+ For extraction mode 1, read each of the top solutions into O, and judge
+   which one (if any) fits your map best.
+
+ For extraction mode 2 (e.g., for ligands, Trp sidechains, etc.), read
+   the PDB file into O, draw the solutions and decide which ones to keep.
+
+ For extraction mode 3 and 4, read the PDB file into O, e.g.:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ s_a_i btrace.pdb btra
+ mol btra
+ paint_ramp atom_b ; red blue
+ ca ; end
+ bell
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ If you use this way to paint_ramp the molecule, then: the more green/blue
+   the CA atoms, the better the fit.
+
+ Of course, you can use the SSE file to do a DEJAVU search (use the
+   "Bones search" option).
+
+ ** USING DEJAVU
+
+ You may want to look up the following two references in which the use
+   of DEJAVU to work at the level of rough Bones-derived secondary-
+   structure elements was first described:
+
+ (1) Kleywegt, G.J. and Jones, T.A. (1994). Halloween ... masks and bones.
+     In "From First Map to Final Model", edited by S. Bailey, R. Hubbard
+     and D. Waller. SERC Daresbury Laboratory, Warrington, pp. 59-66.
+
+ (2) Kleywegt, G.J. and Jones, T.A. (1997 ?). Detecting folding motifs and
+     similarities in protein structures. Meth Enzymol ?, ?-?.
+
+ An SSE file created by SOLEX may look as follows (if you have run ESSENS
+   with both strands and helices, you can merge their SSE files of course):
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+! Created by SOLEX V. 961228/1.0 at Sat Dec 28 23:36:51 1996 for user gerard
+!
+MOL   bone
+NOTE  auto-generated by SOLEX
+PDB   btrace.pdb
+!
+BETA  'B1' ' 1' ' 12' 12 61.43 60.73 47.76 33.97 55.75 27.06
+BETA  'B2' ' 13' ' 21' 9 44.24 63.08 16.44 37.40 64.56 41.58
+BETA  'B3' ' 22' ' 29' 8 56.31 63.65 17.51 44.11 72.87 32.13
+BETA  'B4' ' 30' ' 37' 8 49.36 51.47 27.01 61.21 66.47 37.90
+BETA  'B5' ' 38' ' 45' 8 57.25 53.27 22.42 59.65 74.87 31.87
+BETA  'B6' ' 46' ' 52' 7 45.76 52.50 31.42 59.24 63.58 40.97
+BETA  'B7' ' 53' ' 59' 7 62.51 73.28 34.79 52.24 58.42 26.17
+BETA  'B8' ' 60' ' 65' 6 47.19 65.18 19.62 39.41 67.92 33.35
+ENDMOL
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ These 8 beta-strands were extracted from the averaged P2 myelin map.
+   Running them through DEJAVU with the suggested "Bones search" settings
+   gives one hit if we require that at least 7 strands must match:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Entry    380 = 1ftp = fatty-acid-binding protein - desert locust (sch
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ This is of course a perfect hit, since FABP and P2 myelin have the same
+   fold !  If we relax the search and require only 6 strands to match,
+   we get:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ===> Option ? (INCR) incr
+
+ ********** NEW QUERY **********
+
+ Elements : ( B1 B2 B3 B4 B5 B6 B7 B8) 
+ Min nr of residues for SSEs             ? (       5) 
+ ................... ( B1 B2 B3 B4 B5 B6 B7 B8) 
+ Min nr of elements to match (0 = abort) ? (       7) 6
+
+ Is this a BONES search ? (Y) 
+ BONES search mode
+
+ BONES search; will do lsq_centroid
+ BONES suggested values: 1 5 10.0 5.0 0.2
+ Define how much the nr of residues in SSEs may differ
+ by defining how many residues shorter or longer SSEs in
+ the database may be compared to those in your protein.
+ Max nr of residues "too short" ? (          1) 
+ Max nr of residues "too long"  ? (          5) 
+ Mismatch element length        ? (  10.000) 
+ Mismatch distances             ? (   5.000) 
+ Mismatch cosines               ? (   0.200) 
+ Weights for nr res, length, dist, cos, rmsd
+ BONES suggested values: 0 0 10 10 10
+ Weights for scoring     ? (   0.010    0.010    0.327    0.327    0.327) 
+ Normalised weights      : (   0.010    0.010    0.327    0.327    0.327) 
+
+ Possible distance criteria:
+  C  => centre-to-centre
+  H  => MIN head-tail and tail-head (anti-parallel)
+  T  => MIN head-head and tail-tail (parallel)
+  I  => MIN of all these distances
+  A  => MAX of all these distances
+ BONES suggested value: C !!!
+ Which distances (C/H/T/I/A) ? (C) 
+ Extensive output        ? (N) 
+ BONES suggested value: NO !!!
+ Conserve directionality ? (N) 
+ BONES suggested value: Y
+ Conserve absolute motif ? (Y) 
+ BONES suggested value: NO !!!
+ Conserve neighbours     ? (N) 
+ Attempt to avoid multi-chain hits ? (Y) 
+ Attempt to avoid identical proteins ? (Y) 
+ Create O macro file      ? (Y) 
+ O macro file             ? (beta_lsq.omac) 
+ BONES search; cannot use LSQMAN
+
+ Nr of elements recognised in query : (       8) 
+ Indices : (       1        2        3        4        5        6        7 
+         8) 
+ Nr of elements of each type : (       0        8) 
+
+ ********** 1cbs       **********    152 **********
+ [cellular retinoic-acid-binding protein type ii co - human (homo sapie ]
+ [/nfs/scr_uu5/gerard/dejavu/1cbs.pdb                                   ]
+
+ ...
+
+ Nr of database entries : (       1381) 
+ Nr of selected entries : (       1381) 
+ Nr of matching entries : (          4) 
+ Nr of hits (total)     : (         12) 
+
+ Entry    152 = 1cbs = cellular retinoic-acid-binding protein type ii co - human (homo sapie
+ Entry    219 = 1crb = cellular retinol binding protein (crbp) complexed - rat (rattus rattu
+ Entry    380 = 1ftp = fatty-acid-binding protein - desert locust (sch
+ Entry    825 = 1pmp = p2 myelin protein (p2) - bovine (bos taurus
+
+  2 CPU total/user/sys :       1.6       1.6       0.0
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ All four hits are correct !  So now all we have to do is to execute the
+   O macro produced by DEJAVU, select one of the four PDB entries as our
+   starting model, use Mutate_replace a bit, rebuild the model a bit, and
+   throw it into X-PLOR !
+ (Actually, the orientation of 1CRB is not the correct one, which would
+   probably have been avoided if the helices had been used as well.  Also,
+   the alignment is very rough, so some rigid-body refinement would be
+   necessary in a real-life case !)
+
+ ** KNOWN BUGS
+
+ None, at present.

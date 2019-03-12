@@ -1,0 +1,908 @@
+
+ ** MAVE - GENERAL INFORMATION
+
+ Program : MAVE
+ Version : 080901
+ Author  : Gerard J. Kleywegt & T. Alwyn Jones,
+           Dept. of Cell and Molecular Biology,
+           Uppsala University, Biomedical Centre, Box 596,
+           SE-751 24 Uppsala, SWEDEN
+ E-mail  : gerard@xray.bmc.uu.se
+ Purpose : multiple-crystal averaging of electron-density maps
+ Package : RAVE
+
+ ** REFERENCES
+
+ Reference(s) for this program:
+
+ *  1 * T.A. Jones (1992). A, yaap, asap, @#*?  A set of averaging
+        programs. In "Molecular Replacement", edited by E.J. Dodson,
+        S. Gover and W. Wolf. SERC Daresbury Laboratory, Warrington,
+        pp. 91-105.
+
+ *  2 * G.J. Kleywegt & T.A. Jones (1994).  Halloween ... Masks and
+        Bones. In "From First Map to Final Model", edited by
+        S. Bailey, R. Hubbard and D. Waller.  SERC Daresbury
+        Laboratory, Warrington, pp. 59-66.
+        [http://xray.bmc.uu.se/gerard/papers/halloween.html]
+
+ *  3 * G.J. Kleywegt & R.J. Read (1997). Not your average density.
+        Structure 5, 1557-1569.
+        [http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=PubMed&cmd=Retrieve&list_uids=9438862&dopt=Citation]
+
+ *  4 * R.J. Read & G.J. Kleywegt (2001). Density modification:
+        theory and practice. In: "Methods in Macromolecular
+        Crystallography" (D Turk & L Johnson, Eds.), IOS Press,
+        Amsterdam, pp. 123-135.
+
+ *  5 * Kleywegt, G.J., Zou, J.Y., Kjeldgaard, M. & Jones, T.A. (2001).
+        Around O. In: "International Tables for Crystallography, Vol. F.
+        Crystallography of Biological Macromolecules" (Rossmann, M.G.
+        & Arnold, E., Editors). Chapter 17.1, pp. 353-356, 366-367.
+        Dordrecht: Kluwer Academic Publishers, The Netherlands.
+
+ ** VERSION HISTORY
+
+ 930331 - 0.5 - first production version; started manual
+ 930602 - 0.6 - print corr coeffs for each NCS operator
+ 930615 - 1.0 - new production version
+ 930726 - 1.1 - bug hunt
+ 931216 - 2.0 - implemented domain averaging and positivity
+ 940113 -2.0.2- minor changes
+ 950118 - 2.1 - sensitive to environment variable CCP4_OPEN
+ 951022 - 2.2 - made sensitive to OSYM
+ 951030 - 2.3 - enable reading of one OR MANY NCS operators
+                from each file
+ 951106 - 2.4 - implemented EZ skewing
+ 960315 - 2.5 - changed minimum allowed cell axis length from 10.0
+                to 1.0 A so the program can be used with small
+                molecules; removed nasty bug when using a mask
+                whose origin and extent were not the same as that
+                of the input map for skewing; wrote a jiffy script
+                OMAC/plane_extract.csh to plot density (2D projection)
+                for *any* plane defined by three atoms (e.g., to get
+                a 2D plot for the density of a Trp ring !)
+ 960322 -2.5.1- more changes needed for small-molecule applications
+                (minor ones having to do with deciding what are
+                reasonable values to expect for grid spacing etc.)
+ 960412 - 2.6 - echo all input to help debug scripts
+ 961122 - 3.0 - dynamic memory allocation
+ 010122 - 4.0 - use C routines to do dynamic memory allocation 
+                and port to Linux
+ 010125 - 4.1 - EZ-skewing: if no mask supplied, use all but a border
+                of 3 grid points thickness (to prevent unnecessary
+                FRCSYM errors)
+ 040701 -4.1.1- changed checks of dynamic memory allocation to allow
+                for pointers with negative values as returned by
+                some recent Linux versions
+ 080625 -4.1.2- suppress error messages if more than 10 of them
+ 080901 -4.1.3- check available memory for mask before attempting to
+                fill it with ones (in maskless ez-skewing)
+
+ ** MAP AND MASK SIZE
+
+ From version 3.0 onward, MAVE allocates memory for maps and
+   masks dynamically.  This means that you can increase the size
+   of maps and masks that the program can handle on the fly:
+
+ 1 - through the environment variables MAPSIZE and MASKSIZE (must be
+     in capital letters !), for example put the following in your
+     .cshrc file or your RAVE script:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ setenv MAPSIZE 8000000
+ setenv MASKSIZE 3000000
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ 2 - by using command-line arguments MAPSIZE and MASKSIZE (need not
+     be in capitals), for example in your RAVE script:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ run mave -b mapsize 10000000 masksize 5000000 < mave.inp >& mave.out
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Note that command-line arguments take precedence over environment
+   variables.  So you can set the environment variables in your .cshrc
+   file to "typical" values, and if you have to deal with a map and/or
+   mask which is bigger than that, you can use the command-line argument(s).
+
+ If sufficient memory cannot be allocated, the program will print
+   a message and quit.  In that case, increase the amount of virtual
+   memory (this will not help, of course, if you try to allocate more
+   memory than can be addressed by your machine (for 32-bit machines,
+   something 2**32-1 bytes, I think), or reduce the size requirements.
+
+ MAVE needs space for 2 maps and 1 mask.
+
+ ** NOTES
+
+ NOTE: this program is sensitive to the environment variable
+       CCP4_OPEN.  If this variable has *not* been set, you will
+       not be able to create any CCP4 maps.  If this happens, the
+       program will abort execution on startup.  To fix this,
+       put the following line in your .login or .cshrc file:
+       setenv CCP4_OPEN UNKNOWN
+
+ NOTE: this program is sensitive to the environment variable OSYM.
+   It should point to your local copy of $ODAT/symm, the directory
+   which contains the spacegroup symmetry operators in O format.
+   When asked for a file with spacegroup operators in O format,
+   you may either provide a filename, or the name of a sapcegroup
+   (including blanks if you like, case doesn't matter).  The program
+   will try to open the following files, assuming that STRING is the
+   what you input:
+ (1) open a file called STRING
+ (2) if this fails, check if OSYM is defined and open $OSYM/STRING
+ (3) if this fails, open $OSYM/string.sym
+ (4) if this fails, open $OSYM/string.o
+ Hint: if you make soft links in the OSYM directory, you can also type
+   spacegroup numbers (e.g.: \ln -s p212121.sym 19.sym).
+
+ NOTE: from version 2.3 onwards, you may choose to enter NCS operators
+       either one by one (as it used to be), or all in one go (by
+       putting them all in one file), or a mixture of this.
+
+ NOTE: from 960410 onwards, there is a little jiffy program called CRAVE
+       which can be used to auto-generate C-shell scripts for multiple
+       crystal averaging using MAVE (up to 25 crystal forms; only for
+       single domains at present).  See the CRAVE manual for details !!!
+
+ ** DESCRIPTION
+
+ MAVE is a program for multiple-crystal form averaging.  It may
+   be used to carry out the following tasks:
+
+ (1) NCS-averaging density within one unit cell and projecting it
+     onto a mask in the REFERENCE crystal
+
+ (2) projection of density from a map around a mask in the
+     REFERENCE crystal into a different unit cell and expansion
+     according to NCS-operators
+
+ (3) improvement of approximate RT-operators which relate a
+     reference molecule (mask) in the reference crystal and in
+     any other crystal
+
+ (4) easy skewing of maps (transforming them from one cell/grid
+     to another)
+
+ ** STARTUP
+
+ When you start the program, you will see the following:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ *** MAVE *** MAVE *** MAVE *** MAVE *** MAVE *** MAVE *** MAVE *** MAVE *** 
+
+ Version  - 931216/2.0
+ (C) 1993 - Gerard J. Kleywegt & T. Alwyn Jones, BMC, Uppsala (S)
+ User I/O - routines courtesy of Rolf Boelens, Univ. of Utrecht (NL)
+ Others   - T.A. Jones, G. Bricogne, Rams, W.A. Hendrickson
+ Others   - W. Kabsch, CCP4, PROTEIN, etc. etc.
+
+ Started  - Fri Dec 17 17:01:06 1993
+ User     - gerard
+ Mode     - interactive
+ Host     - rigel
+ ProcID   - 2183
+ Tty      - /dev/ttyq16
+
+ *** MAVE *** MAVE *** MAVE *** MAVE *** MAVE *** MAVE *** MAVE *** MAVE *** 
+
+ Max size of maps and masks    : (    4194304) 
+ Max nr of spacegroup symm ops : (         64) 
+ Max nr of NCS symm ops        : (         64) 
+
+ Which task ?
+  A = Average map on mask in reference crystal
+  P = average & enforce positivity
+  E = Expand map from mask in reference crystal
+  F = expand & keep zero background
+  I = Improve RT-operator from reference to target
+  Q = Quit right now
+ Task ? (A) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Since the input and output are different depending on the option
+   that you select, we shall discuss each of them separately.
+
+ ** AVERAGE
+
+ Use this option to do NCS-averaging and to project the density
+   onto a map which is on the same grid and in the same cell and
+   position as the mask.
+
+ ## input map
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Task ? (A) aver
+ Task : (A) 
+
+ IMPORTANT NOTE ...
+ The REFERENCE and TARGET crystals may be identical !
+
+ Map to be averaged of TARGET crystal ? () p212121_start.E
+ Read header.
+...
+ Header done.
+ Map read OK.
+ Cell axes   (A) : (  62.100   46.700   92.100) 
+ Cell angles (d) : (  90.000   90.000   90.000) 
+ Grid axes (pts) : (      60       48       90) 
+ Origin    (pts) : (       0        0        0) 
+ Extent    (pts) : (      32       26       90) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## mask file (any O/MAMA format)
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Mask in REFERENCE crystal ? () p21_start.mask
+ Reading mask (old format)
+ Mask read OK
+ Number of points in mask : (      66214) 
+ Cell axes   (A) : (  67.000   50.500   86.700) 
+ Cell angles (d) : (  90.000  100.100   90.000) 
+ Grid axes (pts) : (      70       48       88) 
+ Origin    (pts) : (     -22      -27       -3) 
+ Extent    (pts) : (      76       78       77) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## inter-crystal operator
+ provide the name of the "O" datablock file which contains the
+   RT-operator that relates the reference molecule in the reference
+   crystal to the reference molecule in this crystal (if target
+   and reference crystal are identical, provide the identity
+   operator):
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ File with RT FROM reference TO target crystal ? () p21_to_p212121.o
+ Opening O datablock : (p21_to_p212121.o) 
+ Datablock : (.space_group_operators) 
+ Data type : (R) 
+ Number    : (12) 
+ Format    : ((3f15.6)) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## symmetry operators
+ provide the name of the "O" datablock file which contains the
+   symmetry operators for the spacegroup of this crystal:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ File with symmetry operators for TARGET crystal ? () p212121.sym
+ Opening O datablock : (p212121.sym) 
+ Datablock : (.space_group_operators) 
+ Data type : (r) 
+ Number    : (48) 
+ Format    : ((3F10.5)) 
+ Nr of symmetry operators : (          4) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## NCS operators
+ provide the names of the "O" datablock files which contain the
+   NCS-operators for this crystal.  There should be at least one
+   (namely, the identity operator).  When no more NCS-operators
+   are to be read, just hit [RETURN]:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ File with NCS operator for TARGET crystal ? () rt_unit.o
+ Opening O datablock : (rt_unit.o) 
+ Datablock : (unit_operator) 
+ Data type : (R) 
+ Number    : (12) 
+ Format    : ((3f15.7)) 
+ File with NCS operator for TARGET crystal ? () 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## map in reference spacegroup
+ provide the name of ANY map which was made in the REFERENCE
+   spacegroup (MAVE needs some parameters from the header of
+   this file):
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ I need parameters from the averaged map
+ around the mask in the REFERENCE crystal
+ Averaged map in REFERENCE crystal ? () /nfs/scratch/gerard/p21_0x.E
+ Reading header
+...
+ Header done
+ Cell axes   (A) : (  67.000   50.500   86.700) 
+ Cell angles (d) : (  90.000  100.100   90.000) 
+ Grid axes (pts) : (      70       48       88) 
+ Origin    (pts) : (     -22      -27       -3) 
+ Extent    (pts) : (      76       78       77) 
+ Thanks !
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## output map
+ provide the name of the output map (which will be on the same
+   grid etc. as the mask in the reference unit cell):
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Averaged map on mask in REFERENCE crystal ? () /nfs/scratch/gerard/eikel.E
+ CPU total/user/sys :      11.3       8.2       3.1
+ Start averaging ...
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## output
+ The program now does its job.  If you get "Severe FRCSYM error"
+   messages, you have not selected a proper part of the input map
+   (should be AT LEAST one asymmetric unit, INCLUDING THE BORDERS).
+   If you get "Interpolation error" messages, there is something
+   strange (either a bug in the program or, for example, a map
+   which contains only zeroes in a certain area); in this case,
+   contact the authors.
+
+ Afterwards, you will get the following output:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Calls to BLDBIT : (       1688) 
+ CPU total/user/sys :      58.6      57.9       0.7
+  (Q)QOPEN allocated stream  3
+...
+   Minimum density in map  =      -86.12376
+   Maximum density         =      101.20619
+   Mean density            =       -0.02977
+   Rms deviation from mean =        8.75672
+
+ Map written out.
+ Map written
+
+
+ *** MAVE *** MAVE *** MAVE *** MAVE *** MAVE *** MAVE *** MAVE *** MAVE *** 
+
+ Version - 930331/0.5
+ Started - Wed Mar 31 20:12:40 1993
+ Stopped - Wed Mar 31 20:22:15 1993
+
+ CPU-time taken :
+ User    -     74.2 Sys    -      4.4 Total   -     78.6
+
+ *** MAVE *** MAVE *** MAVE *** MAVE *** MAVE *** MAVE *** MAVE *** MAVE *** 
+
+STOP ... All done ... statement executed
+74.1u 4.4s 9:35 13%
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** EXPAND
+
+ Use this option to project the density (after averaging with COMAP)
+   back into the cells of ALL crystal forms.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+...
+ Which task ?
+  A = Average map on mask in reference crystal
+  E = Expand map from mask in reference crystal
+  I = Improve RT-operator from reference to target
+ Task ? (A) expand
+ Task : (E) 
+
+ IMPORTANT NOTE ...
+ The REFERENCE and TARGET crystals may be identical !
+
+ Averaged map in mask of REFERENCE crystal ? () /nfs/scratch/gerard/comap_0x.E
+ Read header.
+...
+ Map read OK.
+ Cell axes   (A) : (  67.000   50.500   86.700) 
+ Cell angles (d) : (  90.000  100.100   90.000) 
+ Grid axes (pts) : (      70       48       88) 
+ Origin    (pts) : (     -22      -27       -3) 
+ Extent    (pts) : (      76       78       77) 
+ Mask in REFERENCE crystal ? () p21_start.mask
+ Reading mask (old format)
+ Mask read OK
+ Number of points in mask : (      66214) 
+ Cell axes   (A) : (  67.000   50.500   86.700) 
+ Cell angles (d) : (  90.000  100.100   90.000) 
+ Grid axes (pts) : (      70       48       88) 
+ Origin    (pts) : (     -22      -27       -3) 
+ Extent    (pts) : (      76       78       77) 
+ File with RT FROM reference TO target crystal ? () p21_to_p212121.o
+ Opening O datablock : (p21_to_p212121.o) 
+ Datablock : (.space_group_operators) 
+ Data type : (R) 
+ Number    : (12) 
+ Format    : ((3f15.6)) 
+ File with symmetry operators for REFERENCE crystal ? () p21.sym
+ Opening O datablock : (p21.sym) 
+ Datablock : (.space_group_operators) 
+ Data type : (r) 
+ Number    : (24) 
+ Format    : ((3F10.5)) 
+ Nr of symmetry operators : (          2) 
+ File with symmetry operators for TARGET crystal ? () p212121.sym
+ Opening O datablock : (p212121.sym) 
+ Datablock : (.space_group_operators) 
+ Data type : (r) 
+ Number    : (48) 
+ Format    : ((3F10.5)) 
+ Nr of symmetry operators : (          4) 
+ File with NCS operator for TARGET crystal ? () rt_unit.o
+ Opening O datablock : (rt_unit.o) 
+ Datablock : (unit_operator) 
+ Data type : (R) 
+ Number    : (12) 
+ Format    : ((3f15.7)) 
+ File with NCS operator for TARGET crystal ? () 
+ I need parameters from a map in the asymmetric
+ unit of the TARGET crystal
+ Asymmetric unit map of TARGET crystal ? () p212121_start.E
+ Reading header
+...
+ Header done
+ Cell axes   (A) : (  62.100   46.700   92.100) 
+ Cell angles (d) : (  90.000   90.000   90.000) 
+ Grid axes (pts) : (      60       48       90) 
+ Origin    (pts) : (       0        0        0) 
+ Extent    (pts) : (      32       26       90) 
+ Thanks !
+ Expanded map in TARGET crystal ? () /nfs/scratch/gerard/zeikerd.E
+ CPU total/user/sys :      11.3       8.4       2.9
+ Start expanding ...
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ The program goes to work.  Again "severe FRCSYM" errors should NOT
+   occur.
+ The output may look as follows:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Nr of asymm units in map   : (   1.156) 
+ Nr of asymm units in map   : (       1) 
+...
+ Calls to BLDBIT   : (          0) 
+ Points in mask    : (      66214) 
+ Set in asymm unit : (      58567) 
+ Total points set  : (      58567) 
+ Average density inside masks : ( -6.058E-02) 
+ Average density in solvent   : (  4.505E-01) 
+ Average density overall      : ( -1.474E-06) 
+...
+ Map written
+...
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** IMPROVE
+
+ Use this option to improve the Cartesian RT-operator FROM the
+   reference molecule in the reference crystal TO the reference
+   molecule in the target crystal.
+
+ This option has the same input parameters as IMP, the program
+   that improves NCS-operators, except that you have to supply
+   two map files instead of only one.  See the IMP manual for
+   more details.
+
+ A typical session may go as follows (NOTE: in real life, a
+   sample density of 10 is too coarse; use 5 for an automatic
+   search and then finetune the rotation and translation
+   operators with a sample density of 1; this takes quite
+   some CPU-time, but it's worth it):
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+...
+ Which task ?
+  A = Average map on mask in reference crystal
+  E = Expand map from mask in reference crystal
+  I = Improve RT-operator from reference to target
+ Task ? (A) imp
+ Task : (I) 
+
+ Map of TARGET crystal ? () p212121_start.E
+ Read header.
+...
+ Map read OK.
+ Cell axes   (A) : (  62.100   46.700   92.100) 
+ Cell angles (d) : (  90.000   90.000   90.000) 
+ Grid axes (pts) : (      60       48       90) 
+ Origin    (pts) : (       0        0        0) 
+ Extent    (pts) : (      32       26       90) 
+ Mask in REFERENCE crystal ? () p21_start.mask
+ Reading mask (old format)
+ Mask read OK
+ Number of points in mask : (      66214) 
+ Cell axes   (A) : (  67.000   50.500   86.700) 
+ Cell angles (d) : (  90.000  100.100   90.000) 
+ Grid axes (pts) : (      70       48       88) 
+ Origin    (pts) : (     -22      -27       -3) 
+ Extent    (pts) : (      76       78       77) 
+ File with RT FROM reference TO target crystal ? () bad_or2or.o
+ Opening O datablock : (bad_or2or.o) 
+ Datablock : (.p21_to_p212121_bad) 
+ Data type : (R) 
+ Number    : (12) 
+ Format    : ((3f15.6)) 
+ File with symmetry operators for REFERENCE crystal ? () p21.sym
+ Opening O datablock : (p21.sym) 
+ Datablock : (.space_group_operators) 
+ Data type : (r) 
+ Number    : (24) 
+ Format    : ((3F10.5)) 
+ Nr of symmetry operators : (          2) 
+ File with symmetry operators for TARGET crystal ? () p212121.sym
+ Opening O datablock : (p212121.sym) 
+ Datablock : (.space_group_operators) 
+ Data type : (r) 
+ Number    : (48) 
+ Format    : ((3F10.5)) 
+ Nr of symmetry operators : (          4) 
+ Map in REFERENCE crystal ? () p21_start.E
+ Read header.
+...
+ Map read OK.
+ Cell axes   (A) : (  67.000   50.500   86.700) 
+ Cell angles (d) : (  90.000  100.100   90.000) 
+ Grid axes (pts) : (      70       48       88) 
+ Origin    (pts) : (       0        0        0) 
+ Extent    (pts) : (      70       48       88) 
+ CPU total/user/sys :       9.9       7.9       2.0
+
+ Select one of the options Q(uit),
+ T(ranslation), R(otation) or A(uto)
+ Search type ? (A) t
+ Step size ? (   0.500) 1
+ Enter the sample density; 1 means: use all
+ points, 3 means: use every third point etc.
+ Higher value -> faster (but less accurate)
+ Sample density ? (       4) 10
+
+ Cell A    : (  62.100   46.700   92.100   90.000   90.000   90.000) 
+ Origin A  : (       0        0        0) 
+ Extent A  : (      32       26       90) 
+ Grid A    : (      60       48       90) 
+ Spacing A : (   1.035    0.973    1.023) 
+ AFORGN    : (   0.000    0.000    0.000) 
+ AFEXT     : (   0.517    0.521    0.989) 
+ AGEXT     : (   0.500    0.500    0.978) 
+ Cell B    : (  67.000   50.500   86.700   90.000  100.100   90.000) 
+ Origin B  : (       0        0        0) 
+ Extent B  : (      70       48       88) 
+ Grid B    : (      70       48       88) 
+ Spacing B : (   0.957    1.052    0.985) 
+ BFORGN    : (   0.000    0.000    0.000) 
+ BFEXT     : (   0.986    0.979    0.989) 
+ BGEXT     : (   0.971    0.958    0.977) 
+
+ Start Rotation Matrix
+    -0.106810    0.673974    0.730998
+    -0.422524    0.634750   -0.646978
+    -0.900048   -0.377965    0.216976
+ Start Translation
+    25.850410   19.666836    7.992209
+ Rotation origin at    -16.336     3.610    28.965
+ Centre of mask in REFERENCE : (   8.922   14.729   35.888) 
+ Centre of mask in TARGET    : ( -13.627   21.464   12.771) 
+ Nr of points in mask        : (      66214) 
+ Shift=   -1.000000   -1.000000   -1.000000 | Corr coeff=    0.017661
+ Shift=   -1.000000   -1.000000    0.000000 | Corr coeff=    0.096346
+ Shift=   -1.000000   -1.000000    1.000000 | Corr coeff=    0.076221
+...
+ Shift=    1.000000    1.000000   -1.000000 | Corr coeff=   -0.022900
+ Shift=    1.000000    1.000000    0.000000 | Corr coeff=    0.044593
+ Shift=    1.000000    1.000000    1.000000 | Corr coeff=    0.046751
+ Nr of mask points checked :        6621
+ CPU total/user/sys :     199.6     198.1       1.6
+ Best Rotation Matrix
+    -0.106810    0.673974    0.730998
+    -0.422524    0.634750   -0.646978
+    -0.900048   -0.377965    0.216976
+ Best Translation
+    26.850410   18.666836    7.992209
+ Correlation Coefficient =     0.406828
+...
+ Select one of the options Q(uit),
+ T(ranslation), R(otation) or A(uto)
+ Search type ? (T) r
+ Step size ? (   0.300) 0.2
+ Enter the sample density; 1 means: use all
+ points, 3 means: use every third point etc.
+ Higher value -> faster (but less accurate)
+ Sample density ? (      10) 
+ Start Rotation Matrix
+    -0.111713    0.673555    0.730651
+    -0.422476    0.633309   -0.648420
+    -0.899475   -0.381117    0.213815
+ Start Translation
+    26.824198   18.712788    8.502277
+ Rotation origin at    -15.820     4.995    29.441
+ Centre of mask in REFERENCE : (   8.922   14.729   35.888) 
+ Centre of mask in TARGET    : ( -12.676   20.372   13.144) 
+ Nr of points in mask        : (      66214) 
+ Shift=   -0.200000   -0.200000   -0.200000 | Corr coeff=    0.428738
+ Shift=   -0.200000   -0.200000    0.000000 | Corr coeff=    0.429371
+...
+ Shift=    0.200000    0.200000    0.000000 | Corr coeff=    0.429088
+ Shift=    0.200000    0.200000    0.200000 | Corr coeff=    0.428719
+ Nr of mask points checked :        6621
+ CPU total/user/sys :     197.5     196.0       1.5
+ Best Rotation Matrix
+    -0.116613    0.673152    0.730257
+    -0.422418    0.631838   -0.649891
+    -0.898880   -0.384257    0.210674
+ Best Translation
+    26.845713   18.850735    8.640188
+ Correlation Coefficient =     0.430368
+
+ Select one of the options Q(uit),
+ T(ranslation), R(otation) or A(uto)
+ Search type ? (R) q
+ File for new operator ? () rt_better.o
+
+
+ *** MAVE *** MAVE *** MAVE *** MAVE *** MAVE *** MAVE *** MAVE *** MAVE *** 
+
+ Version - 930331/0.5
+ Started - Wed Mar 31 20:39:26 1993
+ Stopped - Wed Mar 31 21:05:05 1993
+
+ CPU-time taken :
+ User    -   1192.9 Sys    -     11.9 Total   -   1204.8
+
+ *** MAVE *** MAVE *** MAVE *** MAVE *** MAVE *** MAVE *** MAVE *** MAVE *** 
+
+STOP ... All done ... statement executed
+1192.9u 11.9s 25:39 78%
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** SKEWING
+
+ MAVE could previously be used for mask skewing, but many people found
+   the operation too complicated.  Therefore, from version 2.4, there is
+   a dedicated, simple skewing option ("ez skewing").
+
+ What is skewing ?  Transforming a map in one unit cell/grid (the
+   so-called REFERENCE crystal) to another cell and/or grid (the TARGET
+   crystal).
+
+ Why do you want to do it ?  If you *only* want to do it for display
+   purposes, i.e. to see how well your monoclinic model fits your
+   tetragonal map, DO NOT USE MAVE !!!  There's a command in O called
+   Rot_Tran_Obj with which you can apply an arbitrary operation to
+   a graphics object.  Simply contour the map around your monoclinic
+   model and use Rot_Tran_Obj to rotate and/or translate the map
+   object on top of your tetragonal model.
+ If you want to actually *use* the skewed map (e.g., to calculate
+   structure factors for Molecular Replacement exercises), then you
+   can use MAVE to do just that.
+
+ How is it done ?  Skewing as implemented in this special-purpose
+   MAVE option, is simply a special case of the Expand operation
+   of the program.  It is easier to set up and use, and has some
+   extra bells and whistles to make it easier and more transparent.
+ Compared to the Expand command, there are a couple of things which
+   you do not have to provide:
+ - NCS operators for the TARGET crystal; only the unit operator
+   is used
+ - symmetry operators of the TARGET crystal; only the identity
+   operator is used
+ - an example map to get some map parameters for the TARGET crystal;
+   the origin and extent are figured out automagically by the program;
+   the order of the axes is set to X-Y-Z (if you or your program don't
+   like that, "reslice" the map with MAPMAN using the UVw command);
+   you are prompted for the spacegroup *NUMBER* (1-230)
+ - a mask in the REFERENCE crystal; if you *DO* supply it, it will be
+   used and only density inside the mask will be moved to the TARGET
+   map; if you don't supply it, a dummy mask encompassing the *ENTIRE*
+   REFERENCE map is generated automatically
+
+ Let's go through an example to show how it works (in this case, skewing
+   a P1 map into a P21 cell):
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ *** MAVE *** MAVE *** MAVE *** MAVE *** MAVE *** MAVE *** MAVE *** MAVE *** 
+
+ Max size of maps and masks    : (    5242880) 
+ Max nr of spacegroup symm ops : (         96) 
+ Max nr of NCS symm ops        : (         96) 
+
+ Which task ?
+  A = Average map on mask in reference crystal
+  P = average & enforce positivity
+  E = Expand map from mask in reference crystal
+  F = expand & keep zero background
+  I = Improve RT-operator from reference to target
+  S = ez Skewing
+  Q = Quit right now
+
+ Task ? (A) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Select task "S", for EZ skewing.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Input map of REFERENCE crystal ? ( ) p1.E
+ Read header
+ Input map : (p1.E) 
+ ...
+ Map read OK
+ Closing BINARY CCP4 map on unit : (       1) 
+ Cell axes   (A) : (  49.600   67.500   53.800) 
+ Cell angles (d) : (  76.300   75.200   78.400) 
+ Grid axes (pts) : (      84      112       90) 
+ Origin    (pts) : (     -66      -64      -62) 
+ Extent    (pts) : (     138      128      132) 
+
+ Mask is *OPTIONAL* for skewing !
+ If you do not provide a mask name the entire
+ map will be skewed.
+ Mask in REFERENCE crystal ? ( ) p1.mask
+ Input mask : (p1.mask) 
+ Reading mask (compressed format)
+ Grid points : (    2331648) 
+ Stretches   : (       7064) 
+ Mask points : (     280522) 
+ Number of points in mask : (     280522) 
+ Cell axes   (A) : (  49.600   67.500   53.800) 
+ Cell angles (d) : (  76.300   75.200   78.400) 
+ Grid axes (pts) : (      84      112       90) 
+ Origin    (pts) : (     -66      -64      -62) 
+ Extent    (pts) : (     138      128      132) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Supply the name of the existing (REFERENCE) map, and -optionally- a
+   mask file (which must have the same grid and cell as the input map).
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ File with RT FROM reference TO target crystal ? ( ) p1_to_p21.o
+ Opening O datablock : (p1_to_p21.o) 
+ Datablock : (.LSQ_RT_P1_TO_P21) 
+ Data type : (R) 
+ Number    : (12) 
+ Format    : ((3F15.8)) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Provide a file with the O-style operator FROM reference TO target (NOTE
+   the FROM and TO !!!).  If you don't care, use the unit operator.
+   If you want the map centred on (0,0,0), use the identity rotation
+   and -1.0 * (centre-of-gravity vector) of your REFERENCE model as
+   the translation vector.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ File with symmetry operators for REFERENCE crystal ? ( ) p1
+ ...
+ Nr of symmetry operators : (          1) 
+
+ Nr of spacegroup symmetry operators :   1
+
+ SYMOP  1 =        1.0000       0.0000       0.0000                  0.000
+                   0.0000       1.0000       0.0000                  0.000
+                   0.0000       0.0000       1.0000                  0.000
+ Determinant of rotation matrix =   1.000000
+ Rotation angle                 =   0.000000
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Supply the O-style symmetry operators for the input REFERENCE map.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Output map in TARGET crystal ? ( ) p21.E
+ Output map : (p21.E) 
+ Cell parameters of TARGET crystal ? ( 100.000  100.000  100.000   90.000  
+   90.000   90.000) 49.1 75.8 92.9 90 103.2 90
+ Spacegroup NUMBER ? (          1) 4
+ Grid of TARGET crystal ? (         83         126         155) 84 126 156
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Answer some questions w.r.t. the output nap in the TARGET cell.  Enter the
+  name of the map file, the TARGET cell constants, and the *NUMBER* of the
+  spacegroup.  The program will suggest a grid which has a similar spacing
+  as the input map.  Note that some programs have special requirements w.r.t.
+  the grid for their FFTs.  For CCP4 maps, the maximum prime factor should
+  be less than or equal to 19.  Therefore, in this case, "84" was used
+  instead of "83", and "156" instead of "155".  Of course you don't have to
+  enter a grid with similar spacing, but I don't think it's wise to use
+  a much finer spacing than in the REFERENCE map.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Min mask indices in new map : (         10          26          28) 
+ Max mask indices in new map : (        106         106         130) 
+ Origin of new map : (          0          16          18) 
+ Extent of new map : (        117         101         123) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ The program checks all mask points to find the minimum and maximum fractional
+   coordinates in the new TARGET map.  From that it calculates the origin and
+   extent needed for the new TARGET map (plus 10 safety points on all sides).
+
+ Now the program goes to work:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ REF -> TARGET : (  -0.996    0.078    0.047    0.026    0.743   -0.669   -
+  0.087   -0.665   -0.742   23.261   40.250   43.040) 
+ TARGET -> REF : (  -0.996    0.026   -0.087    0.078    0.743   -0.665    
+  0.047   -0.669   -0.742   18.002   -1.742   60.717) 
+ Nr of asymm units in map   : (   0.880) 
+ Nr of asymm units in map   : (       1) 
+ ERROR --- Less than one asymmetric unit
+ Skewing - create only one copy of the map
+ Points in mask : (     280522) 
+ Progress (% mask) : (  10.000) 
+ Progress (% mask) : (  20.000) 
+ Progress (% mask) : (  29.999) 
+ Progress (% mask) : (  39.999) 
+ Progress (% mask) : (  49.999) 
+ Progress (% mask) : (  59.999) 
+ Progress (% mask) : (  69.999) 
+ Progress (% mask) : (  79.999) 
+ Progress (% mask) : (  89.999) 
+ Progress (% mask) : (  99.999) 
+ Calls to BLDBIT   : (          0) 
+ Points in mask    : (     280522) 
+ Set in asymm unit : (     291239) 
+ Total points set  : (     291239) 
+ FRCTRN errors        : (          0) 
+ FRCSYM errors        : (          0) 
+ Interpolation errors : (          0) 
+ FRCVAL errors        : (          0) 
+ Points outside mask  : (      10529) 
+ Points set > 1 *     : (          0) 
+ Keeping background at zero
+ CPU total/user/sys :      45.0      30.6      14.4
+ Stamp : (Created by MAVE V. 951106/2.4 at Tue Nov 7 01:19:24 1995 for 
+  user gerard) 
+  (Q)QOPEN allocated #  1
+ User:   gerard               Logical Name: p21.E
+ Status: UNKNOWN    Filename: p21.E
+
+  File name for output map file on unit   4 : p21.E
+     logical name p21.E                                                                           
+
+
+   Minimum density in map  =      -54.86745   Maximum density         =       97.98074
+   Mean density            =        0.00024
+   Rms deviation from mean =        7.71887
+
+ Map written out
+ Map written
+
+
+ *** MAVE *** MAVE *** MAVE *** MAVE *** MAVE *** MAVE *** MAVE *** MAVE *** 
+
+ Version - 951106/2.4
+ Started - Tue Nov 7 01:14:51 1995
+ Stopped - Tue Nov 7 01:19:25 1995
+
+ CPU-time taken :
+ User    -     31.1 Sys    -     14.7 Total   -     45.8
+
+ *** MAVE *** MAVE *** MAVE *** MAVE *** MAVE *** MAVE *** MAVE *** MAVE *** 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Note that (due to the fact that P1 symmetry without NCS is used for the
+   TARGET crystal) you will get a map with *exactly one copy* of the density
+   that existed inside the (mask in the) REFERENCE map.  If this is not
+   what you want, use the Expand option instead.
+
+ If you contour the skewed map, ignore its sigma; use the same level as
+   for the original REFERENCE map.
+
+ Well, was this EZ or was it EZ ???
+
+ ** UPDATES
+
+ ## version 2.0
+ You are now presented with the following options on startup:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Which task ?
+  A = Average map on mask in reference crystal
+  P = average & enforce positivity
+  E = Expand map from mask in reference crystal
+  F = expand & keep zero background
+  I = Improve RT-operator from reference to target
+  Q = Quit right now
+ Task ? (A) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ If you want, you may enforce positivity of the density inside
+   the mask.  In this case, all mask points which receive an
+   average density <= zero will be set to an arbitrary small
+   positive value instead.
+
+ In addition, you can now use MAVE to do multiple crystal,
+   multiple domain NCS averaging.  In that case, keep the background
+   at zero after expansion, and combine the various domain maps
+   with COMDEM.
+
+ ** KNOWN BUGS
+
+ None, at present.

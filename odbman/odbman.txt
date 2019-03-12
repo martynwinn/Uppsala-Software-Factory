@@ -1,0 +1,1384 @@
+
+ ** ODBMAN - GENERAL INFORMATION
+
+ Program : ODBMAN
+ Version : 040618
+ Author  : Gerard J. Kleywegt, Dept. of Cell and Molecular Biology,
+           Uppsala University, Biomedical Centre, Box 596,
+           SE-751 24 Uppsala, SWEDEN
+ E-mail  : gerard@xray.bmc.uu.se
+ Purpose : manipulate O datablocks
+ Package : X-UTIL
+
+ ** REFERENCES
+
+ Reference(s) for this program:
+ Reference(s) for this program:
+
+ *  1 * G.J. Kleywegt (1997). Les amis d"O. CCP4/ESF-EACBM
+        Newsletter on Protein Crystallography 34, September 1997,
+        pp. 5-8.
+        [http://xray.bmc.uu.se/usf/factory_8.html]
+
+ *  2 * Kleywegt, G.J., Zou, J.Y., Kjeldgaard, M. & Jones, T.A. (2001).
+        Around O. In: "International Tables for Crystallography, Vol. F.
+        Crystallography of Biological Macromolecules" (Rossmann, M.G.
+        & Arnold, E., Editors). Chapter 17.1, pp. 353-356, 366-367.
+        Dordrecht: Kluwer Academic Publishers, The Netherlands.
+
+ ** VERSION HISTORY
+
+ 931115 - 0.1 - initial version
+ 931129 - 0.4 - first production version
+ 931130 - 0.5 - added EXtract FIeld
+ 931201 - 1.0 - added EX FOrmat, MUltiple and PRocheck
+ 940415 - 1.1 - improved O2D plot files
+ 960219 - 1.2 - minor bug fix (if too many values in histogram
+                command, it no longer crashes; also, allow more
+                values in histogram command)
+ 960301 -1.2.1- cut array dimensioning back so it will run on smaller
+                machines
+ 960409 - 1.3 - implemented macro facility
+ 960517 - 1.4 - implemented simple symbol mechanism
+ 970616 - 1.5 - implemented BOxcar averaging of real datablocks
+ 970626 - 1.6 - support initialisation macro (setenv GKODBMAN macrofile)
+ 980930 - 1.7 - optional parameter to the SImilarity command, to only
+                list datablocks for which the correlation coefficient
+                exceeds a minimum value; new ALl_correlations command
+                to find sets of datablocks with high correlation
+                coefficient
+ 981001 - 1.8 - optional parameter max_correlation for the SImilarity
+                and ALl_correlations commands; new CGraph_file command
+                to save numeric datablocks in a TAB-delimited file that
+                can be imported into CricketGraph etc.
+ 981014 -1.8.1- PLot and SCatter files now contain some statistics
+                about the plotted datablock(s) (ave, sd, min, max;
+                correlation coefficient and rmsd)
+ 981019 -1.8.2- minor bug fix in the above (min and max were screwed up)
+ 981020 -1.8.3- minor bug fix needed for ALPHAs; also reduced memory
+                allocation
+ 981021 -1.8.4- new ECho command to echo command-line input (useful
+                in scripts)
+ 981022 - 1.9 - implemented command history (# command)
+ 981112 -1.9.1- minor bug fixes (REad and CGraph commands)
+ 990303 -1.9.2- minor fix in SImilarity and ALl_correlations options.
+                The last (optional) parameter for these commands is now
+                actually used (it may be Table of List and determines
+                the output format).
+ 990824 -1.9.3- new NOn_parametric command to calculate Spearman's
+                rank-correlation coefficient (similar to the SImilarity
+                command)
+ 990923 -1.9.4- minor changes
+ 001206 - 2.0 - removed nasty bug from ALl_corr command; changed
+                dimensioning (max 100 ODBs of size 10000)
+ 001211 - 2.1 - new 3D_odl_file command to generate ODL file with
+                spheres whose coordinates are taken from 3 datablocks
+                (all scaled to range 0-100)
+ 010331 -2.1.1- minor increase in dimensioning (max size 11000)
+ 010402 -2.1.2- minor changes
+ 010403 -2.1.3- minor bug fix
+ 010803 -  X  - added example figure for 3D_odl command
+ 010807 - 2.2 - new COmbine command to combine two datablocks using
+                the +, -, *, /, MIN or MAX operator; added a number
+                of pictures to this manual to illustrate the results
+                of some commands
+ 011221 -2.2.1- minor changes
+ 040617 -2.2.2- increased maximum datablock size to 15000 elements;
+                implemented error traps if the EXtract commands attempt
+                to create a datablock that is too big
+ 040618 -2.2.3- print more descriptive error messages when the EXtract
+                commands encounter a reading or parsing error
+
+ ** START-UP MACRO
+
+ From version 1.6 on, ODBMAN can execute a macro at start-up (whether
+   it is run interactively or in batch mode).  This can be used to
+   execute commands which you (almost) always want to have executed.
+   To use this feature, set the environment variable GKODBMAN to
+   point to a ODBMAN macro file, e.g.:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ setenv GKODBMAN /home/gerard/odbman.init
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** INTRODUCTION
+
+ ## applications
+
+ ODBMAN is a program for manipulating O datablocks (ODBs).
+ Some of the possibilities:
+
+ (1) analysing individual datablocks
+ (2) simple math operations on datablocks
+ (3) correlating sets of two datablocks
+ (4) plotting a single datablock
+ (5) generating a scatter plot from two datablocks
+ (6) "translating" datablocks
+ (7) setting specific values in a datablock
+ (8) compressing text datablocks
+ (9) extracting datablocks from ASCII files (e.g., X-PLOR and PROCHECK
+     output files)
+
+ ## interface
+
+ The command interface is similar to the one used by MAMA,
+   MAPMAN, DATAMAN etc.  Again, every datablock has a name by
+   which you refer to it.  In addition, each datablock has a
+   type, a length and a format.
+
+ Name: this must be 25 characters or less; all names are
+       automatically converted to UPPERCASE.
+ Type: must be one of Real, Integer, Character or Text;
+       Character entries may contain up to 6 characters;
+       Text entries may contain up to 72 characters
+ Format: must be appropriate for the type of datablock:
+ - Real: format must be F, E or G
+ - Integer: format must be I
+ - Character: format must be A
+ - Text: exception: "format" is the number of characters
+             in each entry (ODBMAN will always reduce this
+             number so that it is just big enough to contain all
+             entries)
+
+ ## wildcards
+
+ When referring to datablocks, you have a lot of wildcards
+   available:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ * 		for all datablocks
+ # 		for all integer datablocks
+ % 		for all real datablocks
+ #% or %# 	for all numerical datablocks
+ $ 		for all character datablocks
+ @ 		for all text datablocks
+ $@ or @$ 	for all character and text datablocks
+ *XYZ* 		for all datablocks containing "XYZ"
+ *XYZ  		for all datablocks ending in "XYZ"
+ XYZ*  		for all datablocks beginning with "XYZ"
+ ? 		for this list
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Note that the only thing that is not allowed is using embedded
+   asterisks (i.e., you cannot type *9*residue*).
+ Many ODBMAN commands allow you to use all of these wildcards;
+   this is indicated by "odb*" in the list of commands that you
+   get when you type a single question mark.
+ Others are more restricted. For example, the SImilarity command
+   must have ONE Real OR Integer datablock as its first argument
+   (indicated by "RI_odb" in the list of commands), and one OR
+   more Real and/or Integer datablocks as its second argument.
+ So, here you could type "simil m9a_residue_rsfit #%", if you
+   want to look for residue properties which are correlated with
+   your RS-fit values. 
+
+ Communication of datablocks between O and ODBMAN is simple:
+ in O, use things like:
+ write m9a* m9a.odb
+ to write all datablocks pertaining to a particular molecule
+   to a file, and:
+ read m9a_new.odb
+ to read ODB files created by ODBMAN.
+ In ODBMAN you use the same commands to read and write ODBs.
+
+ ** DESCRIPTION
+
+ ## startup
+
+ When you start ODBMAN, the program shows you a list of all
+   available commands, their sub-commands (if any) and their
+   parameters (if any).  In addition, some information about
+   the array dimensioning is printed:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ *** ODBMAN *** ODBMAN *** ODBMAN *** ODBMAN *** ODBMAN *** ODBMAN *** 
+
+ Version  - 990923/1.9.4
+ (C) 1992-1999 Gerard J. Kleywegt, Dept. Cell Mol. Biol., Uppsala (S)
+ User I/O - routines courtesy of Rolf Boelens, Univ. of Utrecht (NL)
+ Others   - T.A. Jones, G. Bricogne, Rams, W.A. Hendrickson
+ Others   - W. Kabsch, CCP4, PROTEIN, E. Dodson, etc. etc.
+
+ Started  - Mon Oct 11 19:24:34 1999
+ User     - gerard
+ Mode     - interactive
+ Host     - sarek
+ ProcID   - 13139
+ Tty      - /dev/ttyq12
+
+ *** ODBMAN *** ODBMAN *** ODBMAN *** ODBMAN *** ODBMAN *** ODBMAN *** 
+
+ Reference(s) for this program:
+
+ *  1 * G.J. Kleywegt (1997). Les amis d"O. CCP4/ESF-EACBM
+        Newsletter on Protein Crystallography 34, September 1997,
+        pp. 5-8.
+        [http://xray.bmc.uu.se/usf/factory_8.html]
+
+ *  2 * G.J. Kleywegt, J.Y. Zou, M. Kjeldgaard & T.A. Jones (1999 ?).
+        Chapter 25.2.6.  Around O. Int. Tables for
+        Crystallography, Volume F. Submitted.
+
+ ==> For manuals and up-to-date references, visit:
+ ==> http://xray.bmc.uu.se/usf
+
+ *** ODBMAN *** ODBMAN *** ODBMAN *** ODBMAN *** ODBMAN *** ODBMAN *** 
+
+ Max nr of O data blocks (odb) : (        200) 
+ Total nr of O data blocks     : (        800) 
+ Max nr of elements per odb    : (       5000) 
+ Max length of text odbs       : (         72) 
+
+ Symbol START_TIME : (Mon Oct 11 19:24:34 1999) 
+ Symbol USERNAME : (gerard) 
+
+ ODBMAN options :
+
+ ? (list options)                     ! (comment)
+ QUit                                 $ shell_command
+ & symbol value                       & ? (list symbols)
+ @ macro_file                         ECho on_off
+ # parameter(s) (command history)     
+
+ REad filename                        WRite odb* filename
+ DElete odb*                          TYpe odb*
+ FOrmat RIC_odb* new_format           NAme odb new_name
+ CReate name type nr_elements format  DUplicate old_odb new_odb
+
+ LIst odb*                            STats RI_odb*
+ HIsto RI_odb* x1 x2 x3 [...]         BOxcar R_odb* window_size 
+ SImilarity RI_odb1 RI_odb2* [min] [max] [how]
+ ALl_correlations [min] [max] [how]
+ NOn_parametric RI_odb1 RI_odb2* [min] [max] [how]
+
+ PLot_file RI_odb file [y_lo y_hi label_x label-y]
+ SCatter RI_odb1 RI_odb2 file [label_x label_y]
+ CGraph_file RI_odb* file
+
+ CHaracter_function CT_odb function   INteger_func I_odb function value
+ FLoat_func R_odb function value      
+
+ SEt ALl odb value                    SEt MAny odb first last value
+ SEt INdiv odb first last [values]    SEt ONe odb index value
+ SEt IF odb other_odb operator value  SEt KEep odb first last [step]      
+
+ EXtract FIeld odb type file head_skip line_skip field_nr
+ EXtract FOrmat odb type file head_skip line_skip format
+ EXtract MUltiple odb type file head_skip format
+ EXtract PRocheck mol_name file
+
+
+ Max nr of O data blocks (odb) : (        200) 
+ Total nr of O data blocks     : (        800) 
+ Max nr of elements per odb    : (       5000) 
+ Max length of text odbs       : (         72) 
+
+ ODBMAN > 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## ?
+ Prints the list of all commands etc. again.
+
+ ## !
+ Does nothing; used to add comments to input scripts.
+
+ ## $
+ Issue a shell command (does not necessarily work on all machine
+   types).
+
+ ## QUit
+ Stop working with ODBMAN.  The program will list all datablocks
+   with unsaved changes.  If there are such datablocks, and you
+   run ODBMAN in interactive mode, then the program asks you if you
+   really want to quit.
+
+ ## ECho
+ if you run the program with scripts, it is sometimes useful to see
+   input commands echoed.  The parameter to the ECho command may be
+   ON, OFf, or ? (to list the echo status).
+
+ ## @
+ Execute an ODBMAN macro.
+
+ ## #
+ Command history. Possible uses (blank spaces are optional):
+ - # ? => list history of commands
+ - # ! => ditto, but without numbers (handy for copying into macros)
+ - # ON => switch command history on
+ - # OFf => switch command history off
+ - # # => repeat previous command
+ - # 14 => repeat command number 14 from the list
+ - # 0 => repeat previous command
+ - # -1 => repeat penultimate command, etc.
+ - # 7 more => repeat command number 7, but add "more" to it
+        (e.g., if command 7 was "$ ls" you could type "#7 -FartCos"
+        to get "$ ls -FartCos")
+
+ ## &
+
+ This command can be used to manipulate symbols.  These are probably
+   only useful for advanced users who want to write fancier macros.
+   The command can be used in three ways:
+ (1) & ? -> lists currently defined symbols
+ (2) & symbol value -> sets "SYMBOL" to "value"
+ (3) & symbol -> prompts the user to supply a value for "SYMBOL"
+    (even if the program is executing a macro)
+
+ A few symbols are predefined:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ODBMAN > & ?
+ Nr of defined symbols : (       4) 
+ Symbol PROGRAM : (ODBMAN) 
+ Symbol VERSION : (960517/1.4) 
+ Symbol START_TIME : (Fri May 17 20:37:24 1996) 
+ Symbol USERNAME : (gerard) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ The symbol mechanism is fairly simplistic and has some limitations:
+ - max length of a symbol name is 20 characters
+ - max length of a symbol value is 256 characters
+ - max number of symbols is 100
+ - symbols can not be deleted, but they can be redefined
+ - symbol values are accessed by supplying $SYMBOL_NAME as an
+   argument on the command line; the line that you type on the terminal
+   (or in a macro) is parsed once; if there are additional parameters
+   which the program prompts you for, you cannot use symbols for those
+ - only one substitution per argument (e.g., "$file1 $file2" will
+   lead to a substituion of the entire argument by the value of
+   symbol FILE1 only !)
+ - command names (first argument on any command line) cannot be
+   replaced by a symbol (e.g.: "$command $arg1 $arg2" is not valid)
+ - symbols may be equated to each other, e.g. "& file2 $file1" will
+   give FILE2 the same value as FILE1
+ - symbol substitution is not recursive (e.g., if you set the value
+   of FILE2 to be "$file1", any reference to $FILE2 will be replaced
+   by "$file1", not by the value of FILE1
+ - symbols on comment lines (starting with "!") are not expanded
+ - symbols on system command lines (starting with "$") are not expanded
+
+ ## REad
+ Read a formatted O datablock file.  The file may contain multiple
+   datablocks and may be interspersed with comments (lines starting
+   with "!" in column 1).  
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ODBMAN > re q.odb
+  Created by ODBMAN V. 931129/0.4 at Mon Nov 29 22:09:42 1993 for user gerard
+ Read : (M9A_ATOM_XYZ R 3843 (10(X,F7.4))) 
+ Read : (M9A_ATOM_B R 1281 (10(X,F7.3))) 
+ Read : (M9A_ATOM_WT R 1281 (10(X,F7.5))) 
+ Read : (M9A_RESIDUE_CG R 636 (10(X,F7.4))) 
+ Read : (M9A_CELL R 6 (8(X,F8.4))) 
+...
+ Read : (M9A_SPACEGROUP T 1 1) 
+ Read : (M9A_DATE T 1 24) 
+ Nr of datablocks read : (      29) 
+ Nr of header/comments : (      30) 
+ Datablock read okay
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## LIst
+ Lists basic information about all datablocks that you indicate.
+   Listed are: name, type, number of elements, change-flag (True or
+   False) and the current format.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ODBMAN > li *residue*
+
+ Datablock name           Type  Nr Alt? Format
+ M9A_RESIDUE_CG            R    636 F (10(X,F7.4))
+ M9A_RESIDUE_PEPFLIP       R    159 F (10(X,F7.5))
+ M9A_RESIDUE_RSC           R    159 F (10(X,F7.4))
+ M9A_RESIDUE_MC_B          R    159 F (10(X,F7.3))
+ M9A_RESIDUE_RSFIT         R    159 F (10(X,F7.5))
+ M9A_RESIDUE_POINTERS      I    318 F (16(X,I4))
+ M9A_RESIDUE_PIECES        I    159 F (40(X,I1))
+ M9A_RESIDUE_CA_IDX        I    159 F (16(X,I4))
+ M9A_RESIDUE_NAME          C    159 F (12(1X,A6))
+ M9A_RESIDUE_TYPE          C    159 F (12(1X,A6))
+ M9A_RESIDUE_2RY_STRUC     C    159 F (12(1X,A6))
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## DElete
+ Delete one or more datablocks from memory.  If you use a wildcard
+   here, the program will ask if you are absolutely sure.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ODBMAN > del *pointers
+ Delete : (*POINTERS) 
+ Sure (Y/N) ? (N) y
+ Deleting : (M9A_RESIDUE_POINTERS) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## WRite
+ Write any or all ODBs to a file.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ODBMAN > wr *residue* res.odb
+ Written : (M9A_RESIDUE_CG R 636 (10(X,F7.4))) 
+ Written : (M9A_RESIDUE_PEPFLIP R 159 (10(X,F7.5))) 
+ Written : (M9A_RESIDUE_RSC R 159 (10(X,F7.4))) 
+ Written : (M9A_RESIDUE_MC_B R 159 (10(X,F7.3))) 
+ Written : (M9A_RESIDUE_RSFIT R 159 (10(X,F7.5))) 
+ Written : (M9A_RESIDUE_PIECES I 159 (40(X,I1))) 
+ Written : (M9A_RESIDUE_CA_IDX I 159 (16(X,I4))) 
+ Written : (M9A_RESIDUE_NAME C 159 (12(1X,A6))) 
+ Written : (M9A_RESIDUE_TYPE C 159 (12(1X,A6))) 
+ Written : (M9A_RESIDUE_2RY_STRUC C 159 (12(1X,A6))) 
+ Nr of datablocks written : (      10) 
+ Datablock write okay
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## TYpe
+ List the actual contents of any or all datablocks.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ODBMAN > ty M9A_RESIDUE_2RY_STRUC
+M9A_RESIDUE_2RY_STRUC C 159 (12(1X,A6))
+        BETA   BETA   BETA   ALPHA  ALPHA  ALPHA                BETA   BETA   BETA  
+                                    BETA   BETA   BETA                 BETA   BETA  
+ BETA   BETA                        ALPHA  ALPHA  ALPHA                             
+                      BETA   BETA   BETA   BETA   BETA   BETA   BETA   BETA   BETA  
+               BETA   BETA   BETA   BETA   BETA   BETA   BETA   BETA                
+               BETA   BETA   BETA   BETA   BETA   BETA   BETA   BETA   BETA   BETA  
+ BETA                                      BETA   BETA   BETA   BETA   BETA         
+               BETA   BETA   BETA   BETA   BETA                                     
+                      BETA   BETA   BETA   BETA   BETA   BETA   BETA   BETA   BETA  
+ BETA                 BETA   BETA   BETA   BETA   BETA   BETA   BETA   BETA   BETA  
+ BETA                                             ALPHA  ALPHA  ALPHA  ALPHA  ALPHA 
+ ALPHA  ALPHA  ALPHA  ALPHA  ALPHA  ALPHA  ALPHA  ALPHA  ALPHA                      
+ ALPHA  ALPHA  ALPHA  BETA   BETA   BETA   BETA                                     
+                     
+ Nr of datablocks written : (       1) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## FOrmat
+ Set the format for any or all NON-TEXT datablocks.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ODBMAN > form $ (10(1x,a6))
+ New Character format : ((10(1X,A6))) 
+ Processing : (M9A_RESIDUE_NAME) 
+ Processing : (M9A_RESIDUE_TYPE) 
+ Processing : (M9A_ATOM_NAME) 
+ Processing : (M9A_MOLECULE_TYPE) 
+ Processing : (M9A_MOLECULE_CA) 
+ Processing : (M9A_RESIDUE_2RY_STRUC) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## NAme
+ Change the name of ONE datablock.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ODBMAN > name M9A_RESIDUE_2RY_STRUC m10a_residue_2ry_struc
+ Old name : (M9A_RESIDUE_2RY_STRUC) 
+ New name : (M10A_RESIDUE_2RY_STRUC) 
+ ODBMAN > list *2ry*
+
+ Datablock name           Type  Nr Alt? Format
+ M10A_RESIDUE_2RY_STRUC    C    159 T (10(1X,A6))
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## STats
+ Print some statistics about any or all Real or Integer ODBs.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ODBMAN > stats *flip
+
+ Stats : (M9A_RESIDUE_PEPFLIP) 
+ Nr of elements : (     159) 
+ Minimum  : (  0.000E+00) 
+ Maximum  : (  2.814E+00) 
+ Sum      : (  1.231E+02) 
+ Average  : (  7.739E-01) 
+ St-devn  : (  5.519E-01) 
+ Variance : (  3.046E-01) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## BOxcar
+ Do box-car averaging of any or all Real ODBs.  You have to supply
+   the window size for the averaging.  For instance, a window size
+   of 7 means that a datablock entry "i" is replaced by the average
+   of the entries from "i-3" to "i+3".  You can use this to smooth
+   curves before plotting them with O2D.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ODBMAN > box % 7
+ Box-car average : (M8A_MOLECULE_CA_MXDST) 
+ Box-car average : (M8A_SYMMOP) 
+ Box-car average : (M8A_RESIDUE_RSC) 
+ Box-car average : (M8A_RESIDUE_PEPFLIP) 
+ Box-car average : (M8A_RESIDUE_GEOMPLOT) 
+ Box-car average : (M8A_ATOM_XYZ) 
+ Box-car average : (M8A_ATOM_B) 
+ Box-car average : (M8A_ATOM_WT) 
+ Box-car average : (M8A_RESIDUE_CG) 
+ Box-car average : (M8A_CELL) 
+ Box-car average : (M8A_PDB_SCALE) 
+ Box-car average : (M8A_RESIDUE_RSFIT) 
+ Box-car average : (M8A_RESIDUE_HBOND) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## HIsto
+ Generate a histogram of values for any or all Real or Integer ODBs.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ODBMAN > hist m9a_residue_rsfit 0.0 0.4 0.6 0.8
+ Histrogram limits : (  0.000E+00   4.000E-01   6.000E-01   8.000E-01) 
+
+ Histogram : (M9A_RESIDUE_RSFIT) 
+
+ Nr <        0.0000                    :        0 (  0.00 %; Cum   0.00 %)
+ Nr >=       0.4000 and <       0.6000 :        5 (  3.14 %; Cum   3.14 %)
+ Nr >=       0.6000 and <       0.8000 :       51 ( 32.08 %; Cum  35.22 %)
+ Nr >=       0.8000                    :      103 ( 64.78 %; Cum 100.00 %)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## PLot_file
+ Generate an O2D plot file for one Real or Integer datablock.  You
+   must provide the name of the datablock and the file name.  Optional
+   parameters are the lowest and highest Y value which is to be
+   plotted (e.g., you want RS-fit values to be plotted on a scale
+   from 0.0 to 1.0), and the labels for both axes of the plot.
+
+ $$ <A HREF="http://xray.bmc.uu.se/cgi-bin/gerard/image_page.pl?image=usf/pics/odbman_plot.gif">
+ $$ Example of a PLot</A>.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ODBMAN > plot m9a_residue_pepflip m9a_flip.plt 0 3.5 "residue number" "pep-flip value"
+ Y lower : (  0.000E+00) 
+ Y upper : (  3.500E+00) 
+ X label : (residue number) 
+ Y label : (pep-flip value) 
+ O2D plot file written
+ ODBMAN > $ cat m9a_flip.plt
+! Created by ODBMAN V. 931129/0.4 at Mon Nov 29 23:00:01 1993 for user gerard
+NPOINT      159
+XLABEL residue number
+YLABEL pep-flip value
+COLOUR 2
+XLIMIT 1.0 1.0
+XYVIEW    0.0000E+00   1.6000E+02   0.0000E+00   3.5000E+00
+YVALUE *
+   0.0000E+00   0.0000E+00   4.5207E-01   6.4544E-01   4.5521E-01   1.8592E-01
+   8.8254E-01   7.4481E-01   2.3498E+00   9.1692E-01   8.6838E-01   4.6378E-01
+...
+   5.5748E-01   4.8489E-01   1.4008E+00   1.0811E+00   7.8445E-01   2.0441E+00
+   0.0000E+00   0.0000E+00   0.0000E+00
+END
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## NOn_parametric
+ Calculates Spearman's rank-correlation coefficient, a non-parametric
+   counterpart of the linear correlation coefficient calculated by
+   the SImilarity command. The parameters for thos command are the
+   same as those for the SImilarity command. The output lists
+   the rank-correlation coefficient and the significance (small
+   values are good, values approaching one mean that there is
+   no significant correlation). Also listed are the Z-score of
+   the sum of the squared differences of the ranks and its
+   significance.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ODBMAN > non LSQMAN_RMSD_ORIG * 0.8 1 table
+ Command > (non LSQMAN_RMSD_ORIG * 0.8 1 table) 
+ Minimum correlation coefficient : (   0.800) 
+ Maximum correlation coefficient : (   1.000) 
+
+  Hit #  #Elem Rank-C     Prob   Z(D)     Prob       --- Datablock 1 ---       --- Datablock 2 ---
+      1     70  0.855  4.9E-21 -7.272  3.5E-13 LSQMAN_RMSD_ORIG          SNAFU_PERC_REJ_LCONE     
+      2     70  0.900  3.6E-26 -7.487  7.0E-14 LSQMAN_RMSD_ORIG          DATAMAN_EFF_RESOL_ALL    
+      3     70  0.900  3.1E-26 -7.493  6.7E-14 LSQMAN_RMSD_ORIG          DATAMAN_EFF_RESOL_2SIGMA 
+      4     70  0.866  3.7E-22 -7.207  5.7E-13 LSQMAN_RMSD_ORIG          DATAMAN_EFF_RESOL_4SIGMA 
+      5     70  0.900  3.5E-26 -7.478  7.6E-14 LSQMAN_RMSD_ORIG          CNS_NATOMS_OVER_NWORK    
+      6     70  0.843  6.0E-20 -7.004  2.5E-12 LSQMAN_RMSD_ORIG          CNS_FINAL_RFREE_MIN_R    
+      7     70  0.858  2.6E-21 -7.127  1.0E-12 LSQMAN_RMSD_ORIG          CNS_FINAL_RFREE_RATIO    
+      8     70  0.858  2.3E-21 -7.133  9.8E-13 LSQMAN_RMSD_ORIG          CNS_FINAL_Z_RFREE_RATIO  
+      9     70  0.989  0.0E+00 -8.225  2.0E-16 LSQMAN_RMSD_ORIG          LSQMAN_RMSD_MAIN         
+     10     70  0.837  1.7E-19 -6.958  3.5E-12 LSQMAN_RMSD_ORIG          LSQMAN_AVE_DPHI_ORIG     
+     11     70  0.804  5.3E-17 -6.759  1.4E-11 LSQMAN_RMSD_ORIG          LSQMAN_DPHI_GT10_ORIG    
+     12     70  0.896  1.0E-25 -7.449  9.4E-14 LSQMAN_RMSD_ORIG          LSQMAN_AVE_DPSI_ORIG     
+     13     70  0.824  1.9E-18 -6.883  5.9E-12 LSQMAN_RMSD_ORIG          LSQMAN_DPSI_GT10_ORIG    
+     14     70  0.812  1.5E-17 -6.755  1.4E-11 LSQMAN_RMSD_ORIG          OOPS_AVE_RSC             
+     15     70  0.874  5.6E-23 -7.268  3.7E-13 LSQMAN_RMSD_ORIG          OOPS_AVE_RMSD_ORIG       
+     16     70  0.868  2.1E-22 -7.217  5.3E-13 LSQMAN_RMSD_ORIG          OOPS_AVE_PHIPSI_DIST_ORIG
+     17     70  0.864  6.8E-22 -7.178  7.1E-13 LSQMAN_RMSD_ORIG          SFCHECK_MAX_EST_ERROR    
+     18     70  0.809  2.3E-17 -7.438  1.0E-13 LSQMAN_RMSD_ORIG          INPUT_LCONE_DELETE_ANGLE 
+ Nr of hits : (         18) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## SImilarity
+ Print some information about how similar or different two Real
+   or Integer datablocks are.  Note that the name of the second,
+   comparison datablock, may contain a wildcard.
+ As of version 1.7, there is an additional parameter (corr_min);
+   only datablocks for which the correlation coefficient exceeds
+   this number will be listed (default -1.1, i.e. list all datablocks).
+ As of version 1.7.1 the max correlation can also be provided as
+   a parameter (default +1.1).
+ The final parameter may be T(able) or L(ist).
+ Note the significant inverse correlation between the RS-fit
+   values and the main-chain temperature factors in the following
+   example:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ODBMAN > sim M9A_RESIDUE_RSfit %
+
+ Comparing : (M9A_RESIDUE_RSFIT) 
+ And       : (M9A_RESIDUE_PEPFLIP) 
+ Nr of elements   : (     159) 
+ RMS difference: (  5.684E-01) 
+ Correl Coeff     : (  -0.116) 
+ Shape Similarity : (   0.803) 
+ R-factor (1)  : (  5.235E-01) 
+ Ditto, 2 scaled  : (   0.530) 
+ Scale for 2      : (   1.042) 
+ R-factor (2)  : (  5.453E-01) 
+ Ditto, 1 scaled  : (   0.530) 
+ Scale for 1      : (   0.960) 
+...
+ Comparing : (M9A_RESIDUE_RSFIT) 
+ And       : (M9A_RESIDUE_MC_B) 
+ Nr of elements   : (     159) 
+ RMS difference: (  3.541E+01) 
+ Correl Coeff     : (  -0.739) 
+ Shape Similarity : (   0.832) 
+ R-factor (1)  : (  3.811E+01) 
+ Ditto, 2 scaled  : (   0.468) 
+ Scale for 2      : (   0.026) 
+ R-factor (2)  : (  9.747E-01) 
+ Ditto, 1 scaled  : (   0.468) 
+ Scale for 1      : (  39.103) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## ALl_correlations
+ Will list all pairs of integer and real datablocks whose correlation
+   coefficient lies in a certain range (default -1.1 to +1.1, i.e.
+   list all). The comparison will only be done for pairs of datablocks
+   that contain the same number of elements, of course.
+ The final parameter may be T(able) or L(ist).
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ODBMAN > all 0.999
+ Minimum correlation coefficient : (   0.999) 
+
+ Comparing : (INPUT_RANDOM_DELETE_PERC) 
+ And       : (SNAFU_REJ_RANDOM) 
+ Nr of elements   : (      25) 
+ Correl Coeff     : (   1.000) 
+ RMS difference   : (  1.062E+04) 
+ Shape Similarity : (   1.000) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## 3D_odl_file
+ Generate an ODL file which, when drawn in O, will display spheres
+   whose coordinates are taken from three (Integer or Real) datablocks.
+
+ $$ <A HREF="http://xray.bmc.uu.se/cgi-bin/gerard/image_page.pl?image=usf/pics/odbman_odl.jpg">
+ $$ Example of the use of a 3D_odl ODL file in O</A>.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ODBMAN > 3d resolution rfree percramaout q.odl yellow
+ Command > (3d resolution rfree percramaout q.odl yellow) 
+ X-data range   5.4000E-01  4.0000E+00 (scale by   2.8902E+01)
+ Y-data range   9.4000E-02  4.6500E-01 (scale by   2.6954E+02)
+ Z-data range   0.0000E+00  4.3452E+01 (scale by   2.3014E+00)
+ ODL file written
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ The ODL file may look something like this (display it in O by typing
+   "draw filename"):
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+begin odb3d
+colour yellow
+text_colour yellow
+move 0.0 0.0 0.0
+line 100.0 0.0 0.0
+text 100.0 0.0 0.0 X=
+move 0.0 0.0 0.0
+line 0.0 100.0 0.0
+text 0.0 100.0 0.0 Y=
+move 0.0 0.0 0.0
+line 0.0 0.0 100.0
+text 0.0 0.0 100.0 Z=
+mode solid
+sphere_xyz 100.000 60.916 25.529 0.5
+sphere_xyz 100.000 90.027 23.373 0.5
+...
+sphere_xyz 6.069 13.747 0.000 0.5
+sphere_xyz 0.000 0.000 0.000 0.5
+end_object
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## SCatter
+ Generate an O2D scatter-plot file, in which you display the values
+   in one Real or Integer datablock as a function of those in another.
+ You may use this to check if there are correlations between
+   certain residue properties, for example.
+
+ $$ <A HREF="http://xray.bmc.uu.se/cgi-bin/gerard/image_page.pl?image=usf/pics/odbman_scat.gif">
+ $$ Example of a SCatter plot</A>.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ODBMAN > sc M9A_RESIDUE_RSFIT M9A_RESIDUE_MC_B rsfit_b.plt "rs-fit all atoms" "main-chain B"
+ X label : (rs-fit all atoms) 
+ Y label : (main-chain B) 
+ X lower : (  5.052E-01) 
+ X upper : (  9.362E-01) 
+ Y lower : ( -6.254E+00) 
+ Y upper : (  1.313E+02) 
+ O2D plot file written
+ ODBMAN > $ cat rsfit_b.plt
+! Created by ODBMAN V. 931129/0.4 at Mon Nov 29 23:15:32 1993 for user gerard
+NPOINT      159
+XLABEL rs-fit all atoms
+YLABEL main-chain B
+COLOUR 3
+XYVIEW    5.0519E-01   9.3618E-01  -6.2545E+00   1.3134E+02
+XVALUE *
+   5.2478E-01   6.9678E-01   8.1501E-01   7.0230E-01   7.9696E-01   7.1953E-01
+   5.3427E-01   6.2648E-01   6.1243E-01   7.3070E-01   7.3338E-01   8.0263E-01
+...
+   7.9396E-01   6.0540E-01   5.9415E-01
+YVALUE *
+   9.0280E+01   7.4600E+01   4.9620E+01   4.6760E+01   5.1480E+01   6.1710E+01
+...
+   3.7800E+01   1.2509E+02   0.0000E+00
+END
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## CGraph_file
+ Save any real and/or integer datablocks in a TAB-delimited text file.
+   This file can subsequently be read by CricketGraph (and probably
+   other graphing and spreadsheet programs) so you can make more
+   professional plots etc.  The first line of the file will contain
+   all datablock names; perhaps some programs choke on this, in which
+   case you can remove this line.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ODBMAN > cg % snafu.cg
+ Nr of datablocks selected : (        134) 
+ Max nr of elements        : (         40) 
+ CricketGraph file written
+ CPU total/user/sys :      15.8      15.8       0.1
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Note that only real and integer datablocks will be written:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ODBMAN > list m8a_resi*
+
+ Datablock name           Type  Nr Alt? Format
+ M8A_RESIDUE_RSC           R    262 F (10(X,F7.4))
+ M8A_RESIDUE_PEPFLIP       R    262 F (10(X,F7.5))
+ M8A_RESIDUE_GEOMPLOT      R    262 F (10(X,F7.4))
+ M8A_RESIDUE_RSFIT         R    262 F (10(X,F7.5))
+ M8A_RESIDUE_HBOND         R    262 F (8(X,F8.5))
+ M8A_RESIDUE_BADCOUNTS     I    262 F (40(X,I1))
+ M8A_RESIDUE_BADCON        I    262 F (40(X,I1))
+ M8A_RESIDUE_NAME          C    262 F (1X,5A)
+ M8A_RESIDUE_TYPE          C    262 F (1X,5A)
+ M8A_RESIDUE_DSSP          C    262 F (1X,5A)
+ M8A_RESIDUE_RAMA          C    262 F (1X,5A)
+ ODBMAN > cg m8a_resi* fcpg.cg
+ Nr of datablocks selected : (          7) 
+ Max nr of elements        : (        262) 
+ CricketGraph file written
+ CPU total/user/sys :       6.0       6.0       0.0
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## CHaracter_function
+ Apply a character function to one or more Character and/or Text
+   datablocks.  Typing "?" for the function will give you a list
+   of available functions:
+
+ UP - converts the entries to UPPERCASE
+ LO - converts them to lowercase
+ PR - replaces multiple spaces by a single space
+ RE - removes all spaces
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ODBMAN > ch $ ?
+ Available character functions :
+ UPpercase
+ LOwercase
+ PRetty
+ REmove_spaces
+
+ ODBMAN > ch $ up
+ Character function : (UP) 
+ Processing : (M9A_RESIDUE_NAME) 
+ Processing : (M9A_RESIDUE_TYPE) 
+ Processing : (M9A_ATOM_NAME) 
+ Processing : (M9A_MOLECULE_TYPE) 
+ Processing : (M9A_MOLECULE_CA) 
+ Processing : (M10A_RESIDUE_2RY_STRUC) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## INteger_func
+ Apply a function to one or more Integer datablocks.  Typing "?"
+   for the function will give you a list of available functions:
+
+ LO - applies: value(i) = max(value(i), new_lower_bound)
+ HI - applies: value(i) = min(value(i), new_upper_bound)
+ AD - add a constant to all values
+ MU - multiply all values by a constant
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ODBMAN > in # ?
+ Available integer functions :
+ LOwer_bound_reset
+ UPper_bound_reset
+ ADd
+ MUltiply
+
+ ODBMAN > in M9A_ATOM_COLOUR mu 2
+ Integer function : (MU) 
+ Value : (       2) 
+ Processing : (M9A_ATOM_COLOUR) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## FLoat_func
+ Apply a function to one or more Real datablocks.  Typing "?"
+   for the function will give you a list of available functions:
+
+ LO - applies: value(i) = max(value(i), new_lower_bound)
+ HI - applies: value(i) = min(value(i), new_upper_bound)
+ AD - add a constant to all values
+ MU - multiply all values by a constant
+ IN - removes everything behind the decimal point (3.74 -> 3)
+ NE - replaces every entry by the nearest integer (3.74 -> 4)
+ SQ - replaces each entry by its square root
+ PO - raises each entry to a power
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ODBMAN > fl % ?
+ Available floating point functions :
+ LOwer_bound_reset
+ UPper_bound_reset
+ ADd
+ MUltiply
+ INteger_cutoff
+ NEarest_integer
+ SQuare_root
+ POwer_raise
+
+ ODBMAN > fl M9A_ATOM_B lo 5
+ Floating point function : (LO) 
+ Value : (  5.000E+00) 
+ Processing : (M9A_ATOM_B) 
+ ODBMAN > fl M9A_ATOM_B up 50
+ Floating point function : (UP) 
+ Value : (  5.000E+01) 
+ Processing : (M9A_ATOM_B) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## CReate
+ Create a new datablock.  You must supply the name, type, number
+   of elements and a suitable format.  Real and Integer datablocks
+   will be initialised to 0, the others to the empty string.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ODBMAN > cre m9a_residue_yasspa
+ Type (R/I/C/T) ? (C) i
+ Number of elements ? (1) 159
+ Format ? ((6I12)) (35i2)
+ Initialised new odb : (M9A_RESIDUE_YASSPA) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## DUplicate
+ Make a "carbon copy" of a datablock (in memory).
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ODBMAN > dup M9A_ATOM_XYZ M9A_ATOM_XCOORD 
+ Duplicate odb : (M9A_ATOM_XCOORD) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** SET COMMANDS
+
+ The SET commands can be used to set one or more values in a
+   particular datablock.  The commands handle any type of datablock.
+
+ ## SEt ALl
+ Set all entries in a datablock to a specific value.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ODBMAN > set all m9a_residue_yasspa 0
+ ODBMAN > ty m9a_residue_yasspa
+M9A_RESIDUE_YASSPA I 159 (35I2)
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ Nr of datablocks written : (       1) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## SEt MAny
+ Set a range of entries in a datablock to one and the same value.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ODBMAN > set many m9a_residue_yasspa 10 16 1
+ ODBMAN > ty m9a_residue_yasspa
+M9A_RESIDUE_YASSPA I 159 (35I2)
+ 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ Nr of datablocks written : (       1) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## SEt INdividual
+ Set a range of entries.  Do NOT supply the values, since ODBMAN
+ will prompt you for them.  This effectively allows you to simply
+ edit a datablock, since the defaults will be the current values.
+ For Real and Integer datablocks you will be prompted for values
+ in portions of four at a time.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ODBMAN > set ind m9a_residue_yasspa 15 21
+ Entries 15 - 18 ? (          1           1           0           0) 1 1 0 2
+ Entries 19 - 21 ? (          0           0           0) 2 2 
+ ODBMAN > ty m9a_residue_yasspa
+M9A_RESIDUE_YASSPA I 159 (35I2)
+ 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 0 2 2 2 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ Nr of datablocks written : (       1) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## SEt ONe
+ Set the value of one particular entry in a datablock.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ODBMAN > set one m9a_residue_yasspa 19 4
+ ODBMAN > ty m9a_residue_yasspa
+M9A_RESIDUE_YASSPA I 159 (35I2)
+ 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 0 2 4 2 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ Nr of datablocks written : (       1) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## SEt IF
+ This is a command with which you can "translate" character ODBs
+   into numerical ODBs (for example).  Say that you want to have
+   the secondary structure assignment out of YASSPA encoded as
+   integers, with alpha-helical residues having a value of +1 and
+   residues in beta-strands having a value of -1.  All you have
+   to do is this:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ODBMAN > create m9a_residue_yasspa i 159 (40i2)
+ Initialised new odb : (M9A_RESIDUE_YASSPA) 
+ ODBMAN > set if m9a_residue_yasspa 1 M9A_RESIDUE_2RY_STRUC = ALPHA
+ Entries set : (         23) 
+ Out of      : (        159) 
+ ODBMAN > set if m9a_residue_yasspa -1 M9A_RESIDUE_2RY_STRUC = BETA 
+ Entries set : (         75) 
+ Out of      : (        159) 
+ ODBMAN > ty m9a_residue_yasspa
+M9A_RESIDUE_YASSPA I 159 (40I2)
+ 0-1-1-1 1 1 1 0 0-1-1-1 0 0 0 0 0-1-1-1 0 0-1-1-1-1 0 0 0 1 1 1 0 0 0 0 0 0 0-1
+-1-1-1-1-1-1-1-1 0 0-1-1-1-1-1-1-1-1 0 0 0 0-1-1-1-1-1-1-1-1-1-1-1 0 0 0 0 0-1-1
+-1-1-1 0 0 0-1-1-1-1-1 0 0 0 0 0 0 0 0-1-1-1-1-1-1-1-1-1-1 0 0-1-1-1-1-1-1-1-1-1
+-1 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 1 1 1-1-1-1-1 0 0 0 0 0 0 0 0
+ Nr of datablocks written : (       1) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ The parameters are:
+ - the name of the datablock in which values must be set
+ - the value to be set IF the following condition is true
+ - the comparison datablock
+ - the operator (=, <, > or #, not-equal-to)
+ - the comparison value
+
+ In the example above we typed:
+ set if m9a_residue_yasspa -1 M9A_RESIDUE_2RY_STRUC = BETA 
+ this means: set each entry in ODB m9a_residue_yasspa to -1,
+   IF the value of the corresponding entry in M9A_RESIDUE_2RY_STRUC
+   is equal to the string BETA (otherwise, the value is NOT
+   affected).
+
+ The following example is "a poor man's implementation of OOPS"
+   (in O, you could use centre_next to go from one suspicious
+   residue to the next):
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ODBMAN > create m9a_residue_quality c 159   
+ Format ? ((14A6)) 
+ Initialised new odb : (M9A_RESIDUE_QUALITY) 
+ ODBMAN > set all m9a_residue_quality GOOD
+ ODBMAN > set if m9a_residue_quality BAD m9a_residue_rsfit < 0.6
+ Entries set : (          5) 
+ Out of      : (        159) 
+ ODBMAN > set if m9a_residue_quality BAD m9a_residue_pepflip > 2.5
+ Entries set : (          3) 
+ Out of      : (        159) 
+ ODBMAN > set if m9a_residue_quality BAD m9a_residue_rsc > 1.5
+ Entries set : (         20) 
+ Out of      : (        159) 
+ ODBMAN > ty m9a_residue_quality
+M9A_RESIDUE_QUALITY C 159 (14A6)
+BAD   GOOD  GOOD  GOOD  GOOD  GOOD  BAD   GOOD  GOOD  GOOD  GOOD  GOOD  GOOD  GOOD  
+GOOD  BAD   GOOD  GOOD  GOOD  GOOD  GOOD  GOOD  GOOD  GOOD  GOOD  GOOD  BAD   BAD   
+GOOD  BAD   GOOD  GOOD  GOOD  BAD   GOOD  GOOD  GOOD  BAD   GOOD  GOOD  GOOD  BAD   
+GOOD  GOOD  GOOD  GOOD  GOOD  GOOD  GOOD  GOOD  GOOD  GOOD  GOOD  GOOD  GOOD  GOOD  
+GOOD  GOOD  GOOD  BAD   GOOD  GOOD  GOOD  GOOD  GOOD  BAD   GOOD  GOOD  GOOD  GOOD  
+GOOD  GOOD  BAD   GOOD  GOOD  BAD   BAD   GOOD  GOOD  GOOD  GOOD  BAD   BAD   GOOD  
+BAD   GOOD  GOOD  GOOD  GOOD  GOOD  GOOD  GOOD  GOOD  GOOD  BAD   GOOD  GOOD  GOOD  
+GOOD  GOOD  BAD   GOOD  GOOD  GOOD  BAD   GOOD  GOOD  GOOD  GOOD  GOOD  GOOD  GOOD  
+GOOD  GOOD  BAD   GOOD  BAD   GOOD  GOOD  GOOD  GOOD  GOOD  GOOD  GOOD  GOOD  GOOD  
+GOOD  GOOD  GOOD  GOOD  GOOD  BAD   GOOD  GOOD  GOOD  BAD   GOOD  GOOD  GOOD  GOOD  
+GOOD  GOOD  GOOD  GOOD  GOOD  GOOD  GOOD  GOOD  GOOD  GOOD  GOOD  GOOD  GOOD  GOOD  
+GOOD  GOOD  GOOD  BAD   BAD   
+ Nr of datablocks written : (       1) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## SEt KEep
+ This command can be used for two purposes:
+
+ - cutting out specific bits of a datablock: e.g., if you just
+   want to plot the RS-fit values for one molecule (or only for
+   your water molecules), you could use DUPLICATE to get a copy
+   of the RS-fit datablock, and then cut out the appropriate
+   bit(s) from this datablock:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ODBMAN > dupl M9A_RESIDUE_RSFIT water_residue_rsfit
+ Duplicate odb : (WATER_RESIDUE_RSFIT) 
+ ODBMAN > set keep water_residue_rsfit 128 99999 1
+ Nr of entries before : (        159) 
+ Nr of entries after  : (         32) 
+ ODBMAN > ty water_residue_rsfit
+WATER_RESIDUE_RSFIT R 32 (10(X,F7.5))
+ 0.78577 0.70488 0.78062 0.80997 0.74287 0.73245 0.80670 0.86725 0.76592 0.72771
+ 0.77582 0.76987 0.77744 0.83253 0.83447 0.81540 0.78326 0.75658 0.66148 0.79989
+ 0.81657 0.79834 0.81534 0.79682 0.81085 0.64254 0.71165 0.68426 0.64383 0.79396
+ 0.60540 0.59415
+ Nr of datablocks written : (       1) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ - collapsing a datablock: this is actually why I wrote this
+   option.  Suppose you want to colour your protein in the
+   colours of the Dutch flag.  In that case, you could colour
+   your molecule depending on the X-coordinate of each atom.
+   In order to do that, you want to have a datablock which
+   for each atom contains only its X-coordinate, which means
+   keeping only every third value, starting at the first one:
+ 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ODBMAN > dupl M9A_ATOM_XYZ M9A_ATOM_XCOORD
+ Duplicate odb : (M9A_ATOM_XCOORD) 
+ ODBMAN > set keep M9A_ATOM_XCOORD 1 100000 3
+ Nr of entries before : (       3843) 
+ Nr of entries after  : (       1281) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** EXTRACT COMMANDS
+ The EXTRACT commanda can be used to cull information from formatted
+   files and store it as (Real or Integer) datablocks.
+
+ ## EXtract FIeld
+ If you want to extract data from a formatted file which has
+   not been written with a nice Fortran FORMAT, use this command.
+   For example, most "display" files from X-PLOR are written in
+   free format.
+
+ You must supply:
+ - the name of the new datablock
+ - its type (Real or Integer)
+ - the name of the file which is to be scanned
+ - the number of lines to skip at the top of the file (0, 1, ...)
+ - the number of lines to skip after an item has been read
+   from a line (0, 1, ...)
+ - the number of the field on a line in the file which is to
+   be read; fields are items on a line separated by spaces
+   (unless these spaces occur within "double quotes")
+
+ For example, suppose we have an output file from an X-PLOR
+   PC-refinement job and we want to extract the final PC values.
+   The file typically looks as follows:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ % 450 gerard rigel 22:00:46 progs/odbman > cat q.list
+263.44 42.5 118.05  263.36 39.305 119.72  1 3.5624 4.89073E-02 8.68781E-02 9.80972E-02
+133.01 60 133.01  133.94 59.77 132.86  3 3.5403 4.73586E-02 7.79348E-02 8.33885E-02
+286.18 40 95.156  287.26 39.678 93.268  14 3.5095 6.54724E-02 9.34291E-02 9.42023E-02
+133.6 55 144.51  133.94 54.367 144.43  26 3.4889 4.62323E-02 8.35917E-02 8.95851E-02
+246.69 50 114.69  248.44 49.442 115.26  65 3.4343 5.73853E-02 8.61116E-02 9.02212E-02
+107.06 45 355.79  103.92 44.396 359.08  177 3.3305 5.04327E-02 7.59372E-02 8.4106E-02
+127.77 55 127.77  130.21 55.843 124.69  201 3.321 5.18844E-02 8.66048E-02 0.10473
+260.69 45 110.14  261.86 44.921 112.42  350 3.2369 4.31585E-02 9.56762E-02 0.10101
+97.595 42.5 353.75  93.937 42.84 357.25  432 3.2022 4.8324E-02 8.43962E-02 9.00757E-02
+279.16 40 110.18  278.15 35.811 110.15  487 3.1745 4.39592E-02 8.06346E-02 9.39514E-02
+123.99 52.5 141.13  121.87 51.767 144.7  496 3.1718 3.49398E-02 7.19334E-02 9.45314E-02
+236.47 55 116.47  233.35 55.397 118.42  591 3.1326 4.17005E-02 9.50638E-02 0.1025
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ In this case, we don't need to skip any lines and we want to
+   extract the last, that is the eleventh, item from each line:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ODBMAN > ex fi pc_ref r q.list 0 0 11
+ Number of lines read  : (         12) 
+ Number of values read : (         12) 
+ Extracted new odb : (PC_REF) 
+ ODBMAN > ty pc_ref
+PC_REF R 12 (5E14.4)
+    0.9810E-01    0.8339E-01    0.9420E-01    0.8959E-01    0.9022E-01
+    0.8411E-01    0.1047E+00    0.1010E+00    0.9008E-01    0.9395E-01
+    0.9453E-01    0.1025E+00
+ Nr of datablocks written : (       1) 
+ ODBMAN > st pc_ref
+
+ Stats : (PC_REF) 
+ Nr of elements : (      12) 
+ Minimum  : (  8.339E-02) 
+ Maximum  : (  1.047E-01) 
+ Sum      : (  1.126E+00) 
+ Average  : (  9.387E-02) 
+ St-devn  : (  6.539E-03) 
+ Variance : (  4.276E-05) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Useful combinations of numbers for some file types are:
+
+ X-PLOR xxx.rf       , use: 1 0 5
+ X-PLOR filter.list  , use: 0 0 11
+ X-PLOR search.dat   , use: 0 0 4
+ X-PLOR geomplot.list, use: 0 0 2
+
+ ## EXtract FOrmat
+ If you want to extract data from a formatted file which has
+   been written with a nice Fortran FORMAT, use this command.
+   For example, .3dmatrix files from X-PLOR are written with
+   a FORTRAN format.
+
+ You must supply:
+ - the name of the new datablock
+ - its type (Real or Integer)
+ - the name of the file which is to be scanned
+ - the number of lines to skip at the top of the file (0, 1, ...)
+ - the number of lines to skip after an item has been read
+   from a line (0, 1, ...)
+ - the format for reading ONE item from ONE line, for example
+   (10x,f8.3) or (56x,i4)
+
+ For example, suppose we have an output file from an X-PLOR
+   combined translation function job and we want to extract the
+   TF values (e.g., in order to plot them).
+   The file typically looks as follows:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ (* Translation Function *)
+   rnumber=    240;
+   rave=  0.099;
+   rsigma=  0.008;
+   rmax=  0.119;
+   rmin=  0.084;
+ var={ "x", "y", "z" };
+ min={    0.00000 ,    0.00000 ,    0.00000 };
+ max={    0.00000 ,    1.00000 ,    0.00000 };
+ rf={
+ {
+ {
+     0.1066
+ },
+ {
+     0.1080
+...
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ So, what we need to do is: to skip 12 lines of the header,
+   read a Real number in format (f11.4) [or (f20.1), it doesn't
+   matter since in this particular case there's only one number
+   per line], and then skip two more lines:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ODBMAN > ex form ctf r c.3dm 12 2 (f11.4)
+ ERROR --- Unexpected error reading item from line
+ Number of lines read  : (        733) 
+ Number of values read : (        240) 
+ Extracted new odb : (CTF) 
+ ODBMAN > st ctf
+
+ Stats : (CTF) 
+ Nr of elements : (     240) 
+ Minimum  : (  8.360E-02) 
+ Maximum  : (  1.186E-01) 
+ Sum      : (  2.374E+01) 
+ Average  : (  9.893E-02) 
+ St-devn  : (  8.217E-03) 
+ Variance : (  6.752E-05) 
+ ODBMAN > li ctf
+
+ Datablock name           Type  Nr Alt? Format
+ CTF                       R    240 T (5E14.4)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ There occurs a read error at the end of the file, since the
+   last line contains " }; ", but you don't need to worry about
+   that.  Note that 3*240 + 12 (header) + 1 (last line) = 733 indeed.
+
+ Another example: if Gert Vriend has run his Direct Atomic Contact
+   Analysis program, you may want to analyse and plot the values on
+   a per-residue basis.  Edit the file so it only contains the
+   listing of values:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+    1  GLU  (5   ) :  -2.640
+    2  GLU  (6   ) :  -1.849
+    3  ALA  (7   ) :   1.643
+    4  SER  (8   ) :   1.958
+    5  SER  (9   ) :  -0.837
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Then extract the values as follows:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ODBMAN > ex form gerard_residue_daca r gerard.daca 0 0 (20x,f8.3)
+ Number of lines read  : (        628) 
+ Number of values read : (        628) 
+ Extracted new odb : (GERARD_RESIDUE_DACA) 
+ CPU total/user/sys :       1.5       1.4       0.2
+ ODBMAN > st GERARD_RESIDUE_DACA
+
+ Stats : (GERARD_RESIDUE_DACA) 
+ Nr of elements : (     628) 
+ Minimum  : ( -5.444E+00) 
+ Maximum  : (  7.201E+00) 
+ Sum      : (  7.998E+00) 
+ Average  : (  1.274E-02) 
+ St-devn  : (  2.534E+00) 
+ Variance : (  6.421E+00) 
+ ODBMAN > plot gerard_residue_daca gerard_daca.plt -8 8 "Residue" "DACA value"
+ Y lower : ( -8.000E+00) 
+ Y upper : (  8.000E+00) 
+ X label : (Residue) 
+ Y label : (DACA value) 
+ O2D plot file written
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## EXtract MUltiple
+ If you want to extract more than one number from one or more
+   lines of a FORTRAN-formatted file, use this command.
+
+ You must supply:
+ - the name of the new datablock
+ - its type (Real or Integer)
+ - the name of the file which is to be scanned
+ - the number of lines to skip at the top of the file (0, 1, ...)
+ - the format for reading ALL items, for example
+   (8f6.2) or (28x,3f8.3//)
+
+ You could use this option, for example, to read coordinates
+   from a PDB file, to read an ODB file, or to extract phi/psi
+   angle combinations from a program which produces a list of
+   these.
+ With this option you should always check whether the last
+   entry in the new datablock is genuine, or whether it has
+   a bogus value of zero (if so, use SET KEEP to get rid of it).
+
+ ## EXtract PRocheck
+ This is a "pre-cooked" option to extract up to six residue-based
+   datablocks from a PROCHECK output file (called "xxx.out"):
+
+ - xxx_residue_type   (C)
+ - xxx_residue_name   (C)
+ - xxx_residue_dssp   (C) = secondary structure assignment
+ - xxx_residue_rama   (C) = area of the Ramachandran plot
+ - xxx_residue_badcon (I) = number of bad contacts
+ - xxx_residue_hbond  (R) = H-bond energy
+
+ If a datablock with the same name already exists, it is NOT
+   overwritten !  The "mol_name" which you provide as the first
+   parameter to this command will replace the "xxx" in the names
+   of the ODBs listed above.
+ Note that the DSSP and RAMA datablocks have been converted to
+   uppercase !
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ODBMAN > ex pro m7a m7a.out
+ Start of residue listing; extracting
+      1 PRO    A1            -        1   0.0
+      2 SER    A2            XX       0  -2.0
+      3 VAL    A3            XX       0   0.0
+      4 PHE    A4     E      B        0  -1.9
+      5 LEU    A5     E      B        0   0.0
+...
+    260 VAL    A453   E      B        0  -2.3
+    261 THR    A454   E      B        1  -1.3
+    262 GLU    A455   E      -        0  -1.7
+
+ End of residue listing; skip rest of file
+ Nr of lines read : (        561) 
+ All done !
+ ODBMAN > li *
+
+ Datablock name           Type  Nr Alt? Format
+ M7A_RESIDUE_HBOND         R    262 T (1x,15f5.1)
+ M7A_RESIDUE_BADCON        I    262 T (1x,25i3)
+ M7A_RESIDUE_TYPE          C    262 T (1x,5a)
+ M7A_RESIDUE_NAME          C    262 T (1x,5a)
+ M7A_RESIDUE_DSSP          C    262 T (1x,5a)
+ M7A_RESIDUE_RAMA          C    262 T (1x,5a)
+ ODBMAN > st %#
+
+ Stats : (M7A_RESIDUE_HBOND) 
+ Nr of elements : (     262) 
+ Minimum  : ( -3.800E+00) 
+ Maximum  : (  0.000E+00) 
+ Sum      : ( -2.368E+02) 
+ Average  : ( -9.038E-01) 
+ St-devn  : (  9.701E-01) 
+ Variance : (  9.411E-01) 
+
+ Stats : (M7A_RESIDUE_BADCON) 
+ Nr of elements : (     262) 
+ Minimum  : (  0.000E+00) 
+ Maximum  : (  1.000E+00) 
+ Sum      : (  1.000E+01) 
+ Average  : (  3.817E-02) 
+ St-devn  : (  1.916E-01) 
+ Variance : (  3.671E-02) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ If you read these datablocks into O, you can use them to colour
+   your molecule, for example:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+  O > mol m7a pai_zo m7a a1 a262 yellow
+  O > pai_case residue_dssp 5 e h t s g green red blue magenta cyan
+  O > obj dssp ca ; end
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+  O > pai_zo m7a a1 a262 green
+  O > pai_case residue_rama 5 ~a ~b ~l ~p xx yellow yellow yellow yellow red
+  O > obj rama ca ; end
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+  O > pai_ramp residue_badcon ; blue red
+  O > obj badcon ca ; end
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+  O > pa_zo m7a a1 a262 green
+  O > pai_prop residue_hbond < -4 red
+  O > pai_prop residue_hbond > 0 yellow
+  O > obj hbond ca ; end
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** KNOWN BUGS
+
+ None, at present.

@@ -1,0 +1,368 @@
+
+ ** CRAVE - GENERAL INFORMATION
+
+ Program : CRAVE
+ Version : 960415
+ Author  : Gerard J. Kleywegt & T. Alwyn Jones,
+           Dept. of Cell and Molecular Biology,
+           Uppsala University, Biomedical Centre, Box 596,
+           SE-751 24 Uppsala, SWEDEN
+ E-mail  : gerard@xray.bmc.uu.se
+ Purpose : auto-generate C-shell script for multiple-crystal averaging
+           of electron-density maps
+ Package : RAVE
+
+ ** REFERENCES
+
+ Reference(s) for this program:
+
+ *  1 * T.A. Jones (1992). A, yaap, asap, @#*?  A set of averaging
+        programs. In "Molecular Replacement", edited by E.J. Dodson,
+        S. Gover and W. Wolf. SERC Daresbury Laboratory, Warrington,
+        pp. 91-105.
+
+ *  2 * G.J. Kleywegt & T.A. Jones (1994).  Halloween ... Masks and
+        Bones. In "From First Map to Final Model", edited by
+        S. Bailey, R. Hubbard and D. Waller.  SERC Daresbury
+        Laboratory, Warrington, pp. 59-66.
+        [http://xray.bmc.uu.se/gerard/papers/halloween.html]
+
+ *  3 * G.J. Kleywegt & R.J. Read (1997). Not your average density.
+        Structure 5, 1557-1569.
+        [http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=PubMed&cmd=Retrieve&list_uids=9438862&dopt=Citation]
+
+ *  4 * R.J. Read & G.J. Kleywegt (2001). Density modification:
+        theory and practice. In: "Methods in Macromolecular
+        Crystallography" (D Turk & L Johnson, Eds.), IOS Press,
+        Amsterdam, pp. 123-135.
+
+ *  5 * Kleywegt, G.J., Zou, J.Y., Kjeldgaard, M. & Jones, T.A. (2001).
+        Around O. In: "International Tables for Crystallography, Vol. F.
+        Crystallography of Biological Macromolecules" (Rossmann, M.G.
+        & Arnold, E., Editors). Chapter 17.1, pp. 353-356, 366-367.
+        Dordrecht: Kluwer Academic Publishers, The Netherlands.
+
+
+ ** VERSION HISTORY
+
+ 960409 - 0.01 - first version
+ 960410 - 0.02 - minor changes
+ 960415 - 0.03 - minor bug fixes
+
+ ** DESCRIPTION
+
+ Since writing C-shell scripts for doing multiple-crystal form averaging
+   with RAVE can be an accountant's nightmare, this little jiffy will
+   auto-generate such a script from a simple input file.
+
+ The input file defines the path names of executables, some file names
+   and a few other things.  The output will be a complete C-shell
+   script for executing N cycles of averaging over M crystal forms
+   (1 < M < 26, at present; single-domain averaging only), each
+   with or without NCS.
+
+ An example of such an input file is shown below.  Cut it out and
+   edit it to suit your needs.  Then run CRAVE (takes about a second
+   of CPU time), and execute the resulting script.
+
+ Comment lines start with an exclamation mark in column 1; all other
+   lines contain a keyword (4 characters, sometimes including a
+   trailing space), 1 space, and then the value(s).
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+!
+! input file to generate C-shell script for RAVE
+! to do multiple crystal averaging
+! (sorry, only single domain at present)
+!
+! format for all lines: KEYWORD (4 characters), 1 space, VALUE
+!
+! gj kleywegt @ 960409
+!
+! usage: run crave < jiffy.inp
+! then: chmod +x output_file
+! then execute the output_file
+! to get a log file, use: output_file |& tee rave.log
+!
+! commands to invoke various programs:
+SFAL sfall
+RSTA rstats
+FFT  /public/src/ccp4_2.13/bin/fft
+MAVE run mave
+COMA run comap
+MAPM run mapman
+!
+! your work directory
+WORK /nfs/scr_uu5/gerard/testmave
+! identifier
+IDEN lipase
+! number of cycles
+CYCL 10
+! scratch directory
+SCRA /nfs/scr_uu1/gerard/scratch/
+! mask in reference crystal
+MASK p21_new.mask
+!
+! data for crystal form 1 (reference)
+!
+! identifier
+COPY p21
+! mtz file
+MTZ  p21.mtz
+! input unit cell map
+MAP  p21_start.E
+! mtz file labels for f and sigf
+LABF F
+SIGF SIGF
+! fft grid and extent
+GRID 70 48 88
+EXTE 0 69 0 47 0 87
+! resolution
+RESO 8.0 3.0
+! O symm-op file
+OSYM p21.sym
+! all ncs operators
+NCSO rt_unit.o
+NCSO p21_a_to_b.o
+! cross-crystal operator (= unit oper for form 1)
+XXRT rt_unit.o
+!
+! data for crystal form 2 (target)
+!
+COPY p212121
+MTZ  p212121.mtz
+MAP  p212121_start.E
+LABF F
+SIGF SIGF
+GRID 60 48 90
+EXTE 0 59 0 47 0 89
+RESO 8.0 3.0
+OSYM p212121.sym
+NCSO rt_unit.o
+XXRT p21_to_p212121.o
+!
+! output C-shell script
+FILE lipase_rave.csh
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ NOTES:
+ - the RESOlution should be identical for all crystal forms
+ - the reflections in the input MTZ files *MUST* have been put on
+   the same temperature factor scale prior to cross-crystal averaging
+   (see the DATAMAN manual on how to do this) !!!
+ - OSYM symmetry-operator files are O-style
+ - NCSO and XXRT operators are based on Cartesian coordinates; use
+   program IMP to improve NCS operators and the Improve option of
+   program MAVE to improve cross-crystal operators prior to averaging;
+   they are in O style
+ - all FFTs are done in spacegroup P1 for simplicity, so make sure
+   that the input (unaveraged) maps cover a complete unit cell
+ - the IDEN and COPY names are used to generate map and log-file names
+
+ The program shows what it is doing:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ unix> run crave < crave.inp
+
+ ...
+
+ Max nr of crystal forms    : (         25) 
+ Max nr of NCS-ops per form : (        100) 
+ Main keywords : ( SFAL RSTA FFT MAVE COMA FILE MAPM WORK IDEN CYCL SCRA 
+  MASK) 
+ Form keywords : ( COPY MTZ MAP LABF SIGF GRID EXTE RESO OSYM XXRT NCSO) 
+ Crystal form : (          1) 
+ Crystal form : (          2) 
+
+ SFAL > (sfall) 
+ RSTA > (rstats) 
+ FFT  > (/public/src/ccp4_2.13/bin/fft) 
+ MAVE > (run mave) 
+ COMA > (run comap) 
+ FILE > (lipase_rave.csh) 
+ MAPM > (run mapman) 
+ WORK > (/nfs/scr_uu5/gerard/testmave) 
+ IDEN > (lipase) 
+ CYCL > (10) 
+ SCRA > (/nfs/scr_uu1/gerard/scratch/) 
+ MASK > (p21_new.mask) 
+
+   COPY > (p21) 
+   MTZ  > (p21.mtz) 
+   MAP  > (p21_start.E) 
+   LABF > (F) 
+   SIGF > (SIGF) 
+   GRID > (70 48 88) 
+   EXTE > (0 69 0 47 0 87) 
+   RESO > (8.0 3.0) 
+   OSYM > (p21.sym) 
+   XXRT > (rt_unit.o) 
+   NCSO > (rt_unit.o) 
+   NCSO > (p21_a_to_b.o) 
+
+   COPY > (p212121) 
+   MTZ  > (p212121.mtz) 
+   MAP  > (p212121_start.E) 
+   LABF > (F) 
+   SIGF > (SIGF) 
+   GRID > (60 48 90) 
+   EXTE > (0 59 0 47 0 89) 
+   RESO > (8.0 3.0) 
+   OSYM > (p212121.sym) 
+   XXRT > (p21_to_p212121.o) 
+   NCSO > (rt_unit.o) 
+
+ Nr of crystal forms    : (          2) 
+ Nr of averaging cycles : (         10) 
+
+ TASK > (CYCLE lipase 0) 
+ TASK > (average p21 0) 
+ TASK > (average p212121 0) 
+ TASK > (comap lipase 0) 
+
+ TASK > (CYCLE lipase 1) 
+ TASK > (expand p21 1) 
+ TASK > (expand p212121 1) 
+ TASK > (sfall p21 1) 
+ TASK > (rstats p21 1) 
+ TASK > (fft p21 1) 
+ TASK > (average p21 1) 
+ TASK > (sfall p212121 1) 
+ TASK > (rstats p212121 1) 
+ TASK > (fft p212121 1) 
+ TASK > (average p212121 1) 
+ TASK > (comap lipase 1) 
+
+ TASK > (CYCLE lipase 2) 
+
+ ...
+
+ TASK > (comap lipase 10) 
+
+ TASK > (mapman lipase 10) 
+ TASK > (all done lipase 10) 
+
+
+ *** CRAVE *** CRAVE *** CRAVE *** CRAVE *** CRAVE *** CRAVE *** CRAVE *** 
+
+ Version - 960410/0.02
+ Started - Wed Apr 10 19:38:43 1996
+ Stopped - Wed Apr 10 19:38:44 1996
+
+ CPU-time taken :
+ User    -      1.3 Sys    -      0.1 Total   -      1.4
+
+ *** CRAVE *** CRAVE *** CRAVE *** CRAVE *** CRAVE *** CRAVE *** CRAVE *** 
+
+ >>> This program (C) 1993-96, GJ Kleywegt & TA Jones <<<
+ E-mail: "gerard@xray.bmc.uu.se" or "alwyn@xray.bmc.uu.se"
+
+ *** CRAVE *** CRAVE *** CRAVE *** CRAVE *** CRAVE *** CRAVE *** CRAVE *** 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ The example above produces a script for ten cycles of averaging over
+   two crystal forms, one in P21 with two-fold NCS, and one in P212121
+   without NCS:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+#!/bin/csh -f
+# Created by CRAVE V. 960410/0.02 at Wed Apr 10 19:38:43 1996 for user gerard
+
+cd /nfs/scr_uu5/gerard/testmave
+
+echo 
+echo CYCLE lipase 0
+echo 
+if (! -e p21_new.mask ) then
+  echo ERROR ... file p21_new.mask not found ... aborting
+  exit -1
+endif
+if (! -e p21_start.E ) then
+  echo ERROR ... file p21_start.E not found ... aborting
+  exit -1
+endif
+if (! -e rt_unit.o ) then
+  echo ERROR ... file rt_unit.o not found ... aborting
+  exit -1
+endif
+if (! -e p21.sym ) then
+  echo ERROR ... file p21.sym not found ... aborting
+  exit -1
+endif
+if (! -e rt_unit.o ) then
+  echo ERROR ... file rt_unit.o not found ... aborting
+  exit -1
+endif
+if (! -e p21_a_to_b.o ) then
+  echo ERROR ... file p21_a_to_b.o not found ... aborting
+  exit -1
+endif
+echo 
+echo average p21 0
+echo 
+run mave -b << EOF >& p21_average_0.log
+average
+p21_start.E
+p21_new.mask
+rt_unit.o
+p21.sym
+rt_unit.o
+p21_a_to_b.o
+
+p21_start.E
+/nfs/scr_uu1/gerard/scratch/p21_0x.E
+EOF
+
+if (! -e /nfs/scr_uu1/gerard/scratch/p21_0x.E ) then
+  echo ERROR ... file /nfs/scr_uu1/gerard/scratch/p21_0x.E not found ... aborting
+  exit -1
+endif
+grep -i "error" p21_average_0.log
+grep -i "Corr. coeff. for operator" p21_average_0.log
+grep -i "R-factor for operator" p21_average_0.log
+
+ ...
+
+if (! -e /nfs/scr_uu1/gerard/scratch/lipase_10.E ) then
+  echo ERROR ... file /nfs/scr_uu1/gerard/scratch/lipase_10.E not found ... aborting
+  exit -1
+endif
+grep -i "error" lipase_comap_10.log
+grep -i "Corr coeff       :" lipase_comap_10.log
+echo 
+echo mapman lipase 10
+echo 
+run mapman -b << EOF >& lipase_mapman_10.log
+read m1 /nfs/scr_uu1/gerard/scratch/lipase_10.E ccp4
+mappage m1 final.omap
+EOF
+
+if (! -e final.omap ) then
+  echo ERROR ... file final.omap not found ... aborting
+  exit -1
+endif
+echo 
+echo all done lipase 10
+echo 
+exit 0
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ To run the script, do something like:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ unix> chmod +x lipase_rave.csh
+ unix> nohup lipase_rave.csh |& tee lipase.log &
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ When executed, the script takes about 20 CPU minutes on a DEC/Alpha
+   (in fact, 6 cycles would have been enough).  The R-factors (Fo,Fc)
+   start at > 40% and come down to ~18%; the correlation of the
+   density in the two crystal forms goes up from ~0.55 to > 0.85.
+
+ The final averaged map will always be called final.omap in your
+   work directory; you can contour it in O immediately (the intermediate
+   CCP4 maps will be in your scratch directory).
+
+ ** KNOWN BUGS
+
+ None, at present.

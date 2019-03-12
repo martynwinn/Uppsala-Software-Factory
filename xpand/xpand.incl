@@ -1,0 +1,50 @@
+c
+c === XPAND.INCL === include file for program XPAND
+c
+c Gerard Kleywegt @ 940512
+c Updated 940513
+c Updated 941219
+c Updated 950109
+c Updated 950220
+c Updated 951022,30
+c Updated 980311
+c Updated 980901
+c Updated 20010628
+c
+      implicit none
+c
+      character vers*20,prognm*20
+      parameter (prognm = 'XPAND', vers = '050427/1.8')
+c
+      integer maxatm,maxncs,maxsym
+c
+      parameter (maxatm=100000)
+      parameter (maxncs=360)
+      parameter (maxsym=96)
+c
+      integer iunit,junit, kunit
+      parameter (iunit = 11, junit = 12, kunit = 13)
+c
+c COMMON VARIABLES
+c
+      real rtncs(12,maxncs),rtsym(12,maxsym),atmxyz(3,maxatm)
+      real shell,cell(6),fra2ca(3,3),ca2fra(3,3),fpoint(3)
+      real fralo(3),frahi(3),symxyz(3,maxatm),ncsxyz(3,maxatm)
+      real cpoint(3)
+c
+      integer atmbox(maxatm),symbox(maxatm),ncsbox(maxatm)
+      integer natoms,nncs,nsym
+c
+      character atline(maxatm)*128,chains(maxncs)*1
+c
+c COMMON BLOCKS
+c
+      common /xpndr1/ rtncs,rtsym,atmxyz,symxyz,ncsxyz
+      common /xpndr2/ shell,cell,fra2ca,ca2fra,fralo,frahi,
+     +                fpoint,cpoint
+c
+      common /xpndi1/ atmbox,symbox,ncsbox
+      common /xpndi2/ natoms,nncs,nsym
+c
+      common /xpndc1/ atline,chains
+c

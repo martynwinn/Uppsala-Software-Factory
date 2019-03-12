@@ -1,0 +1,93 @@
+c
+c ... oops.incl
+c
+      implicit none
+c
+c ... parameters
+c
+      character*12 prognm,vers
+      parameter (prognm = 'OOPS', vers = '001211/5.3.3')
+c
+      integer maxres,maxrok,maxbuf,maxatm,maxuse,maxss,maxwif
+      parameter (maxres=7000, maxrok=3, maxbuf=4*1024*1024)
+      parameter (maxatm=70000, maxuse=10, maxss=100, maxwif=10000)
+c
+      integer c,ca,n,o,cb,nmc
+      parameter (c=1,ca=2,n=3,o=4,cb=5,   nmc=5)
+c
+common variables ...
+c
+      real pepflip(maxres),rsfit(maxres),phi(maxres)
+      real psi(maxres),ramaok(2,maxrok,-180:180),cell(6)
+      real pepcut,rsfcut,pdbxyz(3,maxatm),mskrad,resoln
+      real bfac(maxatm),lobfac,hibfac,hibwat,rsccut,rsc(maxres)
+      real qocc(maxatm),loqocc,hiqocc,watqua(maxres),watcut
+      real rsfitm(maxres),rsfits(maxres),rsmcut,rsscut
+      real hib(maxres),lob(maxres),placut,plangl(maxres)
+      real chicut,zeta(maxres),buffer(maxbuf),rsrcut,dbbcut
+      real usercr(maxres,maxuse),usercu(maxuse),rmsdbb(maxres)
+      real loq(maxres),hiq(maxres),rsrfac(maxres),mxcaca,mxatat
+      real mxrmsd,mxrmsb,mxrmsq,mxphps,mxchid,rsrwat,rsfwat
+      real xxrmsd(maxres),xxrmsb(maxres),xxrmsq(maxres)
+      real xxphps(maxres),xxchid(maxres),pdbold(3,maxatm)
+      real bold(maxatm),qold(maxatm),omega(maxres),omecut
+      real ssdist(maxss),sstors(maxss)
+c
+      integer mask(maxbuf),origin(3),extent(3),grid(3)
+      integer nres,nramok(-180:180),natoms,count(maxres)
+      integer resptr(2,maxres),mcptr(nmc,maxres),nuser
+      integer nbadco(maxres),nbadcu,nwater,ndisu,ssresi(2,maxss)
+      integer bindex(maxres),bcount(maxres),nwif,wifptr(maxwif)
+c
+      logical badpp(maxres),badmsk(maxres),badlob(maxres)
+      logical badhib(maxres),userba(maxres,maxuse)
+      logical badloq(maxres),badhiq(maxres),swater(maxres)
+      logical insert(maxres),mutate(maxres),found(maxatm)
+      logical lpep,lrsfit,lrama,lmask,llob,lhib,lrsc
+      logical lrsm,lrss,lplan,lchir,lbadco,lloq,lhiq
+      logical lwat,lrsr,ldbb,lprev,ldisu,lwif
+c
+      character resnam(maxres)*6,molnam*10,oline*128
+      character restyp(maxres)*6,atmnam(maxatm)*4
+      character atmtyp(maxatm)*6,atnmnm(maxatm)*6
+      character mcname(nmc)*4,usernm(maxuse)*40
+      character userln(maxuse)*80,usersn(maxuse)*1
+      character prevnm*10,bfile(maxres)*20,wifmes(maxwif)*80
+c
+c equivalence
+c
+      equivalence (buffer(1),mask(1))
+c
+common blocks ...
+c
+      common /oopsr0/ ramaok,pdbxyz,usercr,pdbold
+      common /oopsr1/ pepflip,rsfit,phi,psi,cell,bfac,rsc,
+     +                rsfitm,rsfits,hib,lob,plangl,zeta,
+     +                usercu,qocc,loq,hiq,watqua,rsrfac,
+     +                rmsdbb,xxrmsd,xxrmsb,xxrmsq,xxphps,
+     +                xxchid,bold,qold,omega,ssdist,sstors
+      common /oopsr2/ pepcut,rsfcut,mskrad,lobfac,hibfac,
+     +                rsccut,rsmcut,rsscut,placut,chicut,
+     +                loqocc,hiqocc,watcut,resoln,mxcaca,
+     +                rsrcut,dbbcut,mxatat,mxrmsd,mxrmsb,
+     +                mxrmsq,mxphps,mxchid,hibwat,rsrwat,
+     +                rsfwat,omecut
+c
+      common /oopsi0/ nramok
+      common /oopsi1/ nres,natoms,nuser,nbadcu,nwater,ndisu,nwif
+      common /oopsi2/ mask,nbadco,origin,extent,grid,count,
+     +                bindex,bcount,wifptr
+      common /oopsi3/ resptr,mcptr,ssresi
+c
+      common /oopsl0/ userba,badpp,badmsk,badlob,badhib,swater,
+     +                badloq,badhiq,insert,mutate,found
+      common /oopsl1/ lpep,lrsfit,lrama,lmask,llob,lhib,lrsc,
+     +                lrsm,lrss,lplan,lchir,lbadco,lloq,lhiq,
+     +                lwat,lrsr,ldbb,lprev,ldisu,lwif
+c
+      common /oopsc1/ resnam,restyp,atmnam,atmtyp,atnmnm,mcname,
+     +                usernm,userln,usersn,bfile,wifmes
+      common /oopsc2/ molnam,oline,prevnm
+c
+c
+c

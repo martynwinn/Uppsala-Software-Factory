@@ -1,0 +1,18 @@
+c
+c ... xhp_graf.incl - include file for xhp_graf.f
+c
+c ... Gerard Kleywegt @ 930305
+c
+      implicit none
+c
+      real xscale(2),yscale(2)
+c
+      integer lun
+c
+common block
+c
+      common /hpcom2/ xscale,yscale
+      common /hpcom3/ lun
+c
+
+

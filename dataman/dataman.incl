@@ -1,0 +1,86 @@
+c
+c ... dataman.incl - include file for program DATAMAN
+c
+c ... Gerard Kleywegt @ 930319
+c
+      implicit NONE
+c
+      include 'dataman_dim.incl'
+c
+c PARAMETERS
+c
+      integer mxuset
+      parameter (mxuset = maxgk9)
+c
+      integer maxsym
+      parameter (maxsym = 96)
+c
+      integer maxitm
+      parameter (maxitm = 8)
+c
+      integer kdata,kcell,ksymm,kreso,kcent,korbi,kfree
+      parameter (kdata  = 1)
+      parameter (kcell  = 2)
+      parameter (ksymm  = 3)
+      parameter (kreso  = 4)
+      parameter (kcent  = 5)
+      parameter (korbi  = 6)
+      parameter (kfree  = 7)
+c
+      real twopi,pi,degtor,rtodeg,circle
+      parameter (twopi=6.2831853071796)
+      parameter (pi=0.50*twopi)
+      parameter (circle=360.0)
+      parameter (degtor=twopi/circle)
+      parameter (rtodeg=circle/twopi)
+c
+      real zero,half,one,two
+      parameter (zero=0.00, half=0.50, one=1.00, two=2.00)
+c
+      real small
+      parameter (small = 0.00001)
+c
+c COMMON VARIABLES
+c
+      real symmop(12,maxsym,mxuset)
+ccc      real fobs(maxhkl,mxuset),sigfob(maxhkl,mxuset)
+ccc      real reso(maxhkl,mxuset)
+      real cell(6,mxuset)
+ccc      real buffer(maxbuf)
+c
+ccc      integer hkl(3,maxhkl,mxuset),morbit(maxhkl,mxuset)
+ccc     integer rfree(maxhkl,mxuset)
+      integer transp(9,maxsym,mxuset),uniqso(maxsym,mxuset)
+      integer numhkl(mxuset),nsymop(mxuset)
+ccc      integer ibuff(maxbuf)
+      integer nuniq(mxuset)
+c
+      logical know(maxitm,mxuset)
+      logical incore(mxuset),change(mxuset),select(mxuset)
+c
+ccc      character centri(maxhkl,mxuset)*1
+      character name(mxuset)*10,file(mxuset)*80
+      character coment(mxuset)*80
+c
+c EQUIVALENCE
+c
+ccc      equivalence (buffer(1),ibuff(1))
+c
+c COMMON BLOCKS
+c
+ccc      common /dmanr2/ fobs,sigfob,reso,cell
+      common /dmanr2/ cell
+      common /dmanr3/ symmop
+c
+      common /dmani1/ numhkl,nsymop,nuniq
+ccc      common /dmani2/ uniqso,morbit,rfree
+ccc      common /dmani3/ hkl,transp
+      common /dmani2/ uniqso
+      common /dmani3/ transp
+c
+      common /dmanl1/ incore,change,select
+      common /dmanl2/ know
+c
+      common /dmanc1/ name,file,coment
+ccc      common /dmanc2/ centri
+c

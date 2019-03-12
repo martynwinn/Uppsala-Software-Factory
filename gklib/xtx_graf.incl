@@ -1,0 +1,185 @@
+c
+c --- include file for XTX routines
+c
+c ... features: multiple windows
+c               multiple viewports per window
+c               multiple objects per window/viewport
+c
+c *** DEBUG LEVEL ***
+c
+      integer xtxdbg
+      parameter (xtxdbg = 0)
+c
+c *** PARAMETERS ***
+c
+c ... WINMAX = max nr of windows
+c     MAXROW = max nr of viewport rows per window
+c     MAXCOL = max nr of viewport columns per window
+c
+      integer    winmax,maxrow,maxcol
+      parameter (winmax=8, maxrow=1,maxcol=1)
+c
+c ... MAXWOB = max nr of window objects (per window)
+c     MAXVOB = max nr of viewport objects (per viewport)
+c
+      integer    maxwob,maxvob
+      parameter (maxwob=10,maxvob=10)
+c
+c ... NUMVOB = max nr of viewport objects (all viewports)
+c     NUMWOB = max nr of window objects (all windows)
+c     MAXOBJ = max nr of objects (total)
+c
+      integer    maxobj,numvob,numwob
+      parameter (numvob=winmax*maxcol*maxrow*maxvob)
+      parameter (numwob=winmax*maxwob+winmax)
+      parameter (maxobj=numwob+numvob)
+c
+c ... MAXPOP = max nr of popup menus
+c
+      integer    maxpop
+      parameter (maxpop=4)
+c
+c ... some handy parameters
+c
+      integer    no_object,active_obj,sleep_obj,new_obj
+      parameter (no_object=0,active_obj=2,sleep_obj=1,new_obj=3)
+c
+      integer    no_error,no_labels,no_connect,no_debug
+      parameter (no_error=0,no_labels=0,no_connect=0,no_debug=0)
+c
+      integer    con_same,con_mirror,con_aspect
+      parameter (con_same=1,con_mirror=2,con_aspect=3)
+c
+      integer    def_scale
+      parameter (def_scale=0)
+c
+      integer    win_available,win_open
+      parameter (win_available=0,win_open=1)
+c
+      parameter (nought = 0)
+      parameter (zero=0.00, half=0.50, one=1.00)
+      parameter (small=1.0e-15)
+c
+c *** INTEGER FUNCTIONS
+c
+      integer tciinp,tciout,tcierr,tcidbg
+c
+c *** INTEGER VARIABLES ***
+c
+c ... IWSTAn (iwin)       - window indices (user,xtx,system)
+c     IWDIM (iwin)        - type of graphics (1D,2D,3D)
+c     IxACT               - index of active window, column, row
+c     NR_COLUMNS (iwin)   - nr of defined columns of viewports
+c     NR_ROWS (iwin)      - nr of defined rows of viewports
+c     ERASE_COLOUR (iwin) - background colour of window
+c     AXES_COLOUR (iwin)  - axes colour of window
+c     DRAW_COLOUR (iwin)  - last drawing colour of window
+c     DO_LABELS (iwin)    - display labels toggle
+c
+      integer iwsta1(winmax),iwsta2(winmax),iwsta3(winmax)
+      integer iwact,icact,iract,iwdim(winmax)
+      integer nr_columns(winmax),nr_rows(winmax)
+      integer erase_colour(0:winmax),axes_colour(0:winmax)
+      integer draw_colour(0:winmax),do_labels(0:winmax)
+      integer vpt_connect (3,maxcol,maxrow,winmax)
+c
+c ... viewport-specific variables
+c
+      integer vpt_dev_coords(4,maxcol,maxrow,winmax)
+      integer whole_vpt(4,maxcol,maxrow,winmax)
+      integer axis_scale(3,maxcol,maxrow,winmax)
+c
+c ... object variables
+c
+      integer w_object(0:maxwob,winmax)
+      integer v_object(maxvob,maxcol,maxrow,winmax)
+      integer obj_stat(maxobj)
+c
+c ... popup menu variables
+c
+      integer numpup,npups(maxpop)
+c
+c ... various scalars
+c
+      integer cursor_win,cursor_col,cursor_row
+      integer font_number,font_size,font_angle
+      integer max_x_pixel,max_y_pixel
+      integer text_cur_x,text_cur_y
+      integer graf_cur_x,graf_cur_y
+c
+c *** REAL VARIABLES ***
+c
+c ... world coordinates of each viewport
+c
+      real win_dev_coords(6,maxcol,maxrow,winmax)
+c
+c ... scaling variables
+c
+      real scale_axis(2,3,maxcol,maxrow,winmax)
+c
+c ... 3D stuff
+c
+      real a3scal(3),a3objm(4,4),a3aidm(4,4)
+c
+c ... various scalar variables
+c
+      real pxoff,pyoff,xscale,yscale
+      real cursor_x,cursor_y
+c
+c *** LOGICAL VARIABLES ***
+c
+      logical fglopen
+c
+c *** CHARACTER VARIABLES ***
+c
+c ... names of the graphics objects
+c
+      character obj_name(maxobj)*25
+c
+c ... labels for each of the three axis
+c
+      character hor_label(winmax)*80,ver_label(winmax)*80
+      character ort_label(winmax)*80
+c
+c ... names of the popup menus
+c
+      character pupnam(maxpop)*25
+c
+c *** COMMON BLOCKS ***
+c
+c /XTXCIn/ - integer variables
+c
+      common /xtxci1/ iwsta1,iwsta2,iwsta3,iwdim,iwact,icact,iract
+c
+      common /xtxci2/ nr_columns,nr_rows,vpt_dev_coords,
+     +   erase_colour,axes_colour,draw_colour,
+     +   whole_vpt,max_x_pixel,max_y_pixel,
+     +   cursor_win,cursor_col,cursor_row,
+     +   numpup,npups,font_number,font_size,font_angle,
+     +   text_cur_x,text_cur_y,graf_cur_x,graf_cur_y
+c
+      common /xtxci3/ w_object,v_object,obj_stat,do_labels,
+     +   vpt_connect,axis_scale
+c
+c /XTXCBR/ - real variables
+c
+      common /xtxcr1/ win_dev_coords,pxoff,pyoff,xscale,yscale,
+     +   cursor_x,cursor_y,scale_axis
+c
+      common /xtxcr2/ a3scal,a3objm,a3aidm
+c
+c /XTXCBL/ - logical variables
+c
+      common /xtxcbl/ fglopen
+c
+c /XTXCBC/ - character variables
+c
+      common /xtxcbc/ obj_name,hor_label,ver_label,ort_label,
+     +   pupnam
+c
+c /XTXSRM/ - set redraw mode
+c
+      common /xtxcrd/ redraw_mode
+
+
+

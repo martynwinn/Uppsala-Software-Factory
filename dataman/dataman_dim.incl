@@ -1,0 +1,15 @@
+c
+c ... DATAMAN_DIM.INCL - dimensioning for DATAMAN
+c
+c ... MAXGK9 - MAX max nr of sets in DATAMAN
+c
+      integer maxgk9
+      parameter (maxgk9 = 25)
+c
+c ... WRDBYT - number of bytes per word (4 or 8)
+c
+      integer wrdbyt
+      parameter (wrdbyt = 4)
+c
+c
+c

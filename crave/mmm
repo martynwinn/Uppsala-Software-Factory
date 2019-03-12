@@ -1,0 +1,17 @@
+#
+OBJ=	crave.o ../gklib/osx_kleylib
+INCL=	Makefile_osx
+
+fc =	 g77
+
+exec =	crave
+
+opt= -C -O -u -check_bounds
+link= -O
+
+$(exec):	$(OBJ)
+	$(fc) $(link) -o $(exec) $(OBJ) ; strip $(exec)
+
+crave.o:	crave.f $(INCL)
+	$(fc) $(opt) -c crave.f
+

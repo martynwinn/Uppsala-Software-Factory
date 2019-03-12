@@ -1,0 +1,376 @@
+
+ ** PROF - GENERAL INFORMATION
+
+ Program : PROF
+ Version : 080625
+ Author  : Gerard J. Kleywegt & T. Alwyn Jones,
+           Dept. of Cell and Molecular Biology,
+           Uppsala University, Biomedical Centre, Box 596,
+           SE-751 24 Uppsala, SWEDEN
+ E-mail  : gerard@xray.bmc.uu.se
+ Purpose : generate electron-density profiles
+ Package : RAVE
+
+ ** REFERENCES
+
+ Reference(s) for this program:
+
+ *  1 * T.A. Jones (1992). A, yaap, asap, @#*?  A set of averaging
+        programs. In "Molecular Replacement", edited by E.J. Dodson,
+        S. Gover and W. Wolf. SERC Daresbury Laboratory, Warrington,
+        pp. 91-105.
+
+ *  2 * G.J. Kleywegt & T.A. Jones (1994).  Halloween ... Masks and
+        Bones. In "From First Map to Final Model", edited by
+        S. Bailey, R. Hubbard and D. Waller.  SERC Daresbury
+        Laboratory, Warrington, pp. 59-66.
+        [http://xray.bmc.uu.se/gerard/papers/halloween.html]
+
+ *  3 * G.J. Kleywegt & R.J. Read (1997). Not your average density.
+        Structure 5, 1557-1569.
+        [http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=PubMed&cmd=Retrieve&list_uids=9438862&dopt=Citation]
+
+ *  4 * R.J. Read & G.J. Kleywegt (2001). Density modification:
+        theory and practice. In: "Methods in Macromolecular
+        Crystallography" (D Turk & L Johnson, Eds.), IOS Press,
+        Amsterdam, pp. 123-135.
+
+ *  5 * Kleywegt, G.J., Zou, J.Y., Kjeldgaard, M. & Jones, T.A. (2001).
+        Around O. In: "International Tables for Crystallography, Vol. F.
+        Crystallography of Biological Macromolecules" (Rossmann, M.G.
+        & Arnold, E., Editors). Chapter 17.1, pp. 353-356, 366-367.
+        Dordrecht: Kluwer Academic Publishers, The Netherlands.
+
+ ** VERSION HISTORY
+
+ 0.1 - 961127 - first version
+ 0.2 - 961209 - improvements
+ 0.3 - 961210 - always use 0.5 A grid for profile (use skew-averaging
+                routine)
+ 0.4 - 961212 - first production version (Uppsala)
+ 010122 - 1.0 - use C routines to do dynamic memory allocation 
+                and port to Linux
+ 040701 -1.0.1- changed checks of dynamic memory allocation to allow
+                for pointers with negative values as returned by
+                some recent Linux versions
+ 041001 - 1.1 - replaced Kabsch' routine U3BEST by quaternion-based
+                routine (U3QION) to do least-squares superpositioning
+ 080625 -1.1.1- suppress error messages if more than 10 of them
+
+ ** INTRODUCTION
+
+ PROF is a program to calculate electron-density profiles.  It reads
+   a library of rigid fragments (e.g., of amino-acid residues), and
+   for each fragment finds all copies in your model, retrieves their
+   densities, averages them (to yield the "profile map"), and calculates
+   how well each copy's density fits the profile map.
+
+ Required input:
+ - a map in CCP4 format which covers the entire model
+ - your model in PDB format
+ - a library file to define the rigid fragments
+
+ Output:
+ - a new map in CCP4 format of the profile density
+ - a new PDB file of your model, with the B-factors replaced by the
+   correlation coefficient of the profile density and the local
+   density, multiplied by 100.
+
+ ** EXAMPLE
+
+ The following shows an example run of the program:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ...
+ *** PROF *** PROF *** PROF *** PROF *** PROF *** PROF *** PROF *** PROF *** 
+
+ Allocate maps of size  : (   10000000) 
+ Allocate masks of size : (    5000000) 
+ Allocate mini maps/masks of size : (     500000) 
+ Max nr of atoms in model  : (      10000) 
+ Max nr of profile groups  : (        100) 
+ Max nr of atoms per group : (        100) 
+ Max nr of occurences      : (       1000) 
+ Atom masking radius (A)   : (   1.600) 
+
+ Input CCP4 map file ? ( ) ../p2ave/p2_10_mola.E
+ Input CCP4 map file : (../p2ave/p2_10_mola.E) 
+ Read header
+ Input map : (../p2ave/p2_10_mola.E) 
+ ...
+ Name of model PDB file ? (m1.pdb) p2_mola.pdb
+ Name of model PDB file : (p2_mola.pdb) 
+ Number of atoms  : (       1039) 
+ Nr of H stripped : (          0) 
+
+ Name of PROF library file ? (/nfs/public/lib/prof.lib) 
+ Name of PROF library file : (/nfs/public/lib/prof.lib) 
+ Group : (ALA N CA (C) CB) 
+ Group : (ALA (CA) C O) 
+ Group : (ARG N CA (C)) 
+ ...
+ Group : (VAL (CA) C O) 
+ Group : (VAL CB CG1 CG2) 
+
+ Output CCP4 map file ? (prof.E) 
+ Output CCP4 map file : (prof.E) 
+
+ Output PDB file ? (prof.pdb) 
+ Output PDB file : (prof.pdb) 
+
+ Origin : (        -17         -32         -31) 
+ Extent : (         95          70          62) 
+ Calculated map/masksize : (     412300) 
+
+ *****************************************
+
+ Group : (ALA N CA (C) CB) 
+ Nr of map points : (        317) 
+ Average density  : (  1.036E+01) 
+ ALA A  22 ... CC =  0.924 ... R =  0.457 ... LSQ-RMSD =  0.015 A
+ ALA A  28 ... CC =  0.872 ... R =  0.385 ... LSQ-RMSD =  0.011 A
+ ALA A  36 ... CC =  0.922 ... R =  0.539 ... LSQ-RMSD =  0.041 A
+ ALA A  75 ... CC =  0.917 ... R =  0.309 ... LSQ-RMSD =  0.018 A
+ ALA A  87 ... CC =  0.842 ... R =  0.489 ... LSQ-RMSD =  0.023 A
+
+ ...
+
+ Group : (VAL CB CG1 CG2) 
+ Nr of map points : (        260) 
+ Average density  : (  8.451E+00) 
+ VAL A  11 ... CC =  0.824 ... R =  0.450 ... LSQ-RMSD =  0.010 A
+ VAL A  25 ... CC =  0.893 ... R =  0.420 ... LSQ-RMSD =  0.004 A
+ VAL A  40 ... CC =  0.955 ... R =  0.410 ... LSQ-RMSD =  0.002 A
+ VAL A  84 ... CC =  0.971 ... R =  0.474 ... LSQ-RMSD =  0.006 A
+ VAL A  94 ... CC =  0.934 ... R =  0.370 ... LSQ-RMSD =  0.007 A
+ VAL A 109 ... CC =  0.841 ... R =  0.465 ... LSQ-RMSD =  0.011 A
+ VAL A 114 ... CC =  0.980 ... R =  0.332 ... LSQ-RMSD =  0.004 A
+ VAL A 115 ... CC =  0.960 ... R =  0.428 ... LSQ-RMSD =  0.007 A
+ VAL A 122 ... CC =  0.894 ... R =  0.528 ... LSQ-RMSD =  0.005 A
+ VAL A 123 ... CC =  0.786 ... R =  0.682 ... LSQ-RMSD =  0.006 A
+ VAL A 131 ... CC =  0.874 ... R =  0.442 ... LSQ-RMSD =  0.006 A
+
+ Stamp : (Created by PROF V. 961212/0.4 at Thu Dec 12 17:52:04 1996 for 
+  user gerard) 
+  (Q)QOPEN allocated #  1
+ User:   gerard               Logical Name: prof.E
+ Status: UNKNOWN    Filename: prof.E
+
+  File name for output map file on unit  11 : prof.E
+     logical name prof.E
+
+
+   Minimum density in map  =      -27.00774   Maximum density         =       70.51029
+   Mean density            =        0.36923
+   Rms deviation from mean =        3.26598
+
+ Map written out
+
+ Writing PDB file with B = CC (group dens, profile dens)
+
+
+ *** PROF *** PROF *** PROF *** PROF *** PROF *** PROF *** PROF *** PROF *** 
+
+ Version - 961212/0.4
+ Started - Thu Dec 12 17:51:08 1996
+ Stopped - Thu Dec 12 17:52:15 1996
+
+ CPU-time taken :
+ User    -     22.2 Sys    -      0.4 Total   -     22.6
+
+ *** PROF *** PROF *** PROF *** PROF *** PROF *** PROF *** PROF *** PROF *** 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** RESULTS
+
+ The program lists for each copy of each fragment:
+ - correlation coefficient between profile and local density
+ - unscaled R-factor between these two densities
+ - RMSD for the least-squares superpositioning of the library fragment
+   and the copy in your model
+
+ A high correlation coefficient means that the local density is "typical";
+   a low correlation coefficient means it is "atypical" (usually, this
+   means that the density is very poor).
+
+ A high RMSD means that the geometry of the fragment in your model is
+   poor (the library fragments have virtually ideal Engh & Huber geometry).
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Group : (MET (CG SD) CE) 
+ Nr of map points : (        250) 
+ Average density  : (  2.501E+01) 
+ MET A  20 ... CC =  0.900 ... R =  0.334 ... LSQ-RMSD =  0.021 A
+ MET A 113 ... CC =  0.951 ... R =  0.336 ... LSQ-RMSD =  0.015 A
+ MET A 119 ... CC =  0.655 ... R =  0.418 ... LSQ-RMSD =  0.013 A
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ To view the profile map, do the following:
+ - mappage the profile map (e.g., with MAPMAN)
+ - start up O
+ - read the library in as a molecule (sam_atom_in prof.lib prof pdb)
+ - draw it and centre on it (mol prof zo ; end ce_zo prof 1 20)
+ - draw the profile map at the same level at which you contour the original
+   map of your model that went into PROF
+
+ The resulting map shows you what a typical copy of each residue type
+   looks like (of course, if your model contains no histidines, there
+   will be no density for the histidine in the profile map).  Because
+   of the averaging process (unless you have only one copy of a residue
+   type in your model), the profile map will usually look better than
+   any individual copy.
+
+ To see how well your model fits the profile map, read in the new PDB
+   file produced by PROF and colour-ramp it according to B-factor
+   (sam_atom_in newfile.pdb new mol new pai_ramp atom_b 0 100 red blue).
+   For a good model, one would expect to see a large blue core, with
+   some green at the surface and the occasional yellow or red sidechain
+   pointing into the solvent.  Out-of-register errors may be detectable
+   as continuous regions of green/yellow/red.  Completely "bogus" models
+   will have green and blue all over the place (as opposed to a blue
+   core with some green on the surface).
+
+ ** LIBRARY
+
+ The default library contains one copy each of the 20 standard amino
+   acids, with near-ideal Engh & Huber geometry.  They are arranged
+   as two 10-residue beta-strands to make it easy to produce 2D plots.
+
+ The library file is set up such that it can be read into O as a PDB
+   file.  The file may contain any number of REMARK records at the
+   top.  Fragments are demarcated by PROFIL and ENDPRO records:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+PROFIL ALA (CA) C O
+REMARK    2  CA  ALA     1       1.678   1.980  -2.775  1.00 20.00   6
+ATOM      3  C   ALA     1       2.837   2.669  -2.062  1.00 20.00   6
+ATOM      4  O   ALA     1       4.001   2.456  -2.400  1.00 20.00   8
+ENDPRO
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ The PROFIL line contains the name of the fragment (free text).  The atoms
+   in each fragment fall into two categories:
+ - those that are only needed to do the least-squares superpositioning;
+   these are labelled as REMARK records, but have the same format as
+   ATOM records (in this way, O will ignore them)
+ - those that are used for the superpositioning, but are also to be
+   included in the profile calculations; these are given on ordinary
+   ATOM records
+
+ Some guidelines for generating your own library entries:
+ - each atom should occur on an ATOM record exactly once (it may occur
+   on REMARK records more often, or not at all)
+ - each fragment should be a rigid entity, i.e. there should be no
+   free conformational torsion angle between any of the atoms, both
+   those defined with ATOM and those defined with REMARK records
+ - each fragment should contain at least two ATOM records (ideally,
+   three or more)
+ - make sure that all fragments have "ideal" geometry (e.g., Engh & Huber)
+
+ For example, a PHE residue gives rise to three rigid fragments:
+   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+PROFIL PHE N CA (C)
+ATOM    104  N   PHE    14      19.250   0.514   0.331  1.00 20.00   7
+ATOM    105  CA  PHE    14      20.079  -0.097   1.360  1.00 20.00   6
+REMARK  106  C   PHE    14      20.937  -1.213   0.775  1.00 20.00   6
+ENDPRO
+PROFIL PHE (CA) C O
+REMARK  105  CA  PHE    14      20.079  -0.097   1.360  1.00 20.00   6
+ATOM    106  C   PHE    14      20.937  -1.213   0.775  1.00 20.00   6
+ATOM    107  O   PHE    14      22.126  -1.317   1.073  1.00 20.00   8
+ENDPRO
+PROFIL PHE CB CG CD1 CD2 CE1 CE2 CZ
+ATOM    108  CB  PHE    14      19.208  -0.625   2.501  1.00 20.00   6
+ATOM    109  CG  PHE    14      18.419   0.443   3.202  1.00 20.00   6
+ATOM    110  CD1 PHE    14      17.171   0.821   2.735  1.00 20.00   6
+ATOM    111  CD2 PHE    14      18.926   1.067   4.328  1.00 20.00   6
+ATOM    112  CE1 PHE    14      16.443   1.804   3.379  1.00 20.00   6
+ATOM    113  CE2 PHE    14      18.203   2.051   4.977  1.00 20.00   6
+ATOM    114  CZ  PHE    14      16.960   2.420   4.502  1.00 20.00   6
+ENDPRO
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** PROGRAM DETAILS
+
+ - the output profile map is always on a fixed, orthogonal grid with a
+   spacing of 0.5 A in all three directions
+
+ - the "integration radius" for density around any atom is fixed at 1.6 A
+
+ - the algorithm is roughly as follows:
+ (1) loop over all groups in the library
+ (2) for each group, generate a mask with a radius of 1.6 A around the
+     ATOMs on the 0.5 A grid
+ (3) loop over all copies of the group in the user's model
+ (4) for each copy, retrieve the appropriate atoms; do a least-squares
+     superpositioning to get the operator into the user's map; extract
+     the density around the copy (using a skew-averaging routine to
+     account for the different grids etc.), and accumulate the profile
+     density for this group
+ (5) average the profile density for this group; accumulate the complete
+     profile density map
+ (6) loop over all copies of the group again
+ (7) for each copy, extract the density again, and calculate the correlation
+     coefficient and unscaled R-factor between the local density and the
+     profile density; put 100 times the correlation coefficient into the
+     B-factor field of each ATOM in this copy of the group
+ (8) adjust the complete profile density map (divide each density value
+     by the number of times it was set; this is to avoid artefacts due
+     to overlap of neighbouring fragments)
+
+ ** MAP AND MASK SIZE
+
+ PROF allocates memory for maps and masks dynamically.  This means that
+   you can increase the size of maps and masks that the program can
+   handle on the fly:
+
+ 1 - through the environment variables MAPSIZE and MASKSIZE (must be
+     in capital letters !), for example put the following in your
+     .cshrc file:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ setenv MAPSIZE 8000000
+ setenv MASKSIZE 3000000
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ 2 - by using command-line arguments MAPSIZE and MASKSIZE (need not
+     be in capitals), for example:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ run prof mapsize 10000000 masksize 5000000
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Note that command-line arguments take precedence over environment
+   variables.  So you can set the environment variables in your .cshrc
+   file to "typical" values, and if you have to deal with a map and/or
+   mask which is bigger than that, you can use the command-line argument(s).
+
+ If sufficient memory cannot be allocated, the program will print
+   a message and quit.  In that case, increase the amount of virtual
+   memory (this will not help, of course, if you try to allocate more
+   memory than can be addressed by your machine (for 32-bit machines,
+   something 2**32-1 bytes, I think), or reduce the size requirements.
+
+ PROF needs space for 2 maps and 1 mask, and for 2 "mini-maps" and
+   2 "mini-masks" which are 10% of the size of a normal mask.
+
+ ** NOTES
+
+ PROF is sensitive to the environment variable CCP4_OPEN.  If this variable
+   has *not* been set, you will not be able to create any CCP4 maps.  If this
+   happens, the program will abort execution on startup.  To fix this, put the
+   following line in your .cshrc file: setenv CCP4_OPEN UNKNOWN
+
+ PROF uses the environment variable GKLIB to set the default location of
+   its library file.  If you set GKLIB in your .cshrc file to /nfs/public/lib
+   (Uppsala only), the program will always come up with the correct default
+   name for this file.
+
+ ** KNOWN BUGS
+
+ None, at present.
+
+ ** UNKNOWN BUGS
+
+ None that I know of ;-)

@@ -1,0 +1,17 @@
+#
+OBJ=	solex.o ../gklib/osx_kleylib
+INCL=	Makefile_osx
+
+fc =	 g77
+
+exec =	solex
+
+opt= -C -O -u -check_bounds
+link= -O
+
+$(exec):	$(OBJ)
+	$(fc) $(link) -o $(exec) $(OBJ) ; strip $(exec)
+
+solex.o:	solex.f $(INCL)
+	$(fc) $(opt) -c solex.f
+

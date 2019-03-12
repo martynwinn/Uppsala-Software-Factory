@@ -1,0 +1,2305 @@
+
+ ** O2D - GENERAL INFORMATION
+
+ Program : O2D
+ Version : 070118
+ Author  : Gerard J. Kleywegt, Dept. of Cell and Molecular Biology,
+           Uppsala University, Biomedical Centre, Box 596,
+           SE-751 24 Uppsala, SWEDEN
+ E-mail  : gerard@xray.bmc.uu.se
+ Purpose : display and conversion of 1D and 2D plot files
+ Package : X-UTIL/RAVE/DEJAVU
+
+ ** REFERENCES
+
+ Reference(s) for this program:
+
+ *  1 * G.J. Kleywegt (1997). Les amis d"O. CCP4/ESF-EACBM
+        Newsletter on Protein Crystallography 34, September 1997,
+        pp. 5-8.
+        [http://xray.bmc.uu.se/usf/factory_8.html]
+
+ *  2 * Kleywegt, G.J., Zou, J.Y., Kjeldgaard, M. & Jones, T.A. (2001).
+        Around O. In: "International Tables for Crystallography, Vol. F.
+        Crystallography of Biological Macromolecules" (Rossmann, M.G.
+        & Arnold, E., Editors). Chapter 17.1, pp. 353-356, 366-367.
+        Dordrecht: Kluwer Academic Publishers, The Netherlands.
+
+ ** VERSION HISTORY
+
+ 921110 - CricketGraph option; auto-update command parameters
+ 930202 - minor changes; updated manual
+ 930203 - minor bug fix (text labels)
+ 930215 - bug fix: PostScript output of 2D contour works with
+          proper scaling now
+ 930223 - command line option -b(atch) supported: if O2D is run
+          with this option, no on-screen graphics are possible; hence,
+          this enables you to do file conversion (plot files to PostScript
+          or CricketGraph format) without the need for using a workstation
+ 930302 - implemented topology option
+ 930317 - removed bug from cursor routine (now you can't use
+          the mouse buttons etc in windows other than the
+          currently selected window; this prevents confusion
+          and core dumps)
+ 930414 - implemented NAIVE option to quickly plot an "O"-style
+          datablock file as a 1D line graph
+ 930419 - implemented free-format read for XVALUE and YVALUE in
+          1D plot files
+ 930607 - implemented GRID in 1D plots
+ 931028 - implemented '*' format and MORE keyword in CricketGraph
+          conversion option
+ 931129 - prepared for ESV and ALPHA versions
+ 931220 - automatic line dashing with MORE and NEXTFN in PostScript
+          output file
+ 940215 - 3.2 - cleaned up for manual
+ 940415 - 4.0 - added colour & figure legends; fixed 2D bug
+ 941014 - 4.1 - implemented pie charts
+ 941230 -4.1.1- removed old bug in contour plotting when the
+          origin was not at (0,0)
+ 951013 - 4.2 - implemented 1D and 2D integration in graphics mode
+ 951014 - 4.3 - added LINE and BOX commands to plot files
+ 951020 - 4.4 - added 1D and 2D integration to popup menu
+ 960415 -4.4.1- minor bug fix
+ 970723 - 4.5 - added Vrml conversion command for 2D plot files
+ 981001 -4.5.1- removed '*' from the first line of CricketGraph
+                output files (should make the format compatible
+                with many graphing and spreadsheet programs)
+ 981129 -4.5.2- add some comments to output PostScript files (in
+                case you want to edit them by hand)
+ 981130 -4.5.3- don't hang on silly viewport (XMIN=XMAX or YMIN=YMAX)
+ 19981216 - 4.6 - HIDE and NOHIDE keywords for 1D, scatter, pie, and
+                histogram plots to white out everything outside the
+                plot box (PostScript files only); CIRCLE and ELLIPS
+                keywords for 1D, scatter, pie, and histogram plots
+ 19990206 - 4.6.1 - DASH and NODASH keywords for 1D, scatter, pie, and
+                histogram plots to force or suppress dashing of lines
+ 19990824 - 5.0 - new RAMP2D command to produced colour-ramped
+                  boxes instead of contour plots
+ 19990826 -5.0.1- implemented little trick to make the colour-ramped
+                  PostScript files smaller (on average, 2 to 6 times)
+ 19990902 - X   - O2D is now also distributed with RAVE and DEJAVU
+ 19990922 -5.0.2- implemented LINFIT keyword for 1D line and
+                  scatter plots to calculate and draw the least-squares
+                  line through the data (assuming unit weights)
+ 19991221 - 5.1 - several changes for Linux/g77
+ 20000628 - 5.2 - implemented XYSTAT keyword for 1D plots to calculate
+                  and print some statistics for the X and Y values as
+                  well as their RMSD and correlation coefficient
+ 20001229 -5.2.1- increased array dimensioning for 1D and 2D plots
+ 20010327 - 5.3 - new BOx_plot (1D) command with BOXPAR keyword
+ 20010427 -5.3.1- minor bug fix (alpha version only)
+ 20010725 -5.3.2- new 1D plot type SPike_plot (mass-spec-like)
+ 20010730 -5.3.3- in BOx plots the average of each bin is now shown
+                  as a "+" sign
+ 20010920 -5.3.4- in BOx plots, the correlation and least-squares
+                  fit of the averages (X and Y) of the boxes are
+                  now also listed (but only boxes that contain at least
+                  10 data points are included in the calculation)
+ 20010924 -5.3.5- minor bug fix
+ 20011011 - 5.4 - new 1D plot type CD_plot (grey-scale mapping of
+                  Y-values; see Jones, T.A. and Kleywegt, G.J. (1999).
+                  CASP3 comparative modelling evaluation. Proteins:
+                  Struct. Funct. Genet. Suppl. 3, 30-46)
+ 20011023 - 5.5 - buffer size for 2D plots can now be passed through
+                  the environment variable or command-line argument
+                  GKBUFFER (e.g.: run o2d gkbuffer 1000000); otherwise,
+                  the default is 500000 points
+ 040701 -5.5.1- changed checks of dynamic memory allocation to allow
+                for pointers with negative values as returned by
+                some recent Linux versions
+ 041021 -5.5.2- if the second BOXPAR parameter is negative, it is
+                interpreted as minus the number of bins and the bins
+                will be chosen such that they all contain (approx.)
+                the same number of data points
+ 051125 - 5.6 - implemented COunt_1D_to_2D command which counts the
+                *distribution* of points in a 1D plot file and produces
+                a 2D plot file
+ 051205 -5.6.1- minor changes; you can now use 411 predefined colours
+ 070118 -5.6.2- fixed CRICketgraph option which was broken (thanks to
+                Mark Mayer at NIH for pointing me to the problem)
+
+
+ ** INTRODUCTION
+
+ O2D is small utility program which can be used to produce several
+  types of 1D and 2D display.  At present the following types of
+  display are supported:
+
+ (a) 1D line graphs (e.g., hydrophobicity versus residue number)
+ (b) 1D scatter graphs (e.g., phi versus phi for all residues)
+ (c) 1D histograms, pie-charts, and box plots
+ (d) 2D contour plots (e.g., CA-CA distance plots or map sections)
+ (e) colour-ramped 2D plots
+ (f) topology diagrams produced by DEJAVU
+
+ In addition, a simple interface to PostScript exists for
+  the plot options: if you provide a second argument,
+  this is taken to be the name for the output PostScript file; if you
+  give only one argument, no PostScript file will be generated.
+
+ A direct connection to "O" does not exist; you are advised to run
+  O2D from a separate window on your workstation.  The interactive
+  graphics are only available in the Silicon Graphics version of
+  the program; versions for other machines can be used to do only
+  conversion of plot files to PostScript.
+
+ Input plot files can be obtained in several ways:
+ (1) by editing
+ (2) from other programs (e.g., MOLEMAN, DATAMAN, OOPS, ODBMAN,
+     MAPMAN, ODBM, XPLO2D, RMSPDB, LSQMAN, QDB)
+ (3) raw O datablock files
+ (4) from scripts (for an example, see OMAC/rfree.csh)
+
+ The files (except O datablock files) are simple keyworded
+  ASCII files, a description is included in this document.
+ It should be easy to write O2D plot files from your own programs
+  as well.  The plot files created by other programs are 
+  usually very basic; you can easily add "embellishments"
+  with an editor (change the viewport, add labels, overlay
+  various plots, change the colours, etc.).
+
+ O2D is an interactive, command-driven program.  You may create up to
+  eight display windows (this number is merely a parameter, so should you
+  need more, I can easily change it).  You may scrutinise/analyse the
+  plots with the mouse.  There are three popup menus (toggled through F-keys)
+  for additional manipulation and analysis of the displays.  Note
+  that these interactive facilities are available exclusively
+  in the SGI version of the program.
+
+ Once you are satisfied with your plots, you may create a tab-delimited
+  ASCII file that can be read by CricketGraph on a Macintosh (note
+  that this only works for 1D plot files and that the keywords 'MORE'
+  and 'NEXTFN' are not supported !).  Use this to produce your
+  publication-quality graphs.
+
+ If you give the command line argument -b (or -batch), you won't get
+  any on-screen graphics.  This allows you to do file conversion (plot
+  file to PostScript, for example) from an ordinary terminal window.
+
+ ** STARTUP
+
+ If you start the program, the following output will appear on your screen:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ *** O2D *** O2D *** O2D *** O2D *** O2D *** O2D *** O2D *** O2D *** O2D *** 
+
+ Version  - 951013/4.2
+ (C) 1993-5 Gerard J. Kleywegt, Dept. Mol. Biology, BMC, Uppsala (S)
+ User I/O - routines courtesy of Rolf Boelens, Univ. of Utrecht (NL)
+ Others   - T.A. Jones, G. Bricogne, Rams, W.A. Hendrickson
+ Others   - W. Kabsch, CCP4, PROTEIN, E. Dodson, etc. etc.
+
+ Started  - Fri Oct 13 23:14:03 1995
+ User     - gerard
+ Mode     - interactive
+ Host     - rigel
+ ProcID   - 6938
+ Tty      - /dev/ttyq3
+
+ *** O2D *** O2D *** O2D *** O2D *** O2D *** O2D *** O2D *** O2D *** O2D *** 
+
+ Reference(s) for this program:
+
+ *  1 * G.J. Kleywegt,
+        Uppsala University, Uppsala, Sweden,
+        Unpublished program.
+
+ *** O2D *** O2D *** O2D *** O2D *** O2D *** O2D *** O2D *** O2D *** O2D *** 
+
+
+ *** Welcome to the all new XTXgraf grafix routines                  ***
+ *** By G J Kleywegt & J v/d Zwan - (c) 1991-92                      ***
+ *** Current version : 940307/1.2.4                                  ***
+
+ Max nr of graphics windows         : (          8) 
+ Max nr of viewport columns         : (          1) 
+ Max nr of viewport rows            : (          1) 
+ Max number of window objects       : (         10) 
+ Max number of viewport objects     : (         10) 
+ Total number of graphics objects   : (        168) 
+ Max number of popup menus          : (          4) 
+
+ ... GRAPHICS ...
+ Max number of graphics windows     : (          8) 
+ Max number of viewport columns     : (          1) 
+ Max number of viewport rows        : (          1) 
+ Max number of window objects       : (         10) 
+ Max number of viewport objects     : (         10) 
+ Total number of graphics objects   : (        168) 
+ Max number of popup menus          : (          4) 
+
+ Valid options are:
+ ?
+ !
+ open_window    Dim Name Bkgr_colr Draw_colr
+ select_window  [Nr]
+ clear_window
+ cursor_mode    Dx Dy
+ naive_1D_plot  O_datablock_file [PostScript_file]
+ 1D_line_plot   Plot_file [PostScript_file]
+ scatter_plot   Plot_file [PostScript_file]
+ histogram      Plot_file [PostScript_file]
+ pie_chart      Plot_file [PostScript_file]
+ 2D_contour     Plot_file [PostScript_file]
+ topology       Plot_file [PostScript_file]
+ focus          Data_nr
+ integrate      Xlo Xhi [Ylo Yhi]
+ close_window
+ cricketgraph   Plot_file CricketGraph_file
+ quit
+
+ Option ? (open_window) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** NON-SGI COMPUTERS AND BATCH MODE
+
+ If you run a non-SGI version of O2D, or if you invoke the SGI
+   version with the command-line argument "-b" or "-batch", you
+   get a subset of these commands:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Valid options are:
+ ?
+ !
+ naive_1D_plot  O_datablock_file PostScript_file
+ 1D_line_plot   Plot_file PostScript_file
+ scatter_plot   Plot_file PostScript_file
+ histogram      Plot_file PostScript_file
+ 2D_contour     Plot_file PostScript_file
+ cricketgraph   Plot_file CricketGraph_file
+ quit
+
+ Option ? (cricketgraph) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** COMMANDS
+
+ The prompt asks you to supply the name of any of the valid options;
+  the value in parentheses is the default command that will be executed
+  if you just hit the return key.  You don't have to type the complete
+  command name; a unique substring suffices.  The commands are not
+  case-sensitive; the parameters, however, are !
+
+ If a command has parameters, you may provide any number of them on the
+  command line.  O2D will prompt you for the values of any parameters
+  which you didn't supply.  In these cases, the default value(s) will be
+  shown in parentheses.  Hit the Return key to accept a default.
+
+ ## ? - print the list of valid commands
+
+ ## ! - ignore this input line
+
+ The "no-op" command, i.e. nothing happens (useful if you run O2D from
+   a script and want to insert comments)
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (open_window) ! comment
+ Option ? (open_window) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## open_window Dim Name Bkgr_colr Draw_colr
+
+ Open a new graphics window.  This command has the following parameters:
+ "Dim"       - the "graphics dimension" of the window, being 1 if you
+                 want to use it for 1D plots and 2 otherwise
+ "Name"      - the name of the window (in fact, the number of the
+                 window will be attached to the start of this string)
+ "Bkgr_colr" - the colour of the background of this window.  At present,
+                 SGI colour indices are used (i.e., 0 = black, 7 = white)
+ "Draw_colr" - the colour for the plot frames and the labels along the
+                 axes
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (open_window) op 
+ Dimension [1,2] ? (       1) 
+ Name ? (No_name) 1d_plots
+ Background colour ? (       0) 
+ Drawing colour ? (       1) 7
+ Labels ON
+ Opened window     : (       1) 
+ Name              : (1:1d_plots) 
+ Graphics dim      : (       1) 
+ Background colour : (       0) 
+ Drawing colour    : (       7) 
+ Option ? (open_window 1 1d_plots 0) op 2 2d_plots 0 2
+ Labels ON
+ Opened window     : (       2) 
+ Name              : (2:2d_plots) 
+ Graphics dim      : (       2) 
+ Background colour : (       0) 
+ Drawing colour    : (       2) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## select_window  [Nr]
+
+ Select window number "Nr".  This means that the next operation will take
+   place in this particular window (e.g., a clear, close or plot operation).
+   If you don't supply a value for "Nr", the number of the currently
+   selected window will be shown.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (open_window 2 2d_plots 0) sel 1
+ Selected window : (       1) 
+ Option ? (select_window 1) sel
+ Selected window : (       1) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## clear_window
+
+ This erases all graphics objects from the currently selected window,
+   so you can "recycle" it and generate a new plot in it.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (select_window) c
+ ERROR - Invalid or ambiguous option : (c) 
+ Option ? (?) cl
+ ERROR - Invalid or ambiguous option : (cl) 
+ Option ? (?) cle 
+ Labels ON
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## close_window
+
+ Close the currently selected window.  If there are any open windows
+   left, the program will select one of them (and tell you which one).
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (clear_window) sel 2
+ Selected window : (       2) 
+ Option ? (select_window 2) clo
+ Active window now : (       1) 
+ Closed window : (       2) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## quit
+
+ Stop working with O2D.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (open_window) quit
+
+
+ *** O2D *** O2D *** O2D *** O2D *** O2D *** O2D *** O2D *** O2D *** O2D *** 
+
+ Version - 941230/4.1.1
+ Started - Wed Oct 11 03:01:43 1995
+ Stopped - Wed Oct 11 03:04:59 1995
+
+ CPU-time taken :
+ User    -      0.1 Sys    -      0.2 Total   -      0.3
+
+ *** O2D *** O2D *** O2D *** O2D *** O2D *** O2D *** O2D *** O2D *** O2D *** 
+
+ >>> This program (C) 1993-95, GJ Kleywegt & TA Jones <<<
+ E-mail: "gerard@xray.bmc.uu.se" or "alwyn@xray.bmc.uu.se"
+
+ *** O2D *** O2D *** O2D *** O2D *** O2D *** O2D *** O2D *** O2D *** O2D *** 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## 1D_line_plot   Plot_file [PostScript_file]
+
+ Produces a 1D line graph in the currently selected window (must be 1D !),
+   by processing the instruction file "Plot_file" (see below).
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (close_window) 1d 1rbp_mc_b.plt 1rbp_mc.ps
+ Initialising ...
+ Reading ...
+ Plotting ...
+ New VPT object : (1D_plot) 
+ => XPS_GRAF - GJK (931220/1.2) 
+ Opened PostScript file : (1rbp_mc.ps) 
+ Date    : (Wed Feb 16 01:36:48 1994) 
+ User    : (gerard) 
+ Program : (O2D) 
+ Number of data points : (        329) 
+ Lowest X-value        : (  1.000E+00) 
+ Highest X-value       : (  3.290E+02) 
+ Lowest Y-value        : (  0.000E+00) 
+ Highest Y-value       : (  7.264E+01) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## box_plot   Plot_file [PostScript_file]
+
+ Produces a 1D box plot in the currently selected window (must be 1D !),
+   by processing the instruction file "Plot_file" (see below). The
+   behaviour can be affected with the BOXPAR keyword in the plot
+   file which has the following parameters:
+ - BOXLOW = lower limit for X-coordinates
+ - BOXBIN = bin size (all points in a bin are lumped)
+ - BOXMAX = upper limit for X-coordinates
+
+ A box plot shows for each bin the 10th, 25th, 50th (median), 75th
+   and 90th percentile of the (Y-values of the) points in the bin.
+   All the extreme points (the 10% above the 90th percentile and
+   the 10% below the 10th percentile) are shown individually
+   (using symbols as for a scatter plot). Statistics for each bin
+   are printed. Note: for bins that contain 10 or fewer points
+   the percentiles are not calculated and only the individual
+   points are shown. For an example, see Figures 2 and 3 in U Dengler,
+   AS Siddiqui & GJ Barton, Proteins 42, 332-344 (2001).
+
+ As of version 5.5.2, if the BOXBIN parameter is negative then it
+   is interpreted as minus the number of bins and the bins will be
+   chosen such that they all contain (approx.) the same number of
+   data points.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (open_window 1 11 0 1) box box.plt box.ps
+ Initialising ...
+ Reading ...
+ > (Created by ODBMAN V. 001206/1.9.5 at Mon Dec 11 17:05:17 2000 for 
+  gerard) 
+ > (Scatter plot of datablock (X) YEAR) 
+ > (And datablock (Y) RFREE) 
+ > (X ave,sdv,min,max =       1.9978E+03      1.3548E+00      1.9930E+03   
+     2.0000E+03) 
+ > (Y ave,sdv,min,max =       2.5463E-01      3.8939E-02      6.7600E-02   
+     4.6500E-01) 
+ > (X-Y corr. coeff., rmsd =    -0.057      1.9975E+03) 
+ Free format read
+ Free format read
+ Plotting ...
+ Linear fit: slope -1.6459E-03 ... intercept 3.5428E+00
+ New VPT object : (box_plot) 
+ => XPS_GRAF - GJK (19981216/3.1.2) 
+ Opened PostScript file : (box.ps) 
+ Date    : (Tue Mar 27 22:04:40 2001) 
+ User    : (gerard) 
+ Program : (O2D) 
+
+        X-min       X-max    Nr
+   1.9925E+03  1.9935E+03     6
+                        Average    St.dev.    Minimum    Maximum  Ave-2*Sdv  Ave+2*Sdv
+                      2.632E-01  4.832E-02  2.250E-01  3.640E-01  1.665E-01  3.598E-01
+
+ [...]
+
+        X-min       X-max    Nr     Median     25th %     75th %     10th %     90th %
+   1.9995E+03  2.0005E+03   323  2.530E-01  2.300E-01  2.700E-01  2.140E-01  2.913E-01
+                        Average    St.dev.    Minimum    Maximum  Ave-2*Sdv  Ave+2*Sdv
+                      2.518E-01  3.308E-02  9.400E-02  3.760E-01  1.856E-01  3.180E-01
+
+ Nr of extras : (       0) 
+ Number of data points : (       5112) 
+ Lowest X-value        : (  1.992E+03) 
+ Highest X-value       : (  2.001E+03) 
+ Lowest Y-value        : (  0.000E+00) 
+ Highest Y-value       : (  5.000E-01) 
+ CPU total/user/sys :       1.6       1.5       0.1
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## scatter_plot   Plot_file [PostScript_file]
+
+ Produces a 1D scatter graph in the currently selected window (must be 1D !),
+   by processing the instruction file "Plot_file" (see below).
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (clear_window) sel 1
+ Selected window : (       1) 
+ Option ? (select_window 1) clea
+ Labels ON
+ Option ? (clear_window) sc p2a_flip_p2a_rsc.plt p2a_flip_p2a_rsc.ps 
+ Initialising ...
+ Reading ...
+ Plotting ...
+ New VPT object : (scatter_plot) 
+ => XPS_GRAF - GJK (931220/1.2) 
+ Opened PostScript file : (p2a_flip_p2a_rsc.ps) 
+ Date    : (Wed Feb 16 01:40:43 1994) 
+ User    : (gerard) 
+ Program : (O2D) 
+ Number of data points : (        131) 
+ Lowest X-value        : ( -1.852E-01) 
+ Highest X-value       : (  3.890E+00) 
+ Lowest Y-value        : ( -2.622E-01) 
+ Highest Y-value       : (  5.506E+00) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## CD_plot   Plot_file PostScript_file
+
+ Produces a normal 1D line plot in the currently selected window (must
+   be 1D !), by processing the instruction file "Plot_file" (see below).
+   The PostScript file, however, will contain a "CD plot" in which
+   the Y-values are been used to calculate a grey-scale value for
+   each X (low = white; high = black). For examples, see Jones,
+   T.A. and Kleywegt, G.J. (1999). CASP3 comparative modelling evaluation.
+   Proteins: Struct. Funct. Genet. Suppl. 3, 30-46).
+
+ The keyword CDVERT can be used to supply a number between 0.01 and
+   1.0 (default is 0.1) that defines the fraction of the Y-axis of
+   the plot that should be used.
+
+ For an example of a CD plot, look
+ $$ <A HREF="http://xray.bmc.uu.se/cgi-bin/gerard/image_page.pl?image=usf/pics/multi_rms_dist.gif">here</A>.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (open_window 1 1 0 1) cd m1_multi_rms_dist.plt q.ps
+ Plot type : (CDPLOT) 
+ Initialising ...
+ Reading ...
+ > (Created by LSQMAN V. 010906/8.5 at Thu Oct 11 18:38:03 2001 for gerard)   
+ > (Plot of Multi-RMS (distances between all unique pairs) as a function 
+  of residue nr) 
+ > (Atom type used  CA) 
+ > (Values are for mol M1 = file pdb1ldn.ent) 
+ Free format read
+ > (Multi-RMS ave, sdv, min, max     0.36    0.28    0.17    3.27) 
+ Free format read
+ Plotting ...
+ New VPT object : (CD_plot) 
+ => XPS_GRAF - GJK (19981216/3.1.2) 
+ Opened PostScript file : (q.ps) 
+ Date    : (Thu Oct 11 21:56:42 2001) 
+ User    : (gerard) 
+ Program : (O2D) 
+ CDVERT : (   0.100) 
+ CDYMAX : (   0.359) 
+ Nr of extras : (       0) 
+ Number of data points : (        316) 
+ Lowest X-value        : (  1.400E+01) 
+ Highest X-value       : (  3.310E+02) 
+ Lowest Y-value        : (  0.000E+00) 
+ Highest Y-value       : (  3.590E+00) 
+ CPU total/user/sys :       1.2       1.1       0.1
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## spike_plot   Plot_file [PostScript_file]
+
+ Produces a 1D spike plot in the currently selected window (must be 1D !),
+   by processing the instruction file "Plot_file" (see below). This
+   looks a bit like a mass spectrum with every point represented as
+   a line from (x,0) to (x,y).
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (open_window 1 1 0 1) spike m1_multi_rms_dist.plt q.ps
+ Plot type : (SPIKE) 
+ Initialising ...
+ Reading ...
+ [...]
+ Plotting ...
+ New VPT object : (spike_plot) 
+ => XPS_GRAF - GJK (19981216/3.1.2) 
+ Opened PostScript file : (q.ps) 
+ Date    : (Thu Oct 21 19:19:25 2004) 
+ User    : (gerard) 
+ Program : (O2D) 
+ Nr of extras : (       0) 
+ Number of data points : (        316) 
+ Lowest X-value        : (  1.400E+01) 
+ Highest X-value       : (  3.310E+02) 
+ Lowest Y-value        : (  0.000E+00) 
+ Highest Y-value       : (  3.590E+00) 
+ CPU total/user/sys :       3.3       3.2       0.1
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## ramp_2D        Plot_file  PostScript_file
+
+ Produces a colour-ramped 2D plot in the currently selected window
+  (must be 2D !), by processing the instruction file "Plot_file"
+  (see below). The colour-ramped plot *only* appears in the
+  PostScript file ! On the display you will see a contour plot
+  as usual. There are several plot file commands specifically
+  for controlling the ramping:
+
+ - RAMLIM: sets the limits for the "low" and "high" colours (values
+    below or above these limits will be ramped to the extreme
+    colours); default = entire dynamic range
+ - RAMCOL: RGB values for the "low" and the "high" colours; default
+    is from blue to red
+ - RAMODE: LINear, LOGarithmic or ABSolute. If your data has a very
+    large dynamic range, you may want to apply LOG scaling. If your
+    data has positive and negative values (e.g., a difference-distance
+    plot from LSQMAN) and you are only interested in the absolute
+    values, use ABS.
+ - RAMTYP: defines the type of ramping. The default is HUE, which
+    will ramp, e.g., from blue to red via green etc. If you want
+    to ramp from or to white, use SAT(uration) instead (and make
+    sure that one of the two RAMCOLs is white). If you want to
+    ramp from black to white or vice versa, use VAL(ue) (and make
+    sure that the RAMCOLs are black and whte). If you want to ramp
+    from one colour to another via white, use WHI(te).
+
+ Compare the following plots:
+
+ - ordinary contour plot (of leucine chi1/chi2 combinations)
+ $$ <A HREF="http://xray.bmc.uu.se/cgi-bin/gerard/image_page.pl?image=usf/pics/leu_rotamers.gif">here</A>
+ - hue-ramped from blue to red (log-scaled)
+ $$ <A HREF="http://xray.bmc.uu.se/cgi-bin/gerard/image_page.pl?image=usf/pics/log_hue.gif">here</A>
+ - sat-ramped from white to green (log-scaled)
+ $$ <A HREF="http://xray.bmc.uu.se/cgi-bin/gerard/image_page.pl?image=usf/pics/log_sat.gif">here</A>
+ - val-ramped from white to black (log-scaled)
+ $$ <A HREF="http://xray.bmc.uu.se/cgi-bin/gerard/image_page.pl?image=usf/pics/log_val.gif">here</A>
+ - white-ramped from blue to white to red (log-scaled)
+ $$ <A HREF="http://xray.bmc.uu.se/cgi-bin/gerard/image_page.pl?image=usf/pics/log_white.gif">here</A>
+
+ As for RGB colours, they are triples of numbers, either in the
+   range [0.0,1.0], or in the range [0,256]. O2D will divide any
+   RGB values greater than 1.0 by 256, so you can use either
+   convention. On SGIs, use the "cedit" program to find RGB colour
+   values. Useful ones are:
+ - black = 0 0 0
+ - white = 1 1 1
+ - grey = X X X (i.e., the same number for R, G and B)
+ - red = 1 0 0
+ - green = 0 1 0
+ - blue = 0 0 1
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (open_window 2 2 0 1) ramp_2d leu_rotamers.plt log_sat.ps
+ FREE format read
+ > (Total nr of residues  28268) 
+ > (Cut-off for local maxima     40) 
+ > (Local maximum    494 @    177.5    62.5) 
+ > (Local maximum     46 @    -97.5    22.5) 
+ > (Local maximum    775 @    -62.5   177.5) 
+ New VPT object : (ramp_2D) 
+ => XPS_GRAF - GJK (19981216/3.1.2) 
+ Opened PostScript file : (log_sat.ps) 
+ Date    : (Tue Aug 24 22:55:12 1999) 
+ User    : (gerard) 
+ Program : (O2D) 
+ Ramp mode : LOGARITHMIC
+ Ramp type : SATURATION
+ Limit     : (  0.000E+00) 
+ RGB start : (   1.000    1.000    1.000) 
+ Limit     : (  2.700E+00) 
+ RGB end   : (   0.000    1.000    0.000) 
+ SAT start : (   0.000) 
+ SAT end   : (   1.000) 
+ Nr of extras : (       0) 
+ Number of data points : (       5329) 
+ Lowest X-value        : (  0.000E+00) 
+ Highest X-value       : (  3.600E+02) 
+ Lowest Y-value        : (  0.000E+00) 
+ Highest Y-value       : (  3.600E+02) 
+ Number of levels      : (         10) 
+ Level intensities     : (  5.000E+00   1.000E+01   2.500E+01   4.000E+01  
+   5.500E+01   7.500E+01   1.000E+02   1.250E+02   2.500E+02   5.000E+02) 
+ Level colour indices  : (          1           1           1           2  
+           2           3           3           4           5           6) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## 2D_contour     Plot_file [PostScript_file]
+
+ Produces a 2D contour plot in the currently selected window (must be 2D !),
+   by processing the instruction file "Plot_file" (see below).
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (open_window 2 2d_plots 0) 2d ca_ca_1rbp.plt ca_ca_1rbp.ps 
+ Formatted read
+ New VPT object : (2D_plot) 
+ => XPS_GRAF - GJK (931220/1.2) 
+ Opened PostScript file : (ca_ca_1rbp.ps) 
+ Date    : (Wed Feb 16 01:41:27 1994) 
+ User    : (gerard) 
+ Program : (O2D) 
+ Number of data points : (      30276) 
+ Lowest X-value        : (  1.000E+00) 
+ Highest X-value       : (  1.740E+02) 
+ Lowest Y-value        : (  1.000E+00) 
+ Highest Y-value       : (  1.740E+02) 
+ Number of levels      : (          3) 
+ Level intensities     : (  3.000E+00   6.000E+00   1.100E+01) 
+ Level colour indices  : (          1           2           3) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## histogram      Plot_file [PostScript_file]
+
+ Plot 1D data as a histogram.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (2d_plot ca_ca_1rbp.plt ca_ca_1rbp.ps) sel 1
+ Selected window : (       1) 
+ Option ? (select_window 1) histo p2a_rsc.plt
+ Initialising ...
+ Reading ...
+ Plotting ...
+ New VPT object : (histogram) 
+ Number of data points : (        130) 
+ Lowest X-value        : (  0.000E+00) 
+ Highest X-value       : (  1.320E+02) 
+ Lowest Y-value        : (  0.000E+00) 
+ Highest Y-value       : (  4.000E+00) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## pie_chart      Plot_file [PostScript_file]
+
+ Plot 1D histogram data as a pie-chart.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (open_window 1 1 0 1) pie pie.plt pie.ps
+ Initialising ...
+ Reading ...
+ Format : ((1p,5e15.7)) 
+ Format : ((5f15.0)) 
+ Plotting ...
+ New VPT object : (pie) 
+ => XPS_GRAF - GJK (2.0 @ 940415) 
+ Opened PostScript file : (pie.ps) 
+ Date    : (Fri Oct 14 01:55:06 1994) 
+ User    : (gerard) 
+ Program : (O2D) 
+ A 13.00000 between 0.2000000 and 0.4000000
+ B 33.00000 between 0.4000000 and 0.6000000
+ C 60.00000 between 0.6000000 and 0.8000000
+ D 68.00000 between 0.8000000 and 1.000000
+ E 57.00000 between 1.000000 and 1.200000
+ F 44.00000 between 1.200000 and 1.400000
+ G 19.00000 between 1.400000 and 1.600000
+ H 23.00000 between 1.600000 and 1.800000
+ I 6.000000 between 1.800000 and 2.000000
+ J 4.000000 between 2.000000 and 2.500000
+ Number of data points : (         10) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## naive_1D_plot  O_datablock_file [PostScript_file]
+
+ Takes an O datablock and produces a simple 1D line graph (if you want
+   more fancy plots, generate a plot file, either with an editor, or
+   with ODBM or ODBMAN).
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (histogram p2a_rsc.plt p2a_rsc.ps) sel 1
+ Selected window : (       1) 
+ Option ? (select_window 1) cle
+ Labels ON
+ Option ? (clear_window) nai p2a_flip.o p2a_flip.ps
+ Initialising ...
+ Reading ...
+ Label  : (P2A_RESIDUE_PEPFLIP) 
+ Type   : (R) 
+ Format : ((10(x,f7.5))) 
+ Number : (        131) 
+ Plotting ...
+ New VPT object : (1D_plot) 
+ => XPS_GRAF - GJK (931220/1.2) 
+ Opened PostScript file : (p2a_flip.ps) 
+ Date    : (Wed Feb 16 01:43:42 1994) 
+ User    : (gerard) 
+ Program : (O2D) 
+ Number of data points : (        131) 
+ Lowest X-value        : (  1.000E+00) 
+ Highest X-value       : (  1.310E+02) 
+ Lowest Y-value        : (  0.000E+00) 
+ Highest Y-value       : (  3.705E+00) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## topology       Plot_file [PostScript_file]
+
+ DEJAVU can produce (too simple) topology files which can be drawn
+   with this command.  The results are not impressive (methinks).
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (naive p2a_flip.o p2a_flip.ps) op 2 topo 0 6
+ Labels ON
+ Opened window     : (       3) 
+ Name              : (3:topo) 
+ Graphics dim      : (       2) 
+ Background colour : (       0) 
+ Drawing colour    : (       6) 
+ Option ? (open_window 2 topo 0) topo cbh6a.topo cbh6a_topo.ps
+ New VPT object : (topology) 
+ => XPS_GRAF - GJK (931220/1.2) 
+ Opened PostScript file : (cbh6a_topo.ps) 
+ Date    : (Wed Feb 16 01:44:49 1994) 
+ User    : (gerard) 
+ Program : (O2D) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## vrml_2D        Plot_file VRML_file line_or_solid
+
+ Converts a 2D plot file into a VRML file.  For what it's worth.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (cricketgraph) vr test.pl2 test.wrl s
+ > (Created by MAPMAN V. 970501/5.1 at Wed Jul 23 18:42:49 1997 for user 
+  gerard) 
+ > (Contour plot of X-Z plane nr 70) 
+ > (Map M2) 
+ > (File p2.mask) 
+ > (Comment Read from p2.mask) 
+ > (Cell 91.80 99.50 56.50 90.00 90.00 90.00) 
+ > (Grid 100 110 64) 
+ Formatted read
+ Opened VRML file
+ Closed VRML file
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## count_1d_to_2d   1D_Plot_file   2D_Plot_file
+
+ This commands reads a 1D plot file, divides the axes in a number of bins
+   (you can determine those yourself if you like with the XCOUNT and
+   YCOUNT keywords in the plot file), and counts the number of points
+   in each 2D bin. The 2D distribution is subsequently written to a
+   2D O2D plot file which you can then plot with the 2D or RAmp
+   commands (optionally, after editing the 2D plot file to change
+   the default colours, level, colour-ramping parameters, labels,
+   etc.).
+
+ The XCOUNT and YCOUNT keywords have three arguments, the minimum value,
+   bin size, and maximum value to take into account along X or Y,
+   respectively. Note that the actual data may extend outside these
+   limits - points outside them will simply not be counted.
+
+ In the 2D plot file, by default there will be 10 plot levels corresponding
+   to 9%, 18%, 27%, ..., 90% of the maximum count found in anyone bin. The
+   colours of these levels are also predefined. The default colour-ramp
+   parameters will produce a HUE-ramped plot from red to blue. Of course,
+   you can change all these things by simply editing the 2D plot file
+   before plotting it.
+
+ This command is useful when you have a large dataset for which a
+   normal scatter plot becomes too cluttered. An alternative is
+   a BOx_plot, but these don't show how densely the various bins
+   are populated (and the binning is only done for the X axis).
+
+ Suppose you want to plot the R-value versus resolution for several
+   thousand PDB entries. Compare the following plots:
+
+ - simple 1D scatter plot (very cluttered)
+ $$ <A HREF="http://xray.bmc.uu.se/cgi-bin/gerard/image_page.pl?image=usf/pics/count_scat.gif">here</A>
+ - 1D box plot (better but no idea how densely populated the bins are)
+ $$ <A HREF="http://xray.bmc.uu.se/cgi-bin/gerard/image_page.pl?image=usf/pics/count_box.gif">here</A>
+ - 2D contour plot (after conversion with the COunt_1D_to_2D command)
+ $$ <A HREF="http://xray.bmc.uu.se/cgi-bin/gerard/image_page.pl?image=usf/pics/count_cont.gif">here</A>
+ - colour-ramped 2D plot (after conversion with the COunt_1D_to_2D command)
+ $$ <A HREF="http://xray.bmc.uu.se/cgi-bin/gerard/image_page.pl?image=usf/pics/count_ramp.gif">here</A>
+ 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (open_window 2 2 0 1) cou mapr_vs_resolution.plt mapr_vs_resolution.pl2
+ Reading 1D plot file ...
+ Keyword ignored : (BOXPAR) 
+ Keyword ignored : (XYVIEW) 
+ Keyword ignored : (MRKSIZ) 
+ > (Created by ODBMAN V. 040618/2.2.3 at Tue Nov 22 15:00:58 2005 for A. 
+  Nonymous) 
+ > (Scatter plot of datablock (X) RESOLUTION) 
+ > (And datablock (Y) MAPR) 
+ > (X ave,sdv,min,max =       2.0675E+00      4.6045E-01      8.0000E-01   
+     4.0000E+00) 
+ > (Y ave,sdv,min,max =       2.1050E-01      3.5745E-02      7.1000E-02   
+     3.5900E-01) 
+ > (X-Y corr. coeff., rmsd =     0.584      1.9085E+00) 
+ Keyword ignored : (LINFIT) 
+ Keyword ignored : (COLOUR) 
+ Nr of data points : (       8653) 
+ Binning and counting ...
+ Xmin, Xmax, Xbin, Nxbin =   6.5000E-01  4.0500E+00  1.0000E-01    35
+ Ymin, Ymax, Ybin, Nybin =   0.0000E+00  3.7000E-01  1.0000E-02    38
+ Nr of points binned  : (       8653) 
+ Max count in any bin : (        147) 
+ Writing 2D plot file ...
+ 2D plot file written
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ The 2D plot file created in this fashion may look as follows:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+REMARK Created by O2D V. 051125/5.6 at Fri Nov 25 23:38:11 2005 for gerard
+[...]
+REMARK X-Y corr. coeff., rmsd =     0.584      1.9085E+00
+NLEVEL 10
+LEVELS
+13 26 40 53 66 79 93 106 119 132
+COLOUR
+1 2 3 3 4 4 5 5 6 6
+RAMCOL 1 0 0   0 0 1
+RAMTYP HUE
+XLABEL Value of RESOLUTION
+YLABEL Value of MAPR
+XPOINT         35
+YPOINT         38
+XLIMIT      6.5000E-01      4.0500E+00
+YLIMIT      0.0000E+00      3.7000E-01
+ZVALUE *
+0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0
+[...]
+2 0 0 0 0 0 0 0 0 0
+0 0 0 1 1 4 9 18 50 55
+92 112 147 139 74 78 65 28 50 19
+16 13 4 5 3 1 0 0 0 0
+0 0 0 0 0 0 0 0 1 1
+[...]
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## cricketgraph   Plot_file CricketGraph_file
+
+ Converts a plot file into a CricketGraph file.  Note: Swedish versions of
+   CG and/or the Mac operating system use decimal comma's instead of decimal
+   points; these can therefore not read the CG files produced by O2D
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (select_window 3) cr p2a_flip.plt p2a_flip.cg
+ Nr of data points : (        131) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ unix > cat p2a_flip.cg
+*
+Residue Pep_flip
+1.00000 0.00000
+2.00000 0.00000
+3.00000 1.43300
+4.00000 0.40947
+5.00000 2.53970
+6.00000 1.55600
+7.00000 0.53990
+8.00000 0.95495
+9.00000 1.62520
+10.00000        3.70480
+11.00000        3.49990
+12.00000        2.81690
+...
+128.00000       0.40391
+129.00000       0.93459
+130.00000       0.00000
+131.00000       0.00000
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## focus          Data_nr
+
+ This option can only be used with 1D graphs.  You provide a data point
+   index (e.g., a residue number) and the program will zoom in on that
+   particular data point: the point will be displayed at the centre of the
+   window, with margins of 1 % of the display width to all four sides.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (foc) foc
+ Data point number ? (     432) 55
+ Option ? (foc) foc 123
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## integrate      Xlo Xhi [Ylo Yhi]
+
+ Integrate part of a 1D curve, or part of a 2D contour map.
+
+ 1D: simply provide the lower and upper X coordinates of the points
+   between which you want to integrate the curve.  Use the cursor_mode
+   to find suitable integration limits, if necessary.
+ The following example shows how CHI1 angles of Valine residues are
+   distributed in high-resolution structures (>70% has CHI=180):
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (open_window) op 1 1 0 1
+ ...
+ Option ? (open_window 1 1 0 1) 1d val_chi1.plt
+ ...
+ Option ? (1d_plot val_chi1.plt) cu 10 10
+ Horizontal arrow step : (     10.000) 
+ Vertical arrow step   : (     10.000) 
+ Column,row,x,y :     1    1      48.235     105.857      48.235     105.857
+ Column,row,x,y :     1    1      86.667     127.571      86.667     127.571
+ Column,row,x,y :     1    1     140.784     168.286     140.784     168.286
+ Column,row,x,y :     1    1     201.569     181.857     201.569     181.857
+ Column,row,x,y :     1    1     271.765     190.000     271.765     190.000
+ Column,row,x,y :     1    1     320.000     192.714     320.000     192.714
+ Option ? (cursor_mode 10 10) int 48 87
+ Integrated     40 points between   4.8000E+01 and   8.7000E+01
+ Actual integration limits found    4.8000E+01 and   8.7000E+01
+ Integral      =   1.6160E+03 Total curve integral =   2.4725E+04
+ Average value =   4.0400E+01 Total curve average  =   6.8490E+01
+ Fraction of total =   0.0654 Centre of gravity    =   6.6475E+01
+ Option ? (integrate 48 87) in 202 140
+ Integrated     63 points between   1.4000E+02 and   2.0200E+02
+ Actual integration limits found    1.4000E+02 and   2.0200E+02
+ Integral      =   1.7410E+04 Total curve integral =   2.4725E+04
+ Average value =   2.7635E+02 Total curve average  =   6.8490E+01
+ Fraction of total =   0.7041 Centre of gravity    =   1.7462E+02
+ Option ? (integrate 202 140) in 271 320
+ Integrated     50 points between   2.7100E+02 and   3.2000E+02
+ Actual integration limits found    2.7100E+02 and   3.2000E+02
+ Integral      =   4.2760E+03 Total curve integral =   2.4725E+04
+ Average value =   8.5520E+01 Total curve average  =   6.8490E+01
+ Fraction of total =   0.1729 Centre of gravity    =   2.9726E+02
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ 2D: provide the X and Y boundaries for integration.  Note that this can
+   *only* be used for the last 2D contour plot that you made, since the
+   data are not stored for earlier plots !!!
+ The following example shows how CHI1/CHI2 rotamers of Leucine residues are
+   distributed in high-resolution structures (55 % + 26 % for the two
+   major rotamers):
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (integrate 271 320) op 2 2 0 1
+ ...
+ Option ? (open_window 2 2 0 1) 2d leu_rotamers.plt
+ ...
+ Option ? (2d_plot leu_rotamers.plt) cu 10 10
+ Horizontal arrow step : (     10.000) 
+ Vertical arrow step   : (     10.000) 
+ Column,row,x,y :     1    1     252.382     210.517     252.382     210.517
+ Column,row,x,y :     1    1     327.223     134.483     327.223     134.483
+ Column,row,x,y :     1    1     148.042      97.241     148.042      97.241
+ Column,row,x,y :     1    1     214.689      29.483     214.689      29.483
+ Column,row,x,y :     1    1     223.429      67.241     223.429      67.241
+ Column,row,x,y :     1    1     289.530       3.621     289.530       3.621
+ Option ? (cursor_mode 10 10) in 250 330 210 130
+ Integrated    289 points
+ X range   2.5000E+02 to   3.3000E+02 (  2.5000E+02  3.3000E+02)
+ Y range   1.3000E+02 to   2.1000E+02 (  1.3000E+02  2.1000E+02)
+ Integral      =   1.5638E+04 Total curve integral =   2.8268E+04
+ Average value =   5.4111E+01 Total curve average  =   5.3046E+00
+ Fraction of total =   0.5532
+ Centre of gravity =   2.9685E+02  1.7768E+02
+ Option ? (integrate 250 330 210 130) in 145 215 30 100
+ Integrated    225 points
+ X range   1.4500E+02 to   2.1500E+02 (  1.4500E+02  2.1500E+02)
+ Y range   3.0000E+01 to   1.0000E+02 (  3.0000E+01  1.0000E+02)
+ Integral      =   7.4380E+03 Total curve integral =   2.8268E+04
+ Average value =   3.3058E+01 Total curve average  =   5.3046E+00
+ Fraction of total =   0.2631
+ Centre of gravity =   1.8313E+02  6.7417E+01
+ Option ? (integrate 145 215 30 100) in 220 290 0 70
+ Integrated    225 points
+ X range   2.2000E+02 to   2.9000E+02 (  2.2000E+02  2.9000E+02)
+ Y range   0.0000E+00 to   7.0000E+01 (  0.0000E+00  7.0000E+01)
+ Integral      =   2.1810E+03 Total curve integral =   2.8268E+04
+ Average value =   9.6933E+00 Total curve average  =   5.3046E+00
+ Fraction of total =   0.0772
+ Centre of gravity =   2.6225E+02  3.9519E+01
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Note: these integration options have also been built into one of the cursor-mode
+   popup menus, so you can integrate interactively.
+
+ ## cursor_mode    Dx Dy
+
+ With this command you enter the cursor analysis mode.  You have the
+   following controls:
+
+ ESC-key to QUIT cursor mode (or appropriate popup items)
+ PAN     with left mouse button or arrow keys
+ ZOOM    with middle mouse button
+ F-KEYS  to toggle popup menus
+ POPUPS  are activated by the right mouse button
+ ^       in a popup means that cursor position is used
+ ^^      in a popup means that you have to select an area
+
+ If you pan with the arrow keys, you move in horizontal steps "Dx" and
+   vertical steps "Dy".  If you pan with the left mouse button, the distance
+   that you cover is proportional to the time between pressing and releasing
+   the mouse button.  The same, mutatis mutandis, holds when you're zooming
+   with the mouse; moving left zooms in horizontally, moving down zooms in
+   vertically (hence, move towards the top righthand corner if you want to
+   zoom out in both directions, etc.).
+ If you have to select an area (e.g., when you use the popup option "zoom
+   area ^^"), move the cursor to one of the corners, click the right mouse
+   button and keep it down; then move to the other corner (the first corner
+   will be highlighted while you do this) and release the mouse button.
+
+ NOTE: you can only analyse one window at a time, namely the currently
+   selected one !!!  So even though you may be pressing the arrow keys
+   in another window, the selected window's plot will actually move !
+   If you want to switch to analysing another plot, you have to select that
+   window (use the "next window" option of the Manipulate popup, vide infra).
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (focus 48) cu 5 .1
+ Horizontal arrow step : (      5.000) 
+ Vertical arrow step   : (      0.100) 
+   
+   ESC-key to QUIT cursor mode
+   PAN  with left mouse button or arrow keys
+   ZOOM with middle mouse button
+   F-KEYS to toggle popup menus
+   ^  in popup means cursor position is used
+   ^^ in popup means you have to pick a 2D area
+
+
+  F-key menus :
+  F  1 : Manipulate
+  F  2 : Analyse
+  F  3 : General_menu
+
+ Popup menu : (Manipulate) 
+    47.71374       1.300776    
+ Point #     48 (D =   2.9309E-04)
+ X,Y,Label =   4.8000E+01,  1.2902E+00 |Data_pt_48|
+ Popup menu : (Analyse) 
+ Data points with Y >    2.491559    
+ Point #      5 X,Y,Label =   5.0000E+00,  2.5397E+00 |Data_pt_5|
+ Point #     10 X,Y,Label =   1.0000E+01,  3.7048E+00 |Data_pt_10|
+ Point #     11 X,Y,Label =   1.1000E+01,  3.4999E+00 |Data_pt_11|
+ Point #     12 X,Y,Label =   1.2000E+01,  2.8169E+00 |Data_pt_12|
+ Point #     13 X,Y,Label =   1.3000E+01,  3.4269E+00 |Data_pt_13|
+ Point #     46 X,Y,Label =   4.6000E+01,  2.8258E+00 |Data_pt_46|
+ Point #     97 X,Y,Label =   9.7000E+01,  2.6618E+00 |Data_pt_97|
+ Point #    117 X,Y,Label =   1.1700E+02,  3.2989E+00 |Data_pt_117|
+ Popup menu : (General_menu) 
+ Popup menu : (Manipulate) 
+ Horizontal line at Y = (  2.427E+00) 
+ Selected window : (       2) 
+ ERROR --- Not a 1D window
+    79.98586       105.2047    
+ Selected window : (       3) 
+ ERROR --- Not a 1D window
+ Selected window : (       1) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## popup menus in cursor_mode
+
+ At present, there are three popup menus, one general (handled by the graphics
+   routines, called "General" and activated with the F3 key) and two specific
+   for O2D (called "Manipulate", activated through F1 and "Analyse", activated
+   through F2).  They contain the following options:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+   ________________________________
+   | GENERAL popup                |   ACTION:
+   ________________________________
+   ________________________________
+   | zoom area ^^                 |   zoom in on a specific part of your plot
+   ________________________________
+   | location ^                   |   print current cursor position
+   ________________________________
+   | pop text port                |   pop text window to front
+   | push text port               |   push text window to back
+   ________________________________
+   | help                         |   print summary of controls
+   | list menus                   |   list menu names and their F-keys
+   ________________________________
+   | double horizontal arrow step |   multiply "Dx" by 2.0
+   | halve horizontal arrow step  |   multiply "Dx" by 0.5
+   | double vertical arrow step   |   multiply "Dy" by 2.0
+   | halve vertical arrow step    |   multiply "Dy" by 0.5
+   ________________________________
+   | integrate curve/area ^^      |   integrate part of 1D or 2D plot
+   ________________________________
+   | QUIT cursor mode             |   go back to the O2D command loop level
+   ________________________________
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+   ________________________________
+   | MANIPULATE popup             |   ACTION:
+   ________________________________
+   ________________________________
+   | ID data point ^              |   print coordinates and label of closest point
+   | location ^                   |   print current cursor location
+   ________________________________
+   | reset full viewport          |   reset original, complete view of the plot
+   | next window                  |   select the next window for analysis
+   ________________________________
+   | display one label ^          |   plot label of closest data point
+   | display all labels           |   plot all labels
+   ________________________________
+   | draw horizontal line ^       |   draw horizontal line at cursor position
+   | draw vertical line ^         |   draw vertical line at cursor position
+   | draw cross lines ^           |   draw horizontal and vertical line
+   ________________________________
+   | quit cursor mode             |   go back to the O2D command loop level
+   ________________________________
+   | QUIT O2D                     |   quit working with O2D alltogether
+   ________________________________
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+   ________________________________
+   | ANALYSE popup                |   ACTION:
+   ________________________________
+   ________________________________
+   | List data  Y > cursor ^      |   list data points above the cursor position
+   | List data  Y < cursor ^      |   list data points below the cursor position
+   | quit cursor mode             |   go back to the O2D command loop level
+   ________________________________
+   | QUIT O2D                     |   quit working with O2D alltogether
+   ________________________________
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+
+ ** PLOT FILES
+
+ The plot instruction files are simple keyworded ASCII files which may contain
+   pointers to "O"-datablock files in certain places.
+ Records in the plot instruction files contain a keyword, one space and (usually)
+   some data which is read into a string and parsed depending on the value of the
+   keyword.  The format for such lines is: (A6,1X,A), where the string may be up to
+   80 characters in length.  Keywords are not case-sensitive.
+
+ For both 1D and 2D files, any line which has an exclamation mark "!" in column
+   one of the keyword, or which has the keyword "REMARK", is treated as a comment
+   line.  The end of a file may be signaled by the keyword "END   " or by an end-of-
+   file.
+
+ ** 1D plot files format
+
+ Ready-made 1D plot files are generated many USF programs, including
+   MAPMAN, DATAMAN, LSQMAN, MOLEMAN(2), ODBM(AN), OOPS(2), RMSPDB
+   and XPLO2D.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+   Keyword  Format  Type  Rest of the line
+   -------------------------------------------------------------------------------
+ # NPOINT   (*)     (I)   nr of data points
+   COLOUR   (*)     (I)   colour index for drawing the graph/points
+   XYVIEW   (*)     (4R)  define the area to be displayed on the screen by
+                          providing XMIN, XMAX, YMIN and YMAX; use this keyword
+                          to compare different files on the same scale
+   MRKTYP   (*)     (I)   marker type; this is for scatter graphs only; the
+                          following options are supported: 1 = plus, 2 = cross,
+                          3 = Z, 4 = diamond, 5 = triangle (pointing up),
+                          6 = triangle (down), 7 = triangle (left), 8 = triangle
+                          (right), all other values = box
+   MRKSIZ   (*)     (2R)  horizontal and vertical sizes of the markers
+ # XLABEL   (A)     (A)   label for marking the horizontal axis
+ # YLABEL   (A)     (A)   label for marking the vertical axis
+ # XLIMIT   (*)     (2R)  lower value for X and the increment (requires NPOINT)
+ # YLIMIT   (*)     (2R)  lower value for Y and the increment (requires NPOINT)
+ # XVALUE   (A)     (A)   format for reading explicit X values from the following
+                          records (requires NPOINT); * = free format
+ # YVALUE   (A)     (A)   format for reading explicit Y values from the following
+                          records (requires NPOINT); * = free format
+   LABELS   (A)     (A)   format for reading explicit data point labels from the
+                          following records (requires NPOINT)
+ # XFROMO   (A)     (A)   filename of an "O" datablock from which the X values are
+                          to be read
+ # YFROMO   (A)     (A)   filename of an "O" datablock from which the Y values are
+                          to be read
+   LFROMO   (A)     (A)   filename of an "O" datablock from which the labels are
+                          to be read
+ # VALUES   (A)     (A)   format for reading explicit X and Y value pairs from the
+                          following records (requires NPOINT); * = free format
+ # VALABS   (A)     (A)   format for reading explicit X/Y/label triples from the
+                          following records (requires NPOINT)
+   NEXTFN   (A)     (A)   more data will be read from the next file whose name
+                          should be on the rest of this line
+   MORE     ---     ---   plot the current points and then continue reading from
+                          the current file (a convenient way of plotting multiple
+                          curves in one graph)
+   TEXT     (*)   (3R,A)  draw a text label; the three arguments are: X, Y position
+                          for the text label, the size in points (only used for the
+                          PostScript output file) and the text itself (enclose in
+                          SINGLE QUOTES !!!)
+   GRID     (*)    (6R)   draw a grid; the six arguments are: x-start, x-end,
+                          x-spacing, y-start, y-end, y-spacing
+   LINE     (*)    (4R)   X1,Y1, X2,Y2; draws line from (X1,Y1) to (X2,Y2)
+   BOX      (*)    (4R)   XLO,XHI, YLO,YHI; draws a box
+   CIRCLE   (*)    (3R)   Xcentre,Ycentre,Radius; draws a circle
+   ELLIPS   (*)    (4R)   Xcentre,Ycentre,Xradius,Yradius; draws an ellipse
+   HIDE     ---     ---   in PostScript output file, white out area outside plot box
+   NOHIDE   ---     ---   in PostScript output file, do NOT white out area outside
+                          plot box
+   DASH     ---     ---   in PostScript output file, force dashing level to be incremented
+   NODASH   ---     ---   in PostScript output file, re-set solid line type
+   LINFIT   ---     ---   will calculate the least-squares fit through the data;
+                          for line and scatter plots this line will also be drawn
+   XYSTAT   ---     ---   will calculate and print stats for X, Y and correlation coeff.
+   BOXPAR   (*)    (3R)   values of BOXLOW, BOXBIN and BOXMAX for box plots
+   CDVERT   (*)     (R)   fraction of vertical axis that is to be used in CD plots
+   XCOUNT   (*)    (3R)   values for XLOW, XBIN and XMAX for count_1d_to_2d command
+   YCOUNT   (*)    (3R)   values for YLOW, YBIN and YMAX for count_1d_to_2d command
+ # END      ---     ---   stop reading; ignore the rest of the input file
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Note that only a few of the available keywords are actually used in any one file.
+   For example, one may obtain X-values either by enumeration (option XLIMIT), or
+   explicitly from any of the options XVALUE, XFROMO, VALUES or VALABS.  By default,
+   all X and Y values are 1, 2, 3 etc., so if that's what you want, you don't even
+   have to use any of these options.  In addition, the labels are set by default to
+   "Data_pt_1" etc. for consecutive points.
+
+ The keywords marked with an "#" in front of them are also supported by the
+   CricketGraph conversion routine (the others are simply ignored).
+
+ ** 1D plot files examples
+
+ ## attribute as a function of residue number
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ! Example 1D plot file
+ !
+ NPOINT 300
+ ! X runs from 1 to 301
+ XLIMIT 1 1
+ XLABEL sequence
+ YLABEL attribute
+ ! draw plot in yellow
+ COLOUR 3
+ MRKSIZ 5 50
+ ! use triangles in scatter plots
+ MRKTYP 5
+ ! explicit Y values
+ YVALUE (15F5.0)
+  1485  884  648  581 2563 3758 2040  860  -64-1552 -425 1265  403 -203  405
+   775  532 -756-1184  243  665 1654  128  160  538 2289 3019 1550 1019 -131
+ -2154 -385 2119  943   71  838  744  548  814 1177 1554 1111  907  780 1583
+...
+ -1781 -120  299 -331  822 2014 1036  109 -352-1286 -828 -280-2052-2288   95
+  -392-2683-1815  232  -17 -415  451 1929 1851  985 1591 2220 1881 2722 3236
+  1699 1334 1185-1962-3371 -619 -239-3278-3806 1604 1668 1349 2122 2746 1712
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## pep-flip values as a function of the O internal residue counter
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ! Example 1D plot file
+ !
+ ! use residue numbers for X
+ XFROMO am_residue_irc
+ ! plot PepFlip values as function of residue nr
+ YFROMO am_residue_pepflip
+ ! labels axes
+ XLABEL Sequence
+ YLABEL PepFlip
+ ! draw plots in green
+ COLOUR 2
+ MRKSIZ 0.75 0.02
+ ! use crosses in scatter graphs
+ MRKTYP 2
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## pep-flip and rsc values as a function of residue number
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ NPOINT    220
+ XYVIEW  3 222 0.0 4.0
+ GRID    0 220 20   0 4 0.5
+ COLOUR      3
+ XLIMIT       3.0000      1.0000
+ YFROMO pep_flip.o
+ !
+ MORE
+ !
+ COLOUR      5
+ MRKTYP  0    box
+ MRKSIZ  0.3 0.03
+ XLIMIT       3.0000      1.0000
+ YFROMO rs_fit_ave.o
+ XLABEL Residue nr GTA Model M6
+ YLABEL RS-fit & Pep_flip values
+ !
+ TEXT   50 3.5 10 'a rather high peak'
+ TEXT   90 0.2 10 'a lowish one'
+ !
+ END   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## averaging statistics as a function of averaging cycle
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+! RSTATS statistics averaging
+!
+NPOINT 14
+COLOUR 2
+XYVIEW 0.029 0.161 0 1
+XLIMIT 0.03 0.01
+XLABEL P212121 A2U - resolution bin (4(st/l)**2) - 930902
+YLABEL CC & R before and after 5 averaging cycles; model M9A
+!
+! R-before = cat q | cut -c48-55
+!
+YVALUE *
+  0.285 
+...
+  0.346 
+!
+MORE
+YVALUE *
+  0.179 
+...
+  0.254 
+!
+! CC-before = cat q | cut -c118-125
+!
+MORE
+COLOUR 3
+YVALUE *
+  0.804
+...
+  0.529
+!
+MORE
+YVALUE *
+  0.910
+...
+  0.640
+!
+END
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## Wilson-scaling plot
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+! Wilson plot file #2:
+! log<I2>/<I1> vs (sin(t)/l)**2
+! Produced by DATAMAN
+! Filename = wilson_S1_S2_2.plt
+!
+NPOINT       16
+XLABEL (sin(theta)/lambda)**2
+YLABEL log<I2>/<I1>
+MRKTYP        1
+COLOUR        1
+XYVIEW   0.0000E+00   4.5937E-02   3.5659E+00   4.1017E+00
+XVALUE (1p,6e12.4)
+  1.2500E-03  3.7500E-03  6.2500E-03  8.7500E-03  1.1250E-02  1.3750E-02
+  1.6250E-02  1.8750E-02  2.1250E-02  2.3750E-02  2.6250E-02  2.8750E-02
+  3.1250E-02  3.3750E-02  3.6250E-02  3.8750E-02  4.1250E-02  4.3750E-02
+!
+YVALUE (1p,6e12.4)
+  2.5507E+00  3.2273E+00  3.7507E+00  3.6250E+00  3.8749E+00  3.8025E+00
+  3.7927E+00  3.8353E+00  3.8980E+00  3.9269E+00  3.9217E+00  3.8944E+00
+  3.9171E+00  3.9563E+00  3.9097E+00  3.9175E+00         
+!
+MORE
+!
+COLOUR        2
+NPOINT        2
+VALUES (1p,2e12.4)
+  1.2500E-03  3.5659E+00
+  4.3750E-02  4.1017E+00
+!
+END
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## rsc values as a function of residue number
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+! Created by OOPS V. 940209/2.3 at Thu Feb 10 00:45:50 1994 for user gerard
+NPOINT     290
+XLABEL Residue number
+YLABEL 1BYH_RESIDUE_RSC
+COLOUR       2
+XYVIEW   0.000 291.000   0.000   3.460
+XLIMIT   1.000   1.000
+YVALUE *
+    1.44130E+00    2.64300E-01    0.00000E+00    0.00000E+00    6.58700E-01
+    5.91000E-01    7.23400E-01    1.75690E+00    2.57700E-01    1.49100E+00
+    8.37900E-01    4.92900E-01    9.03400E-01    1.40620E+00    6.53700E-01
+    0.00000E+00    6.20500E-01    5.74200E-01    2.98340E+00    4.92700E-01
+...
+    0.00000E+00    0.00000E+00    0.00000E+00    0.00000E+00    0.00000E+00
+    0.00000E+00    0.00000E+00    0.00000E+00    0.00000E+00    0.00000E+00
+    0.00000E+00    0.00000E+00    0.00000E+00    0.00000E+00    0.00000E+00
+END   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## 1D translation function
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+! Created by XPLO2D
+NPOINT        407
+XYVIEW    0.00000   1.00000   0.10000   0.25000
+XLIMIT    0.00000   0.00246
+XLABEL Transl C-axis 0.0000 - 1.0000, 0.0025; file combi1_34.3dmatrix
+YLABEL TF values 0.1030 - 0.2210; ave 0.1590; sigma 0.0210
+YVALUE (11f7.4)            
+ 0.1871 0.2027 0.2018 0.1832 0.1536 0.1251 0.1106 0.1160 0.1386 0.1687 0.1950
+ 0.2078 0.2014 0.1758 0.1401 0.1111 0.1028 0.1186 0.1510 0.1861 0.2120 0.2215
+ 0.2109 0.1829 0.1499 0.1281 0.1261 0.1427 0.1686 0.1926 0.2072 0.2078 0.1924
+...
+ 0.1524 0.1716 0.1844 0.1861 0.1759 0.1572 0.1360 0.1199 0.1152 0.1238 0.1429
+ 0.1660 0.1856 0.1956 0.1935 0.1809 0.1634 0.1478 0.1399 0.1425 0.1550 0.1738
+ 0.1925 0.2028 0.1988 0.1811 0.1570 0.1350 0.1225 0.1237 0.1385 0.1624 0.1871
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## Rfree as a function of refinement step
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+NPOINT 59
+COLOUR 2
+XYVIEW 1 59 0.15 0.35
+XLIMIT 1 1
+YFROMO rfree.o
+XLABEL Progress of XPLOR refinement
+YLABEL Rfree/Rnormal
+END   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## average per-residue RMS distance of two molecules
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+REMARK  Per-residue average distance
+REMARK  file produced by RMSPDB at Fri Aug  7 14:58:51 1992
+REMARK  Compared : janet1.pdb
+REMARK       and : janet3.pdb
+REMARK
+NPOINT    467
+COLOUR      3
+XLABEL Residue
+YLABEL Average distance (A)
+XVALUE (8f10.0)
+         9        10        11        12        13        14        15        16
+...
+       465       466       467       468       469       470       471       472
+       473       474       475
+YVALUE (8f10.4)
+    0.5985    0.4632    1.4046    0.5464    0.4185    0.3699    0.4425    0.3351
+    0.3912    0.4396    0.4540    0.4848    0.4675    0.3320    0.5120    0.4828
+...
+    0.4233    0.5245    0.6107    0.4192    0.3084    0.3960    0.4020    0.5547
+    0.3876    0.5279    0.3319    0.4641    0.5340    0.3542    0.2966    0.8534
+    0.5287    0.2241    0.2335
+END   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## histogram of RMS distances of two molecules
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+REMARK  Histogram file produced by RMSPDB at Fri Aug  7 14:58:51 1992
+REMARK  Compared : janet1.pdb
+REMARK       and : janet3.pdb
+REMARK
+NPOINT     11
+COLOUR      3
+XLABEL Distance intervals (A)
+YLABEL Number of distances
+XVALUE (1p,5e15.7)
+  0.0000000E+00  1.0000000E-01  2.0000000E-01  3.0000001E-01  4.0000001E-01
+  5.0000000E-01  6.0000002E-01  6.9999999E-01  8.0000001E-01  9.0000004E-01
+  1.0000000E+00
+YVALUE (5f15.0)
+             20            123            302            424            389
+            265            170             90             49             35
+              0
+END   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## Box plot of Rfree versus deposition year for several thousand PDB entries
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+REMARK Created by ODBMAN V. 001206/1.9.5 at Mon Dec 11 17:05:17 2000 for gerard
+REMARK Scatter plot of datablock (X) YEAR
+REMARK And datablock (Y) RFREE
+REMARK X ave,sdv,min,max =       1.9978E+03      1.3548E+00      1.9930E+03      2.0000E+03
+REMARK Y ave,sdv,min,max =       2.5463E-01      3.8939E-02      6.7600E-02      4.6500E-01
+REMARK X-Y corr. coeff., rmsd =    -0.057      1.9975E+03
+LINFIT
+NPOINT     5112
+XLABEL Value of YEAR
+YLABEL Value of RFREE
+COLOUR 4
+XYVIEW    1992   2001   0.0   0.5
+MRKTYP 1
+MRKSIZ 0.01 0.001
+BOXPAR 1989.5 1 2000.5
+XVALUE *
+   1.9960E+03   1.9970E+03   1.9990E+03   1.9960E+03   1.9980E+03   1.9960E+03
+[...]
+   1.9980E+03   1.9990E+03   1.9980E+03   1.9980E+03   1.9990E+03   2.0000E+03
+YVALUE *
+   3.2000E-01   4.2800E-01   2.8500E-01   4.5200E-01   3.1500E-01   3.5100E-01
+[...]
+   1.5480E-01   1.2100E-01   1.0260E-01   1.4500E-01   1.3100E-01   9.4000E-02
+END
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## Luzzati plot (including theoretical curves)
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+! Created by XPLO2D V. 930728/0.9 at Wed Sep 1 17:01:38 1993 for user gerard
+NPOINT     25
+COLOUR      2
+XYVIEW      0.10000     0.55000     0.00000     0.65000
+XLABEL 1/Resolution (1/A)
+YLABEL Luzzati plot WORKING data (R)
+XVALUE *
+    0.120700    0.165837    0.192678    0.213220    0.230415    0.245399
+    0.258732    0.270636    0.281690    0.291971    0.301205    0.310078
+    0.318979    0.327332    0.335008    0.342466    0.349040    0.355872
+    0.362976    0.369004    0.374532    0.380228    0.386100    0.392157
+    0.397614
+YVALUE *
+    0.418200    0.250400    0.198500    0.171300    0.186600    0.208700
+    0.223000    0.226000    0.229700    0.248300    0.241500    0.252100
+    0.264800    0.272900    0.304900    0.294000    0.289500    0.288000
+    0.311100    0.293800    0.325500    0.300900    0.331700    0.324900
+    0.312900
+!
+MORE
+NPOINT      8
+COLOUR      3
+XVALUE *
+    0.150000    0.200000    0.250000    0.300000    0.350000    0.400000
+    0.450000    0.500000
+YVALUE *
+    0.074000    0.098000    0.122000    0.145000    0.168000    0.191000
+    0.214000    0.237000
+TEXT       0.505000     0.235000 10 '0.20'
+!
+MORE
+NPOINT      9
+COLOUR      4
+XVALUE *
+    0.120000    0.160000    0.200000    0.240000    0.280000    0.320000
+    0.360000    0.400000    0.480000
+YVALUE *
+    0.074000    0.098000    0.122000    0.145000    0.168000    0.191000
+    0.214000    0.237000    0.281000
+TEXT       0.485000     0.279000 10 '0.25'
+!
+MORE
+NPOINT      9
+COLOUR      5
+XVALUE *
+    0.133333    0.166667    0.200000    0.233333    0.266667    0.300000
+    0.333333    0.400000    0.466667
+YVALUE *
+    0.098000    0.122000    0.145000    0.168000    0.191000    0.214000
+    0.237000    0.281000    0.319000
+TEXT       0.471667     0.317000 10 '0.30'
+!
+MORE
+NPOINT     10
+COLOUR      6
+XVALUE *
+    0.114286    0.142857    0.171429    0.200000    0.228571    0.257143
+    0.285714    0.342857    0.400000    0.457143
+YVALUE *
+    0.098000    0.122000    0.145000    0.168000    0.191000    0.214000
+    0.237000    0.281000    0.319000    0.353000
+TEXT       0.462143     0.351000 10 '0.35'
+!
+MORE
+NPOINT     11
+COLOUR      7
+XVALUE *
+    0.125000    0.150000    0.175000    0.200000    0.225000    0.250000
+    0.300000    0.350000    0.400000    0.450000    0.500000
+YVALUE *
+    0.122000    0.145000    0.168000    0.191000    0.214000    0.237000
+    0.281000    0.319000    0.353000    0.385000    0.414000
+TEXT       0.505000     0.412000 10 '0.40'
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** 2D plot files format
+
+ The contour routine expects data on an evenly spaced orthogonal 2D grid, so
+   you can't specify X and Y values.
+
+ Ready-made 2D plot files are generated by:
+ - MAPMAN (section or slice of a map)
+ - LSQMAN (difference-distance matrix)
+ - MOLEMAN(2) (atom-atom distance plot)
+ - XPLO2D (2D translation function)
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+   Keyword  Format  Type  Rest of the line
+   -------------------------------------------------------------------------------
+   XPOINT   (*)     (I)   nr of data points in the horizontal direction (note that
+                          this is the number of intervals PLUS 1)
+   YPOINT   (*)     (I)   nr of data points in the vertical direction (note that
+                          this is the number of intervals PLUS 1)
+   XLIMIT   (*)     (2R)  lower and upper values for X
+   YLIMIT   (*)     (2R)  lower and upper values for Y
+   XLABEL   (A)     (A)   label for marking the horizontal axis
+   YLABEL   (A)     (A)   label for marking the vertical axis
+   NLEVEL   (*)     (I)   the number of contour levels to plot
+   LEVELS   ---     ---   the values of the contour levels; NLEVEL must be known;
+                          the NLEVEL reals are read from the following records,
+                          in free format
+   COLOUR   ---     ---   the colours of the contour levels; NLEVEL must be known;
+                          the NLEVEL integers are read from the following records,
+                          in free format
+   RAMCOL   (*)     (6R)  RGB values for the starting and the ending colour
+                          used in colour-ramped 2D plots (r1 g1 b1 r2 g2 b2);
+                          default is from blue to red
+   RAMLIM   (*)     (2R)  limits on Z to determine the colour (default is
+                          to use the entire dynamic range of ZVALUE)
+   RAMODE   (A)     (A)   one of LIN(ear), LOG(arithmic) or ABS(olute);
+                          the data (ZVALUE) will be transformed prior to
+                          the colour-ramping takes place (the limits
+                          provided with RAMLIM are updated as well !!)
+   RAMTYP   (A)     (A)   type of ramping; one of HUE, SAT(uration), VAL(ue)
+                          or WHI(te). HUE is the default, for ramping from
+                          blue to red. SAT will enable ramping to or
+                          from white. VAL enables ramping from black
+                          to white or the other way around. WHI will
+                          ramp from one colour to another and pass through
+                          white in the middle.
+   ZVALUE   (A)     (A)   the format for reading the XPOINT*YPOINT data values from
+                          the following records; the values are reals, and they are
+                          read with the X-index running fastest:
+                          ((ZVALUE(j,i),j=1,XPOINT),i=1,YPOINT)
+                          NOTE: if the format is * then the data is read in free
+                                format
+   LINE     (*)    (4R)   X1,Y1, X2,Y2; draws line from (X1,Y1) to (X2,Y2)
+   BOX      (*)    (4R)   XLO,XHI, YLO,YHI; draws a box
+   END      ---     ---   stop reading; ignore the rest of the input file
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** 2D plot files examples
+
+ ## Ca-Ca distance matrix
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ !
+ ! Example of a 2D plot file (Calpha distance plot)
+ !
+ REMARK  Produced by MOLEMAN at Mon Aug 24 20:03:28 1992
+ REMARK  From PDB file out.pdb
+ REMARK
+ XLABEL Residue
+ YLABEL Residue
+ NLEVEL      3 
+ LEVELS
+       3.00      5.00     10.00
+ COLOUR
+          1         2         3
+ XPOINT    273
+ YPOINT    273
+ XLIMIT      1   273
+ YLIMIT      1   273
+ ZVALUE (7f10.1)
+        0.0       3.8       6.8       9.5      11.5       9.8      10.5
+       14.0      14.2      12.8      16.2      18.2      21.0      22.1
+       22.9      25.8      26.8      25.1      24.0      21.8      22.4
+ (...)
+       28.8      25.4      22.8      23.7      20.5      20.5      19.6
+       16.7      14.6      15.7      13.2      10.6      11.0       9.8
+        7.1       5.6       6.3       4.9       6.3       4.0       0.0
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## 2D translation function
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+! Created by ODBM V. 931112/1.2 at Tue Nov 16 18:15:48 1993 for user gerard
+NLEVEL   6
+LEVELS
+ 0.09 0.093 0.096 0.099 0.102 0.104
+COLOUR
+ 8 9 10 11 12 13
+XPOINT  16
+YPOINT  16
+XLABEL "direct translation search" CDHC 8-3A 931117 RF peak 14
+YLABEL P21, a,c = 0 -> 0.5; 0.090/3/6/9 0.102/4
+XLIMIT   0 0.5
+YLIMIT   0 0.5
+ZVALUE *
+   0.08762   0.07137   0.05669   0.07611   0.08157   0.07117   0.08299
+   0.08190   0.07753   0.07489   0.08262   0.08485   0.06363   0.07103
+...
+   0.07980   0.07093   0.07541   0.08553   0.07640   0.07573   0.08466
+   0.07419   0.08662   0.08762   0.07137   0.05669   0.07611   0.08157
+   0.07117   0.08299   0.08190   0.07753   0.07489   0.08262   0.08485
+   0.06363   0.07103   0.06756   0.08762
+END   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## section from a map
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+! Created by MAPMAN V. 931117/3.3 at Tue Feb 15 18:22:56 1994 for user gerard
+NLEVEL   5
+LEVELS
+    1.5   2.0  2.5  3 3.5
+COLOUR
+            8           9          10          11          12
+XLABEL Z-plane 100; horizontal = X-axis
+YLABEL vertical = Y-axis; Z=1/2 Harker; PT/"AU" diff patt
+XPOINT  21
+YPOINT  21
+XLIMIT 0.0000000E+00 0.5000000
+YLIMIT 0.0000000E+00 0.5000000
+ZVALUE (1p,6e13.4)
+   1.4791E-01  -7.5199E-02  -6.3337E-01  -1.0663E+00  -1.0237E+00  -9.9388E-01
+  -1.3477E+00  -1.1413E+00   3.5324E-01   1.8302E+00   1.7832E+00   9.5157E-01
+   7.2323E-01   5.8078E-01  -5.6884E-01  -2.0001E+00  -2.2918E+00  -1.6514E+00
+...
+   8.9909E-01   3.9641E-01   2.7680E-01   8.5800E-01   8.3212E-01   2.2648E-01
+   6.6305E-02   3.8946E-03  -6.3404E-01  -1.2345E+00  -1.3464E+00  -1.3753E+00
+  -1.0769E+00  -6.0732E-02   6.0202E-01
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** topology plot files
+
+ These files are produced by DEJAVU.  They may contain the following
+   keywords (all are in free format):
+ XYVIEW ... - viewport; must be the first card (xmin, xmax, ymin, ymax)
+ ALPHA  ... - draw a cylinder (xmin, ymin, xmax, ymax, xwidth, text)
+ BETA   ... - draw an arrow (xmin, ymin, xmax, ymax, xwidth, text)
+ END        - end of file
+ At present, no comments etc. are allowed.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+XYVIEW      -1.00      6.00     -0.50      1.50
+BETA     0.00  0.00  0.00  1.00  0.80 'B1    '
+BETA     1.00  1.00  1.00  0.00  0.80 'B2    '
+ALPHA    2.00  0.00  2.00  1.00  0.80 'A1    '
+ALPHA    3.00  1.00  3.00  0.00  0.80 'A3    '
+BETA     4.00  1.00  4.00  0.00  0.80 'B4    '
+BETA     5.00  0.00  5.00  1.00  0.80 'B3    '
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** NOTES
+
+ Use ODBM/ODBMAN (or manual file editing) to quickly create O-type datablock files
+   (from XPLOR output, for example) for display with O2D !
+
+ BUGFIX - 930203 - labels for the axes could not be longer than 15
+          characters on the screen; this has been changed to 80 characters
+
+ BUGFIX - 930203 - sometimes the PostScript file wouldn't print;
+          probable cause: use of "(" and ")" in axis labels; if the labels
+          were longer than 40 characters, they were truncated which might
+          result in an unmatched "(" in the PostScript file; remedy: length
+          of the labels increased to 80 characters
+
+ Topology option: topology file produced by DEJAVU may be plotted
+   and converted into PostScript with the TOPOLOGY option.  Use
+   a 2D window to plot the topology diagram in.
+
+ NAIVE - 930414 - a new option to quickly plot "O" datablock files.
+         Just type NAIVE O_FILE (PS_FILE) after opening a 1D
+         window and voila.
+
+ 930419 - in 1D plot files, the format following XVALUE or
+          YVALUE may now be * indicating free-format read.
+
+ * LEGENDS - all REMARK cards are now used to create a legend
+   to your plot (maximum of 10 lines Times 12).  Also,
+   for 2D contour plots, (some of) the contour levels are
+   included in this legend.  Note that lines beginning with
+   "!" in your plot file are real comment cards (i.e., they
+   won't be echoed to the PostScript file).
+
+ * CONTOUR - a notorious and long-standing 'offset-bug' has
+             been fixed in the 2D contour option.
+
+ * PIE CHARTS - new option
+
+ * There is a script in the OMAC directory to convert lots of
+   plot files into PostScript format in one go (OMAC/o2dps).
+   For example: $OMAC/o2dps 'x*.plt' 1d
+
+ ** COLOURS
+
+ The following colours are predefined:
+
+ 0 = black
+ 1 = red
+ 2 = green
+ 3 = yellow
+ 4 = blue
+ 5 = magenta
+ 6 = cyan
+ 7 = white
+
+ If you want other colours than this, edit the PostScript
+   file (note that two commands have been defined for you
+   already: C means "stroke setrgbcolour" and K means
+   "stroke sethsvcolour").
+
+ Alternatively, you can use colour numbers 8 to 411 which have
+   been defined as follows (in PostScript files only; on-screen
+   on SGIs the colours are different):
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ #   8 (light_grey           ) =    852276012 RGB    0.800   0.800   0.800
+ #   9 (grey                 ) =    537395712 RGB    0.500   0.500   0.500
+ #  10 (dark_grey            ) =    222515412 RGB    0.200   0.200   0.200
+ #  11 (white                ) =   1062196212 RGB    1.000   1.000   1.000
+ #  12 (gainsboro            ) =    917351274 RGB    0.862   0.862   0.862
+ #  13 (honeydew             ) =   1000330169 RGB    0.941   1.000   0.941
+ #  14 (mistyrose            ) =    938355700 RGB    1.000   0.894   0.882
+ #  15 (skyblue              ) =    979160605 RGB    0.529   0.807   0.921
+ #  16 (light_steel_blue     ) =    925643454 RGB    0.690   0.768   0.870
+ #  17 (lightcyan            ) =   1062196090 RGB    0.878   1.000   1.000
+ #  18 (limegreen            ) =    219987153 RGB    0.197   0.803   0.197
+ #  19 (yellowgreen          ) =    219987559 RGB    0.603   0.803   0.197
+ #  20 (goldenrod            ) =    145379170 RGB    0.854   0.647   0.126
+ #  21 (peru                 ) =    273176367 RGB    0.803   0.521   0.248
+ #  22 (light_salmon         ) =    515506164 RGB    1.000   0.627   0.479
+ #  23 (medium_violet_red    ) =    558989080 RGB    0.780   0.083   0.521
+ #  24 (snow4                ) =    576230957 RGB    0.545   0.537   0.537
+ #  25 (bisque2              ) =    765280177 RGB    0.933   0.835   0.717
+ #  26 (bisque3              ) =    662398767 RGB    0.803   0.717   0.619
+ #  27 (azure1               ) =   1062196153 RGB    0.941   1.000   1.000
+ #  28 (slateblue1           ) =   1061618189 RGB    0.513   0.436   1.000
+ #  29 (slateblue4           ) =    584311075 RGB    0.279   0.236   0.545
+ #  30 (skyblue1             ) =   1061998109 RGB    0.529   0.807   1.000
+ #  31 (lightskyblue3        ) =    855332404 RGB    0.552   0.713   0.803
+ #  32 (paleturquoise4       ) =    584627613 RGB    0.401   0.545   0.545
+ #  33 (cadetblue2           ) =    991836728 RGB    0.556   0.898   0.933
+ #  34 (aquamarine4          ) =    490255643 RGB    0.271   0.545   0.455
+ #  35 (springgreen2         ) =    499041292 RGB    0.000   0.933   0.463
+ #  36 (olivedrab1           ) =    269472508 RGB    0.752   1.000   0.244
+ #  37 (yellow2              ) =     13551537 RGB    0.933   0.933   0.000
+ #  38 (goldenrod3           ) =    132755247 RGB    0.803   0.607   0.114
+ #  39 (goldenrod4           ) =     95855149 RGB    0.545   0.412   0.079
+ #  40 (burlywood1           ) =    649928692 RGB    1.000   0.827   0.607
+ #  41 (orange3              ) =     13129519 RGB    0.803   0.521   0.000
+ #  42 (tomato3              ) =    247794479 RGB    0.803   0.310   0.224
+ #  43 (darkorchid2          ) =    991150790 RGB    0.698   0.228   0.933
+ #  44 (purple4              ) =    584173914 RGB    0.334   0.102   0.545
+ #  45 (mediumpurple2        ) =    991403643 RGB    0.623   0.475   0.933
+ #  46 (sgichartreuse        ) =    478958024 RGB    0.444   0.776   0.444
+ #  47 (deep_sky_blue        ) =   1061938188 RGB    0.000   0.749   1.000
+ #  48 (darkgreen            ) =     12997644 RGB    0.000   0.393   0.000
+ #  49 (dark_khaki           ) =    453732081 RGB    0.741   0.717   0.420
+ #  50 (wheat                ) =    748538828 RGB    0.960   0.870   0.701
+ #  51 (dark_orange          ) =     13158388 RGB    1.000   0.549   0.000
+ #  52 (coral                ) =    342360052 RGB    1.000   0.499   0.314
+ #  53 (medium_purple        ) =    912724556 RGB    0.576   0.440   0.858
+ #  54 (thistle              ) =    901506907 RGB    0.847   0.749   0.847
+ #  55 (navajowhite3         ) =    584787759 RGB    0.803   0.701   0.545
+ #  56 (lemonchiffon1        ) =    855606260 RGB    1.000   0.980   0.803
+ #  57 (paleturquoise1       ) =   1062195945 RGB    0.733   1.000   1.000
+ #  58 (goldenrod2           ) =    153827249 RGB    0.933   0.705   0.134
+ #  59 (burlywood2           ) =    608977841 RGB    0.933   0.772   0.568
+ #  60 (tan4                 ) =    190166573 RGB    0.545   0.353   0.169
+ #  61 (chocolate2           ) =    149385137 RGB    0.933   0.463   0.130
+ #  62 (brown4               ) =    157440557 RGB    0.545   0.138   0.138
+ #  63 (maroon1              ) =    747856884 RGB    1.000   0.204   0.701
+ #  64 (maroon2              ) =    698558385 RGB    0.933   0.189   0.654
+ #  65 (darkorchid1          ) =   1061421817 RGB    0.749   0.244   1.000
+ #  66 (mediumpurple1        ) =   1061693098 RGB    0.670   0.509   1.000
+ #  67 (thistle1             ) =   1062075380 RGB    1.000   0.882   1.000
+ #  68 (thistle2             ) =    991760305 RGB    0.933   0.823   0.933
+ #  69 (thistle3             ) =    855328559 RGB    0.803   0.709   0.803
+ #  70 (darkblue             ) =    584069132 RGB    0.000   0.000   0.545
+ #  71 (sgilightblue         ) =    801758711 RGB    0.491   0.619   0.752
+ #  72 (sgislateblue         ) =    826745288 RGB    0.444   0.444   0.776
+ #  73 (navy_blue            ) =    537931788 RGB    0.000   0.000   0.501
+ #  74 (medium_spring_green  ) =    645890060 RGB    0.000   0.980   0.603
+ #  75 (olive_drab           ) =    157868464 RGB    0.420   0.556   0.138
+ #  76 (darkgoldenrod        ) =     59270877 RGB    0.721   0.525   0.044
+ #  77 (rosybrown            ) =    600371949 RGB    0.737   0.560   0.560
+ #  78 (violetred            ) =    604121915 RGB    0.815   0.126   0.564
+ #  79 (slateblue3           ) =    854960552 RGB    0.412   0.350   0.803
+ #  80 (deepskyblue2         ) =    991631372 RGB    0.000   0.698   0.933
+ #  81 (deepskyblue3         ) =    855219212 RGB    0.000   0.603   0.803
+ #  82 (deepskyblue4         ) =    584486924 RGB    0.000   0.408   0.545
+ #  83 (cadetblue4           ) =    584607058 RGB    0.326   0.525   0.545
+ #  84 (indianred1           ) =    449229812 RGB    1.000   0.416   0.416
+ #  85 (wheat4               ) =    433581613 RGB    0.545   0.495   0.401
+ #  86 (firebrick1           ) =    210970612 RGB    1.000   0.189   0.189
+ #  87 (lightsalmon2         ) =    482956209 RGB    0.933   0.584   0.448
+ #  88 (darkorange1          ) =     13107188 RGB    1.000   0.499   0.000
+ #  89 (dark_red             ) =     12595757 RGB    0.545   0.000   0.000
+ #  90 (crimson              ) =    260140906 RGB    0.862   0.079   0.236
+ #  91 (floralwhite          ) =   1000309748 RGB    1.000   0.980   0.941
+ #  92 (mediumblue           ) =    854601740 RGB    0.000   0.000   0.803
+ #  93 (dodger_blue          ) =   1061748866 RGB    0.118   0.564   1.000
+ #  94 (steelblue            ) =    752362783 RGB    0.275   0.509   0.705
+ #  95 (turquoise            ) =    868083975 RGB    0.251   0.878   0.815
+ #  96 (medium_aquamarine    ) =    711769501 RGB    0.401   0.803   0.666
+ #  97 (sea_green            ) =    371766465 RGB    0.181   0.545   0.342
+ #  98 (lawngreen            ) =     13607411 RGB    0.487   0.988   0.000
+ #  99 (green                ) =     13619212 RGB    0.000   1.000   0.000
+ # 100 (lightyellow          ) =    934269940 RGB    1.000   1.000   0.878
+ # 101 (brown                ) =    185779859 RGB    0.647   0.165   0.165
+ # 102 (violet               ) =    991438769 RGB    0.933   0.509   0.933
+ # 103 (medium_orchid        ) =    880110309 RGB    0.729   0.334   0.827
+ # 104 (navajowhite4         ) =    400006701 RGB    0.545   0.475   0.369
+ # 105 (ivory1               ) =   1000330228 RGB    1.000   1.000   0.941
+ # 106 (honeydew4            ) =    551073293 RGB    0.513   0.545   0.513
+ # 107 (darkolivegreen3      ) =    383565447 RGB    0.635   0.803   0.353
+ # 108 (lightgoldenrod3      ) =    474732335 RGB    0.803   0.745   0.440
+ # 109 (darkgoldenrod1       ) =     75204596 RGB    1.000   0.725   0.059
+ # 110 (burlywood4           ) =    363281965 RGB    0.545   0.451   0.334
+ # 111 (wheat1               ) =    777934836 RGB    1.000   0.905   0.729
+ # 112 (chocolate3           ) =    132544303 RGB    0.803   0.401   0.114
+ # 113 (chocolate4           ) =     91516461 RGB    0.545   0.271   0.075
+ # 114 (pink2                ) =    769297329 RGB    0.933   0.662   0.721
+ # 115 (orchid4              ) =    575966765 RGB    0.545   0.279   0.537
+ # 116 (lightgreen           ) =    604948032 RGB    0.564   0.933   0.564
+ # 117 (lightskyblue         ) =   1041026589 RGB    0.529   0.807   0.980
+ # 118 (forestgreen          ) =    153662610 RGB    0.134   0.545   0.134
+ # 119 (beige                ) =    917451724 RGB    0.960   0.960   0.862
+ # 120 (deeppink             ) =    616656884 RGB    1.000   0.079   0.576
+ # 121 (dark_orchid          ) =    851658340 RGB    0.600   0.197   0.800
+ # 122 (peachpuff3           ) =    625666863 RGB    0.803   0.686   0.584
+ # 123 (dodgerblue4          ) =    584382539 RGB    0.063   0.306   0.545
+ # 124 (lightcyan4           ) =    584627691 RGB    0.479   0.545   0.545
+ # 125 (palegreen3           ) =    524074483 RGB    0.487   0.803   0.487
+ # 126 (indianred3           ) =    363162415 RGB    0.803   0.334   0.334
+ # 127 (indianred4           ) =    251904557 RGB    0.545   0.228   0.228
+ # 128 (salmon3              ) =    359076655 RGB    0.803   0.440   0.330
+ # 129 (salmon4              ) =    247782957 RGB    0.545   0.299   0.224
+ # 130 (lightsalmon4         ) =    284527149 RGB    0.545   0.342   0.259
+ # 131 (orangered2           ) =     12853169 RGB    0.933   0.251   0.000
+ # 132 (plum3                ) =    855204655 RGB    0.803   0.588   0.803
+ # 133 (antique_white        ) =    897488864 RGB    0.980   0.921   0.843
+ # 134 (aliceblue            ) =   1062167481 RGB    0.941   0.972   1.000
+ # 135 (khaki                ) =    589187001 RGB    0.941   0.901   0.549
+ # 136 (lightgoldenrod       ) =    547208113 RGB    0.933   0.866   0.509
+ # 137 (hot_pink             ) =    752264180 RGB    1.000   0.412   0.705
+ # 138 (light_pink           ) =    806049780 RGB    1.000   0.713   0.756
+ # 139 (antiquewhite4        ) =    507000365 RGB    0.545   0.513   0.471
+ # 140 (steelblue2           ) =    991607157 RGB    0.361   0.674   0.933
+ # 141 (turquoise3           ) =    855392268 RGB    0.000   0.772   0.803
+ # 142 (aquamarine1          ) =    884986367 RGB    0.499   1.000   0.831
+ # 143 (darkseagreen2        ) =    752797389 RGB    0.705   0.933   0.705
+ # 144 (darkseagreen3        ) =    649903723 RGB    0.607   0.803   0.607
+ # 145 (seagreen1            ) =    666882390 RGB    0.330   1.000   0.623
+ # 146 (springgreen4         ) =    297317388 RGB    0.000   0.545   0.271
+ # 147 (lightyellow4         ) =    515421741 RGB    0.545   0.545   0.479
+ # 148 (gold4                ) =     13065773 RGB    0.545   0.459   0.000
+ # 149 (rosybrown2           ) =    752564145 RGB    0.933   0.705   0.705
+ # 150 (indianred2           ) =    420890545 RGB    0.933   0.389   0.389
+ # 151 (sienna2              ) =    284663729 RGB    0.933   0.475   0.259
+ # 152 (brown2               ) =    256103345 RGB    0.933   0.232   0.232
+ # 153 (deeppink4            ) =    341889581 RGB    0.545   0.040   0.314
+ # 154 (magenta1             ) =   1061172212 RGB    1.000   0.000   1.000
+ # 155 (orchid1              ) =   1040726004 RGB    1.000   0.513   0.980
+ # 156 (sgibeet              ) =    595829304 RGB    0.556   0.220   0.556
+ # 157 (sgi_teal             ) =    596173032 RGB    0.220   0.556   0.556
+ # 158 (bisque               ) =    818818036 RGB    1.000   0.894   0.768
+ # 159 (mint_cream           ) =   1041224652 RGB    0.960   1.000   0.980
+ # 160 (slateblue            ) =    854963628 RGB    0.416   0.353   0.803
+ # 161 (powderblue           ) =    958261950 RGB    0.690   0.878   0.901
+ # 162 (light_sea_green      ) =    711661706 RGB    0.126   0.698   0.666
+ # 163 (greenyellow          ) =    207606450 RGB    0.678   1.000   0.185
+ # 164 (sienna               ) =    198523519 RGB    0.627   0.322   0.177
+ # 165 (seashell2            ) =    925776817 RGB    0.933   0.898   0.870
+ # 166 (peachpuff2           ) =    724345777 RGB    0.933   0.796   0.678
+ # 167 (lemonchiffon2        ) =    798914481 RGB    0.933   0.913   0.749
+ # 168 (royalblue3           ) =    854983920 RGB    0.228   0.373   0.803
+ # 169 (lightsteelblue1      ) =   1062075172 RGB    0.792   0.882   1.000
+ # 170 (lightsteelblue2      ) =    991760109 RGB    0.737   0.823   0.933
+ # 171 (springgreen1         ) =    536858636 RGB    0.000   1.000   0.499
+ # 172 (chartreuse2          ) =     13551067 RGB    0.463   0.933   0.000
+ # 173 (red1                 ) =     12596212 RGB    1.000   0.000   0.000
+ # 174 (deeppink2            ) =    575754161 RGB    0.933   0.071   0.537
+ # 175 (maroon4              ) =    416410157 RGB    0.545   0.110   0.385
+ # 176 (whitesmoke           ) =   1020212172 RGB    0.960   0.960   0.960
+ # 177 (navajowhite          ) =    724421620 RGB    1.000   0.870   0.678
+ # 178 (cornflowerblue       ) =    987320725 RGB    0.393   0.584   0.929
+ # 179 (chocolate            ) =    136749891 RGB    0.823   0.412   0.118
+ # 180 (maroon               ) =    408102590 RGB    0.690   0.189   0.377
+ # 181 (snow3                ) =    839680815 RGB    0.803   0.788   0.788
+ # 182 (antiquewhite1        ) =    913233908 RGB    1.000   0.937   0.858
+ # 183 (navajowhite2         ) =    675078065 RGB    0.933   0.811   0.631
+ # 184 (steelblue1           ) =   1061909905 RGB    0.389   0.721   1.000
+ # 185 (lightskyblue2        ) =    991764111 RGB    0.643   0.827   0.933
+ # 186 (lightblue3           ) =    855372391 RGB    0.603   0.752   0.803
+ # 187 (turquoise2           ) =    991836172 RGB    0.000   0.898   0.933
+ # 188 (khaki4               ) =    333997613 RGB    0.545   0.525   0.306
+ # 189 (lightyellow3         ) =    752664367 RGB    0.803   0.803   0.705
+ # 190 (yellow1              ) =     13620212 RGB    1.000   1.000   0.000
+ # 191 (wheat2               ) =    728592305 RGB    0.933   0.847   0.682
+ # 192 (chocolate1           ) =    162004980 RGB    1.000   0.499   0.142
+ # 193 (brown1               ) =    276045812 RGB    1.000   0.251   0.251
+ # 194 (orange1              ) =     13258740 RGB    1.000   0.647   0.000
+ # 195 (orange2              ) =     13213617 RGB    0.933   0.603   0.000
+ # 196 (darkorange3          ) =     13006639 RGB    0.803   0.401   0.000
+ # 197 (lightpink4           ) =    429262381 RGB    0.545   0.373   0.397
+ # 198 (magenta3             ) =    854602543 RGB    0.803   0.000   0.803
+ # 199 (magenta4             ) =    584069677 RGB    0.545   0.000   0.545
+ # 200 (purple2              ) =    991094340 RGB    0.568   0.173   0.933
+ # 201 (purple3              ) =    854755831 RGB    0.491   0.150   0.803
+ # 202 (sgi_salmon           ) =    478618388 RGB    0.776   0.444   0.444
+ # 203 (lavender_blush       ) =   1020192756 RGB    1.000   0.941   0.960
+ # 204 (midnightblue         ) =    474070127 RGB    0.099   0.099   0.440
+ # 205 (darkslateblue        ) =    584315175 RGB    0.283   0.240   0.545
+ # 206 (cadet_blue           ) =    670686593 RGB    0.373   0.619   0.627
+ # 207 (mediumseagreen       ) =    478881016 RGB    0.236   0.701   0.444
+ # 208 (tan                  ) =    588986179 RGB    0.823   0.705   0.549
+ # 209 (darksalmon           ) =    515466141 RGB    0.913   0.588   0.479
+ # 210 (light_coral          ) =    538445753 RGB    0.941   0.501   0.501
+ # 211 (orange_red           ) =     12873716 RGB    1.000   0.271   0.000
+ # 212 (pale_violet_red      ) =    617026406 RGB    0.858   0.440   0.576
+ # 213 (darkviolet           ) =    879768144 RGB    0.580   0.000   0.827
+ # 214 (snow2                ) =    970880945 RGB    0.933   0.913   0.913
+ # 215 (royalblue4           ) =    584326309 RGB    0.153   0.251   0.545
+ # 216 (dodgerblue3          ) =    855067755 RGB    0.095   0.455   0.803
+ # 217 (lightskyblue1        ) =   1062079166 RGB    0.690   0.886   1.000
+ # 218 (khaki2               ) =    559826865 RGB    0.933   0.901   0.521
+ # 219 (lightgoldenrod4      ) =    326637101 RGB    0.545   0.505   0.299
+ # 220 (sienna4              ) =    170167853 RGB    0.545   0.279   0.150
+ # 221 (darkorange4          ) =     12873261 RGB    0.545   0.271   0.000
+ # 222 (red3                 ) =     12596015 RGB    0.803   0.000   0.000
+ # 223 (pink3                ) =    662246191 RGB    0.803   0.568   0.619
+ # 224 (magenta2             ) =    990917553 RGB    0.933   0.000   0.933
+ # 225 (mediumorchid2        ) =    991299391 RGB    0.819   0.373   0.933
+ # 226 (indigo               ) =    546320691 RGB    0.295   0.000   0.509
+ # 227 (old_lace             ) =    958346220 RGB    0.992   0.960   0.901
+ # 228 (peach_puff           ) =    773688308 RGB    1.000   0.854   0.725
+ # 229 (light_slate_blue     ) =   1061622289 RGB    0.517   0.440   1.000
+ # 230 (dark_olive_green     ) =    207012186 RGB    0.334   0.420   0.185
+ # 231 (lightgoldenrodyellow ) =    876577760 RGB    0.980   0.980   0.823
+ # 232 (gold                 ) =     13459444 RGB    1.000   0.843   0.000
+ # 233 (orchid               ) =    892801890 RGB    0.854   0.440   0.839
+ # 234 (bisque4              ) =    453500461 RGB    0.545   0.491   0.420
+ # 235 (cornsilk1            ) =    917464052 RGB    1.000   0.972   0.862
+ # 236 (honeydew2            ) =    934201210 RGB    0.878   0.933   0.878
+ # 237 (lightblue4           ) =    584594852 RGB    0.408   0.513   0.545
+ # 238 (olivedrab4           ) =    153662888 RGB    0.412   0.545   0.134
+ # 239 (khaki3               ) =    486298415 RGB    0.803   0.776   0.451
+ # 240 (sienna1              ) =    305670132 RGB    1.000   0.509   0.279
+ # 241 (brown3               ) =    222516015 RGB    0.803   0.200   0.200
+ # 242 (red2                 ) =     12596145 RGB    0.933   0.000   0.000
+ # 243 (palevioletred3       ) =    576099119 RGB    0.803   0.408   0.537
+ # 244 (darkorchid3          ) =    854804071 RGB    0.603   0.197   0.803
+ # 245 (darkorchid4          ) =    584206756 RGB    0.408   0.134   0.545
+ # 246 (mediumpurple3        ) =    855020069 RGB    0.537   0.408   0.803
+ # 247 (mediumpurple4        ) =    584355193 RGB    0.365   0.279   0.545
+ # 248 (blanched_almond      ) =    855545844 RGB    1.000   0.921   0.803
+ # 249 (moccasin             ) =    756952052 RGB    1.000   0.894   0.709
+ # 250 (blue                 ) =   1061171212 RGB    0.000   0.000   1.000
+ # 251 (palegreen            ) =    638554720 RGB    0.596   0.984   0.596
+ # 252 (chartreuse           ) =     13619711 RGB    0.499   1.000   0.000
+ # 253 (salmon               ) =    482871264 RGB    0.980   0.501   0.448
+ # 254 (pink                 ) =    848032756 RGB    1.000   0.752   0.796
+ # 255 (lavenderblush2       ) =    955116465 RGB    0.933   0.878   0.898
+ # 256 (lavenderblush3       ) =    822870831 RGB    0.803   0.756   0.772
+ # 257 (mistyrose4           ) =    519560749 RGB    0.545   0.491   0.483
+ # 258 (azure4               ) =    584627725 RGB    0.513   0.545   0.545
+ # 259 (skyblue2             ) =    991687163 RGB    0.495   0.752   0.933
+ # 260 (lightcyan3           ) =    855424717 RGB    0.705   0.803   0.803
+ # 261 (aquamarine2          ) =    827246043 RGB    0.463   0.933   0.776
+ # 262 (olivedrab2           ) =    252626633 RGB    0.701   0.933   0.228
+ # 263 (darkolivegreen1      ) =    474993444 RGB    0.792   1.000   0.440
+ # 264 (tomato1              ) =    305547252 RGB    1.000   0.389   0.279
+ # 265 (maroon3              ) =    604157743 RGB    0.803   0.161   0.564
+ # 266 (orchid3              ) =    839295791 RGB    0.803   0.412   0.788
+ # 267 (indigo2              ) =    440960142 RGB    0.130   0.533   0.408
+ # 268 (darkseagreen         ) =    600553020 RGB    0.560   0.737   0.560
+ # 269 (palegoldenrod        ) =    711878577 RGB    0.933   0.909   0.666
+ # 270 (lightsteelblue4      ) =    584564156 RGB    0.432   0.483   0.545
+ # 271 (chartreuse4          ) =     13153563 RGB    0.271   0.545   0.000
+ # 272 (darkolivegreen4      ) =    264811964 RGB    0.432   0.545   0.240
+ # 273 (coral1               ) =    367473652 RGB    1.000   0.448   0.338
+ # 274 (coral4               ) =    206832173 RGB    0.545   0.244   0.185
+ # 275 (lightpink2           ) =    724180913 RGB    0.933   0.635   0.678
+ # 276 (palevioletred4       ) =    395611693 RGB    0.545   0.279   0.365
+ # 277 (orchid2              ) =    970436529 RGB    0.933   0.479   0.913
+ # 278 (plum1                ) =   1061922804 RGB    1.000   0.733   1.000
+ # 279 (thistle4             ) =    584564269 RGB    0.545   0.483   0.545
+ # 280 (royalblue            ) =    937861387 RGB    0.255   0.412   0.882
+ # 281 (medium_turquoise     ) =    852294951 RGB    0.283   0.819   0.800
+ # 282 (cyan                 ) =   1062195212 RGB    0.000   1.000   1.000
+ # 283 (indian_red           ) =    391501615 RGB    0.803   0.361   0.361
+ # 284 (antiquewhite3        ) =    736883503 RGB    0.803   0.752   0.690
+ # 285 (lemonchiffon4        ) =    474519085 RGB    0.545   0.537   0.440
+ # 286 (mistyrose2           ) =    876429233 RGB    0.933   0.835   0.823
+ # 287 (blue2                ) =    990916620 RGB    0.000   0.000   0.933
+ # 288 (steelblue3           ) =    855195970 RGB    0.310   0.580   0.803
+ # 289 (skyblue3             ) =    855267764 RGB    0.424   0.650   0.803
+ # 290 (lightcyan2           ) =    991872831 RGB    0.819   0.933   0.933
+ # 291 (turquoise4           ) =    584606732 RGB    0.000   0.525   0.545
+ # 292 (darkseagreen1        ) =    806343424 RGB    0.756   1.000   0.756
+ # 293 (yellow3              ) =     13418287 RGB    0.803   0.803   0.000
+ # 294 (gold3                ) =     13290287 RGB    0.803   0.678   0.000
+ # 295 (tan2                 ) =    314154929 RGB    0.933   0.603   0.287
+ # 296 (firebrick2           ) =    194176945 RGB    0.933   0.173   0.173
+ # 297 (salmon1              ) =    445171700 RGB    1.000   0.549   0.412
+ # 298 (orange4              ) =     12957229 RGB    0.545   0.353   0.000
+ # 299 (plum4                ) =    584480301 RGB    0.545   0.401   0.545
+ # 300 (lightblue1           ) =   1062131449 RGB    0.749   0.937   1.000
+ # 301 (lightblue2           ) =    991812294 RGB    0.698   0.874   0.933
+ # 302 (turquoise1           ) =   1062154252 RGB    0.000   0.960   1.000
+ # 303 (lightyellow2         ) =    872335281 RGB    0.933   0.933   0.819
+ # 304 (yellow4              ) =     13153837 RGB    0.545   0.545   0.000
+ # 305 (coral3               ) =    297125679 RGB    0.803   0.357   0.271
+ # 306 (deeppink3            ) =    498151215 RGB    0.803   0.063   0.463
+ # 307 (hotpink1             ) =    752284660 RGB    1.000   0.432   0.705
+ # 308 (lightpink1           ) =    773512180 RGB    1.000   0.682   0.725
+ # 309 (mediumorchid4        ) =    584290795 RGB    0.479   0.216   0.545
+ # 310 (dark_cyan            ) =    584627212 RGB    0.000   0.545   0.545
+ # 311 (ghostwhite           ) =   1062167512 RGB    0.972   0.972   1.000
+ # 312 (seashell3            ) =    798769967 RGB    0.803   0.772   0.749
+ # 313 (peachpuff4           ) =    429358637 RGB    0.545   0.467   0.397
+ # 314 (cornsilk2            ) =    855533489 RGB    0.933   0.909   0.803
+ # 315 (cornsilk4            ) =    507020845 RGB    0.545   0.533   0.471
+ # 316 (ivory3               ) =    806141743 RGB    0.803   0.803   0.756
+ # 317 (honeydew3            ) =    806141696 RGB    0.756   0.803   0.756
+ # 318 (azure2               ) =    991872890 RGB    0.878   0.933   0.933
+ # 319 (cadetblue3           ) =    855392747 RGB    0.479   0.772   0.803
+ # 320 (darkseagreen4        ) =    445167016 RGB    0.412   0.545   0.412
+ # 321 (palegreen4           ) =    359183702 RGB    0.330   0.545   0.330
+ # 322 (springgreen3         ) =    433896460 RGB    0.000   0.803   0.401
+ # 323 (khaki1               ) =    600785908 RGB    1.000   0.964   0.560
+ # 324 (lightgoldenrod2      ) =    547204017 RGB    0.933   0.862   0.509
+ # 325 (goldenrod1           ) =    166462452 RGB    1.000   0.756   0.146
+ # 326 (firebrick3           ) =    170036015 RGB    0.803   0.150   0.150
+ # 327 (firebrick4           ) =    119654957 RGB    0.545   0.102   0.102
+ # 328 (orangered3           ) =     12817199 RGB    0.803   0.216   0.000
+ # 329 (mediumorchid3        ) =    854932173 RGB    0.705   0.322   0.803
+ # 330 (purple1              ) =   1061365355 RGB    0.607   0.189   1.000
+ # 331 (white                ) =   1062196212 RGB    1.000   1.000   1.000
+ # 332 (black                ) =     12595212 RGB    0.000   0.000   0.000
+ # 333 (paleturquoise2       ) =    991872694 RGB    0.682   0.933   0.933
+ # 334 (cadetblue1           ) =   1062154848 RGB    0.596   0.960   1.000
+ # 335 (cyan3                ) =    855424012 RGB    0.000   0.803   0.803
+ # 336 (green2               ) =     13550604 RGB    0.000   0.933   0.000
+ # 337 (burlywood3           ) =    528128815 RGB    0.803   0.666   0.491
+ # 338 (wheat3               ) =    629905199 RGB    0.803   0.729   0.588
+ # 339 (tomato2              ) =    284546993 RGB    0.933   0.361   0.259
+ # 340 (tomato4              ) =    170099245 RGB    0.545   0.212   0.150
+ # 341 (lightpink3           ) =    625526575 RGB    0.803   0.549   0.584
+ # 342 (palevioletred1       ) =    715663348 RGB    1.000   0.509   0.670
+ # 343 (palevioletred2       ) =    666345393 RGB    0.933   0.475   0.623
+ # 344 (firebrick            ) =    153242310 RGB    0.698   0.134   0.134
+ # 345 (snow1                ) =   1041204212 RGB    1.000   0.980   0.980
+ # 346 (azure3               ) =    855424768 RGB    0.756   0.803   0.803
+ # 347 (slateblue2           ) =    991330795 RGB    0.479   0.404   0.933
+ # 348 (darkgoldenrod2       ) =     70962097 RGB    0.933   0.678   0.055
+ # 349 (darkgoldenrod3       ) =     63525679 RGB    0.803   0.584   0.048
+ # 350 (darkgoldenrod4       ) =     46556717 RGB    0.545   0.397   0.032
+ # 351 (tan1                 ) =    338317300 RGB    1.000   0.647   0.310
+ # 352 (violetred1           ) =    629408756 RGB    1.000   0.244   0.588
+ # 353 (violetred2           ) =    588497841 RGB    0.933   0.228   0.549
+ # 354 (violetred3           ) =    506677039 RGB    0.803   0.197   0.471
+ # 355 (sgi_olive_drab       ) =    243851832 RGB    0.556   0.556   0.220
+ # 356 (linen                ) =    958326752 RGB    0.980   0.941   0.901
+ # 357 (lavender             ) =   1041123217 RGB    0.901   0.901   0.980
+ # 358 (dark_turquoise       ) =    872205324 RGB    0.000   0.807   0.819
+ # 359 (lavenderblush4       ) =    563623469 RGB    0.545   0.513   0.525
+ # 360 (seagreen2            ) =    621724990 RGB    0.306   0.933   0.580
+ # 361 (rosybrown4           ) =    445030957 RGB    0.545   0.412   0.412
+ # 362 (lightsalmon3         ) =    416814895 RGB    0.803   0.505   0.385
+ # 363 (mediumslateblue      ) =    991334895 RGB    0.483   0.408   0.933
+ # 364 (blueviolet           ) =    941807145 RGB    0.541   0.169   0.886
+ # 365 (seashell4            ) =    546858541 RGB    0.545   0.525   0.509
+ # 366 (steelblue4           ) =    584471776 RGB    0.212   0.393   0.545
+ # 367 (lightskyblue4        ) =    584564101 RGB    0.377   0.483   0.545
+ # 368 (paleturquoise3       ) =    855424600 RGB    0.588   0.803   0.803
+ # 369 (cyan2                ) =    991872012 RGB    0.000   0.933   0.933
+ # 370 (palegreen1           ) =    645911143 RGB    0.603   1.000   0.603
+ # 371 (lightgoldenrod1      ) =    585017332 RGB    1.000   0.925   0.545
+ # 372 (rosybrown3           ) =    649703215 RGB    0.803   0.607   0.607
+ # 373 (sienna3              ) =    247894831 RGB    0.803   0.408   0.224
+ # 374 (plum                 ) =    921304942 RGB    0.866   0.627   0.866
+ # 375 (lemonchiffon3        ) =    691831599 RGB    0.803   0.788   0.647
+ # 376 (ivory2               ) =    934201265 RGB    0.933   0.933   0.878
+ # 377 (rosybrown1           ) =    806093812 RGB    1.000   0.756   0.756
+ # 378 (salmon2              ) =    416819121 RGB    0.933   0.509   0.385
+ # 379 (darkorange2          ) =     13070257 RGB    0.933   0.463   0.000
+ # 380 (pink1                ) =    822822900 RGB    1.000   0.709   0.772
+ # 381 (papaya_whip          ) =    889116660 RGB    1.000   0.937   0.835
+ # 382 (sandy_brown          ) =    408567752 RGB    0.956   0.643   0.377
+ # 383 (mistyrose3           ) =    756770607 RGB    0.803   0.717   0.709
+ # 384 (royalblue1           ) =   1061645607 RGB    0.283   0.463   1.000
+ # 385 (royalblue2           ) =    991359251 RGB    0.263   0.432   0.933
+ # 386 (skyblue4             ) =    584519983 RGB    0.291   0.440   0.545
+ # 387 (chartreuse3          ) =     13417885 RGB    0.401   0.803   0.000
+ # 388 (darkolivegreen2      ) =    441370349 RGB    0.737   0.933   0.408
+ # 389 (hotpink2             ) =    698790833 RGB    0.933   0.416   0.654
+ # 390 (hotpink3             ) =    604378927 RGB    0.803   0.377   0.564
+ # 391 (hotpink4             ) =    416530989 RGB    0.545   0.228   0.385
+ # 392 (violetred4           ) =    350374445 RGB    0.545   0.134   0.322
+ # 393 (seashell             ) =    991900660 RGB    1.000   0.960   0.933
+ # 394 (lightblue            ) =    958230194 RGB    0.678   0.847   0.901
+ # 395 (pale_turquoise       ) =    991872698 RGB    0.686   0.933   0.933
+ # 396 (burlywood            ) =    568031090 RGB    0.870   0.721   0.529
+ # 397 (purple               ) =    999434879 RGB    0.627   0.126   0.941
+ # 398 (antiquewhite2        ) =    852351921 RGB    0.933   0.874   0.800
+ # 399 (ivory4               ) =    551073325 RGB    0.545   0.545   0.513
+ # 400 (seagreen3            ) =    538754323 RGB    0.263   0.803   0.501
+ # 401 (green4               ) =     13153292 RGB    0.000   0.545   0.000
+ # 402 (gold2                ) =     13403057 RGB    0.933   0.788   0.000
+ # 403 (coral2               ) =    342274993 RGB    0.933   0.416   0.314
+ # 404 (pink4                ) =    457590317 RGB    0.545   0.389   0.424
+ # 405 (plum2                ) =    991615921 RGB    0.933   0.682   0.933
+ # 406 (cornsilk3            ) =    741110575 RGB    0.803   0.784   0.694
+ # 407 (dodgerblue2          ) =    991454330 RGB    0.110   0.525   0.933
+ # 408 (lightsteelblue3      ) =    855328391 RGB    0.635   0.709   0.803
+ # 409 (green3               ) =     13417484 RGB    0.000   0.803   0.000
+ # 410 (orangered4           ) =     12745261 RGB    0.545   0.146   0.000
+ # 411 (mediumorchid1        ) =   1061582714 RGB    0.878   0.401   1.000
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+
+ ** KNOWN BUGS
+
+ (1) Most READ statements don't have error traps which causes the
+     program to crash in case of a read error.
+
+ (2) Interactive graphics only works for the SGI version.

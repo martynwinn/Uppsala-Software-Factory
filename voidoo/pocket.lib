@@ -1,0 +1,49 @@
+REMA
+REMA *************************************************************
+REMA
+REMA pocket.lib - library of Vanderwaals radii and residue types
+REMA              used by program VOIDOO to mimick program POCKET
+REMA
+REMA NOTE: the sum of probe radius and Vanderwaals radii should be
+REMA       3.0 A in order to compare the results with those of POCKET !!!
+REMA
+REMA v. 0.1 - Gerard Kleijwegt @ 920821
+REMA
+REMA *** elements *** TWO characters; RIGHT justified
+REMA
+ELEM ' N' 1.5
+ELEM ' C' 1.5
+ELEM ' O' 1.5
+ELEM ' S' 1.5
+ELEM ' H' 1.5
+ELEM ' P' 1.5
+REMA
+REMA *************************************************************
+REMA
+REMA *** allowed residue types ***
+REMA
+RESI 'ALA'
+RESI 'ARG'
+RESI 'ASN'
+RESI 'ASP'
+RESI 'CYS'
+RESI 'GLN'
+RESI 'GLU'
+RESI 'GLY'
+RESI 'HIS'
+RESI 'ILE'
+RESI 'LEU'
+RESI 'LYS'
+RESI 'MET'
+RESI 'PHE'
+RESI 'PRO'
+RESI 'SER'
+RESI 'THR'
+RESI 'TRP'
+RESI 'TYR'
+RESI 'VAL'
+RESI 'CPR'
+REMA
+REMA *************************************************************
+REMA
+END 

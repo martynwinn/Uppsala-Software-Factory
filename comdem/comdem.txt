@@ -1,0 +1,228 @@
+
+ ** COMDEM - GENERAL INFORMATION
+
+ Program : COMDEM
+ Version : 040701
+ Author  : Gerard J. Kleywegt & T. Alwyn Jones,
+           Dept. of Cell and Molecular Biology,
+           Uppsala University, Biomedical Centre, Box 596,
+           SE-751 24 Uppsala, SWEDEN
+ E-mail  : gerard@xray.bmc.uu.se
+ Purpose : combine multiple-domain expanded maps
+ Package : RAVE
+
+ ** REFERENCES
+
+ Reference(s) for this program:
+
+ *  1 * T.A. Jones (1992). A, yaap, asap, @#*?  A set of averaging
+        programs. In "Molecular Replacement", edited by E.J. Dodson,
+        S. Gover and W. Wolf. SERC Daresbury Laboratory, Warrington,
+        pp. 91-105.
+
+ *  2 * G.J. Kleywegt & T.A. Jones (1994).  Halloween ... Masks and
+        Bones. In "From First Map to Final Model", edited by
+        S. Bailey, R. Hubbard and D. Waller.  SERC Daresbury
+        Laboratory, Warrington, pp. 59-66.
+        [http://xray.bmc.uu.se/gerard/papers/halloween.html]
+
+ *  3 * G.J. Kleywegt & R.J. Read (1997). Not your average density.
+        Structure 5, 1557-1569.
+        [http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=PubMed&cmd=Retrieve&list_uids=9438862&dopt=Citation]
+
+ *  4 * R.J. Read & G.J. Kleywegt (2001). Density modification:
+        theory and practice. In: "Methods in Macromolecular
+        Crystallography" (D Turk & L Johnson, Eds.), IOS Press,
+        Amsterdam, pp. 123-135.
+
+ *  5 * Kleywegt, G.J., Zou, J.Y., Kjeldgaard, M. & Jones, T.A. (2001).
+        Around O. In: "International Tables for Crystallography, Vol. F.
+        Crystallography of Biological Macromolecules" (Rossmann, M.G.
+        & Arnold, E., Editors). Chapter 17.1, pp. 353-356, 366-367.
+        Dordrecht: Kluwer Academic Publishers, The Netherlands.
+
+ ** VERSION HISTORY
+
+ 931213 - 0.1 - first version
+ 931216 - 0.2 - tested and debugged
+ 931217 - 1.0 - first production version
+ 940113 -1.0.1- check that at least two maps entered
+ 950118 - 1.1 - sensitive to environment variable CCP4_OPEN
+ 960412 - 1.2 - echo all input to help debug scripts
+ 961122 - 2.0 - dynamic memory allocation
+ 010122 - 3.0 - use C routines to do dynamic memory allocation 
+                and port to Linux
+ 040701 -3.0.1- changed checks of dynamic memory allocation to allow
+                for pointers with negative values as returned by
+                some recent Linux versions
+
+ ** MAP SIZE
+
+ From version 2.0 onward, COMDEM allocates memory for its maps
+   dynamically.  This means that you can increase the size
+   that the program can handle on the fly:
+
+ 1 - through the environment variable MAPSIZE (must be in capital
+     letters !), for example put the following in your .cshrc file
+     or your script:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ setenv MAPSIZE 8000000
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ 2 - by using command-line argument MAPSIZE (need not be in capitals),
+     for example in your script:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ run comdem mapsize 10000000
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Note that command-line argument takes precedence over the environment
+   variable.  So you can set the environment variable in your .cshrc
+   file to a "typical" value, and if you have to deal with maps
+   which are bigger than that, you can use the command-line argument.
+
+ If sufficient memory cannot be allocated, the program will print
+   a message and quit.  In that case, increase the amount of virtual
+   memory (this will not help, of course, if you try to allocate more
+   memory than can be addressed by your machine (for 32-bit machines,
+   something 2**32-1 bytes, I think), or reduce the size requirements.
+
+ COMDEM needs space for 3 maps.
+
+ ** NOTES
+
+ NOTE: this program is now sensitive to the environment variable
+       CCP4_OPEN.  If this variable has *not* been set, you will
+       not be able to create any CCP4 maps.  If this happens, the
+       program will abort execution on startup.  To fix this,
+       put the following line in your .login or .cshrc file:
+       setenv CCP4_OPEN UNKNOWN
+
+ ** DESCRIPTION
+
+ If you want to use multiple-domain averaging, you should
+   average and expand your map for each domain separately
+   (i.e., with its own mask and set of NCS operators).  Make
+   sure that you keep a zero background in the expansion step.
+
+ Then, use this program to combine the individual expanded
+   maps and to calculate and set the background level for all
+   points not covered by any mask after the maps have been
+   combined.
+
+ You may apply different weights to each of the maps, but
+   I don't think this is normally necessary (since each map
+   is derived from one and the same "master map"), i.e. use
+   weights equal to one.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+...
+ Max size of maps : (    4194304) 
+
+ First domain map ? ( ) tempm1_zero.E
+ Read header
+...
+ Map read OK
+ Cell axes   (A) : ( 110.600  110.600  160.300) 
+ Cell angles (d) : (  90.000   90.000   90.000) 
+ Grid axes (pts) : (     160      160      240) 
+ Origin    (pts) : (       0        0        0) 
+ Extent    (pts) : (     162      162       32) 
+ Map nr   1      Size     839808
+ ED min, max, total  -6.4655E+01  9.7743E+01  2.4085E+05
+ ED ave, var, stdev   2.8679E-01  6.0887E+01  7.8030E+00
+
+ Weight ? (   1.000) 1.0
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Now give the name of the second file and its weight:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Map nr : (       2) 
+ Domain map file name ? ( ) tempm2_zero.E
+ Read header
+...
+ Map read OK
+ Cell axes   (A) : ( 110.600  110.600  160.300) 
+ Cell angles (d) : (  90.000   90.000   90.000) 
+ Grid axes (pts) : (     160      160      240) 
+ Origin    (pts) : (       0        0        0) 
+ Extent    (pts) : (     162      162       32) 
+ Map nr   2      Size     839808
+ ED min, max, total  -5.1632E+01  6.7189E+01  6.6272E+04
+ ED ave, var, stdev   7.8914E-02  1.2725E+01  3.5672E+00
+
+ Weight ? (   1.000) 
+ RMSD map A / B   : (  8.579E+00) 
+ R-factor (A)     : (  1.234E+00) 
+ Ditto, B scaled  : (  1.997E+00) 
+ Scale for B      : (  4.230E+00) 
+ R-factor (B)     : (  5.221E+00) 
+ Ditto, A scaled  : (  1.997E+00) 
+ Scale for A      : (  2.364E-01) 
+ Corr coeff       : (   0.001) 
+ Shape similarity : (   0.002) 
+ Busy ...
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Note that several statistics are printed: minimum, maximum
+   and integrated electron density, the average density, the
+   variance (used for scaling) and the standard deviation (the
+   square root of the variance).
+
+ In addition, the RMS difference between this map and the
+   first one is printed, as is the "shape similarity index"
+   (values from -1 to +1; +1 means that the two maps have
+   identical shapes, irrespective of the scales they are on).
+
+ NOTE that the correlation coefficient between each of the
+      maps MUST be essentially ZERO, since they are supposed
+      to cover DISJOINT areas in space !!
+      
+ If you want to combine more masks, just keep supplying file
+   names to the program.  Hit [RETURN] to indicate that there
+   are no more maps to be added.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Map nr : (       3) 
+ Domain map file name ? ( ) 
+ No more maps to add
+
+ Sum of weights / Nr of maps : (  1.000E+00) 
+ Dividing by this number ...
+ Calculating background density ...
+ Nr of points set         : (     266836) 
+ Nr of background points  : (     572972) 
+ Sum of density set       : (  3.071E+05) 
+ Average density in masks : (  1.151E+00) 
+ Average background level : ( -5.360E-01) 
+ Setting background density ...
+ Map nr   0      Size     839808
+ ED min, max, total  -7.8140E+01  9.7743E+01 -1.3083E+01
+ ED ave, var, stdev  -1.5578E-05  7.3830E+01  8.5924E+00
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ After all maps have been added, statistics for the combined
+   map are printed and you are asked to supply the name of the
+   output file:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ New summed CCP4 map ? ( ) zero.E
+...
+ Map written out
+...
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Note that the "Minimum density in map" is lower than the minimum
+   of the two maps.  This is because their masks have a minute overlap,
+   and apparently one of the overlapping points gets two negative
+   contributions.
+
+ If you want other ways of combining maps (e.g., MAX(map1,map2,...)),
+   let me know (or use MAPMAN).
+
+ ** KNOWN BUGS
+
+ None, at present.
+

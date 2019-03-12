@@ -1,0 +1,4059 @@
+
+ ** DATAMAN - GENERAL INFORMATION
+
+ Program : DATAMAN
+ Version : 061208
+ Author  : Gerard J. Kleywegt, Dept. of Cell and Molecular Biology,
+           Uppsala University, Biomedical Centre, Box 596,
+           SE-751 24 Uppsala, SWEDEN
+ E-mail  : gerard@xray.bmc.uu.se
+ Purpose : manipulation and analysis of HKL reflection files
+ Package : RAVE
+
+ ** REFERENCES
+
+ Reference(s) for this program:
+
+ *  1 * T.A. Jones (1992). A, yaap, asap, @#*?  A set of averaging
+        programs. In "Molecular Replacement", edited by E.J. Dodson,
+        S. Gover and W. Wolf. SERC Daresbury Laboratory, Warrington,
+        pp. 91-105.
+
+ *  2 * G.J. Kleywegt & T.A. Jones (1994).  Halloween ... Masks and
+        Bones. In "From First Map to Final Model", edited by
+        S. Bailey, R. Hubbard and D. Waller.  SERC Daresbury
+        Laboratory, Warrington, pp. 59-66.
+        [http://xray.bmc.uu.se/gerard/papers/halloween.html]
+
+ *  3 * G.J. Kleywegt & T.A. Jones (1996). xdlMAPMAN and xdlDATAMAN -
+        programs for reformatting, analysis and manipulation of
+        biomacromolecular electron-density maps and reflection data
+        sets. Acta Cryst D52, 826-828.
+        [http://scripts.iucr.org/cgi-bin/paper?gr0468]
+
+ *  4 * G.J. Kleywegt & A.T. Brunger (1996). Checking your
+        imagination: applications of the free R value.
+        Structure 4, 897-904.
+        [http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=PubMed&cmd=Retrieve&list_uids=8805582&dopt=Citation]
+
+ *  5 * G.J. Kleywegt & R.J. Read (1997). Not your average density.
+        Structure 5, 1557-1569.
+        [http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=PubMed&cmd=Retrieve&list_uids=9438862&dopt=Citation]
+
+ *  6 * R.J. Read & G.J. Kleywegt (2001). Density modification:
+        theory and practice. In: "Methods in Macromolecular
+        Crystallography" (D Turk & L Johnson, Eds.), IOS Press,
+        Amsterdam, pp. 123-135.
+
+ *  7 * G.J. Kleywegt, M.R. Harris, J.Y. Zou, T.C. Taylor,
+        A. Wahlby & T.A. Jones (2004). The Uppsala Electron
+        Density Server. Submitted.
+
+ *  8 * Kleywegt, G.J., Zou, J.Y., Kjeldgaard, M. & Jones, T.A. (2001).
+        Around O. In: "International Tables for Crystallography, Vol. F.
+        Crystallography of Biological Macromolecules" (Rossmann, M.G.
+        & Arnold, E., Editors). Chapter 17.1, pp. 353-356, 366-367.
+        Dordrecht: Kluwer Academic Publishers, The Netherlands.
+
+ ** VERSION HISTORY
+
+ 930319 - 0.1 - initial version
+ 930329 - 0.2 - plots for Wilson-scaling; debugged Wilson-scaling;
+                first version of the manual
+ 930401 - 0.3 - new options TEMP_FACTOR, DF (SHELXS deltaF),
+                LAUE, TYPE_HKL and SORT
+ 930416 - 0.4 - implemented TWIN_STATS and GEMINI
+ 930424 - 0.5 - changed "COmment" option to "LAbel"; implemented
+                COMPARE
+ 930602 - 0.6 - made small version for ESV (only 128,000 HKLs);
+                print program dimensioning with "?" option
+ 930608 - 0.7 - print supported formats (type = '?'); added $
+                option to issue shell commands
+ 930616 - 1.0 - new production version
+ 930618 - 1.1 - CHange_index option
+ 930628 - 1.2 - ROgue_kill option
+ 930726 - 1.3 - corrected error in Laue group 11 (3barm):
+                hkl:h>=0, k>=0 with k<=h; if h=k l>=0;
+                renamed LAbel option to ANnotate (was same
+                abbreviation as LAue and could therefore not
+                be used ...)
+ 931103 - 1.4 - included ODD_KILL and EVEN_KILL
+ 931110 - 1.5 - included option to list SPecial reflections
+                (e.g. 0k0 to decide on P2 or P21)
+ 931208 - 1.6 - included option to produce ODL file with the
+                reciprocal lattice, optionally colour-ramped;
+                reduced this document; wrote paper manual
+ 931217 - 1.7 - check symmetry operators for errors
+ 931221 -1.7.1- debugged CHange_index; corrected labels in
+                plot files produced by WIlson
+ 940228 - 2.0 - implemented use of Rfree test flags; minor
+                improvement of WIlson option; implemented
+                RFree and SCatter_plot commands
+ 940301 - 2.1 - debugged Laue group 14 (my P2(1)3 xtal);
+                implemented BIn_plot command
+ 940302 - 2.2 - fixed bugs in RXPLOR read and in BIn_plot;
+                implemented DUo_plot and MErge commands
+ 940303 -2.2.1- removed bugs from BIn and DUo plot options
+ 940308 -2.2.2- print warning in COmpare and MErge if the
+                nr of reflections in common is less than
+                10 % of that of the smallest of the two sets
+ 940316 - 2.3 - support MTZDUMP input format
+ 940404 -2.3.1- more flexibility in SPecial command
+ 940415 - 2.4 - improved O2D plot files; implemented LNI
+                as plot variable; implemented F2I and I2F
+                options in CAlculate (in case you read in Is
+                but want to convert them to Fs, e.g. for
+                plotting or Wilson scaling); print name(s)
+                of set(s) involved in some options
+ 940711 -2.4.1- added "k>=0" to conditions for hk0 in Laue group 4
+                and "l>=0" similarly for Laue group 5
+ 940721 - 2.5 - support TNT HKL-file format (REad and WRite)
+
+ (* code changes of intermediate versions lost due to disk crash *)
+>  940904 -2.5.1- fixed bug in input format MTZDUMP
+>  940908 - 2.6 - new options EStimate_unique and EFfective_resolution
+
+ 941022 - 3.0 - fixed bug in MTZDUMP; implemented EStimate_unique;
+                implemented EFfective_resolution; implemented GUess
+                MW, NRes, VM, COmpleteness and RHo
+ 950112 - 3.1 - added H, K, L, H/A, K/B andr L/C as possible horizontal
+                variables for BIn_plot; new command HKl_aniso_plot to
+                detect anisotropy
+ 950124 -3.1.1- minor change to SPecial format
+ 950219 - 3.2 - new RFree SHell command
+ 950415 - 3.3 - new RFree COmplete, GSheldrick and SPheres commands
+ 950506 -3.3.1- RF GE, SH and SP now accept a *number* of reflections
+                instead of a *percentage* (recognised if it is > 100)
+ 950507 - 3.4 - STats no longer crashes with zero sigmas; COmpare and
+                MErge actually print the value of Rmerge; complete
+                rewrite of the XPLOR input routine (compatible with
+                XPLOR 3.x and 4.x; more robust and flexible; recognizes
+                Rfree flags automatically); new command RSym_hkl_khl
+                to detect possible higher symmetry
+ 950527 - 3.5 - OSF/1 version no longer crashes on empty file names;
+                ABsences option to list systematic absences
+ 950620 -3.5.1- implemented WRiting (*NOT* reading) of CIF-formatted
+                reflection files
+ 950629 -3.5.2- small changes to format with TYpe and SHow
+ 951020 - 3.6 - add option to WRite command to select reflections
+ 951022 - 3.7 - made sensitive to OSYM
+ 951030 -3.7.1- change Sigma formula for I2F and F2I
+ 951107 -3.7.2- corrected CIF stuff (thanks to Peter Keller, Univ. of Bath)
+ 951127 -3.7.3- minor bug fixes
+ 960315 - 3.8 - added NOise command to add random noise to Fs (needed
+                for teaching exercise with calculated data)
+ 960409 - 3.9 - implemented macro facility
+ 960415 -3.9.1- minor bug fixes
+ 960422 - 4.0 - new RInt command to calculate the internal Rsym in
+                any Laue group
+ 960517 - 4.1 - implemented simple symbol mechanism
+ 960629 -4.1.1- minor bug fixes
+ 960729 -4.1.2- bug fixed in RFree COmplete (when writing files)
+ 961111 -4.1.3- minor change so that MTZDUMP files are read again;
+                slightly improved CIF output; read cell constants
+                from MTZDUMP file; copy all MTZDUMP header information
+                to the screen
+ 961126 - 5.0 - implemented dynamic memory allocation
+ 970314 -5.0.1- fixed bug in read routine (Rfree flags were not properly
+                initialised)
+ 970512 -5.0.2- better error checks when there are no centrics in TWin_stats
+                and GEmini
+ 970626 - 5.1 - support initialisation macro (setenv GKDATAMAN macrofile)
+ 970701 -5.1.1- removed bug from the EVEen_kill command (relfections with a
+                negative index were not treated correctly)
+ 970707 -5.1.2- better estimates of unique reflections for F and C lattices
+ 971002 -5.1.3- fixed formula to calculate new sigma when converting
+                intensities to amplitudes (thanks to Zhongning Yang)
+ 971124 - 5.2 - added input and output format CNS
+ 971201 -5.2.1- MTZDUMP input format now recognises MNFs (missing
+                number flags)
+ 980724 - 5.3 - DUplicate command to copy a set; PArity_test command
+                to help detect (pseudo-)centering
+ 980911 - 5.4 - new RFree ADjust command to change the size of the
+                TEST set; new RFree FIll_bins command to add TEST
+                reflections to resolution shells that have too few;
+                new RFree CUt_bins command to remove TEST reflections
+                from resolution shells that have too many; new
+                RFree BIn_list command to show how the TEST reflections
+                are distributed in resolution shells
+ 980928 -5.4.1- new output format XCNS = CNS but without TEST flags;
+                small changes to the CIF output format
+ 980929 - 5.5 - new ZP_restart command to re-start the program with
+                different memory allocation
+ 981013 -5.5.1- PArity_test command also checks H, K, and L odd/even
+ 981015 - 5.6 - ABsences command can now also be used to remove
+                reflections that are systematic absences; the DUo_plot
+                command has been renamed DOuble_plot (since it started
+                with the same two characters as the DUplicate command,
+                the DUo_plot command could actually never be executed ;-);
+                new HEmisphere command to help generate a complete, unique
+                dataset; added "recipe" on how to generate a complete,
+                unique dataset; new option COMplement to the MErge
+                command to allow structure factor completion; new FIll_in
+                command to replace unobserved Fs by the square root of
+                the average intensity in its resolution shell; new
+                ASym_unit command to generate an asymmetric unit of
+                reflections for any Laue group
+ 981021 -5.6.1- new ECho command to echo command-line input (useful
+                in scripts)
+ 981022 - 5.7 - implemented command history (# command); the file type
+                is now a required parameter for both the REad and the
+                WRite command (i.e., the program will prompt for it
+                if it is not supplied on the command line; should save
+                some frustration)
+ 981216 -5.7.1- add a few comments to output PostScript files; print
+                F/Sigma for ABsences; improved handling of orbital
+                multiplicity and (a)centric flags
+ 990318 -5.7.2- minor bug fixed
+ 990923 - 5.8 - minor changes; implemented new EO_plot command to inspect
+                the amplitude distribution for H or K or L EVEN versus ODD
+ 990924 -5.8.1- the RAmp_odl command finally works ...
+ 991101 -5.8.2- new RFree MUlti command
+ 000321 -5.8.3- new parameter to the WRite command to control writing
+                of only Centrics, only Acentrics, or Both
+ 000602 -5.8.4- fixed bug in HKl_aniso_plot command (now it won't
+                coredump when encountering Miller indices greater
+                than 100 or less than -100 ...)
+ 001114 -5.8.5- allow multipliers 2, 3, 4, 5 and 6 in CHange_index command
+ 010122 - 6.0 - use C routines for dynamic memory allocation; port to Linux
+ 010806 -6.0.1- fixed bug in Wilson scaling that sometimes put all data
+                in one bin; added some pictures to the manual page to
+                illustrate some of the options that produce O2D plot
+                files, ODL files, or PostScript files
+ 011109 - 6.1 - changed default for max nr of reflections to 200,000;
+                DATAMAN will now fail when there are more than the
+                max nr of reflections in a file (previously it would
+                print an error message and simply skip the remaining
+                reflections, but this has lead to at least one case
+                in which a colleague "lost" ~10% of his reflections
+                and didn't notice it until it was time to deposit
+                the data in the PDB ...). Now, the program will refuse
+                to read the offending dataset and tell you to allocate
+                more memory using the ZP_restart command
+ 011205 -6.1.1- minor changes
+ 020919 - 6.2 - the STats command now performs a bunch of sanity checks
+                (esp. useful when you are dealing with structure
+                factor files downloaded from the PDB which can be
+                a major mess ...)
+ 020920 -6.2.1- new SIgmas FAke command (sets all Sigma = SQRT | Fobs | );
+                minor changes; STats command will print a warning if it
+                suspects that Sigmas are fake (either constant, or
+                constant * Fobs, or constant * SQRT(Fobs))
+ 020923 -6.2.2- minor changes
+ 020924 -6.2.3- new SIgmas LImit command to reset very small or large
+                sigmas (e.g., to replace zero or negative values)
+ 020930 -6.2.4- minor changes
+ 021114 -6.2.5- new SIgmas CEntric_vs_acentric command
+ 021203 -6.2.6- if reading fails, print the number of reflections that
+                had already been read when the error occured
+ 030214 -6.2.7- minor changes
+ 030417 -6.2.8- better description of input and output formats in both
+                the program and the manual
+ 030902 -6.2.9- minor changes
+ 040301 - 6.3 - new PY_stats command (Padilla-Yeates local intensity
+                statistics; see Acta Cryst D59, 1124 (2003))
+ 040302 -6.3.1- minor changes to PY_stats command; sped up the COmpare,
+                DF, RSym, RFree TRansfer, RFree SPhere and MErge commands,
+                from Order(N^2) to Order(N.log(N)), which
+                can reduce 4 minutes of CPU time to just 2 seconds ...
+ 040304 -6.3.2- new MUltiplicity command to check for redundant
+                reflections (of course, there shouldn't be any
+                in a merged dataset !); several minor changes
+ 040311 -6.3.3- new YEates command to assess the similarity of two
+                datasets (see: TO Yeates, Acta Cryst A44, 142-144 (1988))
+ 040602 -6.3.4- bug fix in LAue command (previously, the program could
+                generate more reflections than than there was memory
+                allocated)  
+ 040701 -6.3.5- changed checks of dynamic memory allocation to allow
+                for pointers with negative values as returned by
+                some recent Linux versions
+ 050301 - 6.4 - new RFree SUggest command that can help you decide
+                how many (or what fraction of) reflections should
+                or could be set aside for cross-validation purposes;
+                the WRite command now counts the reflections it has
+                to write before creating the output file so that the number
+                listed in the NREFlections line in CNS/X-PLOR files
+                is correct even if not all reflections in memory are
+                written (e.g., only acentrics, or only work set);
+                fixed minor bug in STats command; new APpend command
+ 050329 -6.4.1- minor changes
+ 061208 -6.4.2- support OHKL format (writing only)
+
+
+ ** START-UP MACRO
+
+ From version 5.1 on, DATAMAN can execute a macro at start-up (whether
+   it is run interactively or in batch mode).  This can be used to
+   execute commands which you (almost) always want to have executed.
+   To use this feature, set the environment variable GKDATAMAN to
+   point to a DATAMAN macro file, e.g.:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ setenv GKDATAMAN /home/gerard/dataman.init
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** DATA SET SIZE AND NUMBER OF DATA SETS
+
+ From version 5.0 onward, DATAMAN allocates memory for data sets dynamically.
+   This means that you can increase the size and number of data sets that the
+   program can handle on the fly:
+
+ 1 - through the environment variables SETSIZE and NUMSETS (must be
+     in capital letters !), for example put the following in your
+     .cshrc file:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ setenv SETSIZE 100000
+ setenv NUMSETS 4
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ 2 - by using command-line arguments SETSIZE and NUMSETS (need not
+     be in capitals), for example:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ run dataman setsize 200000 numsets 2
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Note that command-line arguments take precedence over environment
+   variables.  So you can set the environment variables in your .cshrc
+   file to "typical" values, and if you have to deal with a data set
+   which is bigger than that, you can use the command-line argument(s).
+
+ From version 5.5 on, you can also use ZP_restart from within the
+   program itself to increase memory allocation.  WARNING : all memory
+   is reset, so any unsaved data will be lost !!!
+
+ If sufficient memory cannot be allocated, the program will print
+   a message and quit.  In that case, increase the amount of virtual
+   memory (this will not help, of course, if you try to allocate more
+   memory than can be addressed by your machine (for 32-bit machines,
+   something 2**32-1 bytes, I think), or reduce the size requirements.
+
+ DATAMAN needs (4 + 8 * NUMSETS) * SETSIZE words for its major arrays.
+
+ ** INTRODUCTION
+
+ Yes, it's the next in our series of XXXX-manipulation programs.
+ You now have MOLEMAN for PDB files, MAMA for masks and DATAMAN
+   for ASCII reflection files.
+ DATAMAN supercedes the existing programs XREF (format
+   exchange), DELTAF (deltaF files for SHELXS90), XSEL (bringing
+   your data into the part of hkl-space that corresponds to your
+   spacegroup's Laue-symmetry, as defined in the Gospel according
+   to CCP4) and GEMINI (detecting twins using intensity statistics);
+   on top of that, DATAMAN contains new functions (such as for
+   Wilson-scaling of datasets from different crystal forms).
+
+ When you read a dataset, you give it a name by which you can
+   refer to it later.  All names are converted to uppercase,
+   so "s1" and "S1" are the same datasets !  DATAMAN checks that
+   you don't use duplicate dataset names.
+ Note that many options accept the wildcard character "*" to mean
+   that a command should be carried out for ALL datasets in memory.
+
+ DATAMAN is command-driven; the first TWO letters of each command
+   are unique (so you don't have to type the rest); the commands
+   are automatically converted to uppercase, so no worries there
+   either.
+
+ Parameters to commands may be supplied on the same line as the
+   command itself.  DATAMAN will prompt you for the values of any
+   parameters that were not supplied in this way.
+
+ DATAMAN runs in interactive mode by default.  This means that if
+ (a) an input file can not be opened, DATAMAN will ask you what to do
+ (b) if you delete a mask which has unsaved changes, DATAMAN will
+     ask you if you're absolutely sure
+ (c) if you quit and there are masks with unsaved changes, DATAMAN
+     will ask you if you really want to quit
+
+ You may run DATAMAN in batch mode by supplying the command line
+   option -b (or -batch).  In that case, DATAMAN will crash if it
+   can't open an input file and any unsaved changes (with QUIT or
+   DELETE) are lost forever.  You may want to use this mode if
+   you run DATAMAN in batch (using an input script).
+
+ NOTE: all output files are opened as "UNKNOWN", which means that
+   any existing files will be overwritten !
+
+ NOTE: this program is sensitive to the environment variable OSYM.
+   It should point to your local copy of $ODAT/symm, the directory
+   which contains the spacegroup symmetry operators in O format.
+   When asked for a file with spacegroup operators in O format,
+   you may either provide a filename, or the name of a sapcegroup
+   (including blanks if you like, case doesn't matter).  The program
+   will try to open the following files, assuming that STRING is the
+   what you input:
+ (1) open a file called STRING
+ (2) if this fails, check if OSYM is defined and open $OSYM/STRING
+ (3) if this fails, open $OSYM/string.sym
+ (4) if this fails, open $OSYM/string.o
+ Hint: if you make soft links in the OSYM directory, you can also type
+   spacegroup numbers (e.g.: \ln -s p212121.sym 19.sym).
+
+ ** STARTUP
+
+ When you start DATAMAN, it welcomes you with a list of available
+   commands and options.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ % 576 gerard sarek 21:03:30 dataman/test > ../6d/6D_DATAMAN
+
+ *** DATAMAN *** DATAMAN *** DATAMAN *** DATAMAN *** DATAMAN *** DATAMAN *** 
+
+ Version  - 040301/6.3
+ (C) 1992-2004 Gerard J. Kleywegt & T. Alwyn Jones, BMC, Uppsala (SE)
+ User I/O - routines courtesy of Rolf Boelens, Univ. of Utrecht (NL)
+ Others   - T.A. Jones, G. Bricogne, Rams, W.A. Hendrickson
+ Others   - W. Kabsch, CCP4, PROTEIN, E. Dodson, etc. etc.
+
+ Started  - Mon Mar 1 23:38:39 2004
+ User     - gerard
+ Mode     - interactive
+ Host     - sarek (Irix/SGI)
+ ProcID   - 27335
+ Tty      - /dev/ttyq14
+
+ *** DATAMAN *** DATAMAN *** DATAMAN *** DATAMAN *** DATAMAN *** DATAMAN *** 
+
+ Reference(s) for this program:
+
+ *  1 * T.A. Jones (1992). A, yaap, asap, @#*?  A set of averaging
+        programs. In "Molecular Replacement", edited by E.J. Dodson,
+        S. Gover and W. Wolf. SERC Daresbury Laboratory, Warrington,
+        pp. 91-105.
+
+ *  2 * G.J. Kleywegt & T.A. Jones (1994).  Halloween ... Masks and
+        Bones. In "From First Map to Final Model", edited by
+        S. Bailey, R. Hubbard and D. Waller.  SERC Daresbury
+        Laboratory, Warrington, pp. 59-66.
+        [http://xray.bmc.uu.se/gerard/papers/halloween.html]
+
+ *  3 * G.J. Kleywegt & T.A. Jones (1996). xdlMAPMAN and xdlDATAMAN -
+        programs for reformatting, analysis and manipulation of
+        biomacromolecular electron-density maps and reflection data
+        sets. Acta Cryst D52, 826-828.
+        [http://scripts.iucr.org/cgi-bin/paper?gr0468]
+
+ *  4 * G.J. Kleywegt & A.T. Brunger (1996). Checking your
+        imagination: applications of the free R value.
+        Structure 4, 897-904.
+        [http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=PubMed&cmd=Retrieve&list_uids=8805582&dopt=Citation]
+
+ *  5 * G.J. Kleywegt & R.J. Read (1997). Not your average density.
+        Structure 5, 1557-1569.
+        [http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=PubMed&cmd=Retrieve&list_uids=9438862&dopt=Citation]
+
+ *  6 * R.J. Read & G.J. Kleywegt (2001). Density modification:
+        theory and practice. In: "Methods in Macromolecular
+        Crystallography" (D Turk & L Johnson, Eds.), IOS Press,
+        Amsterdam, pp. 123-135.
+
+ *  7 * G.J. Kleywegt, M.R. Harris, J.Y. Zou, T.C. Taylor,
+        A. Wahlby & T.A. Jones (2004). The Uppsala Electron
+        Density Server. Submitted.
+
+ *  8 * Kleywegt, G.J., Zou, J.Y., Kjeldgaard, M. & Jones, T.A. (2001).
+        Around O. In: "International Tables for Crystallography, Vol. F.
+        Crystallography of Biological Macromolecules" (Rossmann, M.G.
+        & Arnold, E., Editors). Chapter 17.1, pp. 353-356, 366-367.
+        Dordrecht: Kluwer Academic Publishers, The Netherlands.
+
+ ==> For manuals and up-to-date references, visit:
+ ==>     http://xray.bmc.uu.se/usf
+ ==> For reprints, visit:
+ ==>     http://xray.bmc.uu.se/gerard
+ ==> For downloading up-to-date versions, visit:
+ ==>     ftp://xray.bmc.uu.se/pub/gerard
+
+ *** DATAMAN *** DATAMAN *** DATAMAN *** DATAMAN *** DATAMAN *** DATAMAN *** 
+
+ Allocate data sets of size : (     200000) 
+ Max number of data sets    : (          5) 
+
+ Max nr of data sets           : (          5) 
+ Max nr of reflections per set : (     200000) 
+ Max nr of symmetry operators  : (         96) 
+
+ => Random number generator initialised with seed :          1
+
+ Symbol START_TIME : (Mon Mar  1 23:38:39 2004) 
+ Symbol USERNAME : (gerard) 
+
+ DATAMAN options :
+
+ ? (list options)                     ! (comment)
+ QUit                                 $ shell_command
+ & symbol value                       & ? (list symbols)
+ @ macro_file                         ZP_restart setsize numsets
+ ECho on_off                          # parameter(s) (command history)
+ DElete set                           RAmp_odl set file ramp_option
+ REad_refl set file type [format]         
+ WRite_ref set file type [format] [which_ATW] [which_ABC]
+
+ LIst set                             STats set
+ HIsto set which x1 x2 x3 [...]       SHow_hkl set criterion operand value
+ CEll set a b c al be ga              ANnotate set "text"
+ SYmmop set o_file                    TYpe_hkl set start end step
+ SPecial set hkl_type                 RSym_hkl_khl set
+ ABsences set [list_or_kill]          RInt set
+ PArity_test set                      FIll_in set nbins
+
+ TWin_stats set                       GEmini set plotf1 plotf2
+ LAue newset set laue_group           SOrt_hkl newset set hkl_order
+ KIll_hkl set criterion operand value PRod_plus set which prod plus
+ ODd_kill set h_k_l                   EVen_kill set h_k_l
+ CAlc set what                        TEmp_factor set value
+ CHange_index set newh newk newl      ROgue_kill set h1 k1 l1 [...]
+ NOise set nbins min% max%            DUplicate newset set
+ HEmisphere newset set resolution     ASym_unit newset set resol laue_group
+ SIgmas FAke set                      SIgmas LImit set lower upper
+ SIgmas CEntric_vs_acentric set       PY_stats set plotfile
+
+ WIlson set1 set2 plotf1 plotf2 step  DF newset set1 set2
+ COmpare set1 set2                    MErge newset set1 set2 how
+
+ RFree INit seed                      RFree LIst set
+ RFree GEnerate set %_or_#            RFree REset set
+ RFree SHell set %_or_# nbins         RFree COmplete set nsets basename
+ RFree GSheldrick set nth             RFree SPheres set %_or_# radius
+ RFree TRansfer set old_set           RFree ADjust set new%
+ RFree FIll_bins set target% nbins    RFree CUt_bins set target% nbins
+ RFree BIn_list set nbins             RFree MUlti set nsets how
+
+ EStimate_unique set resol latt nasu  EFfective_resolution set latt nasu
+ GUess MW nres                        GUess NRes MW
+ GUess VM set nres nasu nncs          GUess COmpl set res1 res2 latt nasu
+ GUess RHo set latt nasu nncs nres   
+
+ SCatter_plot set file hori vert      BIn_plot set file hori vert bin
+ HKl_aniso_plot set file              DOuble_plot set1 set2 file hor ver bin
+ EO_plot set file hkl                 
+
+ Max nr of data sets           : (          5) 
+ Max nr of reflections per set : (     200000) 
+ Max nr of symmetry operators  : (         96) 
+
+ Execute initialisation macro : (/home/gerard/dataman.init) 
+ ... Opened macro file : (/home/gerard/dataman.init) 
+ ... On unit : (      61) 
+ Command > (! DATAMAN initialisation macro) 
+ Command > (echo on) 
+        1  @ /home/gerard/dataman.init
+        2  ! DATAMAN initialisation macro
+        3  echo on
+ ... End of macro file
+ ... Control returned to terminal
+ DATAMAN > 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** GENERAL COMMANDS
+
+ ## ?        
+ gives a list of the options and the current dimensioning
+    of the program
+
+ ## !        
+ does nothing (use this for comments in input scripts)
+
+ ## #
+ Command history. Possible uses (blank spaces are optional):
+ - # ? => list history of commands
+ - # ! => ditto, but without numbers (handy for copying into macros)
+ - # ON => switch command history on
+ - # OFf => switch command history off
+ - # # => repeat previous command
+ - # 14 => repeat command number 14 from the list
+ - # 0 => repeat previous command
+ - # -1 => repeat penultimate command, etc.
+ - # 7 more => repeat command number 7, but add "more" to it
+        (e.g., if command 7 was "$ ls" you could type "#7 -FartCos"
+        to get "$ ls -FartCos")
+
+ ## @
+ execute a macro
+
+ Example of a DATAMAN macro:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ! rfree_shell.datmac
+ !
+ ! select test set reflections in thin resolution shells
+ !
+ ! Enter HKL file name
+ read myset
+ !
+ ! Enter cell constants
+ cell myset
+ !
+ ! calculate resolution for each reflection
+ calc myset resol
+ !
+ ! reset any previous TEST flags
+ rfree reset myset
+ !
+ ! Enter percentage or number of TEST reflections, then number of shells
+ rfree shell myset
+ !
+ ! show some statistics
+ stats myset
+ !
+ ! save in X-PLOR format
+ write myset rfree.rxplor rxplor
+ !
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ When executed, this gives:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > @rfree_shell.datmac
+ ... Opened macro file : (rfree_shell.datmac) 
+ ... On unit : (      61) 
+ > (! rfree_shell.datmac) 
+ > (!) 
+ > (! select test set reflections in thin resolution shells) 
+ > (!) 
+ > (! Enter HKL file name) 
+ > (read myset) 
+ File name ? (not_saved_yet) ../crabp.hkl
+ File   : (../crabp.hkl) 
+ Type   : (HKLFS) 
+ Format : (*) 
+ Nr of reflections read : (       9360) 
+ Nr of WORK reflections : (       9360) 
+ Nr of TEST reflections : (          0) 
+ Percentage TEST data   : (   0.000) 
+ This is NOT an Rfree dataset
+ WARNING - less than 500 TEST reflections !
+ > (!) 
+ > (! Enter cell constants) 
+ > (cell myset) 
+ Value for cell 1 ? (100.000) 41.9
+ Value for cell 2 ? (100.000) 41.9
+ Value for cell 3 ? (100.000) 202.7
+ Value for cell 4 ? (90.000) 
+ Value for cell 5 ? (90.000) 
+ Value for cell 6 ? (90.000) 
+ Cell : (  41.900   41.900  202.700   90.000   90.000   90.000) 
+ Volume (A3) : (  3.559E+05) 
+ > (!) 
+ > (! calculate resolution for each reflection) 
+ > (calc myset resol) 
+ Calc : (MYSET) 
+ Cell volume : (  3.559E+05) 
+ Lowest  resolution : (  32.291) 
+ Highest resolution : (   2.504) 
+ > (!) 
+ > (! reset any previous TEST flags) 
+ > (rfree reset myset) 
+ Rfree reset: (MYSET) 
+ Nr of WORK reflections : (       9360) 
+ Nr of TEST reflections : (          0) 
+ Percentage TEST data   : (   0.000) 
+ This is NOT an Rfree dataset
+ WARNING - less than 500 TEST reflections !
+ > (!) 
+ > (! Enter percentage or number of TEST reflections, then number of 
+  shells) 
+ > (rfree shell myset) 
+ Percentage TEST data ? (10.00000) 1000
+ Converted to percentage : (  10.684) 
+ Number of resolution bins ? (          15) 25
+ Rfree shell: (MYSET) 
+ Encoding reflections of this set ...
+ Sorting reflections by resolution ...
+ Nr of reflections        : (       9360) 
+ Nr of resolution shells  : (         25) 
+ Reflections per shell    : (        374) 
+ Percentage TEST reflect. : (  10.684) 
+ Test reflections / shell : (         39) 
+
+ -> Real shell #    1 Resolution =   2.574 A -   2.504 A
+    TEST Shell #    1 Resolution =   2.550 A -   2.545 A
+    First HKL =      6     0    74
+    Last  HKL =     13    10     7
+ ...
+ -> Real shell #   25 Resolution =  22.275 A -   7.700 A
+    TEST Shell #   25 Resolution =   9.876 A -   9.318 A
+    First HKL =      3     3     0
+    Last  HKL =      3     2    13
+
+ Nr of WORK reflections : (       8335) 
+ Nr of TEST reflections : (       1025) 
+ Percentage TEST data   : (  10.951) 
+ This is an Rfree dataset
+ > (!) 
+ > (! show some statistics) 
+ > (stats myset) 
+ Stats : (MYSET) 
+
+   Item     Minimum     Maximum     Average        Sdv         Var 
+   ====     =======     =======     =======        ===         === 
+     H            1          16       8.609       3.229      10.426
+     K          -11          11       0.247       4.377      19.162
+     L            0          78      28.816      18.623     346.798
+   Fobs   4.690E+00   5.614E+02   6.436E+01   4.656E+01   2.168E+03
+  SigFo   1.242E+00   6.052E+01   7.378E+00   3.784E+00   1.432E+01
+   Reso       2.504      32.291       3.940       1.982       3.929
+ Fo/Sig   4.077E-01   1.087E+02   1.275E+01   1.298E+01   1.685E+02
+
+ Correlation Fobs-SigFo   : (  -0.336) 
+ Correlation Fobs-Fo/Sig  : (   0.807) 
+ Correlation SigFo-Fo/Sig : (  -0.604) 
+
+ Nr of reflections      : (       9360) 
+ Nr of WORK reflections : (       8335) 
+ Nr of TEST reflections : (       1025) 
+ Percentage TEST data   : (  10.951) 
+ This is an Rfree dataset
+ > (!) 
+ > (! save in X-PLOR format) 
+ > (write myset rfree.rxplor rxplor) 
+ Nr of WORK reflections : (       8335) 
+ Nr of TEST reflections : (       1025) 
+ Percentage TEST data   : (  10.951) 
+ This is an Rfree dataset
+ File   : (rfree.rxplor) 
+ Type   : (RXPLOR) 
+ Format : ((' INDEX=',3i6,' FOBS=',f10.3,' SIGMA=',f10.3,' TEST=',i3)) 
+ Write WORK and TEST set
+ Nr of reflections stored  : (       9360) 
+ Nr of reflections written : (       9360) 
+ CPU total/user/sys :       3.0       2.4       0.6
+ > (!) 
+ ... End of macro file
+ ... Control returned to terminal
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## &
+
+ This command can be used to manipulate symbols.  These are probably
+   only useful for advanced users who want to write fancier macros.
+   The command can be used in three ways:
+ (1) & ? -> lists currently defined symbols
+ (2) & symbol value -> sets "SYMBOL" to "value"
+ (3) & symbol -> prompts the user to supply a value for "SYMBOL"
+    (even if the program is executing a macro)
+
+ A few symbols are predefined:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > & ?
+ Nr of defined symbols : (       4) 
+ Symbol PROGRAM : (DATAMAN) 
+ Symbol VERSION : (960517/4.1) 
+ Symbol START_TIME : (Fri May 17 20:30:11 1996) 
+ Symbol USERNAME : (gerard) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ The symbol mechanism is fairly simplistic and has some limitations:
+ - max length of a symbol name is 20 characters
+ - max length of a symbol value is 256 characters
+ - max number of symbols is 100
+ - symbols can not be deleted, but they can be redefined
+ - symbol values are accessed by supplying $SYMBOL_NAME as an
+   argument on the command line; the line that you type on the terminal
+   (or in a macro) is parsed once; if there are additional parameters
+   which the program prompts you for, you cannot use symbols for those
+ - only one substitution per argument (e.g., "$file1 $file2" will
+   lead to a substituion of the entire argument by the value of
+   symbol FILE1 only !)
+ - command names (first argument on any command line) cannot be
+   replaced by a symbol (e.g.: "$command $arg1 $arg2" is not valid)
+ - symbols may be equated to each other, e.g. "& file2 $file1" will
+   give FILE2 the same value as FILE1
+ - symbol substitution is not recursive (e.g., if you set the value
+   of FILE2 to be "$file1", any reference to $FILE2 will be replaced
+   by "$file1", not by the value of FILE1
+ - symbols on comment lines (starting with "!") are not expanded
+ - symbols on system command lines (starting with "$") are not expanded
+
+ ## QUit     
+ stop working with DATAMAN; if you run interactively, DATAMAN
+    will check if there are any unsaved changes, and if so, ask you
+    if you really want to quit
+
+ ## ZP_restart
+ if you have started the program with too little memory allocated,
+   you can restart it with this command.  Provide new values for
+   SETSIZE and NUMSETS.  (The mnemonic "ZP" may be counter-intuitive,
+   but the Z and P keys are far apart on a QWERTY keyboard so the
+   chances of accidentally typing this command are reduced.)
+ WARNING : all memory is reset, so any unsaved data will be lost !!!
+
+ ## ECho
+ if you run the program with scripts, it is sometimes useful to see
+   input commands echoed.  The parameter to the ECho command may be
+   ON, OFf, or ? (to list the echo status).
+
+ ## $
+ execute a shell command (does not necessarily work on all
+    machines !)
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > $ xterm &
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## REad     
+ read dataset file into memory; you must supply the name of
+    this new set, the file name, the file type and the format
+    (the latter two are optional; defaults are "*" for both).
+
+ The following file types and formats are supported (use
+    "?" as the type to get an up-to-date listing):
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+    File type:   Required items:    Default format:    Free format?
+    ----------   ---------------    ---------------    ------------
+    SHELXS       h,k,l,F,S          (3i4,2f8.2)        no
+    PROTEIN      h,k,l,F            free               yes
+    MKLCF        h,k,l,intF,intS    free               yes
+    HKLFS (def)  h,k,l,F,S          free               yes
+    2HKLFS       2*(h,k,l,F,S)      free               yes
+    RFREE        h,k,l,F,S,T        free               yes
+    ELEANOR      h,k,l,F,S,1.0-T    free               yes
+    XPLOR        h,k,l,F (S)        [automatic]        n/a
+    X-PLOR       [same as XPLOR]
+    RXPLOR       [same as XPLOR]
+    RX-PLOR      [same as RXPLOR]
+    CNS          [same as XPLOR]
+    TNT          h,k,l,F,S          (4x,3i4,2f8.1)     no
+    MTZDUMP      h,k,l,F,S          [automatic]        n/a
+    *            [same as HKLFS]
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+  If you supply file type "*", HKLFS will be used.  If you
+    supply format "*", the program will read in free format
+    (except for SHELXS, which has a fixed format and XPLOR,
+    where the program extracts the relevant information itself).
+
+  If you (want to) have Is instead of Fs, use the CAlc
+    command (I2F or F2I) to inter-convert them.
+
+  T is a free R-factor flag.  DATAMAN uses the same
+    convention as X-PLOR: work data = 0, test data = 1.
+    The CCP4 convention is supported through file format
+    ELEANOR, where (1.0 - T) is read/written (i.e., a
+    real instead of an integer number).
+
+  MTZDUMP expects an output file from MTZDUMP as input, in
+    which F and S are supposed to be the first columns after
+    h, k and l !! Some of the information from this file will
+    be listed. Create such a file as follows:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ unix > mtzdump hklin q.mtz > q.dump << EOF
+ nref 1000000
+ symm
+ go
+ EOF
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+  Note that TNT phases and FOMs are lost upon reading into DATAMAN !
+
+  From version 3.4 onward: new routine to read XPLOR reflection files
+    (same for XPLOR and RXPLOR; TEST flags are recognised automatically).
+    The new routine can handle multi-line files and is compatible
+    with XPLOR 3.x and 4.x as well as CNS.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > re m1 ? ?
+  
+ Supported READ formats:
+ -----------------------
+ SHELXS  -> sets type HKLFS, format (3i4,2f8.2)
+ PROTEIN -> sets type PROTEIN, user format or (*)
+ MKLCF   -> sets type MKLCF, user format or (*)
+ HKLFS   -> sets type HKLFS, user format or (*)
+ 2HKLFS  -> sets type HKLFS, 2 per line, user format or (*)
+ RFREE   -> sets type RFREE, user format or (*)
+ ELEANOR -> sets type ELEANOR, user format or (*)
+ XPLOR   -> sets type XPLOR, format (*)
+ X-PLOR  -> sets type XPLOR, format (*)
+ RXPLOR  -> sets type RXPLOR, format (*)
+ RX-PLOR -> sets type RXPLOR, format (*)
+ CNS     -> sets type CNS, format (*)
+ TNT     -> sets type TNT, format (4x,3i4,2f8.1)
+ MTZDUMP -> MTZDUMP output file, user format or (*)
+ *       -> sets type HKLFS, user format or (*)
+  
+ DATAMAN > re m6 /home/gerard/proteins/eg1/hkl/eg1_36_rfree_solv.xplor xplor
+ File   : (/home/gerard/proteins/eg1/hkl/eg1_36_rfree_solv.xplor) 
+ Type   : (XPLOR) 
+ Format : (*) 
+ >>> (DECLARE NAME FOBS DOMAIN RECIPROCAL TYPE COMP END) 
+ >>> (DECLARE NAME FCALC DOMAIN RECIPROCAL TYPE COMP END) 
+ >>> (DECLARE NAME FBULK DOMAIN RECIPROCAL TYPE COMP END) 
+ >>> (DECLARE NAME SIGMA DOMAIN RECIPROCAL TYPE REAL END) 
+ >>> (DECLARE NAME TEST DOMAIN RECIPROCAL TYPE INTE END) 
+ Nr of lines read : (      23355) 
+ Nr of reflections read : (      11675) 
+ Nr of WORK reflections : (      10733) 
+ Nr of TEST reflections : (        942) 
+ Percentage TEST data   : (   8.069) 
+ This is an Rfree dataset
+ CPU total/user/sys :      10.9      10.8       0.1
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > re m2 q mtzdump
+ File   : (q) 
+ Type   : (MTZDUMP) 
+ Format : (*) 
+ Scanning MTZDUMP file
+ > 1### CCP PROGRAM SUITE: MTZDUMP VERSION 2.8: 10/05/94###
+ > User: gerard Run date: 22/10/94 Run time:18:59:00
+ > Status: READONLY Filename: hcrabp1_reproc.mtz
+ > * Number of Columns = 5
+ > * Number of Reflections = 7104
+ > * Space group = P43 (number 78)
+ > Number of reflections in the file 7104
+ Found start of reflection list
+ Nr of reflections read : (       7104) 
+ Nr of WORK reflections : (       7104) 
+ Nr of TEST reflections : (          0) 
+ Percentage TEST data : (   0.000) 
+ This is NOT an Rfree dataset
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > re m2 test.tnt tnt
+ File   : (test.tnt) 
+ Type   : (TNT) 
+ Format : (*) 
+ TNT phases and FOMs ignored !
+ Skipped : (REM CREATED BY DATAMAN V. 940721/2.5 AT FRI JUL 22 00:43:42 
+  1994 FOR USER GERARD) 
+ Nr of reflections read : (        200) 
+ Nr of WORK reflections : (        200) 
+ Nr of TEST reflections : (          0) 
+ Percentage TEST data : (   0.000) 
+ This is NOT an Rfree dataset
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## APpend
+ this command appends a dataset from a file to one already in memory.
+   the parameters are identical to those of the REad command (except
+   that the first argument must be the name of an existing set in
+   memory, obviously). Note that the dataset that results from an
+   append operation is probably not sorted in any particular way.
+ 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > append m1 nat21.hkl *
+ Appending reflections to an existing dataset
+ Nr of reflections before append : (      22335) 
+ File   : (nat21.hkl) 
+ Type   : (HKLFS) 
+ Format : (*) 
+ Nr of reflections read  : (      16975) 
+ Nr of reflections total : (      39310) 
+ TEST has FLAG=1; WORK has FLAG<>1
+ Nr of WORK reflections : (      39310) 
+ Nr of TEST reflections : (          0) 
+ Percentage TEST data   : (   0.000) 
+ This is NOT an Rfree dataset
+ WARNING - fewer than 500 TEST reflections !
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## WRite
+ write a dataset to file; you must supply the set name and the
+    file name; file type and format are optional again.  (Use
+    "?" as the type to get an up-to-date listing.)
+
+ From version 3.6 onward, there is another optional argument
+   with which you can select whether all reflections should be
+   written, or just the TEST set or only the WORK set.  One
+   character suffices (W for WORK, T for TEST, anything else
+   for ALL reflections).  You can use this to create separate
+   files, e.g. for calculation of Rfree with TNT.
+
+ From version 5.8.3, there is a further optional argument which
+   can be "A" to only write acentric reflections, "C" to only
+   write centric reflections, or "B" to write both.
+
+ Note that reflection lines in X-PLOR/CNS style files will be
+   changed before output to remove all extraneous spaces. If you
+   absolutely want column-formatted files, use the HKLFS or RFREE
+   options and specify the format explicitly (in "double quotes"),
+   e.g.: wr s1 q.cv RFREE "(' INDE',3i6,' FOBS=',f10.3,' 0.0 SIGMA=',f10.3,' TEST=',i3)"
+
+ Note that DATAMAN uses the X-PLOR/CNS definition of Rfree test flags,
+   i.e., "0" is work, and "1" is test reflection. The CCP4 definition
+   (real number equal to 1.0 minus the X-PLOR/CNS flag) is supported
+   through the ELEANOR output format. In CIF files, a character is
+   used instead ("o" for observed, and "f" for "free").
+
+ The header of OHKL files created by DATAMAN (version 6.4.2 or newer)
+   will need editing of the spacegroup name and possibly the cell
+   constants before you can use them in O !
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+    File type:   Default format:    Free format?  Rfree-flag?
+    ----------   ---------------    ------------  -----------
+    SHELXS       (3i4,2f8.2)        no		  no
+    PROTEIN      (3i6,f10.3)        yes		  no
+    MKLCF        (3i6,2i10)         yes		  no
+    HKLFS        (3i6,2f10.3)       yes		  no
+    RFREE        (3i6,2f10.3,i2)    yes		  yes
+    ELEANOR      (3i6,2f10.3,f4.1)  yes           (1.0-flag)
+    XPLOR        fixed XPLOR fmt    no 		  no
+    X-PLOR       [same as XPLOR]    no 		  no
+    RXPLOR       fixed XPLOR fmt    no 		  yes
+    RX-PLOR      [same as RXPLOR]   no 		  yes
+    CNS          fixed CNS fmt      no 		  yes
+    XCNS         fixed CNS fmt      no 		  no
+    TNT          fixed TNT format   no            no
+    CIF          economical         no            yes (o/f)
+    OHKL         fixed OHKL format  no            no
+    *            [same as HKLFS]    yes		  no
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Note that all phases for TNT files are set to 1000.0 and all FOMs
+   to 0.0.  Also note that TNT expects reflections to be sorted
+   with L varying fastest and H slowest; this is NOT checked !
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > wr m1 q ?
+ Nr of WORK reflections : (       2687) 
+ Nr of TEST reflections : (        272) 
+ Percentage TEST data : (   9.192) 
+ This is an Rfree dataset
+  
+ Supported WRITE formats:
+ ------------------------
+ SHELXS  -> sets type HKLFS, format (3i4,2f8.2)
+ PROTEIN -> sets type PROTEIN, user format or (*)
+ MKLCF   -> sets type MKLCF, user format or (3i6,2i10)
+ HKLFS   -> sets type HKLFS, user format or (*)
+ RFREE   -> sets type HKLFS+Rfree_01, user format or (*)
+ ELEANOR -> sets type HKLFS+(1.0-Rfree_01), user format or (*)
+ XPLOR   -> sets type XPLOR, format (*)
+ X-PLOR  -> sets type XPLOR, format (*)
+ RXPLOR  -> sets type XPLOR+Rfree_01, format (*)
+ RX-PLOR -> sets type XPLOR+Rfree_01, format (*)
+ CNS     -> sets type CNS+Rfree_01, format (*)
+ XCNS    -> sets type CNS, but no Rfree_01, format (*)
+ TNT     -> sets type TNT, format (*)
+ CIF     -> sets type CIF+Rfree_of, format (*)
+ *       -> sets type HKLFS, user format or (*)
+ Default format HKLFS/PROTEIN is (3i6,2f10.3)
+  
+ DATAMAN > wr m1 q.xplor rxplor
+ Nr of WORK reflections : (       2687) 
+ Nr of TEST reflections : (        272) 
+ Percentage TEST data : (   9.192) 
+ This is an Rfree dataset
+ File   : (q.xplor) 
+ Type   : (RXPLOR) 
+ Format : ((' INDEX=',3i6,' FOBS=',f10.3,' SIGMA=',f10.3,' TEST=',i3)) 
+ Nr of reflections written : (       2959) 
+ CPU total/user/sys :       3.8       3.6       0.2
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > wr m1 test.tnt tnt
+ Nr of WORK reflections : (        200) 
+ Nr of TEST reflections : (          0) 
+ Percentage TEST data : (   0.000) 
+ This is NOT an Rfree dataset
+ File   : (test.tnt) 
+ Type   : (TNT) 
+ Format : (('HKL ',3i4,2f8.1,'  1000.0  0.0000')) 
+ TNT phases set to 1000.0, FOMs to 0.0 !
+ Nr of reflections written : (        200) 
+ DATAMAN > $ head -5 test.tnt
+ REM Created by DATAMAN V. 940721/2.5 at Fri Jul 22 00:43:42 1994 for user gerard
+ HKL    1   1   1    67.4    37.2  1000.0  0.0000
+ HKL    2   0   0    47.5    29.9  1000.0  0.0000
+ HKL    2   0   1  2379.3    33.2  1000.0  0.0000
+ HKL    2   0   2  4917.0    94.7  1000.0  0.0000
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN >  wr m1 qt.tnt tnt * t
+ Nr of WORK reflections : (        183) 
+ Nr of TEST reflections : (         17) 
+ Percentage TEST data   : (   8.500) 
+ This is an Rfree dataset
+ WARNING - less than 500 TEST reflections !
+ File   : (qt.tnt) 
+ Type   : (TNT) 
+ Format : (('HKL ',3i4,2f8.1,'  1000.0  0.0000')) 
+ Write TEST set only
+ TNT phases set to 1000.0, FOMs to 0.0 !
+ Nr of reflections stored  : (        200) 
+ Nr of reflections written : (         17) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > wr m1 q cns * all centr
+ Command > (wr m1 q cns * all centr) 
+ TEST has FLAG=1; WORK has FLAG<>1
+ Nr of WORK reflections : (      13182) 
+ Nr of TEST reflections : (       1496) 
+ Percentage TEST data   : (  10.192) 
+ This is an Rfree dataset
+ File   : (q) 
+ Type   : (CNS) 
+ Format : ((' INDE',3i6,' FOBS=',f10.3,' 0.0 SIGMA=',f10.3,' TEST=',i3)) 
+ Write WORK and TEST set
+ Write CENTRICS only
+ Nr of reflections stored  : (      14678) 
+ Nr of reflections written : (       1445) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > re m1 cmcase_nati.dump mtzdump
+ [...]
+ DATAMAN > wr m1 test.ohkl ohkl
+ TEST has FLAG=1; WORK has FLAG<>1
+ Nr of WORK reflections : (      15887) 
+ Nr of TEST reflections : (          0) 
+ Percentage TEST data   : (   0.000) 
+ This is NOT a cross-validation dataset
+ WARNING - fewer than 500 TEST reflections !
+ File   : (test.ohkl) 
+ Type   : (OHKL) 
+ Format : (('hkl',3i5,2f15.5)) 
+ Write WORK and TEST set
+ Write BOTH centrics and acentrics
+ Nr of reflections to write : (      15887) 
+ -> You must edit the spacegroup name !
+ Writing reflections ...
+ Nr of reflections stored   : (      15887) 
+ Nr of reflections written  : (      15887) 
+ CPU total/user/sys :       1.1       1.1       0.0
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > wr m1 acbp.cif cif
+ Nr of WORK reflections : (       7056) 
+ Nr of TEST reflections : (        797) 
+ Percentage TEST data   : (  10.149) 
+ This is an Rfree dataset
+ File   : (acbp.cif) 
+ Type   : (CIF) 
+ Format : ((3i10,1p,2e15.6,i10)) 
+ Write WORK and TEST set
+ Nr of reflections stored  : (       7853) 
+ Nr of reflections written : (       7853) 
+ CPU total/user/sys :       6.3       6.3       0.1
+ DATAMAN > $ head -20 acbp.cif ; tail -10 acbp.cif
+;
+acbp.cif
+Created by DATAMAN V. 951107/3.7.2 at Tue Nov 7 23:20:48 1995 for user gerard
+;
+
+data_r0zzzsf
+
+loop_
+  _refln.index_h
+  _refln.index_k
+  _refln.index_l
+  _refln.F_meas_au
+  _refln.F_sigma_au
+  _refln.status
+
+0 0 19 3.532600E+02 1.654300E+02 o
+0 0 20 1.949980E+04 1.551900E+03 o
+0 0 22 5.338000E+02 2.104400E+02 o
+0 0 23 3.809400E+02 1.802800E+02 o
+0 0 24 1.322140E+04 1.043980E+03 o
+17 5 3 2.982040E+03 1.606700E+02 f
+17 5 4 2.465410E+03 1.450900E+02 o
+17 5 5 1.558960E+03 1.350500E+02 o
+17 5 6 1.748640E+03 1.261000E+02 o
+17 5 7 1.514660E+03 1.097800E+02 o
+
+;
+This file should contain 7853 reflections
+;
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## DElete
+ delete a dataset from memory.  If you run DATAMAN in interactive mode,
+    and there are unsaved changes, the program will ask if you're absolutely
+    sure
+
+ ## DUplicate
+ make a copy of a set.  All set and reflection attributes will be copied
+   (symmetry, cell, resolution, orbital multiplicity, etc.).  This
+   command may be useful if you want to have a back-up prior to a
+   "sensitive" operation, or if you want to carry out an operation
+   separately for low and high-resolution data (e.g., a PArity_test).
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > dup m2 m1
+ Nr of WORK reflections : (      16012) 
+ Nr of TEST reflections : (          0) 
+ Percentage TEST data   : (   0.000) 
+ This is NOT an Rfree dataset
+ WARNING - fewer than 500 TEST reflections !
+ DATAMAN > li m2
+
+ List : (M2) 
+ Number of reflections :      16012
+ File name : not_saved_yet
+ Label     : Copied from M1
+ Cell constants not supplied
+ Symmetry operators not supplied
+ Resolution has NOT been calculated
+ (A)centrics have NOT been deduced
+ Orbital multiplicities NOT calculated
+ This is NOT an Rfree dataset
+ There are UNSAVED changes
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## HEmisphere
+ generate a hemisphere of data in a new set.  The cell constants are
+   taken from another set.  Also, you must supply the resolution limit.
+   (Note: the F000 reflection is *not* generated.)  All the FOBS will
+   be set to 1.0, and all the SIGMAs to 0.0.  By default, the dataset
+   will be generated in Laue group 3: hkl:l>=0, hk0:h>=0, 0k0:k>=0.
+   To convert to Laue group 1 or 2, use the Laue command.  See also
+   the ASym_unit command.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > re m1 dump.cns cns
+ ...
+ DATAMAN > cell m1  78.990   78.990   38.020  90.00  90.00  90.00 
+ ...
+ DATAMAN > hemi m2 m1 2.0
+ Generate   : (Hemisphere) 
+ Resolution : (   2.000) 
+ Laue group : (       3) 
+ Cell : (  78.990   78.990   38.020   90.000   90.000   90.000) 
+ Cell volume : (  2.372E+05) 
+ Hmax : (         40) 
+ Kmax : (         40) 
+ Lmax : (         20) 
+ Nr of reflections generated : (      62083) 
+ Lowest  resolution : (  78.990) 
+ Highest resolution : (   2.000) 
+ Nr of WORK reflections : (      62083) 
+ Nr of TEST reflections : (          0) 
+ Percentage TEST data   : (   0.000) 
+ This is NOT an Rfree dataset
+ WARNING - fewer than 500 TEST reflections !
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## ASym_unit
+ generate an asymmetric unit of data in a new set.  The cell constants
+   are taken from another set.  Also, you must supply the resolution
+   limit and the Laue group (a "?" will list all Laue groups and their
+   definition).  (Note: the F000 reflection is *not* generated.)  All
+   the FOBS will be set to 1.0, and all the SIGMAs to 0.0.  See also
+   the HEmisphere command (which is equivalent the ASym command with
+   Laue group 3).  Note: you may want to delete the systematic absences
+   for your particular spacegroup afterwards.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > re m1 dump.cns cns
+ ...
+ DATAMAN > cell m1  78.990   78.990   38.020  90.00  90.00  90.00 
+ ...
+ DATAMAN > asym m2 m1 2.0 8
+ Generate   : (Asymmetric unit) 
+ Resolution : (   2.000) 
+ Laue group : (       8) 
+ Cell : (  78.990   78.990   38.020   90.000   90.000   90.000) 
+ Cell volume : (  2.372E+05) 
+ Hmax : (         40) 
+ Kmax : (         40) 
+ Lmax : (         20) 
+ Nr of reflections generated : (       8591) 
+ Lowest  resolution : (  78.990) 
+ Highest resolution : (   2.000) 
+ Nr of WORK reflections : (       8591) 
+ Nr of TEST reflections : (          0) 
+ Percentage TEST data   : (   0.000) 
+ This is NOT an Rfree dataset
+ WARNING - fewer than 500 TEST reflections !
+ DATAMAN > sy m2 p43212
+ Try to open as : (p43212) 
+ ...
+ Unique symmops : (       1        2        3        4        5        6   
+       7        8) 
+ DATAMAN > abs m2 kill
+
+ Kill systematic absences for : (M2) 
+ #        1 HKL      0     0     1 Fo, S(Fo) =   1.0000E+00  0.0000E+00 Test 0
+ #        2 HKL      0     0     2 Fo, S(Fo) =   1.0000E+00  0.0000E+00 Test 0
+ ...
+ #     8573 HKL     39     0     0 Fo, S(Fo) =   1.0000E+00  0.0000E+00 Test 0
+ Nr of systematic absences : (         35) 
+ Nr of reflections left : (       8556) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## LIst
+ print some information about a dataset
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > list *
+ List : (M1) 
+ Number of reflections :       2959
+ File name : q.xplor
+ Label     : Read from rfree.xplor
+ Cell      :     80.800    80.800    80.800    90.000    90.000    90.000
+ Symmetry operators not supplied
+ Resolution has been calculated
+ (A)centrics have NOT been deduced
+ Orbital multiplicities NOT calculated
+ This is an Rfree dataset
+ There are no unsaved changes
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## STats
+ print some statistics about a dataset
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > st m6
+ Stats : (M6) 
+
+   Item     Minimum     Maximum     Average        Sdv         Var 
+   ====     =======     =======     =======        ===         === 
+     H            0          28      14.330       6.085      37.028
+     K            0          19       6.075       4.619      21.336
+     L            0          55      22.172      13.337     177.884
+   Fobs   8.721E+01   3.164E+04   4.795E+03   3.260E+03   1.063E+07
+  SigFo   1.893E+01   2.560E+03   2.877E+02   1.736E+02   3.015E+04
+   Reso       3.600      37.466       5.385       2.572       6.617
+ Fo/Sig   1.346E+00   7.861E+01   2.192E+01   1.544E+01   2.384E+02
+
+ Correlation Fobs-SigFo   : (  -0.007) 
+ Correlation Fobs-Fo/Sig  : (   0.663) 
+ Correlation SigFo-Fo/Sig : (  -0.563) 
+
+ Nr of reflections      : (      11675) 
+ Nr of WORK reflections : (      10733) 
+ Nr of TEST reflections : (        942) 
+ Percentage TEST data   : (   8.069) 
+ This is an Rfree dataset
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## HIsto
+ produce a histogram.  You must supply the set name, the type of data
+    you want to investigate and values for the histogram intervals.
+    The datatype may be: FOB(s), SIG(ma), F/S or RES(olution).
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > histo s1 fobs 1 5 10 50 100 500
+ Histrogram limits : (  1.000E+00   5.000E+00   1.000E+01   5.000E+01   
+  1.000E+02   5.000E+02) 
+ Histogram : (S1) 
+
+ Nr of values <          1.00                    :        0
+ Nr of values >=         5.00 and <        10.00 :      249
+ Nr of values >=        10.00 and <        50.00 :     5471
+ Nr of values >=        50.00 and <       100.00 :     1693
+ Nr of values >=       100.00 and <       500.00 :      107
+ Nr of values >=       500.00                    :        0
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## SHow_hkl
+ list reflections which satisfy a certain criterion.  You have to supply
+    the criterion, the operand and the value.
+    The criterion may be: FOB(s), SIG(ma), F/S or RES(olution).
+    The operand may be: < or >.  The value may be anything.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > sh m1 fob < 75
+ Show_hkl : (M1) 
+ Nr of reflections : (       2959) 
+ Show reflection if : (FOB < 75.00000) 
+ #       16 HKL      1     1     1 Fo, S(Fo) =   5.8090E+01  2.8220E+01 Test 0
+ #       18 HKL      1     3     1 Fo, S(Fo) =   4.5230E+01  2.2870E+01 Test 0
+ #       20 HKL      1     4     1 Fo, S(Fo) =   5.6580E+01  2.8470E+01 Test 0
+ #       69 HKL      1     5     2 Fo, S(Fo) =   7.0030E+01  3.5380E+01 Test 0
+ #      432 HKL      2     3     6 Fo, S(Fo) =   6.0350E+01  2.6960E+01 Test 0
+ Nr of reflections listed : (          5) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## CEll
+ define the unit-cell constants for a dataset.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > ce m1 41.6 41.6 202.4 90 90 90
+ Cell : (  41.600   41.600  202.400   90.000   90.000   90.000) 
+ Volume (A3) : (  3.503E+05) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## ANnotate
+ add a comment to a dataset.  If the comment contains spaces, then
+    surround it by double quotes (").
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > an m1 "xplor 3.2 a dataset hcrabp2 p213 raxis denzo"
+ DATAMAN > li m1
+ List : (M1) 
+ Number of reflections :       2959
+ File name : q.xplor
+ Label     : xplor 3.2 a dataset hcrabp2 p213 raxis denzo
+ Cell      :     80.800    80.800    80.800    90.000    90.000    90.000
+...
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## SYmmop
+ read an "O"-type file containing the symmetry operators of the
+    spacegroup of a dataset.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > sym m1 p213.sym
+ Opening O datablock : (p213.sym) 
+ Datablock : (.SPACE_GROUP_OPERATORS) 
+ Data type : (R) 
+ Number    : (144) 
+ Format    : ((3F10.5)) 
+ Nr of symmetry operators : (         12) 
+
+ Nr of spacegroup symmetry operators :  12
+ SYMOP  1 =        1.0000       0.0000       0.0000                  0.000
+                   0.0000       1.0000       0.0000                  0.000
+                   0.0000       0.0000       1.0000                  0.000
+ Determinant of rotation matrix =   1.000000
+ Rotation angle                 =   0.000000
+ SYMOP  2 =       -1.0000       0.0000       0.0000                  0.500
+                   0.0000      -1.0000       0.0000                  0.000
+                   0.0000       0.0000       1.0000                  0.500
+ Determinant of rotation matrix =   1.000000
+ Rotation angle                 = 180.000000
+...
+ SYMOP 12 =        0.0000      -1.0000       0.0000                  0.500
+                   0.0000       0.0000      -1.0000                  0.000
+                   1.0000       0.0000       0.0000                  0.500
+ Determinant of rotation matrix =   1.000000
+ Rotation angle                 = 120.000008
+ Unique symmops : (       1        2        3        4        5        6   
+       7        8        9       10       11       12) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## CAlculate
+ calculate certain attributes for all reflections of a dataset.
+    The following calculation types are currently supported:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+    Type:     Meaning:                            Requires:
+    -----     --------                            ---------
+    R(esol)   resolution (A)                      unit-cell constants
+    C(entr)   centrics and acentrics              symmetry operators
+    O(rbit)   orbital multiplicity                symmetry operators
+    I(2F)     go from intensities to Fs           -
+    F(2I)     go from Fs to intensities           -
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ * Resolution is calculated in the usual way from the HKLs and the
+    unit-cell constants.
+
+ * Centric reflections are deduced using the simple definition of
+    Gerard Bricogne: (hkl) is centric if there is an operation A,
+    such that A(hkl) = -(hkl), where A is the transpose of the
+    rotation matrix of a unique symmetry operator of the spacegroup,
+    and "-(hkl)" is the Friedel-mate of (hkl).
+
+ * The orbital multiplicity is the number of DISTINCT reflections
+    which are equivalent to (hkl) when applying all unique symmetry
+    operators PLUS Friedel expansion to (hkl).  (For acentric
+    reflections, this will be twice the number of unique symmetry
+    operators; for acentric and axial reflections, this number will
+    be lower.)
+
+ * I2F: uses the approximations: F ~ SQRT (I), and 
+    Sigma (F) = Sigma (I) / (2.0 * F).  This is only done for
+    reflections with I > 0; if there are zero or negative
+    intensities they are not changed and a warning is printed
+    (use "kill * fob < 0.0001" to get rid of them).
+
+ * F2I: uses the approximations: I ~ F * F, and
+    Sigma (I) = 2.0 * F * Sigma (F).  This is only done for
+    reflections with F > 0; if there are zero or negative
+    amplitudes they are not changed and a warning is printed
+    (use "kill * fob < 0.0001" to get rid of them).
+
+ NOTE: DATAMAN is clever enough to keep track of what it knows about
+       each dataset (cell constants, symmetry operators, resolution,
+       etc.), so it will issue error messages if you haven't supplied
+       sufficient information for a certain calculation.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > ca m1 res
+ Calc : (M1) 
+ Cell volume : (  5.275E+05) 
+ Lowest  resolution : (  46.650) 
+ Highest resolution : (   3.219) 
+ DATAMAN > ca * cen
+ Calc : (M1) 
+ Nr of reflections    : (       2959) 
+ Nr of unique symmops : (         12) 
+ Nr of acentric reflections : (       2493) 
+ Nr of  centric reflections : (        466) 
+ CPU total/user/sys :       2.1       2.1       0.0
+ DATAMAN > ca * orb
+ Calc : (M1) 
+ Nr of reflections    : (       2959) 
+ Nr of unique symmops : (         12) 
+ There are     2485 reflections with O.M.  24
+ There are      451 reflections with O.M.  12
+ There are        8 reflections with O.M.   8
+ There are       15 reflections with O.M.   6
+ CPU total/user/sys :       3.6       3.6       0.0
+ DATAMAN > cal s2 orb
+ Calc : (S2) 
+ ERROR --- I don't know the symmops
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## KIll_hkl
+ remove certain reflections from a dataset.  The arguments to this
+    command are the same as for the SHow_hkl command.
+
+ This command allows you to remove reflections with:
+ - very low Fobs : kill set fobs < 1
+ - very high Fobs: kill set fobs > 100000
+ - Fobs less than X times their Sigma: kill set f/s < 2
+
+ In addition, it can be used to cut out a certain resolution range:
+ - low-resolution cut-off : kill set reso > 10.0
+ - high-resolution cut-off: kill set reso < 2.5
+
+ NOTE: if either NONE or ALL of the reflections would be deleted
+          by a KILL operation, DATAMAN returns with an error message
+          and NO reflections are deleted !
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > ki m1 res > 10
+ Kill_hkl : (M1) 
+ Nr of reflections before : (       2959) 
+ Kill reflection if : (RES > 10.00000) 
+ Nr of reflections after : (       2880) 
+ Nr of WORK reflections : (       2615) 
+ Nr of TEST reflections : (        265) 
+ Percentage TEST data : (   9.201) 
+ This is an Rfree dataset
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## PRod_plus
+ modify the values of Fobs and Sigmas.  You may use this to make
+    all your Fobs ten times larger or smaller, or to define a flat
+    Sigma for all reflections which were read from a PROTEIN file.
+    The following may be transformed: F(obs), S(igma) or B(oth).
+ The formula is: new_value = prod * old_value + plus
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > pr 
+ Which set ? (M1) 
+ Which [Fobs|Sigfo|Both] ? (FOB) both
+ Prod ? (1.0) 10
+ Plus ? (0.0) 
+ Prod_plus : (M1) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## WIlson
+ scale two datasets using Wilson statistics.  This option uses
+    a set of subroutines kindly provided by Gerard Bricogne.
+
+ It works as follows:
+
+ Over a number of resolution bins, the average intensity (note
+    that intensity is the square of the structure-factor amplitude !)
+    is computed for both datasets, by calculating:
+
+ <I> = SUM (Fobs ** 2) / SUM (orbital_mult)
+
+ Then, LOG (<I2>/<I1>) is "plotted" versus (sin(theta)/lambda)**2,
+    and a weighted least-squares line is determined through the
+    data points.  The slope of this line yields a correction temperature
+    factor which must be applied to the Fobs of the second dataset;
+    similarly, the intercept yields a scale factor.
+    
+ You will obtain two plot files (which can be displayed and converted
+    into PostScript by O2D), one showing <I> for each dataset as a function
+    of (sin(theta)/lambda)**2 bin, the other showing the plot of LOG (<I2>/<I1>)
+    and the least-squares line as a function of (sin(theta)/lambda)**2 bin.
+
+ Make PostScript files with O2D or OMAC/o2dps.
+    View them with GhostView or GhostScript and print them with:
+    print qms w1.ps
+
+ If you repeat this operation (maybe twice), you should soon get
+    a scale of 1.0 and a temperature factor of 0.0; the first plot
+    should display similar profiles for both datasets and the second
+    should yield a flat line at Y=0.
+
+ $$ <A HREF="http://xray.bmc.uu.se/cgi-bin/gerard/image_page.pl?image=usf/pics/wilson_1.gif">
+ $$ Example of a WIlson &lt;I&gt; plot after one round of scaling</A>.
+
+ $$ <A HREF="http://xray.bmc.uu.se/cgi-bin/gerard/image_page.pl?image=usf/pics/wilson_2.gif">
+ $$ Example of a WIlson LOG (&lt;I2&gt;/&lt;I1&gt;) plot after one round of scaling</A>.
+
+ $$ <A HREF="http://xray.bmc.uu.se/cgi-bin/gerard/image_page.pl?image=usf/pics/wilson_3.gif">
+ $$ Example of a WIlson &lt;I&gt; plot after two rounds of scaling</A>.
+
+ $$ <A HREF="http://xray.bmc.uu.se/cgi-bin/gerard/image_page.pl?image=usf/pics/wilson_4.gif">
+ $$ Example of a WIlson LOG (&lt;I2&gt;/&lt;I1&gt;) plot after two rounds of scaling</A>.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > wil m2 m1 w11.plt w12.plt 0.002
+ Wilson scaling - G. Bricogne
+ Max nr of bins : (         64) 
+ Min nr of bins : (         10) 
+ Bin width      : (  2.000E-03) 
+ Min 4 * (sin(theta)/lambda)**2 : (  1.011E-02) 
+ Max 4 * (sin(theta)/lambda)**2 : (  1.735E-01) 
+ F's  put on same scale+temp  by Wilson plot :
+           W SCALE  =  0.98108E-01
+           W BTEMP  =    -31.180
+ Nr of bins used    : (         22) 
+ Step size for bins : (  2.000E-03) 
+ Applying scale to set 2
+
+ Bin    NF1    NF2         SSQ1         SSQ2         <I1>         <I2> LOG<I2>/<I1> 4(SIN(T)/L)^2
+   2   1416   1854   1.8825E+11   2.3256E+13   1.3294E+08   1.2544E+10   4.5470E+00   3.0000E-03
+   3   3176   3710   4.3035E+11   3.5022E+13   1.3550E+08   9.4398E+09   4.2437E+00   5.0000E-03
+   4   3720   4326   5.4386E+11   4.1410E+13   1.4620E+08   9.5724E+09   4.1817E+00   7.0000E-03
+  12   7892   7952   7.6624E+11   1.9890E+13   9.7091E+07   2.5013E+09   3.2489E+00   2.3000E-02
+  13   8360    840   5.9398E+11   1.4115E+12   7.1050E+07   1.6803E+09   3.1634E+00   2.5000E-02
+
+ Comparison of <I1> and <I2> :
+ Correlation coefficient : (   0.706) 
+ Scaled R w.r.t. <I1>    : (  3.113E-01) 
+ Scaled R w.r.t. <I2>    : (  3.113E-01) 
+ RMS difference          : (  8.736E+09) 
+...
+ DATAMAN >  wil m2 m1 w21.plt w22.plt 0.002
+ Wilson scaling - G. Bricogne
+ Max nr of bins : (         64) 
+ Min nr of bins : (         10) 
+ Bin width      : (  2.000E-03) 
+ Min 4 * (sin(theta)/lambda)**2 : (  1.011E-02) 
+ Max 4 * (sin(theta)/lambda)**2 : (  1.735E-01) 
+ F's  put on same scale+temp  by Wilson plot :
+           W SCALE  =  0.99597E+00
+           W BTEMP  =     -0.322
+ Nr of bins used    : (         22) 
+ Step size for bins : (  2.000E-03) 
+ Applying scale to set 2
+
+ Bin    NF1    NF2         SSQ1         SSQ2         <I1>         <I2> LOG<I2>/<I1> 4(SIN(T)/L)^2
+   2   1416   1854   1.8825E+11   2.7544E+11   1.3294E+08   1.4857E+08   1.1111E-01   3.0000E-03
+   3   3176   3710   4.3035E+11   4.5696E+11   1.3550E+08   1.2317E+08  -9.5404E-02   5.0000E-03
+...
+  12   7892   7952   7.6624E+11   8.0277E+11   9.7091E+07   1.0095E+08   3.8994E-02   2.3000E-02
+  13   8360    840   5.9398E+11   6.0982E+10   7.1050E+07   7.2598E+07   2.1552E-02   2.5000E-02
+
+ Comparison of <I1> and <I2> :
+ Correlation coefficient : (   0.984) 
+ Scaled R w.r.t. <I1>    : (  4.969E-02) 
+ Scaled R w.r.t. <I2>    : (  4.969E-02) 
+ RMS difference          : (  1.011E+07) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## MErge
+ merge two datasets together (e.g., two different crystals
+     of the same protein).  Note that this option assumes that
+     the structure factors have already been scaled (e.g.,
+     with the WIlson_scaling command) !!!
+ The R factors reported are Rmerge.  Rfree flags are NOT set
+     for the merged dataset.  Also, it is unsorted.  DATAMAN
+     does not check if the two datasets have similar cells and
+     symmetry operators, etc.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > me m4 m1 m3 ?
+ Select one of:
+ SIG = sigma weighting: Fnew = (S2*F1+S1*F2), Snew = 2*S1*S2/(S1+S2)
+ AVE = average: Fnew = (F1+F2)/2, Snew = 1/2*SQRT(S1^2+S2^2)
+ COM = complement: new set = set1 + all data from set2 not in set1
+ DATAMAN > merge m4 m1 m3 complement
+ Merging Set 1 : (M1) 
+     and Set 2 : (M3) 
+ Method        : (COM) 
+ Sets *assumed* to be scaled together
+ Encoding reflections of set 1 ...
+ Encoding reflections of set 2 ...
+ Generating merged dataset ...
+ Almost done ...
+
+ HKLs only in set 1 : (          0) 
+ HKLs only in set 2 : (        379) 
+ HKLs in both sets  : (       8177) 
+ Total nr of HKLs   : (       8556) 
+
+ Comparison for Set 1 and Set 2 Fobs :
+ Correlation coefficient : (   0.000) 
+ Shape similarity        : (   0.794) 
+ Unscaled R w.r.t. <F1>  : (  9.951E-01) 
+ Unscaled R w.r.t. <F2>  : (  2.047E+02) 
+ Scaled R w.r.t. <F1>    : (  5.649E-01) 
+            Scale factor : (  2.057E+02) 
+ Scaled R w.r.t. <F2>    : (  5.649E-01) 
+            Scale factor : (  4.862E-03) 
+ RMS difference          : (  2.583E+02) 
+ Rmerge = SUM |F1-F2| / SUM |F1+F2|
+ Value of Rmerge : (   0.990) 
+ Nr of WORK reflections : (       8556) 
+ Nr of TEST reflections : (          0) 
+ Percentage TEST data   : (   0.000) 
+ This is NOT an Rfree dataset
+ WARNING - fewer than 500 TEST reflections !
+ The new dataset is UNSORTED !
+ CPU total/user/sys :       1.6       1.6       0.0
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## TEmp_factor
+ apply a temperature factor to a set of Fobs.  All Fobs of the
+    selected set are multiplied by EXP(-B*STOLSQ), where STOLSQ
+    is (SIN(THETA)/LAMBDA)**2.  The resolution of the reflections
+    must have been calculated previously (CALC command).
+
+ ## DF
+ prepare a SHELXS90 DELTA-F dataset.  This option makes the older
+    program DELTAF obsolete.  From a set of native data S1, and a
+    set of derivative data S2, it calculates a new dataset S3,
+    which contains all HKLs which S1 and S2 have in common, with:
+
+ Fobs = Fobs(nat) - Fobs(der)  [or vice versa; doesn't matter]
+ Sig  = SQRT (sig(nat)**2 + sig(der)**2)
+
+ NO checks are made to see if S1 and S2 are comparable datasets !
+    Data set S3 inherits the unit cell and symmetry operators from
+    data set S1.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > df m3 m2 m1
+ Encoding reflections of set 1 ...
+ Checking reflections of set 2 ...
+ HKLs in native     set 1: (       6723) 
+ HKLs in derivative set 2: (       2880) 
+ HKLs in new nat-der set : (       2638) 
+ Nr of WORK reflections : (       2638) 
+ Nr of TEST reflections : (          0) 
+ Percentage TEST data : (   0.000) 
+ This is NOT an Rfree dataset
+ CPU total/user/sys :       4.8       4.8       0.0
+  ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## LAue
+ move your HKLs to the proper part of "hkl-space" (according
+    to the CCP4 manual pages).  The new set will inherit the
+    unit cell and symmetry operators from the old set.  Note
+    that the HKLs in the new set are UNSORTED.  (The algorithm
+    expands each reflection to P1 using the symmetry operators
+    and Friedel expansion; those that satisfy the Laue requirements
+    are kept in the order in which they are generated.)
+    The symmetry operators must be known for the old set.
+    This option makes the older program XSEL obsolete.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > laue s6 s5 ?
+ LAUE = 1, 1bar,   hkl:h>=0   0kl:k>=0   00l:l>=0
+ LAUE = 2, 1bar,   hkl:k>=0   h0l:l>=0   h00:h>=0
+ LAUE = 3, 1bar,   hkl:l>=0   hk0:h>=0   0k0:k>=0
+ LAUE = 4, 2/m,    hkl:k>=0, l>=0     hk0:h>=0
+ LAUE = 5, 2/m,    hkl:h>=0, l>=0     0kl:k>=0   (2-nd sett.)
+ LAUE = 6, mmm,    hkl:h>=0, k>=0, l>=0
+ LAUE = 7, 4/m,    hkl:h>=0, k>0, l>=0 with  k>=0 for h=0
+ LAUE = 8, 4/mmm,  hkl:h>=0, h>=k>=0, l>=0
+ LAUE = 9, 3bar,   hkl:h>=0, k<0, l>=0 including 00l
+ LAUE = 10, 3bar,  hkl:h>=0, k>0  including  00l:l>0
+ LAUE = 11, 3barm, hkl:h>=0, k>=0 with k<=h; if h=k l>=0
+ LAUE = 12, 6/m,   hkl:h>=0, k>0, l>=0  with  k>=0 for h=0
+ LAUE = 13, 6/mmm, hkl:h>=0, h>=k>=0, l>=0
+ LAUE = 14, m3,    hkl:h>=0, k>=0, l>=0 with l>=h, k>=h for l=h
+ LAUE = 15, m3m,   hkl:k>=l>=h>=0
+ DATAMAN > laue m4 m1 14
+ Laue : (M1) 
+ HKLs in old set : (       2880) 
+ HKLs in new set : (       2880) 
+ HKLs in the new set are UNSORTED !
+ Nr of WORK reflections : (       2615) 
+ Nr of TEST reflections : (        265) 
+ Percentage TEST data : (   9.201) 
+ This is an Rfree dataset
+ CPU total/user/sys :       3.8       3.8       0.1
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## FIll_in
+ replace unobserved data (signalled by a sigma <= 0.00001) by the
+   square root of the average intensity in the appropriate resolution
+   shell.  The sigmas will be set equal to Fobs.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > fill m5 25
+ 4*(sin(theta)/lambda)**2 min : (  3.205E-04) 
+ 4*(sin(theta)/lambda)**2 max : (  2.500E-01) 
+ Nr of bins : (         25) 
+ Bin size   : (  9.987E-03) 
+   Bin    4STOLSQ limits     Nobs    Nfill       <Ibin>        Ffill
+     1  0.00032  0.01031       70       23   2.4984E+05   4.9984E+02
+     2  0.01031  0.02029      120       31   2.0026E+05   4.4751E+02
+     3  0.02029  0.03028      161       17   1.2098E+05   3.4782E+02
+ ...
+    21  0.20006  0.21005      463        8   2.1221E+04   1.4567E+02
+    22  0.21005  0.22004      461        0   2.0900E+04   1.4457E+02
+    23  0.22004  0.23002      469        5   1.7580E+04   1.3259E+02
+    24  0.23002  0.24001      481        2   1.4430E+04   1.2012E+02
+    25  0.24001  0.25000      465       21   1.1875E+04   1.0897E+02
+ Nr of measured reflections   : (       8177) 
+ Nr of reflections to fill in : (        379) 
+ Min Nobs/Nfill ratio : (   3.043) 
+ Max Nobs/Nfill ratio : ( 392.000) 
+ Done
+ Nr of WORK reflections : (       8556) 
+ Nr of TEST reflections : (          0) 
+ Percentage TEST data   : (   0.000) 
+ This is NOT an Rfree dataset
+ WARNING - fewer than 500 TEST reflections !
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## SOrt
+ sort reflections by HKL.  You must supply the sort order,
+    e.g. 'LKH' means: L varies fastest, then K and H varies
+    slowest.  The new set inherits the unit cell and symmetry
+    operators of the old set.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > so m5 m2 khl
+ Sort : (M2) 
+ Encoding reflections of old set ...
+ Sorting reflections ...
+ Nr of WORK reflections : (       6723) 
+ Nr of TEST reflections : (          0) 
+ Percentage TEST data : (   0.000) 
+ This is NOT an Rfree dataset
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## TYpe_hkl
+ list ranges of reflections (h,k,l,Fobs,Sigma only).  You have
+    to supply the start, end and step index.
+
+ START - first reflection to list; if you supply a value less
+            than 1, it will be set to 1
+
+ END   - last reflection to list; a value of 0 means "the last
+            reflection" (since you may use a wildcard this is a
+            different number, usually, for each dataset); if this
+            value is less than START, it will be made equal to
+            START; if it exceeds the number of reflections for
+            a set, it will made equal to this number
+
+ STEP  - the number of reflections to skip between to listings;
+            if this number is zero, it will be set to the value
+            of END minus 1; if it is negative, it means
+            "list -STEP reflections, equally spaced between START
+            and END"
+
+ Examples:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ type s1 1 10 1    -> list the first 10 reflections
+ type s1 11110 0 1 -> list all refl. from 11110 to the end
+ type s1 0 0 0     -> list the first and the last refl.
+ type s1 400 0 0   -> list refl. 400 only
+ type s1 400 400 1 -> list refl. 400 only
+ type s1 0 0 -10   -> list ten refl. evenly spaced between
+                      the first and the last
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > ty s1 0 0 0
+
+ Type : (S1) 
+ #        1  HKL      0     0    68  Fobs & SigFob =   1.3228E+02  4.4220E+00
+ #    11116  HKL     16     4     6  Fobs & SigFob =   3.6476E+01  2.0911E+01
+ DATAMAN > ty s1 0 0 -10
+
+ Type : (S1) 
+ #        1  HKL      0     0    68  Fobs & SigFob =   1.3228E+02  4.4220E+00
+ #     1113  HKL      1     3    11  Fobs & SigFob =   6.2385E+01  4.8240E+00
+ #     2225  HKL      2     5    21  Fobs & SigFob =   1.0126E+02  4.6080E+00
+ #     3337  HKL      3     7    56  Fobs & SigFob =   5.5640E+01  5.2460E+00
+ #     4449  HKL      4    10    46  Fobs & SigFob =   2.4554E+01  1.8005E+01
+ #     5561  HKL      5    15    17  Fobs & SigFob =   4.5699E+01  1.4304E+01
+ #     6673  HKL      7     4    43  Fobs & SigFob =   3.2842E+01  1.2416E+01
+ #     7785  HKL      8     9    48  Fobs & SigFob =   4.2854E+01  9.9220E+00
+ #     8897  HKL     10     4    50  Fobs & SigFob =   3.7612E+01  8.5490E+00
+ #    10009  HKL     12     4    35  Fobs & SigFob =   5.5335E+01  9.2700E+00
+ DATAMAN > ty s1 1 10 0
+
+ Type : (S1) 
+ #        1  HKL      0     0    68  Fobs & SigFob =   1.3228E+02  4.4220E+00
+ #       10  HKL      0     1     2  Fobs & SigFob =   1.4859E+01  5.9550E+00
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## TWin_stats
+ calculate and print some statistics which may be (or may not be)
+    helpful in identifying twinning.  Centrics must have been
+    deduced.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > tw s1
+ Twin_stats : (S1) 
+ Nr of reflections : (       6491) 
+ Acentrics         : (       5399) 
+ Centrics          : (       1092) 
+
+     Item         Average         StDev           Min            Max   
+   ========      =========      =========      =========      =========
+   |F| all     2.21888E+02    1.51817E+02    2.35400E+01    1.77622E+03
+   |F| acn     2.18669E+02    1.40776E+02    2.72200E+01    1.26959E+03
+   |F| cen     2.37800E+02    1.96769E+02    2.35400E+01    1.77622E+03
+   |I| all     7.22826E+04    1.17248E+05    5.54132E+02    3.15496E+06
+   |I| acn     6.76340E+04    9.68559E+04    7.40928E+02    1.61186E+06
+   |I| cen     9.52670E+04    1.86275E+05    5.54132E+02    3.15496E+06
+   I*I all     1.89719E+10    1.48852E+11    3.07062E+05    9.95376E+12
+   I*I acn     1.39554E+10    6.07686E+10    5.48975E+05    2.59809E+12
+   I*I cen     4.37740E+10    3.35720E+11    3.07062E+05    9.95376E+12
+
+ <I**2>/<I>**2 for CENTRO       : (   4.823) 
+ <I**2>/<I>**2 for NON-CS       : (   3.051) 
+ <I**2>/<I>**2 for ALL          : (   3.631) 
+
+ <F**2>/<F>**2 for CENTRO       : (   1.685) 
+ <F**2>/<F>**2 for NON-CS       : (   1.414) 
+ <F**2>/<F>**2 for ALL          : (   1.468) 
+
+ Wilson ratio for CENTRO        : (   0.594) 
+ Wilson ratio for NON-CS        : (   0.707) 
+ Wilson ratio for ALL           : (   0.681) 
+ Wilson ratio non-twinned CENTRO : (   0.637) 
+ Wilson ratio non-twinned NON-CS : (   0.785) 
+ Wilson ratio 1:1-twinned NON-CS : (   0.885) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## GEmini
+ produce plots of 1N(z,alpha) for the centro- and non-centro-
+    symmetric reflections of a dataset.  The theoretical curves
+    for twinning fractions of 0.0, 0.1, 0.2, 0.3 and 0.5 are
+    plotted for comparison with your own data.  The output
+    consists of text (see below) and two PostScript files.
+ Note that the program expects the dataset to contain Fs, not Is.
+    Intenrally. Is are calculated using I ~ F*F.
+ For more info, check the two references listed in the
+    example output.
+
+ $$ <A HREF="http://xray.bmc.uu.se/cgi-bin/gerard/image_page.pl?image=usf/pics/gemini_1.gif">
+ $$ Example of a GEmini plot for non-centrosymmetric data</A>.
+
+ $$ <A HREF="http://xray.bmc.uu.se/cgi-bin/gerard/image_page.pl?image=usf/pics/gemini_2.gif">
+ $$ Example of a GEmini plot for centrosymmetric data</A>.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > gem s4 p21.ps p22.ps
+
+  REFERENCES:
+  
+  (1) D.C. Rees, "The Influence of Twinning by Merohedry on
+  Intensity Statistics", Acta Cryst A36, 578-581 (1980)
+  (2) E. Stanley, "The Identification of Twins from
+  Intensity Statistics", J Appl Cryst 5, 191-194 (1972)
+
+ Z sampled at : (   0.100    0.200    0.300    0.400    0.500    0.600    
+  0.700    0.800    0.900    1.000) 
+ ALPHA sampled at : (   0.000    0.100    0.200    0.300    0.500) 
+
+ Nr of reflections : (       7559) 
+ Acentrics         : (       6662) 
+ Centrics          : (        897) 
+
+     Item         Average         StDev           Min            Max   
+   ========      =========      =========      =========      =========
+   |I| all     1.88424E+03    2.43450E+03    1.70825E+00    4.82070E+04
+   |I| acn     1.80282E+03    2.16455E+03    1.70825E+00    2.15708E+04
+   |I| cen     2.48896E+03    3.83828E+03    3.35622E+00    4.82070E+04
+    z  all     1.00000E+00    1.29203E+00    9.06597E-04    2.55843E+01
+    z  acn     1.00000E+00    1.20064E+00    9.47541E-04    1.19650E+01
+    z  cen     1.00000E+00    1.54212E+00    1.34844E-03    1.93683E+01
+
+ DIST NON-CS : (   0.085    0.208    0.314    0.388    0.456    0.512    
+  0.560    0.602    0.637    0.669) 
+ For ALPHA = 0.00 RMSD to curve =  0.051 and SHAPE MATCH =  0.999
+ For ALPHA = 0.10 RMSD to curve =  0.081 and SHAPE MATCH =  0.994
+ For ALPHA = 0.20 RMSD to curve =  0.113 and SHAPE MATCH =  0.987
+ For ALPHA = 0.30 RMSD to curve =  0.134 and SHAPE MATCH =  0.983
+ For ALPHA = 0.50 RMSD to curve =  0.150 and SHAPE MATCH =  0.978
+ Most likely twin fraction : (   0.000) 
+
+ DIST CENTRO : (   0.171    0.279    0.379    0.445    0.517    0.562    
+  0.614    0.653    0.676    0.701) 
+ For ALPHA = 0.00 RMSD to curve =  0.039 and SHAPE MATCH =  0.997
+ For ALPHA = 0.10 RMSD to curve =  0.028 and SHAPE MATCH =  1.000
+ For ALPHA = 0.20 RMSD to curve =  0.062 and SHAPE MATCH =  0.999
+ For ALPHA = 0.30 RMSD to curve =  0.086 and SHAPE MATCH =  0.997
+ For ALPHA = 0.50 RMSD to curve =  0.103 and SHAPE MATCH =  0.996
+ Most likely twin fraction : (   0.100) 
+...
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## PY_stats
+
+ this command calculates the local intensity statistics for a dataset
+   as defined by Padilla and Yeates (JE Padilla & TO Yeates, Acta
+   Cryst D59, 1124 (2003)). You need to have calculated (a)centrics
+   before you can use this command. The only parameters are the name
+   of the dataset and the name of a PostScript plot file (this will
+   contain the cumulative distribution N(|L|) for acentric reflections
+   as a function of |L| as well as the theoretical curves for an
+   untwinned dataset and a perfectly twinned one. Read the paper
+   to find out how to use and interpret this information !
+
+ Note: pairs are only counted once. No symmetry expansion is used
+   to find neighbouring reflections. Neighbours are defined as in
+   the legend to Figure 1 in the Padilla & Yeates paper, i.e.
+   reflections that differ by -2, 0 or 2 in h, k and l (excluding
+   the reflection itself, of course). Only pairs in which the
+   first reflection is acentric are included (but the neigbours
+   may be centric or acentric).
+
+ Note: the program expects the dataset to consist of amplitudes and
+   converts these into intensities by squaring them. In other words,
+   you should NOT supply intensities or first convert amplitudes
+   to intensities yourself !
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > re m1 1chr_i4.hkl *
+ [...]
+ DATAMAN > sym m1 i4
+ [...]
+ DATAMAN > calc m1 centrics
+ [...]
+ DATAMAN > py m1 local_intensity_plot_1chr_i4.ps
+
+ REFERENCE:
+ JE Padilla & TO Yeates, Acta Cryst D59, 1124 (2003).
+
+ PY stats for Set = (M1) 
+
+ Encoding reflections ...
+ Nr of reflections : (      16012) 
+ Acentrics         : (      15574) 
+ Centrics          : (        438) 
+
+ Sorting reflections ...
+ Calculating local intensity statistics ...
+
+ <|L|> =  0.501 Untwinned =  0.500 Perfectly twinned =  0.375
+ <L^2> =  0.334 Untwinned =  0.333 Perfectly twinned =  0.200
+ Npair =       162553 SUM |L| =    81417.445 SUM L^2 =    54344.258
+
+ => XPS_GRAF - GJK (19981216/3.1.2) 
+ Opened PostScript file : (local_intensity_plot_1chr_i4.ps) 
+ Date    : (Tue Mar  2 00:03:55 2004) 
+ User    : (gerard) 
+ Program : (DATAMAN) 
+ PostScript plot file written
+ CPU total/user/sys :       1.1       1.1       0.0
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Note: my first (naive) implementation required Order(N^2) operations
+   and took 100 seconds for 15000 reflections, 370 seconds for 30000
+   reflections, etc. The present implementation is of Order (N.log(N))
+   and requires 1 second for 15000 reflections, 2 seconds for 30000
+   reflections, etc.
+
+ ## ROgue_kill
+ kill rogue reflections in any or all datasets by supplying
+    an HKL triple (rogues need to be removed before calculating
+    isomorphous or anomalous Pattersons; see the output from
+    the CCP4 program SCALEIT).  You may enter up to 5 hkl-
+    triples per ROgue_kill command.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > ro s1 1 0 67
+ Rogue_kill : (S1) 
+ Rogue : (1 0 67) 
+ ERROR --- Rogue hkl not found
+ DATAMAN > ro s1 1 0 18
+ Rogue_kill : (S1) 
+ Rogue : (1 0 18) 
+ #        9  HKL      1     0    18  Fobs & SigFob =   7.1601E+01  2.4990E+00
+ Nr of reflections now : (       9359) 
+ DATAMAN > rog s1 2 0 8  2 1 0  2 2 40 3 -1 40  3 0 2
+ Rogue_kill : (S1) 
+ Rogue : (2 0 8) 
+ #       85  HKL      2     0     8  Fobs & SigFob =   4.1400E+02  8.5320E+00
+ Nr of reflections now : (       9359) 
+...
+ Rogue : (3 0 2) 
+ #      322  HKL      3     0     2  Fobs & SigFob =   5.6135E+02  7.5750E+00
+ Nr of reflections now : (       9355) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## SIgmas FAke
+ if you don't have real sigmas, and don't want to set them to a
+   constant value, you can fake them with: Sigma = SQRT | Fobs |.
+   This can be recognised by the fact that you'll obtain a perfect
+   correlation between Sigma and Fobs/Sigma:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > fake m1
+ Fake sigmas : (M1) 
+ Faking sigmas ... Sigma = SQRT( |Fobs| )
+ DATAMAN > stats m1
+
+ Stats : (M1) 
+
+ Total number of reflections   : (     178291) 
+ Reflections with H = 0        : (          0) 
+ Reflections with K = 0        : (       2568) 
+ Reflections with L = 0        : (       2584) 
+ Reflections with Fobs < 0.01  : (          0) 
+ Reflections with SigFo < 0.01 : (          0) 
+
+   Item     Minimum     Maximum     Average        Sdv         Var 
+   ====     =======     =======     =======        ===         === 
+     H            8         106      64.231      18.690     349.301
+     K            0          77      27.748      17.823     317.664
+     L            0          77      27.577      17.625     310.646
+   Fobs   3.160E-01   1.955E+02   2.182E+01   1.627E+01   2.646E+02
+  SigFo   5.621E-01   1.398E+01   4.407E+00   1.548E+00   2.397E+00
+ Fo/Sig   5.621E-01   1.398E+01   4.407E+00   1.548E+00   2.397E+00
+
+ Correlation Fobs-SigFo   : (   0.970) 
+ Correlation Fobs-Fo/Sig  : (   0.970) 
+ Correlation SigFo-Fo/Sig : (   1.000) 
+
+ Nr of reflections      : (     178291) 
+ TEST has FLAG=1; WORK has FLAG<>1
+ Nr of WORK reflections : (     178291) 
+ Nr of TEST reflections : (          0) 
+ Percentage TEST data   : (   0.000) 
+ This is NOT an Rfree dataset
+ WARNING - fewer than 500 TEST reflections !
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## SIgmas LImit
+ reset sigmas with "strange" (negative, zero, very small or very big)
+   values
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > si lim
+ Which set ? (*) m4
+ Minimum sigma value ? (0.01) 
+ Maximum sigma value ? (1.0E30) 
+ Limit sigmas : (M4) 
+ Limiting sigmas ...
+ Minimum value : (  1.000E-02) 
+ Maximum value : (  1.000E+30) 
+ Reset < minimum : (          0) 
+ Reset > maximum : (          0) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## SIgmas CEntric_vs_acentric
+ calculates some sigma-related statistics separately for the centric
+   and acentric reflections.   This may (or may not) help you decide
+   whether or not you have any anomalous signal to write home about.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > si ce m4
+ Sigmas centric vs acentric : (M4) 
+ Nr of reflections  : (      16012) 
+ Nr with Sigma <= 0 : (          0) 
+ Nr acentric        : (      15574) 
+ <Fobs/Sigma(Fobs)> : (  40.909) 
+ <Sigma(Fobs)>      : (   8.893) 
+ Nr centric         : (        438) 
+ <Fobs/Sigma(Fobs)> : (  30.426) 
+ <Sigma(Fobs)>      : (  13.579) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## NOise
+ add random noise to your Fs.  You provide the number of resolution
+   shells, the minimum and the maximum percentage noise to be added.
+   The algorithm is trivial (as usual ;-):
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+   - divide the data in N resolution bins
+   - for every bin, calculate the average intensity (~ F**2)
+   - for every reflection in the bin:
+     o generate a random percentage change in the range provided
+     o generate a random number to decide on the sign of the change
+       (i.e., to add or subtract the noise term)
+     o calculate the change in intensity by multiplying the percentage
+       change by the average intensity in the bin
+     o if the resulting intensity is positive, then replace the
+       current F by the square root of the new intensity
+     o else, replace the old F by 1/10-th of its old value
+   - print some statistics
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Note: if you supply minimum and maximum % changes of X1 and X2,
+   the the Rm"(I) ought to be ~(X1 + X2)/2 (see the example below
+   for definitions of the various R factors).  In the example below,
+   X1 = 2.5 % and X2 = 7.5 %, and indeed Rm"(I) = 0.05 (i.e., 5%).
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > read m1 crabp.hkl
+ ...
+ DATAMAN > cell m1 42 42 202 90 90 90
+ ...
+ DATAMAN > cal m1 reso
+ ...
+ DATAMAN > noise
+ Which set ? (M1) 
+ Number of bins ? (15) 
+ Minimum % noise ? (2.5) 
+ Maximum % noise ? (7.5) 
+ Copying & encoding reflections ...
+ Sorting reflections by resolution ...
+ Nr of reflections        : (       9360) 
+ Nr of resolution shells  : (         15) 
+ Reflections per shell    : (        624) 
+ Minimum noise %          : (   2.500) 
+ Maximum noise %          : (   7.500) 
+
+ -> Real shell #    1 Resolution =   2.609 A -   2.497 A
+ Nr of reflection in shell: (        624) 
+ Average intensity        : (  1.202E+03) 
+ ...
+ -> Real shell #   15 Resolution =  32.291 A -   6.535 A
+ Nr of reflection in shell: (        625) 
+ Average intensity        : (  2.160E+04) 
+
+ Rmerge (F) = SUM |Fold-Fnew| / SUM |Fold+Fnew|
+ Value of Rmerge (F) : (   0.020) 
+ Rm" (F) = SUM |Fold-Fnew| / SUM |Fold|
+ Value of Rm" (F) : (   0.039) 
+ Rmerge (I) = SUM |Iold-Inew| / SUM |Iold+Inew|
+ Value of Rmerge (I) : (   0.025) 
+ Rm" (I) = SUM |Iold-Inew| / SUM |Iold|
+ Value of Rm" (I) : (   0.050) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## CHange_index
+ re-index your data. Supply the dataset name (or *) and
+    expressions for the new HKL, for example: H-K K+H L.
+    If you include spaces in an expression, enclose the
+    whole expression in DOUBLE quotes !
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > chan s1 h-k k+h -l
+ New H = H-K
+     H =  1*H + -1*K +  0*L
+ New K = K+H
+     K =  1*H +  1*K +  0*L
+ New L = -L
+     L =  0*H +  0*K + -1*L
+ Re-index : (S1) 
+ First reflection:      1     0     4 =>      1     1    -4
+ Nr of reflections re-indexed : (       9360) 
+ DATAMAN > chan s1 "+H +K" "k -  h" "-     l"
+ New H = +H+K
+     H =  1*H +  1*K +  0*L
+ New K = K-H
+     K = -1*H +  1*K +  0*L
+ New L = -L
+     L =  0*H +  0*K + -1*L
+ Re-index : (S1) 
+ First reflection:      1     1    -4 =>      2     0     4
+ Nr of reflections re-indexed : (       9360) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ From version 5.8.5 on, you may also use expressions such as "H+2K"
+   or "4H-2K-2L" (the numbers may be 2, 3, 4, 5, or 6).
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > ch m1 h-2k h+3k-4l 3h+2k-l
+ New H = H-2K
+     H =  1*H + -2*K +  0*L
+ New K = H+3K-4L
+     K =  1*H +  3*K + -4*L
+ New L = 3H+2K-L
+     L =  3*H +  2*K + -2*L
+ Re-index : (M1) 
+ First reflection:    -32     0     7 =>    -32   -60  -110
+ Nr of reflections re-indexed : (     100000) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## YEates
+ compare the Fobs of identical reflections in two datasets,
+    for example, a native and a putative derivative dataset.
+    Apply Wilson scaling first so that the data are on the same
+    scale. This is an alternative for the COmpare command, and
+    has the advantage that the values of the statistics are
+    not dominated by reflections with large intensity differences.
+    Instead, all reflections contribute equally. For more
+    information, see: TO Yeates, Acta Cryst A44, 142-144 (1988).
+
+ Note: you need to calculate (a)centrics for at least one of the
+    two datasets you compare.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > re m1 ssao_160_final.hkl *
+ [...]
+ DATAMAN > sym m1 p43
+ [...]
+ DATAMAN > cal m1 ce
+ [...]
+ DATAMAN > re m2 ssao_twintest_03.hkl *
+ [...]
+ DATAMAN > compar m1 m2
+ [...]
+ Rmerge = SUM |F1-S*F2| / SUM |F1+S*F2|
+ Value of Rmerge : (   0.066) 
+ CPU total/user/sys :       2.3       2.3       0.0
+ DATAMAN > yeates m1 m2
+ Comparing Set 1 = (M1) 
+       and Set 2 = (M2) 
+ Encoding reflections of set 2 ...
+ Sorting reflections of set 2 ...
+ Locating reflections of set 1 in set 2 ...
+ HKLs in set 1 : (     100858) 
+ HKLs in set 2 : (     100858) 
+ HKLs in both  : (     100858) 
+ Common centrics  : (       1605) 
+ <|H|> =  0.264  Expected identical =  0.000  Expected unrelated =  0.637
+ <H^2> =  0.170  Expected identical =  0.000  Expected unrelated =  0.500
+ Common acentrics : (      95379) 
+ <|H|> =  0.216  Expected identical =  0.000  Expected unrelated =  0.500
+ <H^2> =  0.134  Expected identical =  0.000  Expected unrelated =  0.333
+ CPU total/user/sys :       2.3       2.2       0.0
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## COmpare
+ compare the Fobs of identical reflections in two datasets,
+   for example, a native and a putative derivative dataset.
+   Apply Wilson scaling first so that the data are on the same
+   scale. See the YEates command for an alternative.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > co m1 m2
+ Comparing Set 1 = (M1) 
+       and Set 2 = (M2) 
+ Encoding reflections of set 1 ...
+ Checking reflections of set 2 ...
+ HKLs in set 1 : (       9089) 
+ HKLs in set 2 : (      16012) 
+ HKLs in both  : (       8491) 
+ Correlation coeff Fobs : (   0.994) 
+ Shape similarity  Fobs : (   0.998) 
+ RMS difference Fo1/Fo2 : (  7.643E+00) 
+ R=SUM(Fo1-Fo2)/SUM(Fo1): (  4.507E-02) 
+ R with (Fo1-S*Fo2)     : (  4.511E-02) 
+          where scale S : (  9.988E-01) 
+ R=SUM(Fo1-Fo2)/SUM(Fo2): (  4.501E-02) 
+ R with (S*Fo1-Fo2)     : (  4.511E-02) 
+          where scale S : (  1.001E+00) 
+ Rmerge = SUM |F1-S*F2| / SUM |F1+S*F2|
+ Value of Rmerge : (   0.023) 
+ CPU total/user/sys :       3.9       3.9       0.0
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## ODd_kill
+ kill all reflections which have an ODD value for one of the
+    three indices H, K or L
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > odd m1 l
+ ODD (M1) 
+ Nr of reflections before : (       9360) 
+ Kill reflection if : (L ODD) 
+ Nr of reflections after : (       4728) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## EVen_kill
+ kill all reflections which have an EVEN value for one of the
+    three indices H, K or L
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > even m1 k
+ EVEN (M1) 
+ Nr of reflections before : (       4728) 
+ Kill reflection if : (K EVEN) 
+ Nr of reflections after : (       1243) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## ABsences
+ list systematic absences.  Symmetry operators must be known.
+    Formula used (see G. Bricogne, Int. Tables): if there is a
+    (reciprocal space, i.e. transposed) symmetry operator rotation
+    matrix G, such that G(h) = h for a reflection h, then if the
+    vector product (h.t) is non-integer, the reflection is absent.
+ From version 5.6, there is an extra optional argument list_or_kill
+   (default is List); if this is given as Kill, the systematic absences
+   will be deleted from the dataset.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > re m1 acbp_8_9.hkl
+ DATAMAN > sy m1 p41.o
+ DATAMAN > abs m1
+
+ Systematic absences for : (M1) 
+ #        1 HKL      0     0    19 Fo, S(Fo) =   3.5326E+02  1.6543E+02 Test 0
+ #        3 HKL      0     0    22 Fo, S(Fo) =   5.3380E+02  2.1044E+02 Test 0
+ #        4 HKL      0     0    23 Fo, S(Fo) =   3.8094E+02  1.8028E+02 Test 0
+ #        6 HKL      0     0    25 Fo, S(Fo) =   6.1606E+02  2.6389E+02 Test 0
+ #        7 HKL      0     0    26 Fo, S(Fo) =   4.7512E+02  2.1109E+02 Test 0
+ #        8 HKL      0     0    27 Fo, S(Fo) =   4.6304E+02  2.1279E+02 Test 0
+ #        9 HKL      0     0    29 Fo, S(Fo) =   4.4480E+02  2.2093E+02 Test 0
+ ...
+ #       26 HKL      0     0    46 Fo, S(Fo) =   7.0913E+02  2.8538E+02 Test 0
+ #       27 HKL      0     0    47 Fo, S(Fo) =   8.1553E+02  3.3997E+02 Test 0
+ Nr of systematic absences : (         21) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## PArity_test
+ calculate average intensity ratios for reflections with H+K odd/even,
+   and ditto for H+L, K+L, and H+K+L.  This may help in identifying
+   missed (pseudo-)centering.  For instance, if the average intensity
+   ratio for reflections with H+K odd/even is small (say, < 0.5),
+   this means that H+K odd reflections are "systematically weak".
+   This could mean you have pseudo-C-face centering.  Similarly,
+   for H+L (B-face), and K+L (A-face).  If all three ratios are low,
+   this could indicate pseudo-F centering (all faces).  If the ratio
+   is low for H+K+L, you could have (pseudo)-I centering (body).
+
+ Ratios close to 1.0 indicate that there is
+   no (pseudo-)centering.  If there is pseudo-centering, try running
+   this option separately for the low and high resolution relfections.
+
+ From version 5.5.1, this will also look at H, K, and L odd/even to
+   detect possible A, B, or C centering.
+
+ The example below is for CBH1 (PDB code 1CEL), which has two molecules
+   related by a translation of (1/2,1/2,"almost 1/2").  If all data
+   is used, the parity test doesn't detect anything, but if only
+   low resolution data is used (to 5.0 A), the following result is
+   obtained:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > pa m1
+
+ Parity test for : (M1) 
+
+ H odd  : (       1774) 
+ H even : (       1933) 
+ <I(H odd)>  : (  3.144E+07) 
+ <I(H even)> : (  2.978E+07) 
+ Ratio : (   1.056) 
+
+ K odd  : (       1810) 
+ K even : (       1897) 
+ <I(K odd)>  : (  3.055E+07) 
+ <I(K even)> : (  3.060E+07) 
+ Ratio : (   0.999) 
+
+ L odd  : (       1801) 
+ L even : (       1906) 
+ <I(L odd)>  : (  3.036E+07) 
+ <I(L even)> : (  3.078E+07) 
+ Ratio : (   0.987) 
+
+ H+K odd  : (       1850) 
+ H+K even : (       1857) 
+ <I(H+K odd)>  : (  2.945E+07) 
+ <I(H+K even)> : (  3.169E+07) 
+ Ratio : (   0.929) 
+
+ H+L odd  : (       1855) 
+ H+L even : (       1852) 
+ <I(H+L odd)>  : (  3.016E+07) 
+ <I(H+L even)> : (  3.099E+07) 
+ Ratio : (   0.973) 
+
+ K+L odd  : (       1855) 
+ K+L even : (       1852) 
+ <I(K+L odd)>  : (  2.980E+07) 
+ <I(K+L even)> : (  3.135E+07) 
+ Ratio : (   0.950) 
+
+ H+K+L odd  : (       1843) 
+ H+K+L even : (       1864) 
+ <I(H+K+L odd)>  : (  2.325E+07) 
+ <I(H+K+L even)> : (  3.781E+07) 
+ Ratio : (   0.615) 
+ (Pseudo) I (body) centering ???
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## SPecial
+ list special reflections; supply the set name and the HKL-type.
+    The latter can be 000, h00, 0k0, 00l, hk0, h0l, or 0kl, but NOT
+    hkl since this would list ALL reflections.
+ In the example below, it helps us decide whether out spacegroup
+    is P2 (no special conditions) or P21 (ok0, k even).
+ Note that there are two 0k0 reflections with k odd, but they
+    have an F/Sigma ratio which is a factor ten lower than that
+    of the 0k0/k=2n reflections.  In this case, we would put our
+    money on P21.
+ From version 2.3.1 onwards, you may also enter things like
+    0kk, hhh, hhl etc.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > sp s1 0k0
+
+ Special  : (S1) 
+ HKL-type : (0K0) 
+ #       59 HKL      0     3     0 F,SigF,ratio =   1.3980E+00  3.5300E-01  3.9603E+00
+ #      104 HKL      0     5     0 F,SigF,ratio =   1.4160E+00  5.8300E-01  2.4288E+00
+ #      126 HKL      0     6     0 F,SigF,ratio =   1.4403E+01  7.0400E-01  2.0459E+01
+ #      171 HKL      0     8     0 F,SigF,ratio =   3.1996E+01  1.2590E+00  2.5414E+01
+ #      214 HKL      0    10     0 F,SigF,ratio =   3.1006E+01  1.0100E+00  3.0699E+01
+ #      254 HKL      0    12     0 F,SigF,ratio =   4.2625E+01  2.3080E+00  1.8468E+01
+ #      287 HKL      0    14     0 F,SigF,ratio =   6.1280E+01  1.7350E+00  3.5320E+01
+ #      315 HKL      0    16     0 F,SigF,ratio =   2.4026E+01  4.2400E-01  5.6665E+01
+ #      338 HKL      0    18     0 F,SigF,ratio =   3.3270E+01  1.1540E+00  2.8830E+01
+ #      355 HKL      0    20     0 F,SigF,ratio =   1.1321E+01  6.0200E-01  1.8806E+01
+ #      371 HKL      0    22     0 F,SigF,ratio =   5.0230E+00  9.8400E-01  5.1047E+00
+ Reflections listed : (         11) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > sp m1 hhh
+
+ Special  : (M1) 
+ HKL-type : (HHH) 
+ #        1 HKL      1     1     1 Fo,S(Fo),F/S =   6.7440E+01  3.7160E+01  1.8149E+00 Test 0
+ #       97 HKL      4     4     4 Fo,S(Fo),F/S =   4.3735E+03  8.5220E+01  5.1320E+01 Test 0
+ #      202 HKL      5     5     5 Fo,S(Fo),F/S =   6.1027E+03  1.1165E+02  5.4659E+01 Test 0
+ #      333 HKL      6     6     6 Fo,S(Fo),F/S =   9.7983E+03  1.1443E+02  8.5627E+01 Test 0
+ #      486 HKL      7     7     7 Fo,S(Fo),F/S =   1.4471E+04  3.0876E+02  4.6868E+01 Test 0
+ #      655 HKL      8     8     8 Fo,S(Fo),F/S =   3.0938E+03  1.9367E+02  1.5974E+01 Test 0
+ #      846 HKL      9     9     9 Fo,S(Fo),F/S =   2.1958E+03  2.8935E+02  7.5887E+00 Test 0
+ #     1055 HKL     10    10    10 Fo,S(Fo),F/S =   8.3374E+03  2.2009E+02  3.7882E+01 Test 0
+ #     1284 HKL     11    11    11 Fo,S(Fo),F/S =   1.5704E+03  1.5677E+02  1.0017E+01 Test 0
+ #     1532 HKL     12    12    12 Fo,S(Fo),F/S =   1.6947E+03  1.9054E+02  8.8942E+00 Test 0
+ #     1799 HKL     13    13    13 Fo,S(Fo),F/S =   2.6416E+03  1.5287E+02  1.7280E+01 Test 0
+ #     2080 HKL     14    14    14 Fo,S(Fo),F/S =   2.5434E+03  1.6720E+02  1.5212E+01 Test 0
+ #     2376 HKL     15    15    15 Fo,S(Fo),F/S =   7.1494E+02  3.5679E+02  2.0038E+00 Test 0
+ #     2686 HKL     16    16    16 Fo,S(Fo),F/S =   9.9648E+02  4.1290E+02  2.4134E+00 Test 0
+ Reflections listed : (         14) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## MUltiplicity
+ quickly check the redundancy of a dataset. Of course, for a merged
+   dataset the redundancy should be 1.0
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > re m1 d175a.hkl hkl
+ [...]
+ DATAMAN > mu *
+
+ Multiplicity : (M1) 
+ Encoding reflections ...
+ Sorting reflections ...
+ Checking reflections ...
+
+ Total nr of reflections : (      22335) 
+ Unique reflections      : (      21622) 
+ Average redundancy      : (   1.033) 
+ Maximum redundancy      : (       2) 
+ WARNING - Redundant reflections !!!
+
+      Redundancy  Nr of unique reflections
+      ----------  ------------------------
+          1                     20909
+          2                       713
+
+ Multiplicity : (M2) 
+ Encoding reflections ...
+ Sorting reflections ...
+ Checking reflections ...
+
+ Total nr of reflections : (      16975) 
+ Unique reflections      : (      16975) 
+ Average redundancy      : (   1.000) 
+ Maximum redundancy      : (       1) 
+
+      Redundancy  Nr of unique reflections
+      ----------  ------------------------
+          1                     16975
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## RSym_hkl_khl
+ quickly check if the crystal which you processed in pointgroup P3,
+     P4, I4 or P6 could perhaps be of higher symmetry (e.g., P41212
+     instead of P41).  Rsym for HKL and KHL reflections is calculated
+     on Fs and Is (assuming I=F*F).
+ In the following example, the data was processed in I4 (Rmerge ~0.10),
+     but can actually be reduced to I422 with an even lower Rsym (I) of
+     0.067:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > rsym m2
+ Rsym (hkl,khl) : (M2) 
+ Encoding reflections ...
+ Checking reflections ...
+
+ Total nr of reflections   : (      16012) 
+ Nr of HHL reflections     : (        438) 
+ Nr of single observations : (       1728) 
+ Nr of HKL & KHL observ.   : (       6923) 
+ Nr of reduced reflections : (       9089) 
+
+ Correlation coeff Fobs : (   0.966) 
+ Shape similarity  Fobs : (   0.991) 
+ RMS difference Fhk/Fkh : (  1.693E+01) 
+ R=SUM(Fhk-Fkh)/SUM(Fhk): (  1.071E-01) 
+ R with (Fhk-S*Fkh)     : (  1.070E-01) 
+          where scale S : (  1.003E+00) 
+ R=SUM(Fhk-Fkh)/SUM(Fkh): (  1.074E-01) 
+ R with (S*Fhk-Fkh)     : (  1.070E-01) 
+          where scale S : (  9.972E-01) 
+
+ Rmerge (F) = SUM |Fhkl-Fkhl| / SUM |Fhkl+Fkhl|
+ Value of Rmerge (F) : (   0.054) 
+
+ Rmerge (I) = SUM |Ihkl-Ikhl| / SUM |Ihkl+Ikhl|
+ Approximation: I = F*F
+ Value of Rmerge (I) : (   0.067) 
+ CPU total/user/sys :       5.0       5.0       0.0
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## RInt
+ a more general version of the RSym command which will calculate the
+   internal Rsym (Rint) for a dataset in any Laue group.  Two possible
+   uses of this command:
+ - if you want to check if you could have higher symmetry than you
+   previously assumed; in that case: REad the dataset, use SYmmetry
+   to give the operator of the higher symmetry point group;  generate
+   the LAue group's asymmetric unit of reflections (this will yield
+   two or more copies for many reflections), and use the RInt
+   command to see how well symmetry-related reflections merge
+ - if you have processed your data in P1, and you want to find the
+   highest symmetry point group in which it can be merged with
+   reasonable statistics
+ The merging Rint value is calculated on Is (approximated by I = F**2),
+   so if your data already consists of Is, convert them into Fs
+   first (with: CAlc set_name I2F) !
+ Note that DATAMAN does not actually merge multiple observations.  If
+   you find the correct Laue group, you should go back to your original
+   data after processing, and re-merge in the new point group.
+
+ In the following example, data was processed in point group 222,
+   but a check is made to see if the data could really be in a
+   cubic spacegroup P2x3.  The Rint value is 4.5 % so that it
+   seems rather likely that the real symmetry is cubic.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > re m1 p222_32a.hkl
+ ...
+ DATAMAN > symm m1 p23 
+ ...
+ DATAMAN > la m2 m1 14
+ Laue old set : (M1) 
+      New set : (M2) 
+ HKLs in old set : (       7698) 
+ HKLs in new set : (       7698) 
+ HKLs in the new set are UNSORTED !
+ ...
+ DATAMAN > rint m2
+ Rint : (M2) 
+ Maximum multiplicity : (       1000) 
+ Encoding reflections ...
+ Calculating Rint ...
+
+ Nr of reflexions with multiplicity   1 =         60
+ Nr of reflexions with multiplicity   2 =        861
+ Nr of reflexions with multiplicity   3 =       1972
+
+ Nr of reflections : (       7698) 
+ Nr of single obs  : (         60) 
+ Nr of mult obs    : (       2833) 
+   times they occur: (       7698) 
+ Nr of unique refl : (       2893) 
+
+            Sum(hkl) Sum(i) | I - <I> |
+ Rint (I) = ---------------------------
+                Sum(hkl) Sum(i) |I|
+
+ Sum(hkl) Sum(i) | I - <I> | : (  2.462E+10) 
+ Sum(hkl) Sum(i) |I|         : (  5.497E+11) 
+
+ Value of Rint (I) : (   0.045) 
+ CPU total/user/sys :       1.5       1.5       0.0
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Higher symmetry that really isn't there will manifest itself in
+   a very high value (typically > 0.50) for Rint.  For example,
+   if the same data from the previous example is expanded into
+   P1, and then mapped into point group 3, Rint is 63.4%:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > re m1 p222_32a.hkl
+ ...
+ DATAMAN > sy m1 p222
+ ...
+ DATAMAN > la m2 m1 1
+ Laue old set : (M1) 
+      New set : (M2) 
+ HKLs in old set : (       7698) 
+ HKLs in new set : (      28827) 
+ ...
+ DATAMAN > sy m2 p3
+ ...
+ DATAMAN > la m3 m2 9
+ Laue old set : (M2) 
+      New set : (M3) 
+ HKLs in old set : (      28827) 
+ HKLs in new set : (      29340) 
+ ...
+ DATAMAN > ri m3
+ Rint : (M3) 
+ Maximum multiplicity : (       1000) 
+ Encoding reflections ...
+ Calculating Rint ...
+
+ Nr of reflexions with multiplicity   1 =       8037
+ Nr of reflexions with multiplicity   2 =       3460
+ Nr of reflexions with multiplicity   3 =       4794
+
+ Nr of reflections : (      29340) 
+ Nr of single obs  : (       8037) 
+ Nr of mult obs    : (       8254) 
+   times they occur: (      21302) 
+ Nr of unique refl : (      16291) 
+
+            Sum(hkl) Sum(i) | I - <I> |
+ Rint (I) = ---------------------------
+                Sum(hkl) Sum(i) |I|
+
+ Sum(hkl) Sum(i) | I - <I> | : (  1.108E+12) 
+ Sum(hkl) Sum(i) |I|         : (  1.746E+12) 
+
+ Value of Rint (I) : (   0.634) 
+ CPU total/user/sys :      22.5      22.5       0.0
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ In the following example, a dataset processed in I4 is checked to
+   see if it could be I422 (in this case, the RSym command could
+   have been used as well).  Again, this would appear to be the case.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > re m1 ../test_i4.hkl
+ ...
+ DATAMAN > sy m1 i422
+ ...
+ DATAMAN > la m2 m1 8
+ Laue old set : (M1) 
+      New set : (M2) 
+ HKLs in old set : (      16012) 
+ HKLs in new set : (      16012) 
+ ...
+ DATAMAN > ri m2
+ Rint : (M2) 
+ Maximum multiplicity : (       1000) 
+ Encoding reflections ...
+ Calculating Rint ...
+
+ Nr of reflexions with multiplicity   1 =       2166
+ Nr of reflexions with multiplicity   2 =       6923
+
+ Nr of reflections : (      16012) 
+ Nr of single obs  : (       2166) 
+ Nr of mult obs    : (       6923) 
+   times they occur: (      13846) 
+ Nr of unique refl : (       9089) 
+
+            Sum(hkl) Sum(i) | I - <I> |
+ Rint (I) = ---------------------------
+                Sum(hkl) Sum(i) |I|
+
+ Sum(hkl) Sum(i) | I - <I> | : (  1.493E+07) 
+ Sum(hkl) Sum(i) |I|         : (  2.220E+08) 
+
+ Value of Rint (I) : (   0.067) 
+ CPU total/user/sys :       8.0       8.0       0.0
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ In the following example, data in P1 is taken to see if it could be
+   merged in P2 (in this case, two of the three angles should be very
+   close to 90 degrees; if the remaining one is the alpha angle,
+   re-index; if it's beta, use Laue group 4; if it's gamme, use
+   Laue group 5).  In this case, it does not look like P2 data.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > re m1 ../d175a.hkl
+ ...
+ DATAMAN > sy m1 p2
+ ...
+ DATAMAN > la m2 m1 4
+ Laue old set : (M1) 
+      New set : (M2) 
+ HKLs in old set : (      22335) 
+ HKLs in new set : (      22335) 
+ ...
+ DATAMAN > ri m2
+ Rint : (M2) 
+ Maximum multiplicity : (       1000) 
+ Encoding reflections ...
+ Calculating Rint ...
+
+ Nr of reflexions with multiplicity   1 =       9388
+ Nr of reflexions with multiplicity   2 =       6020
+ Nr of reflexions with multiplicity   3 =         66
+ Nr of reflexions with multiplicity   4 =        177
+
+ Nr of reflections : (      22335) 
+ Nr of single obs  : (       9388) 
+ Nr of mult obs    : (       6263) 
+   times they occur: (      12946) 
+ Nr of unique refl : (      15651) 
+
+            Sum(hkl) Sum(i) | I - <I> |
+ Rint (I) = ---------------------------
+                Sum(hkl) Sum(i) |I|
+
+ Sum(hkl) Sum(i) | I - <I> | : (  1.809E+06) 
+ Sum(hkl) Sum(i) |I|         : (  3.486E+06) 
+
+ Value of Rint (I) : (   0.519) 
+ CPU total/user/sys :      15.3      15.3       0.0
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ 
+ ## RAmp_odl
+ generate an ODL file for O which, when displayed, shows your
+    reciprocal lattice.  Individual reflections may be colour
+    ramped according to Fobs, Sigma, Fobs/Sigma or resolution.
+
+ $$ <A HREF="http://xray.bmc.uu.se/cgi-bin/gerard/image_page.pl?image=usf/pics/reclat.jpg">
+ $$ Example of a RAmp ODL file displayed in O</A>.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > ra
+ Command > (ra) 
+ Which set ? (M1) 
+ ODL file name ? (reciprocal_lattice.odl) q.odl
+ Colour ramping criterion [FOB|SIG|F/S|RES|NONe] ? (RES) f/s
+ Ramp_odl : (M1) 
+ ODL file : (q.odl) 
+ Ramp by  : (F/S) 
+ Max Abs (HKL) = (         43) 
+ Ramp by Fobs / Sigma(Fobs)
+ Minimum : (  2.013E+00) 
+ Maximum : (  1.206E+02) 
+ Will do colour ramping:
+ From BLUE for low  values
+ To   RED  for high values
+ ODL file written
+ CPU total/user/sys :       3.5       3.3       0.2
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ To display the object in O, do the following:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+  O > centre_xyz 0 0 0
+  O > draw q.odl
+ As3> O descriptor in computer file system
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** RFREE TEST SET COMMANDS
+
+ ## RFree INit
+ initialise the random number generator used for assigning Rfree
+    flags.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > rf in 620605
+ => Random number generator initialised with seed :     620605
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## RFree LIst
+ show info about Rfree flags for one or more datasets.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > rf li *
+ Rfree : (M1) 
+ Nr of WORK reflections : (       2615) 
+ Nr of TEST reflections : (        265) 
+ Percentage TEST data : (   9.201) 
+ This is an Rfree dataset
+...
+ Rfree : (M5) 
+ Nr of WORK reflections : (       6723) 
+ Nr of TEST reflections : (          0) 
+ Percentage TEST data : (   0.000) 
+ This is NOT an Rfree dataset
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## RFree SUggest
+ this command can help you decide how many reflections (or what fraction)
+   to set aside for cross-validation purposes. It lists for 1%, 2%, ...
+   15% test sets how many reflections this corresponds to, and what the
+   estimated relative error in the Rfree values will be, and then
+   does the same but assuming test sets of 500, 600, ... 2500 reflections.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > rf su m1
+
+ Total nr of reflections : (      22335) 
+
+ This command can help you decide how many, or
+ what fraction of reflections should be set aside
+ for cross-validation purposes. An estimate of the
+ relative error in Rfree is provided, calculated as
+ 1 / SQRT (Nr HKLs).
+
+     % HKLs    Nr HKLs   Rel. error
+          1        223      0.067
+          2        447      0.047
+          3        670      0.039
+          4        893      0.033
+          5       1117      0.030
+          6       1340      0.027
+          7       1563      0.025
+          8       1787      0.024
+          9       2010      0.022
+         10       2234      0.021
+         11       2457      0.020
+         12       2680      0.019
+         13       2904      0.019
+         14       3127      0.018
+         15       3350      0.017
+
+    Nr HKLs     % HKLs   Rel. error
+        500       2.24      0.045
+        600       2.69      0.041
+        700       3.13      0.038
+        800       3.58      0.035
+        900       4.03      0.033
+       1000       4.48      0.032
+       1100       4.93      0.030
+       1200       5.37      0.029
+       1300       5.82      0.028
+       1400       6.27      0.027
+       1500       6.72      0.026
+       1600       7.16      0.025
+       1700       7.61      0.024
+       1800       8.06      0.024
+       1900       8.51      0.023
+       2000       8.95      0.022
+       2100       9.40      0.022
+       2200       9.85      0.021
+       2300      10.30      0.021
+       2400      10.75      0.020
+       2500      11.19      0.020
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## RFree GEnerate
+ set Rfree flags for a given percentage (approximately) of the
+    reflections.  If you provide a "percentage" > 100, the program
+    assumes you have given it an approximate *number* of test set
+    reflections and will convert it to a percentage.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > rf gen m2 5
+ Rfree generate: (M2) 
+ Nr of WORK reflections : (       6381) 
+ Nr of TEST reflections : (        342) 
+ Percentage TEST data : (   5.087) 
+ This is an Rfree dataset
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## RFree SHell
+ a different, non-random way of selecting TEST reflections.  In cases
+    with NCS, there will be "NCS-related" reflections, some of which
+    will be in the test set, and others in the WORK set.  This gives
+    rise to too small differences between R and Rfree since the
+    "NCS-related" reflections in the WORK set have phase/amplitude
+    relations with their cousins in the TEST set.
+ This command takes a different approach: it selectively "excises"
+    thin shells of reflections (since "NCS-related" reflections will
+    have similar resolution).  You supply a global percentage of TEST
+    data and the number of resolution bins to use.  For each bin, the
+    reflections in the centre (forming a shell) will be flagged as
+    TEST reflections.
+ You must have calculated the resolution first.  If reflections
+    had been partitioned previously, use the RFree REset command
+    first.
+ If you provide a "percentage" > 100, the program assumes you have
+    given it an approximate *number* of test set reflections and will
+    convert it to a percentage.
+
+ Reference: GJ Kleywegt & TA Jones, Structure 3, 535-540.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > rf sh
+ Which set ? (*) m1
+ Percentage TEST data ? (10.00000) 8
+ Number of resolution bins ? (          15) 
+ Rfree shell: (M1) 
+ Encoding reflections of this set ...
+ Sorting reflections by resolution ...
+ Nr of reflections        : (       9360) 
+ Nr of resolution shells  : (         15) 
+ Reflections per shell    : (        624) 
+ Percentage TEST reflect. : (   8.000) 
+ Test reflections / shell : (         49) 
+
+ -> Real shell #    1 Resolution =   2.59 A -   2.50 A
+    TEST Shell #    1 Resolution =   2.55 A -   2.54 A
+    First HKL =     16    -1    13
+    Last  HKL =     11    -6    51
+
+ -> Real shell #    2 Resolution =   2.68 A -   2.59 A
+    TEST Shell #    2 Resolution =   2.64 A -   2.63 A
+    First HKL =     11    11    11
+    Last  HKL =     11    -1    55
+
+ ...
+
+ -> Real shell #   15 Resolution =  32.09 A -   6.47 A
+    TEST Shell #   15 Resolution =   8.29 A -   7.97 A
+    First HKL =      5     0     0
+    Last  HKL =      4     3     7
+
+ Nr of WORK reflections : (       8595) 
+ Nr of TEST reflections : (        765) 
+ Percentage TEST data : (   8.173) 
+ This is an Rfree dataset
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## RFree COmplete
+ generate X-PLOR Rfree reflection files for complete cross-validation
+    purposes.  You provide the set name, the number of datasets (10 for
+    10 % partitionings, 20 for 5 % partitionings, etc.), and the base
+    file name (to which the number of the partitioning and the file
+    name extension ".rxplor" will be added.
+ This command will give you N copies of your reflection data set,
+    such that none of the test sets in them have any reflections in
+    common, and each of the reflections is flagged as a TEST set
+    reflection in exactly one of the N files.
+ Afterwards, the previous set of Rfree flags is restored.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > rfr com
+ Which set ? (M1) 
+ Number of partitionings ? (10) 
+ Basename for output files ? (complete_xval_) xvalid_
+ Test set  1 #hkl =     1023 =     9.84 %
+ ... file name = xvalid_1.rxplor
+ File   : (xvalid_1.rxplor) 
+ Type   : (RXPLOR) 
+ Format : ((' INDEX=',3i6,' FOBS=',f10.3,' SIGMA=',f10.3,' TEST=',i3)) 
+ Nr of reflections written : (      10393) 
+ Test set  2 #hkl =     1036 =     9.97 %
+ ... file name = xvalid_2.rxplor
+ File   : (xvalid_2.rxplor) 
+ Type   : (RXPLOR) 
+ Format : ((' INDEX=',3i6,' FOBS=',f10.3,' SIGMA=',f10.3,' TEST=',i3)) 
+ Nr of reflections written : (      10393) 
+ ...
+ Test set 10 #hkl =     1043 =    10.04 %
+ ... file name = xvalid_10.rxplor
+ File   : (xvalid_10.rxplor) 
+ Type   : (RXPLOR) 
+ Format : ((' INDEX=',3i6,' FOBS=',f10.3,' SIGMA=',f10.3,' TEST=',i3)) 
+ Nr of reflections written : (      10393) 
+ Total nr of reflexions : (      10393) 
+ Total TEST  reflexions : (      10393) 
+ Nr of WORK reflections : (      10393) 
+ Nr of TEST reflections : (          0) 
+ Percentage TEST data : (   0.000) 
+ This is NOT an Rfree dataset
+ CPU total/user/sys :      30.2      29.6       0.6
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## RFree GSheldrick
+ provided for compatibility with SHELXL in which every N-th
+    reflection is kept aside for the TEST set (N being 10 at present).
+    You provide the number "N", e.g. N=10 will give a 10 % TEST set,
+    N=50 will give a 2 % TEST set, etc.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > rf gs m1 10
+ Nr of WORK reflections : (       9354) 
+ Nr of TEST reflections : (       1039) 
+ Percentage TEST data : (   9.997) 
+ This is an Rfree dataset
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## RFree SPhere
+ thanks to the G-function there are almost always reflections in
+    the WORK set which are directly related to a TEST set reflection.
+ This phenomenon is particularly obvious in the case of NCS, but
+    even in its absence (due to the presence of flat solvent) it will
+    occur.  This option derives from discussions with Peter Metcalf,
+    Randy Read and Axel Brunger.  It selects small spheres of
+    reflections for the TEST set.  You provide the percentage of
+    TEST data and the radius of the sphere (in reciprocal lattice
+    points).  Reflections will be selected at random, and all
+    reflections within a sphere around it will also be flagged.
+    Probably a sphere radius of 1 or 2 will suffice for government
+    work, although in cases of large cells and/or high solvent
+    content you may need a larger radius.
+ Note that this option does *not* take the G-function for "NCS-
+    related" reflections into account (yet ?).
+ If you provide a "percentage" > 100, the program assumes you have
+    given it an approximate *number* of test set reflections and will
+    convert it to a percentage.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > rf sp m1 10 1
+ Encoding reflections ...
+ Nr of TEST spheres : (        165) 
+ Nr of WORK reflections : (       9350) 
+ Nr of TEST reflections : (       1043) 
+ Percentage TEST data : (  10.036) 
+ This is an Rfree dataset
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## RFree TRansfer
+ transfer TEST flags from one dataset to the next.  This would
+    in my view only be necessary if you never use Simulated
+    Annealing to uncouple R and Rfree, and when you move from
+    refining a native at 1.8 A to a complex at 2.8 A, for instance.
+    In that case, read your native data with TEST flags, and your
+    complex data without, and use this command to transfer the
+    flags from the native to the complex data set.
+ Note that this is not sufficient if the situation is such that
+    you move to *higher* resolution !  In that case, read your new
+    high-resolution dataset in twice, calculate the resolution,
+    and for one of them kill all data higher than the previous
+    resolution limit, transfer the flags from the low-resolution
+    data set to it, and save it (this assumes that both dataset
+    have similar low-resolution cut-offs and completeness !).  For
+    the other copy, kill all data below the old low-resolution
+    limit, and generate TEST flags for the remaining, new data.
+ Finally, merge the files (e.g., using the Unix command "cat").
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > rf tr m2 m1
+ Transferring TEST flags FROM : (M1) 
+ Nr of WORK reflections : (      52310) 
+ Nr of TEST reflections : (       2784) 
+ Percentage TEST data : (   5.053) 
+ This is an Rfree dataset
+ TO : (M2) 
+ Nr of WORK reflections : (      47476) 
+ Nr of TEST reflections : (          0) 
+ Percentage TEST data : (   0.000) 
+ This is NOT an Rfree dataset
+ Encoding reflections ...
+ Transferring flags ...
+ Nr of WORK reflections : (      45115) 
+ Nr of TEST reflections : (       2361) 
+ Percentage TEST data : (   4.973) 
+ This is an Rfree dataset
+ CPU total/user/sys :      11.2      11.1       0.0
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## RFree ADjust
+ change the percentage of TEST reflections.  If the new percentage is
+   smaller than the current one, an appropriate fraction of the TEST
+   reflections will be selected at random and turned into WORK
+   reflections.  If the new percentage is greater than the current one,
+   an appropriate fraction of WORK reflections will be selected at
+   random and turned into TEST reflections.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > re m1 racr2_hi_p212121_rfree.xplor xplor
+ ...
+ Percentage TEST data   : (  10.192) 
+ This is an Rfree dataset
+ DATAMAN > rf ad m1 5.0
+ Nr of WORK reflections : (      13182) 
+ Nr of TEST reflections : (       1496) 
+ Percentage TEST data   : (  10.192) 
+ Requested percentage   : (   5.000) 
+ Actual new percentage  : (   4.967) 
+ Nr of WORK reflections : (      13949) 
+ Nr of TEST reflections : (        729) 
+ Percentage TEST data   : (   4.967) 
+ This is an Rfree dataset
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## RFree BIn_list
+ list the number and percentage of TEST reflections in resolution
+   shells.  Can be used to check if there are resolution ranges
+   that are "underpopulated" in terms of TEST reflections.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > rf bin m2 10
+ 4*(sin(theta)/lambda)**2 min : (  1.005E-02) 
+ 4*(sin(theta)/lambda)**2 max : (  2.048E-01) 
+ Nr of bins : (         10) 
+ Bin size   : (  1.947E-02) 
+
+   Bin   4STOLSQ limits     Resol limits    Nrefl  Ntest  %test
+     1   0.0100  0.0295    9.975   5.820      561     53   9.45
+     2   0.0295  0.0490    5.820   4.518      940    100  10.64
+     3   0.0490  0.0685    4.518   3.822     1305    125   9.58
+     4   0.0685  0.0879    3.822   3.372     1658    165   9.95
+     5   0.0879  0.1074    3.372   3.051     1952    202  10.35
+     6   0.1074  0.1269    3.051   2.807     2145    203   9.46
+     7   0.1269  0.1464    2.807   2.614     2260    220   9.73
+     8   0.1464  0.1658    2.614   2.456     2446    286  11.69
+     9   0.1658  0.1853    2.456   2.323     2498    252  10.09
+    10   0.1853  0.2048    2.323   2.210     2554    267  10.45
+
+ Nr of WORK reflections : (      16446) 
+ Nr of TEST reflections : (       1889) 
+ Percentage TEST data   : (  10.303) 
+ This is an Rfree dataset
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## RFree FIll_bins
+ add TEST reflections to resolution shells that contain too few of
+   them.  This can happen when you tranfer Rfree flags from a
+   low-resolution or incomplete dataset to a new high-resolution
+   and/or more complete one.  This command can also be used (together
+   with RFree CUt_bins) to obtain a TEST set which is almost
+   uniform in size (percentage) in all resolution shells (in that
+   case, use the two commands alternatively, and repeatedly, and
+   use a large number of bins).
+ In the example below, Rfree flags were transfered from a nearly
+   complete, but low-resolution (3.2 A) dataset, to a new 2.2 A
+   dataset (which was less complete in the low-resolution shells,
+   but did not merge well with the 3.2 A dataset).  The RFree
+   FIll_bins command is used to augment the TEST set.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > rf fi m2 10.0 15
+ 4*(sin(theta)/lambda)**2 min : (  1.005E-02) 
+ 4*(sin(theta)/lambda)**2 max : (  2.048E-01) 
+ Nr of bins : (         15) 
+ Bin size   : (  1.298E-02) 
+ Filling up bins ...
+
+   Bin   4STOLSQ limits     Resol limits    Nrefl  Ntest  %test New Ntest & %
+     1   0.0100  0.0230    9.975   6.589      320     29   9.06     30   9.38
+     2   0.0230  0.0360    6.589   5.269      535     53   9.91     53   9.91
+     3   0.0360  0.0490    5.269   4.518      646     52   8.05     63   9.75
+     4   0.0490  0.0620    4.518   4.017      835     78   9.34     86  10.30
+     5   0.0620  0.0750    4.017   3.652     1010    103  10.20    103  10.20
+     6   0.0750  0.0879    3.652   3.372     1118    116  10.38    116  10.38
+     7   0.0879  0.1009    3.372   3.148     1299     79   6.08    127   9.78
+     8   0.1009  0.1139    3.148   2.963     1343      0   0.00    134   9.98
+     9   0.1139  0.1269    2.963   2.807     1455      0   0.00    133   9.14
+    10   0.1269  0.1399    2.807   2.674     1513      0   0.00    152  10.05
+    11   0.1399  0.1529    2.674   2.558     1574      0   0.00    164  10.42
+    12   0.1529  0.1658    2.558   2.456     1619      0   0.00    169  10.44
+    13   0.1658  0.1788    2.456   2.365     1680      0   0.00    157   9.35
+    14   0.1788  0.1918    2.365   2.283     1673      0   0.00    184  11.00
+    15   0.1918  0.2048    2.283   2.210     1699      0   0.00    168   9.89
+
+ Nr of WORK reflections : (      16480) 
+ Nr of TEST reflections : (       1855) 
+ Percentage TEST data   : (  10.117) 
+ This is an Rfree dataset
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## RFree CUt_bins
+ this command does the opposite of RFree FIll_bins, in that it removes
+   TEST reflections from shells that contain too may of them.  This
+   may happen if you transfer TEST flags from a complete to a less
+   complete dataset, for instance.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > rf cu m1 10 10
+ 4*(sin(theta)/lambda)**2 min : (  9.897E-03) 
+ 4*(sin(theta)/lambda)**2 max : (  9.623E-02) 
+ Nr of bins : (         10) 
+ Bin size   : (  8.633E-03) 
+ Cutting down bins ...
+
+   Bin   4STOLSQ limits     Resol limits    Nrefl  Ntest  %test New Ntest & %
+     1   0.0099  0.0185   10.052   7.346      331     35  10.57     30   9.06
+     2   0.0185  0.0272    7.346   6.067      508     50   9.84     50   9.84
+     3   0.0272  0.0358    6.067   5.285      626     70  11.18     66  10.54
+     4   0.0358  0.0444    5.285   4.744      671     69  10.28     62   9.24
+     5   0.0444  0.0531    4.744   4.341      759    100  13.18     65   8.56
+     6   0.0531  0.0617    4.341   4.026      856    102  11.92     89  10.40
+     7   0.0617  0.0703    4.026   3.771      903    116  12.85     94  10.41
+     8   0.0703  0.0790    3.771   3.559      940    141  15.00     92   9.79
+     9   0.0790  0.0876    3.559   3.379     1010    135  13.37     97   9.60
+    10   0.0876  0.0962    3.379   3.224     1082    156  14.42    114  10.54
+
+ Nr of WORK reflections : (       6939) 
+ Nr of TEST reflections : (        759) 
+ Percentage TEST data   : (   9.860) 
+ This is an Rfree dataset
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## RFree MUlti
+ generate multiple test-set flags. With this command you can generate
+   test flags 1, 2, 3, 4, .... You tell the program how many test sets
+   you want, and if you want to assign test flags systematically
+   (1,2,3,...) or at random. (Note: most output formats will replace
+   all non-unit test flags by zero, but not thge output formats CNS
+   and RFREE.)
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > rf mu m1 10 rand
+ Command > (rf mu m1 10 rand) 
+ Flag =      1 for     5857 reflections (  9.96 %)
+ Flag =      2 for     5908 reflections ( 10.05 %)
+ Flag =      3 for     5811 reflections (  9.89 %)
+ Flag =      4 for     5900 reflections ( 10.04 %)
+ Flag =      5 for     5919 reflections ( 10.07 %)
+ Flag =      6 for     5891 reflections ( 10.02 %)
+ Flag =      7 for     5864 reflections (  9.98 %)
+ Flag =      8 for     5833 reflections (  9.92 %)
+ Flag =      9 for     5971 reflections ( 10.16 %)
+ Flag =     10 for     5825 reflections (  9.91 %)
+ TEST has FLAG=1; WORK has FLAG<>1
+ Nr of WORK reflections : (      52922) 
+ Nr of TEST reflections : (       5857) 
+ Percentage TEST data   : (   9.964) 
+ This is an Rfree dataset
+ WARNING - more than 3000 TEST reflections !
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## RFree REset
+ reset all Rfree flags to zero, i.e. no data in the Rfree-test set.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > rf res m2
+ Rfree reset: (M2) 
+ Nr of WORK reflections : (       6723) 
+ Nr of TEST reflections : (          0) 
+ Percentage TEST data : (   0.000) 
+ This is NOT an Rfree dataset
+ DATAMAN > rf ge m2 7.5
+ Rfree generate: (M2) 
+ Nr of WORK reflections : (       6214) 
+ Nr of TEST reflections : (        509) 
+ Percentage TEST data : (   7.571) 
+ This is an Rfree dataset
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** PLOT COMMANDS
+
+ ## SCatter_plot
+ plot a reflection property versus another for ALL reflections
+    in a dataset.  If you have Rfree flags set, you will get
+    two curves in different colours and a comparison of average
+    values etc. of the properties can be made from the output.
+ Plot the files with O2D using the SCatter command in a 1D
+    plot window (or convert them to PostScript format straightaway).
+
+ The variables may be:
+ FOB = Fobs, SIG = Sigma(Fobs),
+ F/S = Fobs/Sigma(Fobs), INT = Fobs^2,
+ I/S = Fobs^2/Sigma(Fobs)^2, RES = resolution,
+ 1/R = 1/resolution, STL = sin(theta)/lambda,
+ DST = 4(STL^2)
+
+ For instance, to plot the ratio of Fobs over Sigma(Fobs) as
+    a function of sin(theta)/lambda, type something like:
+      scat m1 fos_stl.plt stl f/s,
+    i.e.: dataset name, plot file name, variable for the horizontal
+    axis and variable for the vertical axis.
+
+ Note that this gives one plot point per reflection !  If you
+    have many reflections, the BIn_plot command may be more useful.
+
+ $$ <A HREF="http://xray.bmc.uu.se/cgi-bin/gerard/image_page.pl?image=usf/pics/datam_scatter.gif">
+ $$ Example of a SCatter plot</A>.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > scat m1 sc1.plt ? ?
+ Select one of : FOB = Fobs, SIG = Sigma,
+   F/S = Fobs/Sigma, INT = F^2,
+   I/S = F^2/Sigma^2, RES = resolution,
+   1/R = 1/resolution, STL = sin(theta)/lambda,
+   DST = 4(STL^2)
+ DATAMAN > scat m1 sc1.plt stl f/s
+
+ Rfree flag  : (       0) 
+ Data points : (       2615) 
+ Plot F/S versus STL
+ STL MIN   5.0273E-02 MAX   1.5532E-01 AVE   1.1914E-01 SDV   2.6499E-02
+ F/S MIN   1.5617E-01 MAX   3.1629E+01 AVE   1.3766E+01 SDV   7.7298E+00
+
+ Rfree flag  : (       1) 
+ Data points : (        265) 
+ Plot F/S versus STL
+ STL MIN   5.2871E-02 MAX   1.5520E-01 AVE   1.2138E-01 SDV   2.6651E-02
+ F/S MIN   1.7302E-01 MAX   2.9454E+01 AVE   1.3895E+01 SDV   7.8384E+00
+ Plot file generated
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ In O2D, do:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (open_window) op 1 1 0 1
+ Option ? (open_window 1 1 0) sc sc1.plt sc1.ps
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## BIn_plot
+ similar to the SCatter_plot command, except that Y-values are
+     averaged in bins of X-values.  The X and Y variables are the
+     same as for the SCatter-plot command, but the Y variable may
+     also be the number of reflections in the bin.  The last parameter
+     determines how the bins are chosen: if it is a positive number,
+     it is taken as the width of each bin, if it is a negative
+     number, it is taken as minus the number of bins.
+ If you have Rfree flags set, you will get two curves in
+     different colours and the work and test data will be
+     compared by the program.
+ For example, to produce and compare the Wilson plot of the
+     work and test data, use something like: bi m1 wil.plt dst int -20,
+     i.e., plot the average intensity in each bin as a function
+     of 4*(sin(theta)/lambda)^2 and use 20 bins.
+ To see if the reflections are evenly distributed in the
+     resolution bins, use: bi m1 nref.plt dst nrf -20
+ Plot or convert the plot files with O2D, using the 1D command.
+
+ $$ <A HREF="http://xray.bmc.uu.se/cgi-bin/gerard/image_page.pl?image=usf/pics/datam_binplot.gif">
+ $$ Example of a BIn plot</A>.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > bi m1 wil.plt dst ?   
+ Select one of : FOB = Fobs, SIG = Sigma,
+   F/S = Fobs/Sigma, INT = F^2,
+   I/S = F^2/Sigma^2, RES = resolution,
+   1/R = 1/resolution, STL = sin(theta)/lambda,
+   DST = 4(STL^2), NRF = nr of reflections
+ DATAMAN > bi m1 wil.plt dst int -15
+ DST Min, Max =   1.0109E-02  9.6498E-02
+ Min and Max nr of bins =   5 64
+ Nr of bins : (      15) 
+ Bin size   : (  5.759E-03) 
+ Plot INT versus DST
+       Bin nr Start value  <INT> Work   Nr values  <INT> Test   Nr values
+            1  1.0109E-02  1.4216E+08          72  1.2433E+08          13
+            2  1.5869E-02  1.4396E+08         118  9.0143E+07           6
+            3  2.1628E-02  1.2436E+08         130  7.5640E+07           5
+            4  2.7387E-02  1.4487E+08         137  1.7044E+08          16
+...
+           14  8.4979E-02  1.0555E+08         219  1.4101E+08          25
+           15  9.0739E-02  9.6113E+07         247  9.0426E+07          30
+
+ Comparison for WORK and TEST data :
+ Correlation coefficient : (   0.836) 
+ Scaled R w.r.t. <I1>    : (  1.552E-01) 
+ Scaled R w.r.t. <I2>    : (  1.552E-01) 
+ RMS difference          : (  3.526E+07) 
+ Plot file generated
+ DATAMAN > bi m1 nref.plt dst nrf -15
+ DST Min, Max =   1.0109E-02  9.6498E-02
+ Min and Max nr of bins =   5 64
+ Nr of bins : (      15) 
+ Bin size   : (  5.759E-03) 
+ Plot NRF versus DST
+       Bin nr Start value  <NRF> Work   Nr values  <NRF> Test   Nr values
+            1  1.0109E-02  7.2000E+01          72  1.3000E+01          13
+            2  1.5869E-02  1.1800E+02         118  6.0000E+00           6
+...
+           14  8.4979E-02  2.1900E+02         219  2.5000E+01          25
+           15  9.0739E-02  2.4700E+02         247  3.0000E+01          30
+
+ Comparison for WORK and TEST data :
+ Correlation coefficient : (   0.784) 
+ Scaled R w.r.t. <I1>    : (  2.198E-01) 
+ Scaled R w.r.t. <I2>    : (  2.198E-01) 
+ RMS difference          : (  1.617E+02) 
+ Plot file generated
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ In O2D, do:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (open_window) op 1 1 0 1
+ Option ? (scatter_plot sc1.plt sc1.ps) 1d wil.plt wil.ps
+ Option ? (1d_plot wil.plt wil.ps) 1d nref.plt nref.ps
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## DOuble_plot
+ same as the BIn_plot command, except that plots and statistics
+     are given for two different datasets (rather than for work
+     and test reflections of one dataset).  (This command used to
+     be called DUo_plot, but since this starts with the same two
+     characters as the DUplicate command, the DUo_plot command
+     could never be executed ... Changed in version 5.6.)
+
+ $$ <A HREF="http://xray.bmc.uu.se/cgi-bin/gerard/image_page.pl?image=usf/pics/doubleplot.gif">
+ $$ Example of a DOuble plot</A>.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > du m1 m2 d1.plt ?
+ Select one of : FOB = Fobs, SIG = Sigma,
+   F/S = Fobs/Sigma, INT = F^2,
+   I/S = F^2/Sigma^2, RES = resolution,
+   1/R = 1/resolution, STL = sin(theta)/lambda,
+   DST = 4(STL^2)
+ DATAMAN > du m1 m2 d1.plt dst int -20
+ DST Min, Max =   4.5838E-04  1.7311E-01
+ Min and Max nr of bins =   5 64
+ Nr of bins : (      20) 
+ Bin size   : (  8.633E-03) 
+ Plot INT versus DST
+       Bin nr Start value <INT> Set 1   Nr values <INT> Set 2   Nr values
+            1  4.7748E-03  5.9571E+07          69  6.3925E+07          53
+            2  1.3408E-02  1.4791E+08         135  1.3502E+08          93
+            3  2.2040E-02  1.1905E+08         197  1.3481E+08         128
+...
+           19  1.6017E-01  0.0000E+00           0  1.3839E+07         177
+           20  1.6880E-01  0.0000E+00           0  1.1492E+07         167
+
+ Comparison for Set 1 and Set 2 data :
+ Correlation coefficient : (   0.982) 
+ Scaled R w.r.t. Set 1   : (  2.386E-01) 
+ Scaled R w.r.t. Set 2   : (  2.386E-01) 
+ RMS difference          : (  2.463E+07) 
+ Plot file generated
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## EO_plot
+ can be used to detect subtle spacegroup errors in special cases.
+   See: E. Carredano, PhD thesis, Uppsala, 1999 (also "to be published",
+   I suspect). You select for which type of Miller index you want
+   to produce this plot (H, K or L). You will get a plot with two
+   curves, the <Fobs> as a function of H/K/L for EVEN and ODD H/K/L,
+   respectively. If these two curves are not very similar, you
+   may have a problem. (Use O2D to convert the plot into a PostScript
+   file.)
+
+ $$ <A HREF="http://xray.bmc.uu.se/cgi-bin/gerard/image_page.pl?image=usf/pics/eoplot.gif">
+ $$ Example of an EO plot</A>.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > eo
+ Command > (eo) 
+ Which set ? (M1) 
+ O2D plot file ? (even_odd.plt) 
+ H, K, or L ? (L) 
+ Even/Odd plot set = (M1) 
+ Miller index type = (L) 
+ Plot file name    = (even_odd.plt) 
+ Plot file generated
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## HKl_aniso_plot
+ Can be used to detect anisotropy in your crystal.  It generates
+     a plot with three curves, one for reflections with constant |h|,
+     one for constant |k|, and one for constant |l|.  DATAMAN collects
+     all reflections with constant |h|, etc., and then calculates
+     for each value of |h| etc. the average value of 1/Resolution
+     (plotted as X), and the LN of the mean Fobs (plotted as Y).
+ If you have anisotropy along one of the axes, this should show
+     up as one curve having quite a different shape than the other
+     two.  Only bins with > 20 reflections are included in the plot,
+     but all values are listed in a table.  Of course, the resolution
+     for each reflection must have been calculated previously.
+
+ $$ <A HREF="http://xray.bmc.uu.se/cgi-bin/gerard/image_page.pl?image=usf/pics/hklaniso.gif">
+ $$ Example of an HKl_aniso plot</A>.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > re m1 ssao_twintest_03.hkl *
+ [...]
+ DATAMAN > cell m1 130.2 130.2 221.5 90 90 90
+ [...]
+ DATAMAN > cal m1 res
+ [...]
+ DATAMAN > hkl m1 ssao_twintest_03_aniso.plt
+ HKL-aniso plot Set = (M1) 
+
+ HKL |   <1/R>h    LN<F>h       # |   <1/R>k    LN<F>k       # |   <1/R>l    LN<F>l       # |
+   0 |  2.480E-01 6.132E+00  3095 |  1.986E-01 7.119E+00    19 |  2.496E-01 5.788E+00  1806 | 
+   1 |  2.483E-01 6.227E+00  3078 |  2.471E-01 6.235E+00  3154 |  2.491E-01 5.897E+00  1835 | 
+   2 |  2.486E-01 6.228E+00  3073 |  2.474E-01 6.222E+00  3149 |  2.490E-01 5.833E+00  1834 | 
+   3 |  2.488E-01 6.202E+00  3067 |  2.473E-01 6.196E+00  3147 |  2.497E-01 5.882E+00  1831 | 
+   4 |  2.495E-01 6.211E+00  3050 |  2.479E-01 6.200E+00  3132 |  2.492E-01 5.863E+00  1833 | 
+   5 |  2.502E-01 6.192E+00  3035 |  2.486E-01 6.162E+00  3117 |  2.496E-01 5.897E+00  1828 | 
+   6 |  2.510E-01 6.185E+00  3029 |  2.495E-01 6.166E+00  3111 |  2.497E-01 5.840E+00  1830 | 
+ [...]
+  80 |  0.000E+00 0.000E+00     0 |  0.000E+00 0.000E+00     0 |  3.650E-01 5.689E+00    76 | 
+  81 |  0.000E+00 0.000E+00     0 |  0.000E+00 0.000E+00     0 |  3.674E-01 5.786E+00    32 | 
+ Plot file generated
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** GUESSTIMATING COMMANDS
+
+ ## EStimate_unique
+ calculate an *estimate* of the number of unique reflections for
+    one or more datasets.  The cell constants must be known.  You must
+    provide the set name, resolution, lattice type (P or R for anything
+    without centering, C, I or F for anything with centering) and the
+    number of asymmetric units of your spacegroup (e.g., 4 in the case
+    of P212121, 12 for P213, etc.).  The estimate uses the volume of
+    reciprocal space rather than explicit enumeration of reflections.
+ Usually, the value will be correct give or take 5-10 % (therefore,
+    the precision of the number printed is much higher than the
+    accuracy !!!).
+
+ The formula to estimate the volume of reciprocal space is:
+ 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+           4/3 * PI * (A*B*C)/(D**3)
+    Nref = -------------------------
+               2 * (1 + F) * N
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ 
+ PI = 3.14...; A/B/C = cell axes (A); D = resolution limit (A);
+ "2" = Friedel mates; F = centering flag (0 for P/R, 1 for C/F/I);
+ N = nr of asymmetric units of the spacegroup
+
+ It is analogous to the formula for calculating the volume of
+    a sphere, recognising that max (H | D) = int (A / D), etc.
+    Note that it *is* an approximation !
+ Rewriting the formula in terms of Nref gives an expression
+    for D (used for the EFfective_resolution command).
+ 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+  DATAMAN > ce m1 41.6 41.6 202.4 90 90 90
+ Cell : (  41.600   41.600  202.400   90.000   90.000   90.000) 
+ Volume (A3) : (  3.503E+05) 
+ DATAMAN > es m1 2.9 p 4
+ Estimate unique reflections : (M1) 
+ Unit cell axis lengths : (  41.600   41.600  202.400) 
+ Resolution limit (A)   : (   2.900) 
+ Lattice type           : ( P) 
+ Nr asymm. units/cell   : (       4) 
+ Est. nr of reflections : (       7520) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## EFfective_resolution
+ following an idea of Bart Hazes, this option counts your reflections
+    and estimates the resolution at which this number of reflections
+    would correspond to a 100 % complete dataset.  I suggest to use
+    the number listed for reflections with F > 3 * Sigma(F) as *the*
+    effective resolution.  Warning: you may not like the results ...
+    (especially in the case of weak data and/or low completeness).
+ Again, the volume of reciprocal space is used to estimate the
+    effective resolution, so the result is a ball-park figure !
+ To be on the safe side, round to the nearest HIGHER multiple
+    of 0.1 A (e.g., 3.12 becomes 3.2 A, 1.88 becomes 1.9 A, etc.).
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > ef m1 p 4
+ Effective resolution : (M1) 
+ Unit cell axis lengths : (  41.600   41.600  202.400) 
+ Lattice type           : ( P) 
+ Nr asymm. units/cell   : (       4) 
+ Nr of HKLs with F >= 0 * Sigma =     7104 ==> Eff. D ~     2.96 A
+ Nr of HKLs with F >= 1 * Sigma =     7104 ==> Eff. D ~     2.96 A
+ Nr of HKLs with F >= 2 * Sigma =     7061 ==> Eff. D ~     2.96 A
+ Nr of HKLs with F >= 3 * Sigma =     6022 ==> Eff. D ~     3.12 A
+ Nr of HKLs with F >= 4 * Sigma =     5606 ==> Eff. D ~     3.20 A
+ Nr of HKLs with F >= 5 * Sigma =     5327 ==> Eff. D ~     3.25 A
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## GUess MW
+ "guestimates" the molecular weight of your molecule with the
+    approximation: MW ~ 112 * Nresidues
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > gu mw 136
+ Nr of residues  ~ (     136) 
+ Mol Weight (Da) : (  1.523E+04) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## GUess NRes
+ "guestimates" the number of residues in your molecule with the
+    approximation: Nres ~ MW / 112
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > gu nres 16000
+ Mol Weight (Da) : (  1.600E+04) 
+ Nr of residues  ~ (     143) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## GUess VM
+ "guestimates" values for Vm, V(molecule) and the solvent content
+    of your crystal using the following approximations:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+    Vm ~ 112 * Nres * Nncs * Nasu / Vcell
+    V  ~ 140 * Nres
+    SC ~ 100 * (1 - 140 * Nres * Nncs * Nasu / Vcell)
+  & SC ~ 100 * (1 - 1.23/Vm)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > guess vm m1 136 4 2
+ Set : (M1) 
+ Cell constants    : (  41.600   41.600  202.400   90.000   90.000   
+  90.000) 
+ Nr of residues    : (     136) 
+ Asymm. units      : (       4) 
+ NCS molecules     : (       2) 
+ Cell volume (A3)  : (  3.503E+05) 
+ Assuming average residue mass = 112 Da
+ Mass in cell (Da) ~ (  1.219E+05) 
+ Vm (A3/Da)        ~ (   2.874) 
+ Assuming average residue volume = 140 A3
+ Mol volume (A3)   ~ (  1.904E+04) 
+ Protein cntnt (%) ~ (  43.487) 
+ Solvent cntnt (%) ~ (  56.513) 
+ 100%*(1-1.23/Vm)  ~ (  57.209) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## GUess COmpleteness
+ use reciprocal space volume to estimate the completeness in a
+    resolution shell
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > gu co m1 100 2.9 p 4
+     7103 HKLs in [  2.90-100.00] Max ~     7520 Cmplt ~  94.45 %
+ DATAMAN > gu co m1 100 10 p 4
+      137 HKLs in [ 10.00-100.00] Max ~      183 Cmplt ~  74.86 %
+ DATAMAN > gu co m1 3.2 3.1 p 4
+      567 HKLs in [  3.10-  3.20] Max ~      559 Cmplt ~ 101.43 %
+ DATAMAN > gu co m1 3.1 3.0 p 4
+      617 HKLs in [  3.00-  3.10] Max ~      637 Cmplt ~  96.86 %
+ DATAMAN > gu co m1 3.0 2.9 p 4
+      677 HKLs in [  2.90-  3.00] Max ~      727 Cmplt ~  93.12 %
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## GUess RHo
+ this option helps you design your structure-refinement protocol
+    by telling you (a) what the minimum *effective* resolution is
+    that you need in order to perform any of 9 different types of
+    refinement with a RHO (data-to-parameter ratio) of at least
+    1.5, and (b) what the value of RHO will be depending on your
+    effective resolution and chosen refinement protocol.  In
+    calculating the number of parameters, the approximation:
+    Natoms ~ 8 * Nresidues is used.
+ The example below may help to clarify these points:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > gu rho m1 p 4 2 136
+ Refinement strategy for set : (M1) 
+ Unit cell axes  : (  41.600   41.600  202.400) 
+ Lattice type    : ( P) 
+ Nr asymm. units : (       4) 
+ Nr of residues  : (     136) 
+ NCS molecules   : (       2) 
+
+ The following refinement strategies are used :
+ Nr  1 = Rigid-body refinement       (6*Nncs)                     
+ Nr  2 = Torsion  /Grouped Bs/NCS    (~4*Nres)                       
+ Nr  3 = Torsion  /Grouped Bs/No NCS (~4*Nres*Nncs)                  
+ Nr  4 = Cartesian/Grouped Bs/NCS    (~26*Nres)                      
+ Nr  5 = Cartesian/Grouped Bs/No NCS (~26*Nres*Nncs)                 
+ Nr  6 = Cartesian/Isotr Bs  /NCS    (~32*Nres)                      
+ Nr  7 = Cartesian/Isotr Bs  /No NCS (~32*Nres*Nncs)                 
+ Nr  8 = Cartesian/Anisotr Bs/NCS    (~72*Nres)                      
+ Nr  9 = Cartesian/Anisotr Bs/No NCS (~72*Nres*Nncs)                 
+
+ The optimal strategy depends on the resolution;
+ Nreflections should be > ~1.5 Nparameters !!!!!
+ The following table shows the MINIMUM effective
+ resolution for which this is the case for these
+ refinement strategies:
+ Nr  1 ~         12 parameters => Dmin ~  21.68 A
+ Nr  2 ~        544 parameters => Dmin ~   6.08 A
+ Nr  3 ~       1088 parameters => Dmin ~   4.83 A
+ Nr  4 ~       3536 parameters => Dmin ~   3.26 A
+ Nr  5 ~       7072 parameters => Dmin ~   2.59 A
+ Nr  6 ~       4352 parameters => Dmin ~   3.04 A
+ Nr  7 ~       8704 parameters => Dmin ~   2.41 A
+ Nr  8 ~       9792 parameters => Dmin ~   2.32 A
+ Nr  9 ~      19584 parameters => Dmin ~   1.84 A
+
+ RHO = Nref / Npar is listed in the following
+ table as a function of EFFECTIVE resolution and
+ refinement strategy:
+
+ Res(A)      Nrefl RHO       1      2      3      4      5      6      7      8      9
+   4.00       2866       238.8    5.3    2.6    0.8    0.4    0.7    0.3    0.3    0.1
+   3.90       3092       257.7    5.7    2.8    0.9    0.4    0.7    0.4    0.3    0.2
+   3.80       3342       278.5    6.1    3.1    0.9    0.5    0.8    0.4    0.3    0.2
+   3.70       3621       301.8    6.7    3.3    1.0    0.5    0.8    0.4    0.4    0.2
+   3.60       3931       327.6    7.2    3.6    1.1    0.6    0.9    0.5    0.4    0.2
+   3.50       4278       356.5    7.9    3.9    1.2    0.6    1.0    0.5    0.4    0.2
+   3.40       4666       388.8    8.6    4.3    1.3    0.7    1.1    0.5    0.5    0.2
+   3.30       5103       425.3    9.4    4.7    1.4    0.7    1.2    0.6    0.5    0.3
+   3.20       5597       466.4   10.3    5.1    1.6    0.8    1.3    0.6    0.6    0.3
+   3.10       6156       513.0   11.3    5.7    1.7    0.9    1.4    0.7    0.6    0.3
+   3.00       6793       566.1   12.5    6.2    1.9    1.0    1.6    0.8    0.7    0.3
+   2.90       7520       626.7   13.8    6.9    2.1    1.1    1.7    0.9    0.8    0.4
+   2.80       8355       696.3   15.4    7.7    2.4    1.2    1.9    1.0    0.9    0.4
+   2.70       9318       776.5   17.1    8.6    2.6    1.3    2.1    1.1    1.0    0.5
+   2.60      10435       869.6   19.2    9.6    3.0    1.5    2.4    1.2    1.1    0.5
+   2.50      11738       978.2   21.6   10.8    3.3    1.7    2.7    1.3    1.2    0.6
+   2.40      13267      1105.6   24.4   12.2    3.8    1.9    3.0    1.5    1.4    0.7
+   2.30      15073      1256.1   27.7   13.9    4.3    2.1    3.5    1.7    1.5    0.8
+   2.20      17224      1435.3   31.7   15.8    4.9    2.4    4.0    2.0    1.8    0.9
+   2.10      19803      1650.3   36.4   18.2    5.6    2.8    4.6    2.3    2.0    1.0
+   2.00      22925      1910.4   42.1   21.1    6.5    3.2    5.3    2.6    2.3    1.2
+   1.90      26738      2228.2   49.2   24.6    7.6    3.8    6.1    3.1    2.7    1.4
+   1.80      31447      2620.6   57.8   28.9    8.9    4.4    7.2    3.6    3.2    1.6
+   1.70      37329      3110.8   68.6   34.3   10.6    5.3    8.6    4.3    3.8    1.9
+   1.60      44775      3731.3   82.3   41.2   12.7    6.3   10.3    5.1    4.6    2.3
+   1.50      54340      4528.3   99.9   49.9   15.4    7.7   12.5    6.2    5.5    2.8
+   1.40      66836      5569.7  122.9   61.4   18.9    9.5   15.4    7.7    6.8    3.4
+   1.30      83477      6956.4  153.5   76.7   23.6   11.8   19.2    9.6    8.5    4.3
+   1.20     106133      8844.4  195.1   97.5   30.0   15.0   24.4   12.2   10.8    5.4
+   1.10     137790     11482.5  253.3  126.6   39.0   19.5   31.7   15.8   14.1    7.0
+   1.00     183398     15283.2  337.1  168.6   51.9   25.9   42.1   21.1   18.7    9.4
+   0.90     251575     20964.6  462.5  231.2   71.1   35.6   57.8   28.9   25.7   12.8
+   0.80     358200     29850.0  658.5  329.2  101.3   50.7   82.3   41.2   36.6   18.3
+   0.70     534690     44557.5  982.9  491.4  151.2   75.6  122.9   61.4   54.6   27.3
+   0.60     849067     70755.6 1560.8  780.4  240.1  120.1  195.1   97.5   86.7   43.4
+   0.50    1467188     ******* 2697.0 1348.5  414.9  207.5  337.1  168.6  149.8   74.9
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** RECIPES
+
+ ## FORMAT CONVERSION
+
+ This is easy:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ read s1 old.hkl protein|xplor|mklcf|shelxs|* *    ! read old format
+ { apply Fobs magnitude, resolution and/or Fobs/Sigma cut-offs }
+ write s1 new.hkl protein|xplor|mklcf|shelxs|* *   ! write new format
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## EXTREMELY LARGE FOBS
+
+ First make a histogram of the Fobs values, then SHow the large ones and
+   if you don't like them, KIll them (or use ROgue_kill):
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ histo set fobs 1 10 100 1000 10000 100000 1000000
+ show set fobs > 100000
+ kill set fobs > 100000
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## RESOLUTION CUT-OFFS
+
+ Supply the unit-cell constants and apply the appropriate cut-offs:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ cell set a b c al be ga
+ calc set res
+ kill set res > 10
+ kill set res < 2.5
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## FOBS/SIGMA CUT-OFFS
+
+ This is really simple (but do you really want to throw away data ???):
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ kill set f/s < 2
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## WILSON SCALING OF TWO DATASETS
+
+ Just follow the recipe:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ read s1 s1.hkl
+ cell s1 a b c al be ga
+ sym s1 symop1.o
+ read s2 s2.hkl
+ cell s2 a b c al be ga         ! may be different from those of set s1
+ sym s2 symop2.o                ! ditto
+ cal * resol                    ! calculate resolution of each reflection
+ cal * orbit                    ! calculate orbital multiplicity
+ wilson s1 s2 w1.plt w2.plt
+ wilson s1 s2 w1x.plt w2x.plt
+ wilson s1 s2 w1xx.plt w2xx.plt
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## EXPANDING REFLECTIONS TO P1
+
+ This can easily be done with the LAUE command; this command always
+   expands to P1, and then uses the Laue conditions to find out which
+   reflections should be kept.  Just feed DATAMAN your dataset, the
+   proper symmetry operators (of your real spacegroup) and put it
+   into Laue group 1:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ read m1 q.hkl
+ symm m1 p422.sym
+ laue m2 m1 1
+ sort m3 m2 lkh
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Note that this is not limited to P1.  For instance, if you want to
+   expand your P213 reflections into P212121 (i.e., going down from
+   m3 to mmm Laue symmetry; mmm = Laue group 6), use:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ read m1 q.hkl
+ symm m1 p23.sym
+ laue m2 m1 6
+ sort m3 m2 lkh
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## WORKING WITH INTENSITIES
+
+ If you use SHELXL, for example, you will have Is in your files.
+   Convert them to Fs with the CAlculate command:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ read m1 i.hkl
+ calc m1 i2f
+ (...)
+ calc m1 f2i
+ writ m1 i.hkl
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## GENERATING A UNIQUE, COMPLETE DATASET
+
+ Use the following set of commands to generate a unique, complete
+   dataset:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ! read your existing dataset (can in fact be *any* dataset since
+ ! we only use it to tell DATAMAN what cell constants to use in
+ ! the HEmisphere command !)
+ read m1 dump.cns cns
+ ! provide the cell constants
+ cell m1 78.99 78.99 38.02 90 90 90 
+ ! generate an asymmetric unit of data (e.g., to 2.0 A resolution)
+ ! provide the correct Laue group !
+ asym m2 m1 2.0 8
+ ! provide the symmetry operators
+ sym m2 p43212
+ ! remove systematic absences
+ abs m2 kill
+ ! sort by L-K-H
+ sort m3 m2 lkh
+ ! save the dataset
+ write m3 new.cns cns
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## DIFFERENCE REFINEMENT
+
+ If you want to try out difference refinement with X-PLOR (see: T.C.
+   Terwilliger & J. Berendzen, ACta Cryst D51, 609-618 (1995)), you
+   can use DATAMAN to produce a set of modified Fobs using the
+   following recipe:
+
+ (1) run the following job in XPLOR:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ remarks Generate Fobs(nati) and Fcalc(nati) for use in difference refinement
+ remarks T.C. Terwilliger & J. Berendzen, ACta Cryst D51, 609-618 (1995)
+ @parameters.xplor
+ structure   @m1_gen.psf end
+ coordinates @m1_mb_mbx.pdb
+ xrefine
+  @crystal.xplor
+  @scatter.xplor
+  nreflections=100000 
+  reflection @../hkl/cbh2.xplor end
+  resolution 8.0 1.8
+  method=FFT
+  fft memory=1000000 end
+  tolerance=0.0 lookup=false
+  mbins 20
+  update-fcalc
+  print r-factor
+  do scale (fcalc=fobs)
+  write reflections fobs sigma
+        output=../../umb/hkl/nati_fobs.xplor end
+  write reflections fcalc sigma
+        output=../../umb/hkl/nati_fcalc.xplor end
+ end
+ stop
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ (2) then change FCALC to FOBS in the output FCALC reflection file:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ unix> sed -e 's/FCALC/FOBS/' nati_fcalc.xplor > q ; mv q nati_fcalc.xplor
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+   
+ (3) create the Fobs-Fcalc file in DATAMAN (note: you can *NOT* do this
+     in X-PLOR with "do amplitude (fobs=fobs-fcalc)", since this will
+     give you the absolute value of the difference; here you want to
+     keep the *sign* of the difference as well !):
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > re fo nati_fobs.xplor xplor
+ DATAMAN > re fc nati_fcalc.xplor xplor
+ DATAMAN > co fo fc
+ Correlation coeff Fobs : (   0.954) 
+ Rmerge = SUM |F1-S*F2| / SUM |F1+S*F2|
+ Value of Rmerge : (   0.087) 
+ [NOTE: actual R-factor is ~2 times 0.087 = 17.4 %]
+ DATAMAN > df delta fo fc
+ DATAMAN > wr delta nati_fo_fc.xplor rxplor
+ DATAMAN > $ head -3 nati_fo_fc.xplor
+INDEX= 6 0 0 FOBS= 5.200 SIGMA= 3.253 TEST= 0
+INDEX= 7 0 0 FOBS= -14.239 SIGMA= 3.677 TEST= 0
+INDEX= 8 0 0 FOBS= -5.998 SIGMA= 4.667 TEST= 0
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ (4) Wilson-scale the complex Fobs to the high-res dataset Fobs with DATAMAN
+     (note: you *must* do this, unless both datasets are already on the same
+     -e.g., absolute- scale; otherwise the subtraction will produce rubbish):
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > read nati ../../nati/hkl/cbh2.xplor xplor
+ Nr of reflections read : (      55094) 
+ DATAMAN > read mug mug_merge.xplor xplor
+ Nr of reflections read : (      23496) 
+ DATAMAN > compare mug nati
+ ...
+ HKLs in set 1 : (      23496) 
+ HKLs in set 2 : (      55094) 
+ HKLs in both  : (      10413) 
+ Correlation coeff Fobs : (   0.928) 
+ ...
+ Rmerge = SUM |F1-S*F2| / SUM |F1+S*F2|
+ Value of Rmerge : (   0.090) 
+ DATAMAN > cell nati 49.1 75.8 92.9 90.0 103.2 90.0
+ DATAMAN > symm nati p21.sym
+ DATAMAN > cell mug 48.76 75.1 91.7 90.0 103.0 90.0
+ DATAMAN > symm mug p21.sym
+ DATAMAN > calc * resol
+ Highest resolution : (   1.743) 
+ Highest resolution : (   2.400) 
+ DATAMAN > calc * centr
+ DATAMAN > calc * orbit
+ DATAMAN > kill nati resol < 2.4
+ DATAMAN > kill mug resol > 8.0
+ DATAMAN > wilson nati mug
+ Name of first plot file ? (wilson_nati_mug_1.plt) 
+ Name of second plot file ? (wilson_nati_mug_2.plt) 
+ Step size ? (2.4999999E-03) 
+ ...
+           W SCALE  =  0.20725E-01
+           W BTEMP  =     -4.852
+ ...
+ Applying scale to set 2
+ ...
+ Comparison of <I1> and <I2> :
+ Correlation coefficient : (   0.997) 
+ Scaled R w.r.t. <I1>    : (  6.731E-02) 
+ Scaled R w.r.t. <I2>    : (  6.731E-02) 
+ RMS difference          : (  2.897E+07) 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ (5) create the difference Fobs file with DATAMAN (note that this may
+     give a few reflections with Fobs < 0.  I tend to ignore these
+     [using "fwindow 0.001 1000000" in X-PLOR], but you could also
+     reset them to zero):
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ DATAMAN > df diff mug delta
+ Delta-F Set 1 = (MUG) 
+     and Set 2 = (DELTA) 
+ Encoding reflections of set 1 ...
+ Checking reflections of set 2 ...
+ HKLs in native     set 1: (      23064) 
+ HKLs in derivative set 2: (      51722) 
+ HKLs in new nat-der set : (      22304) 
+ Nr of WORK reflections : (      20446) 
+ Nr of TEST reflections : (       1858) 
+ Percentage TEST data   : (   8.330) 
+ This is an Rfree dataset
+ DATAMAN > stats diff
+ Stats : (DIFF) 
+
+   Item     Minimum     Maximum     Average        Sdv         Var 
+   ====     =======     =======     =======        ===         === 
+     H          -20          19      -1.205       8.986      80.754
+     K            0          29      11.362       7.322      53.616
+     L            0          38      14.850       9.247      85.508
+   Fobs  -1.828E+01   5.202E+02   8.910E+01   5.651E+01   3.194E+03
+  SigFo   1.273E+00   2.019E+03   2.726E+02   2.170E+02   4.709E+04
+ Fo/Sig  -4.208E+00   1.248E+02   5.261E+00   1.236E+01   1.527E+02
+
+ Correlation Fobs-SigFo   : (  -0.212) 
+ Correlation Fobs-Fo/Sig  : (   0.344) 
+ Correlation SigFo-Fo/Sig : (  -0.502) 
+
+ Nr of reflections      : (      22304) 
+ Nr of WORK reflections : (      20446) 
+ Nr of TEST reflections : (       1858) 
+ Percentage TEST data   : (   8.330) 
+ This is an Rfree dataset
+ DATAMAN > wr diff diff_refinement_fobs.xplor rxplor
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ (6) refine against the new DIFF dataset (but calculate maps and [free] R-factors
+     using the normal Fobs after every refinement cycle)
+
+ ** KNOWN BUGS
+
+ None, at present.

@@ -1,0 +1,313 @@
+
+ ** MAPFIX - GENERAL INFORMATION
+
+ Program : MAPFIX
+ Version : 040701
+ Author  : Gerard J. Kleywegt & T. Alwyn Jones,
+           Dept. of Cell and Molecular Biology,
+           Uppsala University, Biomedical Centre, Box 596,
+           SE-751 24 Uppsala, SWEDEN
+ E-mail  : gerard@xray.bmc.uu.se
+ Purpose : fix CCP4 maps from RAVE
+ Package : RAVE
+
+ ** REFERENCES
+
+ Reference(s) for this program:
+
+ *  1 * T.A. Jones (1992). A, yaap, asap, @#*?  A set of averaging
+        programs. In "Molecular Replacement", edited by E.J. Dodson,
+        S. Gover and W. Wolf. SERC Daresbury Laboratory, Warrington,
+        pp. 91-105.
+
+ *  2 * G.J. Kleywegt & T.A. Jones (1994).  Halloween ... Masks and
+        Bones. In "From First Map to Final Model", edited by
+        S. Bailey, R. Hubbard and D. Waller.  SERC Daresbury
+        Laboratory, Warrington, pp. 59-66.
+        [http://xray.bmc.uu.se/gerard/papers/halloween.html]
+
+ *  3 * G.J. Kleywegt & R.J. Read (1997). Not your average density.
+        Structure 5, 1557-1569.
+        [http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=PubMed&cmd=Retrieve&list_uids=9438862&dopt=Citation]
+
+ *  4 * R.J. Read & G.J. Kleywegt (2001). Density modification:
+        theory and practice. In: "Methods in Macromolecular
+        Crystallography" (D Turk & L Johnson, Eds.), IOS Press,
+        Amsterdam, pp. 123-135.
+
+ *  5 * Kleywegt, G.J., Zou, J.Y., Kjeldgaard, M. & Jones, T.A. (2001).
+        Around O. In: "International Tables for Crystallography, Vol. F.
+        Crystallography of Biological Macromolecules" (Rossmann, M.G.
+        & Arnold, E., Editors). Chapter 17.1, pp. 353-356, 366-367.
+        Dordrecht: Kluwer Academic Publishers, The Netherlands.
+
+ ** MAP SIZE
+
+ From version 2.0 onward, MAPFIX allocates memory for its map
+   dynamically.  This means that you can increase the size
+   that the program can handle on the fly:
+
+ 1 - through the environment variable MAPSIZE (must be in capital
+     letters !), for example put the following in your .cshrc file
+     or your script:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ setenv MAPSIZE 8000000
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ 2 - by using command-line argument MAPSIZE (need not be in capitals),
+     for example in your script:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ run mapfix mapsize 10000000
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Note that command-line argument takes precedence over the environment
+   variable.  So you can set the environment variable in your .cshrc
+   file to a "typical" value, and if you have to deal with a map
+   which is bigger than that, you can use the command-line argument.
+
+ If sufficient memory cannot be allocated, the program will print
+   a message and quit.  In that case, increase the amount of virtual
+   memory (this will not help, of course, if you try to allocate more
+   memory than can be addressed by your machine (for 32-bit machines,
+   something 2**32-1 bytes, I think), or reduce the size requirements.
+
+ MAPFIX needs space for 1 map.
+
+ ** NOTES
+
+ This is an unsupported jiffy program.
+
+ NOTE: this program is now sensitive to the environment variable
+       CCP4_OPEN.  If this variable has *not* been set, you will
+       not be able to create any CCP4 maps.  If this happens, the
+       program will abort execution on startup.  To fix this,
+       put the following line in your .login or .cshrc file:
+       setenv CCP4_OPEN UNKNOWN
+
+ Quick-and-dirty program to fix the following in CCP4 maps:
+ - add a title
+ - alter the write-order of the axes
+ - add (or change) the spacegroup's symmetry operators
+
+ 960116 - fixed bug which limited max size of map sections; check
+          for environment variable CLIBD to deduce the name of the
+          local CCP4 symm-op file
+ 960412 - echo all input to help debug scripts
+ 961122 - dynamic memory allocation
+ 040701 -3.0.1- changed checks of dynamic memory allocation to allow
+                for pointers with negative values as returned by
+                some recent Linux versions
+
+ ** EXAMPLE
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+< % 119 gerard rigel 20:57:10 gerard/scratch> MAPFIX
+
+ *** MAPFIX *** MAPFIX *** MAPFIX *** MAPFIX *** MAPFIX *** MAPFIX *** 
+
+ Version  - 930615/1.0
+ (C) 1993 - Gerard J. Kleywegt & T. Alwyn Jones, BMC, Uppsala (S)
+ User I/O - routines courtesy of Rolf Boelens, Univ. of Utrecht (NL)
+ Others   - T.A. Jones, G. Bricogne, Rams & W.A. Hendrickson
+ Others   - CCP4, PROTEIN, etc. etc.
+
+ Started  - Tue Jun 15 21:03:55 1993
+ User     - gerard
+ Mode     - interactive
+ Host     - rigel
+ ProcID   - 5991
+ Tty      - /dev/ttyq0
+
+ *** MAPFIX *** MAPFIX *** MAPFIX *** MAPFIX *** MAPFIX *** MAPFIX *** 
+
+ Max size of map : (    4194304) 
+ Input map ? ( ) a2u/m5_4.E
+ Read header
+ Input map : (a2u/m5_4.E) 
+...
+ Titles :
+           new 2Fo-Fc map                                                                  
+           Created by AVE V. 930603/1.4 at Thu Jun 10 22:29:12 1993 for user A. Nonymous   
+
+
+ Parameters as read from the map file
+ Origin ......................          0         0         0
+ Extent ......................        140        80       144
+ Grid ........................        140        80       144
+ Cell axes ...................     106.82     62.34    114.19
+ Cell angles .................      90.00     90.00     90.00
+ UVW (fast, medium, slow) ....          Z         X         Y
+
+ Header done
+ Map read OK
+ Cell axes   (A) : ( 106.820   62.340  114.190) 
+ Cell angles (d) : (  90.000   90.000   90.000) 
+ Grid axes (pts) : (     140       80      144) 
+ Origin    (pts) : (       0        0        0) 
+ Extent    (pts) : (     140       80      144) 
+
+ Output map ? (out.E) test.E
+
+ Title ? (RAVE/CCP4 map) test MAPFIX
+
+ UVW (write-order axes) ? (       3        1        2) 2 3 1
+
+ Spacegroup ? (      19) 5
+ Library file with symm-ops ? (/nfs/public/packages/ccp4/lib/data/symop.lib) 
+...
+ Calculating min, max etc.
+
+   Minimum density in map  =      -53.37548
+   Maximum density         =       93.61629
+   Mean density            =        0.00001
+   Rms deviation from mean =       11.75688
+
+ Map written out
+
+
+ *** MAPFIX *** MAPFIX *** MAPFIX *** MAPFIX *** MAPFIX *** MAPFIX *** 
+
+ Version - 930615/1.0
+ Started - Tue Jun 15 21:03:55 1993
+ Stopped - Tue Jun 15 21:06:28 1993
+
+ CPU-time taken :
+ User    -     39.0 Sys    -      4.4 Total   -     43.4
+
+ *** MAPFIX *** MAPFIX *** MAPFIX *** MAPFIX *** MAPFIX *** MAPFIX *** 
+
+ >>> This program is (C) 1993, GJ Kleywegt & TA Jones <<<
+ E-mail: "gerard@xray.bmc.uu.se" or "alwyn@xray.bmc.uu.se"
+
+ *** MAPFIX *** MAPFIX *** MAPFIX *** MAPFIX *** MAPFIX *** MAPFIX *** 
+
+STOP ... Toodle pip ... statement executed
+39.0u 4.4s 2:33 28%
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ To show that it works, run EXTEND:
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+< % 123 gerard rigel 20:57:10 gerard/scratch> extend mapin test.E
+  
+1### CCP PROGRAM SUITE: EXTEND      VERSION 2.1.3: 28/08/92###
+ User: gerard  Run date:  6/15/93  Run time:21:11:43
+
+xyzlim -10 10 -10 10 -10 10
+end
+...
+           Number of columns, rows, sections ...............   80  144  140
+           Map mode ........................................    2
+           Start and stop points on columns, rows, sections     0   79    0  143    0  139
+           Grid sampling on x, y, z ........................  140   80  144
+           Cell dimensions ................................. 106.82000  62.34000 114.18999  90.00000  90.00000  90.00000
+           Fast, medium, slow axes .........................    Y    Z    X
+           Minimum density .................................   -53.37548
+           Maximum density .................................    93.61629
+           Mean density ....................................     0.00001
+           Rms deviation from mean density .................    11.75688
+           Space-group .....................................    5
+           Number of titles ................................    3
+
+ Titles :
+           new 2Fo-Fc map                                                                  
+           Created by AVE V. 930603/1.4 at Thu Jun 10 22:29:12 1993 for user A. Nonymous   
+           test MAPFIX                                                                     
+...
+ Fractional limits of output map are -0.0714 0.0714-0.1250 0.1250-0.0694 0.0694
+...
+ Symmetry operations :  X,Y,Z * -X,Y,-Z                                                                
+
+ Symmetry operations :  1/2+X,1/2+Y,Z * 1/2-X,1/2+Y,-Z                                                 
+
+   Minimum density in map  =      -40.17652
+   Maximum density         =       71.92261
+   Mean density            =        0.16396
+   Rms deviation from mean =       17.06237
+...
+           Number of columns, rows, sections ...............   21   21   21
+           Map mode ........................................    2
+           Start and stop points on columns, rows, sections   -10   10  -10   10  -10   10
+           Grid sampling on x, y, z ........................  140   80  144
+           Cell dimensions ................................. 106.82000  62.34000 114.18999  90.00000  90.00000  90.00000
+           Fast, medium, slow axes .........................    Y    Z    X
+           Minimum density .................................   -40.17652
+           Maximum density .................................    71.92261
+           Mean density ....................................     0.16396
+           Rms deviation from mean density .................    17.06237
+           Space-group .....................................    5
+           Number of titles ................................    1
+
+ Titles :
+           new 2Fo-Fc map                                                                  
+
+ Normal termination
+User: 0.50s System: 0.45s Elapsed: 00:11.00s
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Now use MAPMAN to calculate the correlation coefficient between
+   the new, small map and the original map (should be 1.000):
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+< % 125 gerard rigel 20:57:10 gerard/scratch> MAPMAN
+
+ *** MAPMAN *** MAPMAN *** MAPMAN *** MAPMAN *** MAPMAN *** MAPMAN *** 
+...
+ MAPMAN > re m1 MAPOUT ccp4
+ Read header
+ Input map : (MAPOUT) 
+...
+ Parameters as read from the map file
+ Origin ......................        -10       -10       -10
+ Extent ......................         21        21        21
+ Grid ........................        140        80       144
+ Cell axes ...................     106.82     62.34    114.19
+ Cell angles .................      90.00     90.00     90.00
+ UVW (fast, medium, slow) ....          Y         Z         X
+
+ Header done
+ Sum of density in map : (  1.518E+03) 
+ Map read into memory
+ MAPMAN > re m2 a2u/m5_4.E ccp4
+ Read header
+ Input map : (a2u/m5_4.E) 
+...
+ Parameters as read from the map file
+ Origin ......................          0         0         0
+ Extent ......................        140        80       144
+ Grid ........................        140        80       144
+ Cell axes ...................     106.82     62.34    114.19
+ Cell angles .................      90.00     90.00     90.00
+ UVW (fast, medium, slow) ....          Z         X         Y
+
+ Header done
+ Sum of density in map : (  9.694E+00) 
+ Map read into memory
+ CPU total/user/sys :      14.2      12.0       2.2
+ MAPMAN > si m1 m2
+ Similarity Map : (M1) 
+ Similarity Map : (M2) 
+ Lower limits common volume : (       0        0        0) 
+ Upper limits common volume : (      10       10       10) 
+ Limits first  map  : (      11       21       11       21       11       
+  21) 
+ Limits second map  : (       1       11        1       11        1       
+  11) 
+ Number of common map points : (       1331) 
+ Nr of points in common grid : (       1331) 
+ Correlation coefficient : (   1.000) 
+ R-factor w.r.t. map 1   : (   0.000) 
+ R-factor w.r.t. map 2   : (   0.000) 
+ RMS difference          : (  0.000E+00) 
+ Shape similarity index  : (   1.000) 
+ MAPMAN > quit
+...
+STOP ... Toodle pip ... statement executed
+12.2u 2.6s 0:54 27%
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** KNOWN BUGS
+
+ None, at present.

@@ -1,0 +1,52 @@
+c
+c ... SOD.INCL - include file for SOD
+c
+c ... Gerard Kleywegt @ 930917
+c
+c ... Updated 930917
+c
+      implicit none
+c
+      character*20 prognm,vers
+      parameter (prognm = 'SOD', vers = '030313/0.9')
+c
+      character*1 delete,quote,unknown,nothing
+      parameter (delete  = '-')
+      parameter (quote   = '''')
+      parameter (unknown = 'X')
+      parameter (nothing = '+')
+c
+      integer maxres,maxseq,maxtyp
+      parameter (maxres=2000)
+      parameter (maxseq= 200)
+      parameter (maxtyp=  30)
+c
+      integer maxchr,maxopt
+      parameter (maxchr = 128)
+      parameter (maxopt = 100)
+c
+common variables ...
+c
+      integer lenseq(maxseq)
+      integer nseq,nref,ntyp,imax
+c
+      character seqnce(maxseq)*(maxres)
+      character seqnam(maxseq)*20
+      character task*4,form*4,molnam*6,prefix*1,libfil*80
+      character keep(3)*4,outfil*80,ofirst*4,refer*4
+      character replac*3,insert*3,delmut*3
+      character dumseq*(maxres),mark*1,fmtstr*80
+      character typone(maxtyp)*1,typnam(maxtyp)*3
+      character typtxt(maxtyp)*80
+c
+common blocks ...
+c
+      common /sodi01/ lenseq
+      common /sodi02/ nseq,nref,ntyp,imax
+c
+      common /sodc01/ seqnce,seqnam,keep
+      common /sodc02/ task,form,molnam,prefix,libfil,outfil
+      common /sodc03/ ofirst,refer,dumseq,mark,fmtstr,replac,
+     +                insert,delmut
+      common /sodc04/ typone,typnam,typtxt
+c

@@ -1,0 +1,17 @@
+#
+OBJ=	comdem.o ../gklib/osx_kleylib
+INCL=	Makefile_osx
+
+fc =	 g77
+
+exec =	comdem
+
+opt= -C -O -u -check_bounds
+link= -O
+
+$(exec):	$(OBJ)
+	$(fc) $(link) -o $(exec) $(OBJ) ; strip $(exec)
+
+comdem.o:	comdem.f $(INCL)
+	$(fc) $(opt) -c comdem.f
+

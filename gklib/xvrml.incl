@@ -1,0 +1,32 @@
+c
+c ... xvrml.incl - include file for XVRML subroutine library
+c
+c ... GJ Kleywegt @ 970717
+c
+      implicit none
+c
+      character*20 verstr
+ccc      parameter (verstr = 'XVRML - 990924/0.7')
+      parameter (verstr = 'XVRML - 20051205/0.8')
+c
+      integer numcol
+      parameter (numcol =  411)
+c
+      real rxrgb1,rxrgb2,rxrgb3
+c
+      integer colnum(numcol)
+      integer ixvrml
+c
+      logical lxvopn
+c
+      character colnam(numcol)*21
+c
+      common /cxvrr1/ rxrgb1,rxrgb2,rxrgb3
+c
+      common /cxvri1/ ixvrml
+      common /cxvri2/ colnum
+c
+      common /cxvrl1/ lxvopn
+c
+      common /cxvrc1/ colnam
+c

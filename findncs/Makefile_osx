@@ -1,0 +1,22 @@
+#
+OBJ=	findncs.o ../gklib/osx_kleylib  ../ccp4libs_latest_m32_osx/libccp4f.a  ../ccp4libs_latest_m32_osx/libccp4c.a
+EXEC =	findncs
+INCL=	Makefile_osx
+SUBS = 
+##SUBS## SUBS = findncs_subs.o
+##INCL## INCL = Makefile_osx findncs.incl
+##STATIC## STATIC = -static
+
+fc =	 gfortran -DOSX
+
+opt= -O -u -check_bounds -ffixed-line-length-132 -m32 -I..
+link= -O
+
+$(EXEC):	$(OBJ) $(SUBS)
+	$(fc) $(link) -o $(EXEC) $(SUBS) $(OBJ) $(STATIC) -m32 ; strip $(EXEC)
+
+findncs.o:	findncs.fpp $(INCL)
+	$(fc) $(opt) -c findncs.fpp
+
+##SUBS## findncs_subs.o:	findncs_subs.fpp $(INCL)
+##SUBS## 			$(fc) $(opt) -c findncs_subs.fpp
