@@ -1,0 +1,114 @@
+srcdir = /home/mdw/usf/Uppsala-Software-Factory
+bindir = $(srcdir)/bin
+
+FC = gfortran
+OPT = -O 
+LDFLAGS = -L/xtal/ccp4-7.0/lib -lccp4f -lccp4c -lmmdb2 -L$(srcdir)/gklib -lgk
+
+GKLIB = libgk.a
+GKLIB_OBJS = abortg.o  errcon.o  gvalin.o  ludcmp.o putlin.o  vrmlca.o xps_offset.o \
+alterm.o  errint.o  gvalio.o  lusure.o      qsortg.o  wamore.o            xps_open.o \
+anamat.o  eulatt.o  gvaluo.o  lwater.o      r2r.o     wrmask.o            xps_polar.o \
+anancs.o  extint.o  gvalut.o  mainch.o      ranrot.o  wrmcom.o            xps_polyline.o \
+anasgs.o  extrop.o  histo.o   mainuc.o      rdfhdr.o  wroezd.o            xps_ps_box.o \
+angle.o   ezdput.o  hsorti.o  mapclo.o      rdfsec.o  wroncs.o            xps_ps_comment.o \
+appstr.o  fix360.o  hsortj.o  maphdr.o      rdlib.o   wxplmp.o            xps_rgb_colour.o \
+area3.o   fixang.o  hsortr.o  mapin.o       rdmcom.o  xbatch.o            xps_scale.o \
+asciii.o  fixdif.o  hsvrgb.o  maskin.o      rdoncs.o  xhp_init.o          xps_solid.o \
+asciin.o  flusho.o  iindex.o  maskqq.o      remspa.o  xhp_lineto.o        xps_stroke.o \
+asciio.o  fratra.o  ilohi.o   maskst.o      rgb2o.o   xhp_lintyp.o        xps_symbol.o \
+asciuo.o  frcsym.o  incase.o  matejd.o      rgbhsv.o  xhp_moveto.o        xps_text.o \
+asciut.o  frctrn.o  inicmp.o  matinv.o      rlohi.o   xhp_penclr.o        xrmsd.o \
+avesdv.o  fvalii.o  inimap.o  matrot.o      rswap.o   xhp_pen.o           xshape.o \
+betacf.o  fvalin.o  inimsk.o  mereul.o      rvalii.o  xhp_penup.o         xsocket.o \
+betai.o   fvalio.o  initca.o  merpol.o      rvalin.o  xhp_pwndown.o       xstat2.o \
+bldbit.o  fvaluo.o  intrp1.o  mulmat.o      rvalio.o  xhp_stamp.o         xstats.o \
+c2car4.o  fvalut.o  intrpl.o  mulmtx.o      rvaluo.o  xhp_text.o          xvrml_box8.o \
+c2cart.o  gammln.o  invncs.o  nasort.o      rvalut.o  xhp_txtsiz.o        xvrml_cell.o \
+ccpeul.o  gaussj.o  iogenv.o  nn8.o         seqdst.o  xhp_window.o        xvrml_close.o \
+ccppol.o  genrsq.o  ioline.o  nonpar.o      setmgt.o  xinfo.o             xvrml_col_index.o \
+celvol.o  getcom.o  isitok.o  notmsk.o      shell.o   xinter.o            xvrml_col_list.o \
+chkdim.o  getelm.o  isort.o   notnuc.o      shellj.o  xopen.o             xvrml_col_name.o \
+chkrio.o  getr0.o   iswap.o   nuctyp.o      shellr.o  xopxoa.o            xvrml_colour.o \
+cnops.o   getr1.o   ivalii.o  oack.o        smooth.o  xplpol.o            xvrml_col_rgb.o \
+cntmsk.o  getr2.o   ivalin.o  oclose.o      sort2.o   xprint.o            xvrml_cpk_col.o \
+cntnbr.o  getr5.o   ivalio.o  old_alterm.o  spawno.o  xps_axes.o          xvrml_cpk.o \
+convec.o  gkargs.o  ivaluo.o  old_cntmsk.o  spline.o  xps_bold.o          xvrml_decode_rgb.o \
+copmap.o  gkatty.o  ivalut.o  old_copmij.o  stamp.o   xps_box.o           xvrml_encode_rgb.o \
+copmij.o  gkaxs1.o  jacobi.o  old_coprim.o  stars.o   xps_cart.o          xvrml_face_surf.o \
+coprim.o  gkaxs2.o  jvalii.o  old_cutmsk.o  str2i.o   xps_circle.o        xvrml_get_cyl.o \
+crank.o   gkccp4.o  jvalin.o  old_inimsk.o  str2r.o   xps_circle_part.o   xvrml_init.o \
+cutmsk.o  gkdate.o  jvalio.o  old_notmsk.o  subchr.o  xps_close.o         xvrml_open.o \
+defcor.o  gkdcpu.o  jvaluo.o  old_smooth.o  svbksb.o  xps_colour.o        xvrml_plus.o \
+defina.o  gkecpu.o  jvalut.o  opnmfl.o      svdcmp.o  xps_dash.o          xvrml_pointset.o \
+det3.o    gkerr.o   lclose.o  opoodb.o      svdmx3.o  xps_delete.o        xvrml_polyline.o \
+detaj.o   gkgarg.o  leng1.o   oprint.o      swpord.o  xps_draw.o          xvrml_rgb_name.o \
+distce.o  gkhost.o  length.o  oready.o      tangle.o  xps_ellipse.o       xvrml_scale.o \
+dist.o    gkinit.o  lhydro.o  orthog.o      telmap.o  xps_ellipse_part.o  xvrml_stick_col.o \
+dohist.o  gklibf.o  linint.o  osymop.o      textii.o  xps_filled_box.o    xvrml_stick.o \
+dosymb.o  gkmode.o  locase.o  packin.o      textin.o  xps_greek.o         xvrml_text.o \
+ed4out.o  gknarg.o  log2.o    packut.o      textio.o  xps_grey_box.o      xvrml_wire_col.o \
+edhdr.o   gknval.o  logiii.o  pbased.o      textuo.o  xps_hide.o          xvrml_wire.o \
+edin.o    gkpath.o  logiin.o  pckrho.o      textut.o  xps_init.o          xvrml_wire_surf.o \
+edinx.o   gkpid.o   logiio.o  pdbinfo.o     u3best.o  xps_inquire.o       xystat.o \
+edmout.o  gkquit.o  logiuo.o  pretty.o      u3qion.o  xps_label.o \
+edout.o   gkrand.o  logiut.o  print_rot.o   unprho.o  xps_legend.o \
+edzout.o  gkrefs.o  lsatom.o  priref.o      upcase.o  xps_line.o \
+eigsrt.o  gksys.o   lsqgjk.o  prompt.o      vecang.o  xps_long_legend.o \
+elinfo.o  gkuser.o  lsqrms.o  psrini.o      vecrtv.o  xps_mapol.o \
+erfcc.o   gvalii.o  lubksb.o  psrinp.o      voxvol.o  xps_move.o
+
+aconiodir = aconio
+avedir = ave
+cellodir = cello
+comadir = coma
+flooddir = flood
+VOIDOO_PROGS = cavity voidoo
+VOIDOO_OBJ = cavity.o voidoo.o cavity_subs.o voidoo_subs.o
+voidoodir = voidoo
+
+all: aconio cello coma flood $(VOIDOO_PROGS)
+
+$(GKLIB_OBJS):
+	cd gklib; \
+	eval $(FC) -c $(OPT) -o $@ `basename $@ .o`.f
+
+$(GKLIB): $(GKLIB_OBJS)
+	cd gklib; \
+	ar r $@ $?
+
+aconio.o ave.o cello.o coma.o flood.o:
+	pwd=`pwd`; \
+	cd `basename $@ .o`; \
+	eval $(FC) -c $(OPT) -o $$pwd/$@ `basename $@ .o`.f
+
+$(VOIDOO_OBJ):
+	pwd=`pwd`; \
+	cd voidoo; \
+	eval $(FC) -c $(OPT) -o $$pwd/$@ `basename $@ .o`.f
+
+aconio: aconio.o 
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS)
+ave: ave.o 
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS)
+cello: cello.o 
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS)
+coma: coma.o 
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS)
+flood: flood.o 
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS)
+cavity: cavity.o cavity_subs.o
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS)
+voidoo: voidoo.o voidoo_subs.o
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS)
+
+aconio.o: $(aconiodir)/aconio.f
+ave.o: $(avedir)/ave.f
+cello.o: $(cellodir)/cello.f
+coma.o: $(comadir)/coma.f
+flood.o: $(flooddir)/flood.f
+cavity.o: $(voidoodir)/cavity.f
+cavity_subs.o: $(voidoodir)/cavity_subs.f
+voidoo.o: $(voidoodir)/voidoo.f
+voidoo_subs.o: $(voidoodir)/voidoo_subs.f
+
