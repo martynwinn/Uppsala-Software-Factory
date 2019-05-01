@@ -25,8 +25,8 @@ c
       integer*8 iaptr,ibptr
       integer*8 fmalloc
 #else
-      integer iaptr,ibptr
-      integer fmalloc
+      integer*8 iaptr,ibptr
+      integer*8 fmalloc
 #endif
 c
       integer nb, mapsize, nummaps, i1, i2

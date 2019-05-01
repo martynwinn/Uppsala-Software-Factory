@@ -21,7 +21,7 @@
 #ifdef ALPHA
 typedef long address_type;
 #else
-typedef int address_type;
+typedef long address_type;
 #endif
 
 
