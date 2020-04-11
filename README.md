@@ -1,7 +1,9 @@
 Uppsala Software Factory. March 2019
 ---------------------------------------------
 
-These are the famous Uppsala Software Factory programs, rescued into GitHub. 
+These are the famous Uppsala Software Factory programs, rescued into GitHub.
+
+The following is the original README, now out-of-date!!
 
 
 Introduction
