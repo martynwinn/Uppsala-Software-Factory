@@ -1,0 +1,61 @@
+REMA
+REMA *************************************************************
+REMA
+REMA maprop.radii - library used by program MAPROP to mimick
+REMA                the method of Voorintholt et al. to display
+REMA                surfaces, cavities, clefts, tunnels etc.
+REMA
+REMA v. 0.1 - Gerard Kleijwegt @ 940320
+REMA
+REMA
+REMA use MAPROP, MAPMAN and O as follows:
+REMA power = -1, constant = 1, cuton = 1, cutoff = ~10,
+REMA reset value for unset points >= CUTOFF value
+REMA use combination method NEAR to effectively calculate
+REMA the distance to the nearest atom within ~10 A (if any)
+REMA mappage the NEWEZD map with MAPMAN; contour at e.g. +3.5 in O
+REMA with colour blue to show the approximate solvent-accessible
+REMA surface; contour at different levels to find out at what
+REMA distances cavities, tunnels, clefts etc. become closed off
+REMA
+REMA *** elements *** TWO characters; RIGHT justified
+REMA
+ELEM ' N' 1.0
+ELEM ' C' 1.0
+ELEM ' O' 1.0
+ELEM ' S' 1.0
+ELEM ' H' 1.0
+ELEM ' P' 1.0
+REMA
+REMA *************************************************************
+REMA
+REMA *** allowed residue types ***
+REMA
+RESI 'ALA'
+RESI 'ARG'
+RESI 'ASN'
+RESI 'ASP'
+RESI 'CYS'
+RESI 'GLN'
+RESI 'GLU'
+RESI 'GLY'
+RESI 'HIS'
+RESI 'ILE'
+RESI 'LEU'
+RESI 'LYS'
+RESI 'MET'
+RESI 'PHE'
+RESI 'PRO'
+RESI 'SER'
+RESI 'THR'
+RESI 'TRP'
+RESI 'TYR'
+RESI 'VAL'
+RESI 'CPR'
+RESI 'CYH'
+RESI 'PYR'
+RESI 'PCA'
+REMA
+REMA *************************************************************
+REMA
+END 

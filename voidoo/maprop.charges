@@ -1,0 +1,143 @@
+REMA
+REMA *************************************************************
+REMA
+REMA maprop.charges - atomic charge library used by program MAPROP
+REMA                - values from XPLOR tophcsdx.pro
+REMA
+REMA v. 0.1 - Gerard Kleijwegt @ 940317
+REMA
+REMA
+REMA use MAPROP, MAPMAN and O as follows:
+REMA power = 1, constant = 1 (or -1), cuton = 1, cutoff = ~7
+REMA use combination method SUM to effectively calculate
+REMA the electrostatic potential at each point for a
+REMA point charge +1 (or -1)
+REMA mappage the NEWEZD map with MAPMAN; contour at e.g. +0.5 in O
+REMA with colour blue to show positively charged patches
+REMA multiply map with -1 in MAPMAN; contour at +0.5 in O
+REMA with colour red to show negatively charged patches
+REMA
+REMA *** elements *** TWO characters; RIGHT justified
+REMA
+ELEM ' N' 1.0
+ELEM ' C' 0.0
+ELEM ' O' -1.0
+ELEM ' S' 0.0
+ELEM ' H' 0.0
+ELEM ' P' 0.0
+REMA
+ELEM 'NA' 1.0
+ELEM 'MG' 2.0
+ELEM 'CL' -1.0
+ELEM 'CA' 2.0
+ELEM 'MN' 2.0
+ELEM 'FE' 2.0
+ELEM 'ZN' 2.0
+ELEM 'CD' 2.0
+REMA
+REMA *************************************************************
+REMA
+REMA *** atom types *** FOUR characters; element is first TWO
+REMA
+ATOM ' N  ' -0.1
+ATOM ' C  '  0.55
+ATOM ' O  ' -0.55
+ATOM ' CA '  0.1
+REMA
+REMA *************************************************************
+REMA
+REMA *** residue/atom combinations *** EIGHT chracaters: RRR*AAAA
+REMA first three=residue, four=anything, five-eight=atom name
+REMA
+SPAT 'ARG* CD '  0.1
+SPAT 'ARG* NE ' -0.1
+SPAT 'ARG* CZ '  0.5
+SPAT 'ARG* NH1'  0.25
+SPAT 'ARG* NH2'  0.25
+REMA
+SPAT 'ASN* CG '  0.55
+SPAT 'ASN* OD1' -0.55
+SPAT 'ASN* ND2'  0.0
+REMA
+SPAT 'ASP* CB ' -0.16
+SPAT 'ASP* CG '  0.36
+SPAT 'ASP* OD1' -0.60
+SPAT 'ASP* OD2' -0.60
+REMA
+SPAT 'CYS* CB '  0.19
+SPAT 'CYS* SG ' -0.19
+REMA
+SPAT 'GLN* CD '  0.55
+SPAT 'GLN* OE1' -0.55
+SPAT 'GLN* NE2'  0.0
+REMA
+SPAT 'GLU* CG ' -0.16
+SPAT 'GLU* CD '  0.36
+SPAT 'GLU* OE1' -0.6
+SPAT 'GLU* OE2' -0.6
+REMA
+SPAT 'HIS* CB '  0.1
+SPAT 'HIS* CG '  0.15
+SPAT 'HIS* CD2'  0.2
+SPAT 'HIS* ND1'  0.05
+SPAT 'HIS* CE1'  0.45
+SPAT 'HIS* NE2'  0.05
+REMA
+SPAT 'LYS* CE '  0.25
+SPAT 'LYS* NZ '  0.75
+REMA
+SPAT 'MET* CG '  0.06
+SPAT 'MET* SD ' -0.12
+SPAT 'MET* CE '  0.06
+REMA
+SPAT 'PRO* N  ' -0.2
+SPAT 'PRO* CD '  0.1
+REMA
+SPAT 'SER* CB '  0.25
+SPAT 'SER* OG ' -0.25
+REMA
+SPAT 'THR* CB '  0.25
+SPAT 'THR* OG1' -0.25
+REMA
+SPAT 'TRP* CG ' -0.03
+SPAT 'TRP* CD1'  0.06
+SPAT 'TRP* CD2'  0.1
+SPAT 'TRP* NE1' -0.06
+SPAT 'TRP* CE2' -0.04
+SPAT 'TRP* CE3' -0.03
+REMA
+SPAT 'TYR* CZ '  0.25
+SPAT 'TYR* OH ' -0.25
+REMA
+REMA *************************************************************
+REMA
+REMA *** allowed residue types ***
+REMA
+RESI 'ALA'
+RESI 'ARG'
+RESI 'ASN'
+RESI 'ASP'
+RESI 'CYS'
+RESI 'GLN'
+RESI 'GLU'
+RESI 'GLY'
+RESI 'HIS'
+RESI 'ILE'
+RESI 'LEU'
+RESI 'LYS'
+RESI 'MET'
+RESI 'PHE'
+RESI 'PRO'
+RESI 'SER'
+RESI 'THR'
+RESI 'TRP'
+RESI 'TYR'
+RESI 'VAL'
+RESI 'CPR'
+RESI 'CYH'
+RESI 'PYR'
+RESI 'PCA'
+REMA
+REMA *************************************************************
+REMA
+END 

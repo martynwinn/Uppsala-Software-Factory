@@ -1,0 +1,57 @@
+REMA
+REMA *************************************************************
+REMA
+REMA maprop.atypes - atomic type library used by program MAPROP
+REMA
+REMA v. 0.1 - Gerard Kleijwegt @ 940317
+REMA
+REMA
+REMA use MAPROP, MAPMAN and O as follows:
+REMA power = 0, constant = 1, cuton = 0.1, cutoff = ~2
+REMA use combination method NEAR to effectively calculate
+REMA the atom type of the nearest atom within ~2 A (if any)
+REMA mappage the NEWEZD map with MAPMAN; contour at e.g. +6.5 in O
+REMA with colour blue to show patches close to N, O, S etc.
+REMA contour at +16.5 to see patches aroung metal ions etc.
+REMA
+REMA *** elements *** TWO characters; RIGHT justified
+REMA
+ELEM ' N' 7.0
+ELEM ' C' 6.0
+ELEM ' O' 8.0
+ELEM ' S' 16.0
+ELEM ' H' 1.0
+ELEM ' P' 15.0
+REMA
+REMA *************************************************************
+REMA
+REMA *** allowed residue types ***
+REMA
+RESI 'ALA'
+RESI 'ARG'
+RESI 'ASN'
+RESI 'ASP'
+RESI 'CYS'
+RESI 'GLN'
+RESI 'GLU'
+RESI 'GLY'
+RESI 'HIS'
+RESI 'ILE'
+RESI 'LEU'
+RESI 'LYS'
+RESI 'MET'
+RESI 'PHE'
+RESI 'PRO'
+RESI 'SER'
+RESI 'THR'
+RESI 'TRP'
+RESI 'TYR'
+RESI 'VAL'
+RESI 'CPR'
+RESI 'CYH'
+RESI 'PYR'
+RESI 'PCA'
+REMA
+REMA *************************************************************
+REMA
+END 

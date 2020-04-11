@@ -1,0 +1,22 @@
+c
+c === MAPROP_DIM.INCL === dimensioning include file for program MAPROP
+c
+c ... MAXELM = max nr of chemical elements (needed for properties)
+c     MAXATY = max nr of atom types
+c     MAXRAC = max nr of residue/atom combinations
+c     MAXATM = max nr of atoms
+c     MAXRES = max nr of residue types to keep
+c     MAXGRD = max nr of points in any one direction
+c     MAXBUF = buffer size
+c
+      integer maxelm,maxaty,maxatm,maxres,maxbuf
+      integer maxgrd,maxrac
+c
+      parameter (maxelm =    50)
+      parameter (maxaty =   100)
+      parameter (maxrac =   500)
+      parameter (maxatm = 50000)
+      parameter (maxres =    50)
+      parameter (maxgrd =  1000)
+      parameter (maxbuf = 4*1024*1024)
+c

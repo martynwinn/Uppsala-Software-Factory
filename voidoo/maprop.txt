@@ -1,0 +1,576 @@
+
+ ** MAPROP - GENERAL INFORMATION
+
+ Program : MAPROP
+ Version : 950118
+ Author  : Gerard J. Kleywegt, Dept. of Cell and Molecular Biology,
+           Uppsala University, Biomedical Centre, Box 596,
+           SE-751 24 Uppsala, SWEDEN
+ E-mail  : gerard@xray.bmc.uu.se
+ Purpose : calculate properties on a grid
+ Package : VOIDOO
+
+ ** REFERENCES
+
+ Reference(s) for this program:
+
+ *  1 * G.J. Kleywegt & T.A. Jones (1993). Biomacromolecular
+        Speleology. CCP4/ESF-EACBM Newsletter on Protein
+        Crystallography 29, November 1993, pp. 26-28.
+        [http://xray.bmc.uu.se/usf/factory_2.html]
+
+ *  2 * G.J. Kleywegt & T.A. Jones (1994).  Detection, delineation,
+        measurement and display of cavities in macromolecular
+        structures. Acta Cryst D50, 178-185.
+        [http://scripts.iucr.org/cgi-bin/paper?gr0263]
+
+ *  3 * Kleywegt, G.J., Zou, J.Y., Kjeldgaard, M. & Jones, T.A. (2001).
+        Around O. In: "International Tables for Crystallography, Vol. F.
+        Crystallography of Biological Macromolecules" (Rossmann, M.G.
+        & Arnold, E., Editors). Chapter 17.1, pp. 353-356, 366-367.
+        Dordrecht: Kluwer Academic Publishers, The Netherlands.
+
+ ** VERSION HISTORY
+
+ 940317 - 0.1 - initial version & documentation
+ 940318 - 0.2 - removed bug; minor changes
+ 940320 - 0.3 - added RESET constant; made 'radii' library
+ 940419 - 0.4 - started option "NEST" (requires more work later)
+ 950118 - 0.5 - sensitive to environment variable GKLIB
+
+ ** INTRODUCTION
+
+ MAPROP is a simple program to calculate properties of 
+   molecules on a grid.  For example, you can generate a
+   map with the electrostatic potential for each grid
+   point, or a map which contains the element number of
+   the nearest atom.
+ Depending on the library file and parameters that you
+   feed into the program, you can calculate all sorts
+   of grid-based properties.
+ One day, O may contain an option to colour a map
+   depending on the value for that grid point in some
+   other map.  Then, it will be trivial to colour-code
+   a van der Waals surface by the type of the nearest
+   atom or residue, for example.  Until that day, the
+   most useful application of MAPROP will probably be
+   in calculating electrostatic potential and polarity
+   or hydrophobicity maps.
+
+ NOTE: This program is sensitive to the environment variable
+   GKLIB.  If set, the name of this directory will be prepended
+   to the default name for the library file needed by this
+   program.  For example, in Uppsala, put the following line
+   in your .login or .cshrc file:
+   setenv GKLIB /nfs/public/lib
+
+ ** INPUT
+
+ The following input is required:
+
+ (1) a library which contains values of any property
+     for the atoms that occur in your molecule.  The
+   format for such files is identical to that of VOIDOO
+   library files (see the VOIDOO manual).  Property values
+   may be listed for chemical elements, specific atoms
+   or residue/atom-type combinations.  In addition, the file
+   must contain a list of residue types which are to be
+   used by MAPROP (residues not occurring in this list are
+   rejected on input).
+
+ (2) a structure in the form of a PDB file.
+
+ (3) parameters for the grid calculations:
+     the following map P(X) will be calculated, where,
+   for each atom A and each grid point X, R = distance(A,X):
+  
+ IF R > Cutoff => no contribution
+ IF R < Cuton  => P(X) = P(A) * C
+ ELSE          => P(X) = P(A) * C / (R^N)
+  
+ All points which are NOT set, will be given a value Q
+
+ C is a constant and N and integer power (.., -1, 0, 1, 2, ..)
+   to which the distance should be raised.
+  
+ Values for different atoms A near X may be combined:
+ SUM  -> sum all values from contributing atoms
+ PROD -> multiply them
+ MIN  -> take the minimum
+ MAX  -> take the maximum
+ NEAR -> only keep value of the nearest atom
+
+ (4) the grid spacing for the output map (in A).  The map
+     will be in New EZD format.  This means that it can be
+   read and displayed by O directly, or mappaged with MAPMAN.
+   The grid will be such that it encompasses your molecule,
+   and a margin of (CUTOFF + 1.0) A will be added on all
+   sides (but never less than 3 A, or more than 10 A).
+
+ ** ALGORITHM
+
+ First, the grid will be initialised.  The initial value
+   depends on the combination option you have chosen:
+   for NEAR and SUM this value is 0.0, for PROD 1.0, for
+   MIN 999999.999 and for MAX -999999.999.  The distance
+   map (to encode the shortest distance of a grid point
+   to any atom in the case of NEAR, and to record if a
+   grid point has been given a value in the other cases)
+   is initialised with a value of 999999.999.
+
+ Second, the map is calculated.  A loop is carried out over
+   all atoms.  For each atom, the part of the map which can be
+   affected by it (depends on its position in space and the
+   value of CUTOFF) is delineated and all grid points are
+   tested to check their distance.  Depending on the distance
+   and the type of combination you selected, the corresponding
+   value in the map is updated appropriately.  A message is
+   printed every 500 atoms so you know the program is still
+   working.  Afterwards, all map points which were not set that you
+   (i.e., not close enough to any atom) are reset to a value
+   supplied.  Some statistics of the map are printed and, finally,
+   it is written to a file (note that a dummy cell is introduced
+   by MAPROP).
+
+ The map is written is new EZD format.  Some CPU time is spent
+   to minimise the amount of disk space occupied by the file
+   (by removing zeroes behind the decimal point, and by replacing
+   multiple spaces by only one space).  Although this takes some
+   time (but only once !), it reduces the file size by typically
+   50 % or more.
+
+ Now, the map can be read by MAPMAN, multiplied by -1.0 in
+   some cases, and mappaged.  All you have to do now, is to
+   centre on your molecule and draw the map(s) !
+
+ ** EXAMPLE
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ % 364 gerard rigel 21:16:43 scratch/gerard > run maprop
+ 
+... Run maprop
+ 
+... Executing /nfs/public/IRIX/bin/4d_maprop
+... For gerard on rigel at Sun Mar 20 21:17:24 MET 1994
+ 
+
+ *** MAPROP *** MAPROP *** MAPROP *** MAPROP *** MAPROP *** MAPROP *** 
+
+ Version  - 940320/0.3
+ (C) 1993/4 Gerard J. Kleywegt, Dept. Mol. Biology, BMC, Uppsala (S)
+ User I/O - routines courtesy of Rolf Boelens, Univ. of Utrecht (NL)
+ Others   - T.A. Jones, G. Bricogne, Rams, W.A. Hendrickson
+ Others   - W. Kabsch, CCP4, PROTEIN, etc. etc.
+
+ Started  - Sun Mar 20 21:17:24 1994
+ User     - gerard
+ Mode     - interactive
+ Host     - rigel
+ ProcID   - 10380
+ Tty      - /dev/ttyq1
+
+ *** MAPROP *** MAPROP *** MAPROP *** MAPROP *** MAPROP *** MAPROP *** 
+
+
+ ***** MAPROP ***** MAPROP ***** MAPROP ***** MAPROP ***** MAPROP ***** 
+
+                          Current version : 940320/0.3  
+                          Max nr of atoms :      50000
+                       Max nr of elements :         50
+                     Max nr of atom types :        100
+             Max nr of residue/atom types :        500
+                  Max nr of residue types :         50
+                 Max nr of points for map :    8388608
+               Ditto, for distance buffer :    8388608
+      Memory use (Bytes) for major arrays :   67908864
+
+ ***** MAPROP ***** MAPROP ***** MAPROP ***** MAPROP ***** MAPROP ***** 
+
+ Data input
+ ----------
+  
+ (1) Property values and residue types
+  
+ Library file ? (maprop.lib) /home/gerard/progs/maprop/maprop.charges
+  
+ Reading your library file ...
+ Nr of lines in library file : (        143) 
+ Nr of elements defined      : (         14) 
+ Nr of atom types defined    : (          4) 
+ Nr of residue/atom types    : (         46) 
+ Nr of residue types defined : (         24) 
+
+ ELEM       N    1.00       C    0.00       O   -1.00       S    0.00
+ ELEM       H    0.00       P    0.00      NA    1.00      MG    2.00
+ ELEM      CL   -1.00      CA    2.00      MN    2.00      FE    2.00
+ ELEM      ZN    2.00      CD    2.00
+
+ ATOM       N   -0.10       C    0.55       O   -0.55       CA   0.10
+
+ SPAT  ARG  CD   0.10  ARG  NE  -0.10  ARG  CZ   0.50  ARG  NH1  0.25
+ SPAT  ARG  NH2  0.25  ASN  CG   0.55  ASN  OD1 -0.55  ASN  ND2  0.00
+ SPAT  ASP  CB  -0.16  ASP  CG   0.36  ASP  OD1 -0.60  ASP  OD2 -0.60
+ SPAT  CYS  CB   0.19  CYS  SG  -0.19  GLN  CD   0.55  GLN  OE1 -0.55
+ SPAT  GLN  NE2  0.00  GLU  CG  -0.16  GLU  CD   0.36  GLU  OE1 -0.60
+ SPAT  GLU  OE2 -0.60  HIS  CB   0.10  HIS  CG   0.15  HIS  CD2  0.20
+ SPAT  HIS  ND1  0.05  HIS  CE1  0.45  HIS  NE2  0.05  LYS  CE   0.25
+ SPAT  LYS  NZ   0.75  MET  CG   0.06  MET  SD  -0.12  MET  CE   0.06
+ SPAT  PRO  N   -0.20  PRO  CD   0.10  SER  CB   0.25  SER  OG  -0.25
+ SPAT  THR  CB   0.25  THR  OG1 -0.25  TRP  CG  -0.03  TRP  CD1  0.06
+ SPAT  TRP  CD2  0.10  TRP  NE1 -0.06  TRP  CE2 -0.04  TRP  CE3 -0.03
+ SPAT  TYR  CZ   0.25  TYR  OH  -0.25
+
+ RESI      ALA     ARG     ASN     ASP     CYS     GLN     GLU     GLY
+ RESI      HIS     ILE     LEU     LYS     MET     PHE     PRO     SER
+ RESI      THR     TRP     TYR     VAL     CPR     CYH     PYR     PCA
+  
+ (2) PDB file
+  
+ PDB file name ? (in.pdb) a16.pdb
+  
+ Reading your PDB file ...
+ REMARK WRITTEN BY O VERSION 5.9.1
+ REMARK SAT SEP 18 01:38:23 1993
+ Number of atoms read     : (       3220) 
+ Number of atoms kept     : (       3220) 
+ Number of atoms rejected : (          0) 
+ No residue types rejected
+  
+ (3) Various parameters
+
+ The following map P(X) will be calculated:
+  
+ For each atom A and each grid point X,
+ R = distance(A,X):
+  
+ IF R > Cutoff => no contribution
+ IF R < Cuton  => P(X) = P(A) * C
+ ELSE          => P(X) = P(A) * C / (R^N)
+  
+ All points which are NOT set, will be given
+ a value Q
+  
+ Values for different atoms A may be combined:
+ SUM  -> sum all values from contributing atoms
+ PROD -> multiply them
+ MIN  -> take the minimum
+ MAX  -> take the maximum
+ NEAR -> only keep value of the nearest atom
+
+ Minimal radius CUTON  (>0)     ? (   1.000) 1
+ Minimal radius CUTON           : (  1.000E+00) 
+ Maximal radius CUTOFF (>CUTON) ? (   7.000) 10
+ Maximal radius CUTOFF          : (  1.000E+01) 
+ Constant C (<> 0)              ? (   1.000) 1
+ Constant C                     : (  1.000E+00) 
+ Radius power N                 ? (       1) 1
+ Radius power N                 : (       1) 
+ Uniform value for unset points ? (   0.000) 0
+ Uniform value for unset points : (  0.000E+00) 
+ Combine SUM/PROD/MIN/MAX/NEAR  ? (SUM) SUM
+ Combination method             : (SUM) 
+ Name of map file (NEWEZD)      ? (maprop.nezd) sgi.nezd
+ Name of map file (NEWEZD)      : (sgi.nezd) 
+  
+ (4) Map grid
+  
+ Min, max, cog for X :      5.228    54.913    30.107
+ Min, max, cog for Y :     40.635    86.626    63.884
+ Min, max, cog for Z :     26.399    91.680    61.070
+ Grid spacing (A)        ? (   1.000) 
+ Grid spacing (A)        : (   1.000) 
+ Margin on all sides (A) : (  10.000) 
+ Min, max, cog for X :     -5.000    65.000
+ Min, max, cog for Y :     29.000    97.000
+ Min, max, cog for Z :     15.000   102.000
+ Number of grid points : (         71          69          88) 
+ Required buffer       : (     431112) 
+ Buffer size           : (    8388608) 
+ % of buffer needed    : (   5.139) 
+ Volume per voxel (A3) : (  1.000E+00) 
+  
+ Data input done
+ ---------------
+  
+  1 CPU total/user/sys :       3.4       3.0       0.4
+
+ Clearing nearest atom buffer ...
+
+  2 CPU total/user/sys :       0.3       0.3       0.0
+
+ Initialising map with value : (  0.000E+00) 
+
+  3 CPU total/user/sys :       0.4       0.3       0.1
+
+ Calculating map ...
+ Nr of atoms done : (        500) 
+ Nr of atoms done : (        500) 
+ Nr of atoms done : (       1000) 
+ Nr of atoms done : (       1500) 
+ Nr of atoms done : (       2000) 
+ Nr of atoms done : (       2500) 
+ Nr of atoms done : (       3000) 
+
+  4 CPU total/user/sys :     182.2     178.2       4.0
+
+ Resetting unset points to : (  0.000E+00) 
+ Nr of points reset : (     250437) 
+ Out of a total of  : (     431112) 
+
+ Nr of points in grid : (     431112) 
+ Sum of values in map : ( -1.346E+04) 
+ Average value in map : ( -3.121E-02) 
+ St. Deviation        : (  1.231E-01) 
+ Minimum value in map : ( -1.496E+00) 
+ Maximum value in map : (  1.177E+00) 
+
+  5 CPU total/user/sys :       1.7       1.6       0.1
+
+ Opening New-EZD map file ...
+
+ Writing map ...
+ CELL 200.000 200.000 200.000 90.000 90.000 90.000
+ ORIGIN -5 29 15
+ EXTENT 71 69 88
+ GRID 200 200 200
+ SCALE 1.000
+
+  6 CPU total/user/sys :     111.9     109.7       2.2
+
+
+ *** MAPROP *** MAPROP *** MAPROP *** MAPROP *** MAPROP *** MAPROP *** 
+
+ Version - 940320/0.3
+ Started - Sun Mar 20 21:17:24 1994
+ Stopped - Sun Mar 20 21:23:32 1994
+
+ CPU-time taken :
+ User    -    293.0 Sys    -      6.9 Total   -    299.9
+
+ *** MAPROP *** MAPROP *** MAPROP *** MAPROP *** MAPROP *** MAPROP *** 
+
+ >>> This program (C) 1993-94, GJ Kleywegt & TA Jones <<<
+ E-mail: "gerard@xray.bmc.uu.se" or "alwyn@xray.bmc.uu.se"
+
+ *** MAPROP *** MAPROP *** MAPROP *** MAPROP *** MAPROP *** MAPROP *** 
+
+STOP ... Toodle pip ... statement executed
+
+real     6:08.3
+user     4:53.0
+sys         6.9
+ 
+... Started  Sun Mar 20 21:17:24 MET 1994
+... Finished Sun Mar 20 21:23:32 MET 1994
+... Mode     Normal
+ 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** APPLICATIONS
+
+ ## electrostatic potential map
+ Use the library file 'maprop.charges', a power of 1,
+  constant of 1 (or -1), cuton of 1 and cutoff of ~7-15.
+  If you now SUM the contributions of the atoms, you will
+  get a map of the electrostatic potential for a point
+  charge +1 (or -1).  Mappage the map, contour at ~0.5 in
+  O in blue and you'll see where the positively charged
+  patches are.  Multiply the map with -1.0 in MAPMAN, contour
+  at ~0.5 again in red and you'll see the negatively charged
+  patches in your structure.
+  Formula: Velectrostatic = Qpoint * SUM (Qatom/Distance)
+  where the sum is cut off to only include interactions
+  with nearby atoms.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+REMA maprop.charges - atomic charge library used by program MAPROP
+REMA                - values from XPLOR tophcsdx.pro
+...
+ELEM ' N' 1.0
+ELEM ' C' 0.0
+ELEM ' O' -1.0
+ELEM ' S' 0.0
+ELEM ' H' 0.0
+ELEM ' P' 0.0
+REMA
+ELEM 'NA' 1.0
+ELEM 'MG' 2.0
+...
+ATOM ' N  ' -0.1
+ATOM ' C  '  0.55
+ATOM ' O  ' -0.55
+ATOM ' CA '  0.1
+...
+SPAT 'ARG* CD '  0.1
+SPAT 'ARG* NE ' -0.1
+SPAT 'ARG* CZ '  0.5
+SPAT 'ARG* NH1'  0.25
+SPAT 'ARG* NH2'  0.25
+REMA
+SPAT 'ASN* CG '  0.55
+SPAT 'ASN* OD1' -0.55
+SPAT 'ASN* ND2'  0.0
+...
+SPAT 'TYR* CZ '  0.25
+SPAT 'TYR* OH ' -0.25
+...
+RESI 'ALA'
+RESI 'ARG'
+RESI 'ASN'
+RESI 'ASP'
+...
+RESI 'VAL'
+RESI 'CPR'
+RESI 'CYH'
+RESI 'PYR'
+RESI 'PCA'
+END 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## type-of-nearest-atom map
+ Use the library file 'maprop.atypes', a power of 0,
+  constant of 1 , cuton of 0.1 and cutoff of ~2.
+  If you use NEAR, you will 'calculate' the atom type
+  of the nearest atom within ~2 A (if any).  Mappage the map,
+  contour at ~6.5 in O in blue and you'll see patches close
+  to N, O, S etc.  Contour at +16.5 to see patches around
+  metal ions etc.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+REMA maprop.atypes - atomic type library used by program MAPROP
+...
+ELEM ' N' 7.0
+ELEM ' C' 6.0
+ELEM ' O' 8.0
+ELEM ' S' 16.0
+ELEM ' H' 1.0
+ELEM ' P' 15.0
+...
+RESI 'ALA'
+RESI 'ARG'
+...
+RESI 'PCA'
+END 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## polarity/hydrophobicity map
+ Use the library file 'maprop.polar', a power of 1 (or 2 or ...),
+  constant of 1 , cuton of 1 and cutoff of ~7.
+  If you use SUM, you will calculate how polar or hydrophobic
+  the environment of each grid point is.  Contour at e.g. +2
+  in blue to see polar patches, or multiply the map by -1.0
+  and contour at +2.0 in green to see hydrophobic patches.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+REMA maprop.polar - "polarity" library used by program MAPROP
+REMA              - code: polar +1, hydrophobic -1, rest 0
+...
+ELEM ' N' 1.0
+ELEM ' C' -1.0
+ELEM ' O' 1.0
+ELEM ' S' 0.0
+ELEM ' H' 0.0
+ELEM ' P' 0.0
+...
+ATOM ' N  '  1.0
+ATOM ' C  '  0.0
+ATOM ' O  '  1.0
+ATOM ' CA ' -1.0
+...
+SPAT 'ARG* CD '  0.0
+SPAT 'ARG* CZ '  0.0
+...
+SPAT 'TYR* CZ '  0.0
+...
+RESI 'ALA'
+RESI 'ARG'
+...
+RESI 'PCA'
+END 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ## grid-based structure alignment
+ Suppose you have two molecules which have different sequences,
+  shapes etc. but which you suspect to bind the same ligand due
+  to similar 'electrostatic potential shape'.  You can now easily
+  align the two molecules !  First, get an initial alignment,
+  e.g. with O or LSQMAN.  Second, calculate an electrostatic
+  potential map for both molecules separately.  Third, generate
+  a mask with MAMA which is big enough to fit both; use the same
+  grid, cell etc. as for the MAPROP map of one of the two molecules.
+  Now, use the automatic inter-crystal operator improvement option
+  in IMP to improve the alignment of the two molecules based on
+  the fit of their electrostatic potential maps !
+
+ ## surfaces, cavities, etc.
+ Use 'maprop.radii', cuton 1.0, cutoff ~10, power -1 (!) and
+  a reset value equal to or grater than the cutoff radius.  Use
+  combination option NEAR to effectively calculate the distance
+  to the nearest atom within ~10 A (if any).
+ Mappage the NEWEZD map with MAPMAN; contour at e.g. +3.5 in O
+  with colour blue to show the approximate solvent-accessible
+  surface; contour at different levels to find out at what
+  radii cavities, tunnels, clefts etc. become closed off.  This
+  application of MAPROP is inspired by the method of Voorintholt
+  et al. for visualising cavities.
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+REMA maprop.radii - library used by program MAPROP to mimick
+REMA                the method of Voorintholt et al. to display
+REMA                surfaces, cavities, clefts, tunnels etc.
+...
+ELEM ' N' 1.0
+ELEM ' C' 1.0
+ELEM ' O' 1.0
+ELEM ' S' 1.0
+ELEM ' H' 1.0
+ELEM ' P' 1.0
+...
+RESI 'ALA'
+RESI 'ARG'
+...
+RESI 'PCA'
+END 
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ ** NOTES
+
+ - speed: the algorithm scales up linearly with the number
+    of atoms, and with the third power of the reciprocal
+    grid spacing as well as the third power of the cut-off
+    radius.  If the radius power N is unequal zero, a square
+    root has to be evaluated for every grid point.  If the
+    power is -2, -1, 1 or 2, the formula is explicit; otherwise
+    (RADIUS**POWER) is explicitly evaluated.
+
+ - timing: identical runs on an ESV, R3000 SGI/Indigo and
+    a DEC/Alpha (3220 atoms, calculating electrostatic potential,
+    cut-on 1.0, cut-off 10.0, power 1, SUM method, reset value
+    0.0, grid spacing 1.0 A yielding 431,112 grid points of
+    which 250437 were reset afterwards) require the following
+    amounts of CPU time (user/system time):
+
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+			ESV		SGI		ALPHA
+			-----------	-----------	-----------
+    map calculation	247.9 / 0.1	178.2 / 4.0	 61.4 / 0.3
+    map output		222.5 / 1.1	109.7 / 2.2	 32.9 / 4.5
+    total for the run	478.0 / 2.0	293.0 / 6.6	 95.4 / 5.0
+    speed-up vs. ESV	1.0		1.6		5.0
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+
+ Other than in the header line, there were no differences
+    between the resulting EZD files.
+
+ - MAPMAN, MAMA and IMP are part of the RAVE package; LSQMAN is
+    part of the DEJAVU package
+
+ - if you create new library files for calculating other properties,
+    please send them to me for redistribution to other users
+
+ - if you would like to see changes to the map-calculation formula,
+    or more of them, let me know
+
+ ** KNOWN BUGS
+
+ None, at present.

@@ -1,0 +1,85 @@
+c
+c === MAPROP.INCL === main include file for program MAPROP
+c
+c Gerard Kleywegt @ 940317
+c
+c Updated 940317,18,20
+c Updated 950118
+c
+      implicit none
+c
+      character*12 prognm,version
+c
+      parameter (prognm = 'MAPROP', version = '950118/0.5')
+c
+      include 'maprop_dim.incl'
+c
+c ... MEMUSE - memory used for major arrays (in BYTES)
+c
+      integer memuse
+c
+      parameter (memuse = 4*maxatm*4 + 3*maxbuf*4)
+c
+c ELEMENT DATA  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+c
+      real prorad(maxelm),prorat(maxaty),prorac(maxrac)
+      integer numelm,numaty,numrac
+      character namelm(maxelm)*2,namaty(maxaty)*4
+      character namrac(maxrac)*8
+c
+common
+c
+      common /cbelm1/ prorad,prorat,prorac
+      common /cbelm2/ numelm,numaty,numrac
+      common /cbelm3/ namelm,namaty,namrac
+c
+c RESIDUE DATA  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+c
+      integer numres
+      character resnam(maxres)*3
+c
+common
+c
+      common /cbres1/ numres
+      common /cbres2/ resnam
+c
+c ATOM DATA  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+c
+      real xd(maxatm),yd(maxatm),zd(maxatm),dpro(maxatm)
+      integer natoms,nrejec
+      character atmnam(maxatm)*15
+c
+common
+c
+      common /cbatm1/ xd,yd,zd,dpro
+      common /cbatm2/ natoms,nrejec
+      common /cbatm3/ atmnam
+c
+c GRID DATA  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+c
+      real rbuff(maxbuf),dbuff(maxbuf)
+      real xg(maxgrd),yg(maxgrd),zg(maxgrd)
+      real xmin,xmax,ymin,ymax,zmin,zmax,gsize,volppt
+      integer ngrid(3),nxy,nxyz
+      integer nbrcnt(maxbuf)
+c
+common
+c
+      common /cbden1/ xmin,xmax,ymin,ymax,zmin,zmax,gsize,volppt,
+     +                xg,yg,zg
+      common /cbden2/ ngrid,nxy,nxyz
+      common /cbden3/ rbuff,dbuff
+      common /cbden4/ nbrcnt
+c
+c VARIOUS DATA  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+c
+      real cuton,cutoff,const,total,user,sys,corest
+      integer power,ierror
+      character dfile*80,combi*4
+c
+common
+c
+      common /cbvar1/ cuton,cutoff,const,corest
+      common /cbvar2/ power,ierror
+      common /cbvar3/ dfile,combi
+c
