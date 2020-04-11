@@ -1,9 +1,10 @@
-srcdir = /home/mdw/usf/Uppsala-Software-Factory
+srcdir = /home/mdw/USF/Uppsala-Software-Factory
 bindir = $(srcdir)/bin
 
 FC = gfortran
 OPT = -O 
-LDFLAGS = -L/xtal/ccp4-7.0/lib -lccp4f -lccp4c -lmmdb2 -L$(srcdir)/gklib -lgk
+LDFLAGS_CCP4 = -L/xtal/ccp4-7.0/lib -lccp4f -lccp4c -lmmdb2
+LDFLAGS = -L$(srcdir)/gklib -lgk
 
 GKLIB = libgk.a
 GKLIB_OBJS = abortg.o  errcon.o  gvalin.o  ludcmp.o putlin.o  vrmlca.o xps_offset.o \
@@ -62,12 +63,18 @@ aconiodir = aconio
 avedir = ave
 cellodir = cello
 comadir = coma
+comapdir = comap
+comdemdir = comdem
+cravedir = crave
+datamandir = dataman
+essensdir = essens
+findncsdir = findncs
 flooddir = flood
-VOIDOO_PROGS = cavity voidoo
-VOIDOO_OBJ = cavity.o voidoo.o cavity_subs.o voidoo_subs.o
+VOIDOO_PROGS = cavity voidoo maprop
+VOIDOO_OBJ = cavity.o voidoo.o cavity_subs.o voidoo_subs.o maprop.o
 voidoodir = voidoo
 
-all: aconio cello coma flood $(VOIDOO_PROGS)
+all: aconio cello crave findncs flood $(VOIDOO_PROGS)
 
 $(GKLIB_OBJS):
 	cd gklib; \
@@ -77,7 +84,7 @@ $(GKLIB): $(GKLIB_OBJS)
 	cd gklib; \
 	ar r $@ $?
 
-aconio.o ave.o cello.o coma.o flood.o:
+aconio.o ave.o cello.o coma.o comap.o comdem.o flood.o:
 	pwd=`pwd`; \
 	cd `basename $@ .o`; \
 	eval $(FC) -c $(OPT) -o $$pwd/$@ `basename $@ .o`.f
@@ -87,28 +94,48 @@ $(VOIDOO_OBJ):
 	cd voidoo; \
 	eval $(FC) -c $(OPT) -o $$pwd/$@ `basename $@ .o`.f
 
-aconio: aconio.o 
+aconio: $(aconiodir)/aconio.o 
 	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS)
-ave: ave.o 
+ave: $(avedir)/ave.o 
 	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS)
-cello: cello.o 
+cello: $(cellodir)/cello.o 
 	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS)
-coma: coma.o 
+coma: $(comadir)/coma.o 
 	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS)
-flood: flood.o 
+comap: $(comapdir)/comap.o 
 	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS)
-cavity: cavity.o cavity_subs.o
+comdem: $(comdemdir)/comdem.o 
 	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS)
-voidoo: voidoo.o voidoo_subs.o
+crave: $(cravedir)/crave.o 
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS)
+dataman: $(datamandir)/dataman.o 
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS)
+essens: $(essensdir)/essens.o 
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS)
+findncs: $(findncsdir)/findncs.o 
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS)
+flood: $(flooddir)/flood.o 
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS) $(LDFLAGS_CCP4)
+cavity: $(voidoodir)/cavity.o $(voidoodir)/cavity_subs.o
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS)
+voidoo: $(voidoodir)/voidoo.o $(voidoodir)/voidoo_subs.o
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS)
+maprop: $(voidoodir)/maprop.o
 	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS)
 
-aconio.o: $(aconiodir)/aconio.f
-ave.o: $(avedir)/ave.f
-cello.o: $(cellodir)/cello.f
-coma.o: $(comadir)/coma.f
-flood.o: $(flooddir)/flood.f
-cavity.o: $(voidoodir)/cavity.f
-cavity_subs.o: $(voidoodir)/cavity_subs.f
-voidoo.o: $(voidoodir)/voidoo.f
-voidoo_subs.o: $(voidoodir)/voidoo_subs.f
-
+$(aconiodir)/aconio.o: $(aconiodir)/aconio.f
+$(avedir)/ave.o: $(avedir)/ave.f
+$(cellodir)/cello.o: $(cellodir)/cello.f
+$(comadir)/coma.o: $(comadir)/coma.f
+$(comapdir)/comap.o: $(comapdir)/comap.f
+$(comdemdir)/comdem.o: $(comdemdir)/comdem.f
+$(cravedir)/crave.o: $(cravedir)/crave.f
+$(datamandir)/dataman.o: $(datamandir)/dataman.f
+$(essensdir)/essens.o: $(essensdir)/essens.f
+$(findncsdir)/findncs.o: $(findncsdir)/findncs.f
+$(flooddir)/flood.o: $(flooddir)/flood.f
+$(voidoodir)/cavity.o: $(voidoodir)/cavity.f
+$(voidoodir)/cavity_subs.o: $(voidoodir)/cavity_subs.f
+$(voidoodir)/voidoo.o: $(voidoodir)/voidoo.f
+$(voidoodir)/voidoo_subs.o: $(voidoodir)/voidoo_subs.f
+$(voidoodir)/maprop.o: $(voidoodir)/maprop.f $(voidoodir)/maprop.incl $(voidoodir)/maprop_dim.incl
