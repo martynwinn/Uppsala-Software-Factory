@@ -1,12 +1,14 @@
 srcdir = /home/mdw/USF/Uppsala-Software-Factory
 bindir = $(srcdir)/bin
 
+CC = gcc
 FC = gfortran
-OPT = -O 
+OPT = -O -cpp
 LDFLAGS_CCP4 = -L/xtal/ccp4-7.0/lib -lccp4f -lccp4c -lmmdb2
 LDFLAGS = -L$(srcdir)/gklib -lgk
 
 GKLIB = libgk.a
+GKLIB_COBJS = fmalloc.o
 GKLIB_OBJS = abortg.o  errcon.o  gvalin.o  ludcmp.o putlin.o  vrmlca.o xps_offset.o \
 alterm.o  errint.o  gvalio.o  lusure.o      qsortg.o  wamore.o            xps_open.o \
 anamat.o  eulatt.o  gvaluo.o  lwater.o      r2r.o     wrmask.o            xps_polar.o \
@@ -52,7 +54,7 @@ ed4out.o  gknarg.o  log2.o    packut.o      textio.o  xps_grey_box.o      xvrml_
 edhdr.o   gknval.o  logiii.o  pbased.o      textuo.o  xps_hide.o          xvrml_wire.o \
 edin.o    gkpath.o  logiin.o  pckrho.o      textut.o  xps_init.o          xvrml_wire_surf.o \
 edinx.o   gkpid.o   logiio.o  pdbinfo.o     u3best.o  xps_inquire.o       xystat.o \
-edmout.o  gkquit.o  logiuo.o  pretty.o      u3qion.o  xps_label.o \
+edmout.o  gkquit.o  logiuo.o  pretty.o      u3qion.o  xps_label.o  \
 edout.o   gkrand.o  logiut.o  print_rot.o   unprho.o  xps_legend.o \
 edzout.o  gkrefs.o  lsatom.o  priref.o      upcase.o  xps_line.o \
 eigsrt.o  gksys.o   lsqgjk.o  prompt.o      vecang.o  xps_long_legend.o \
@@ -70,23 +72,54 @@ datamandir = dataman
 essensdir = essens
 findncsdir = findncs
 flooddir = flood
-VOIDOO_PROGS = cavity voidoo maprop
-VOIDOO_OBJ = cavity.o voidoo.o cavity_subs.o voidoo_subs.o maprop.o
+impdir = imp
+lsqmandir = lsqman
+mapfixdir = mapfix
+mappagedir = mappage
+mavedir = mave
+ncs6ddir = ncs6d
+odbmandir = odbman
 voidoodir = voidoo
 
-all: aconio cello crave findncs flood $(VOIDOO_PROGS)
+PROGS = aconio ave cello coma comap comdem crave dataman essens findncs flood imp lsqman mapfix \
+mappage mave ncs6d odbman
+PROG_OBJS = $(aconiodir)/aconio.o $(avedir)/ave.o $(cellodir)/cello.o $(comadir)/coma.o \
+$(comapdir)/comap.o $(comdemdir)/comdem.o $(cravedir)/crave.o \
+$(essensdir)/essens.o $findncsdir)/findncs.o \
+$(flooddir)/flood.o $(impdir)/imp.o $(mapfixdir)/mapfix.o \
+$(mappagedir)/mappage.o $(mavedir)/mave.o $(ncs6ddir)/ncs6d.o $(odbmandir)/odbman.o
+DATAMAN_OBJS = $(datamandir)/dataman.o $(datamandir)/dataman_subs.o 
+LSQMAN_OBJS = $(lsqmandir)/lsqman.o $(lsqmandir)/lsqman_subs.o 
+
+VOIDOO_PROGS = cavity voidoo maprop
+VOIDOO_OBJ = $(voidoodir)/cavity.o $(voidoodir)/voidoo.o $(voidoodir)/cavity_subs.o \
+$(voidoodir)/voidoo_subs.o $(voidoodir)/maprop.o
+
+all: $(PROGS) $(VOIDOO_PROGS)
+
+$(GKLIB_COBJS):
+	cd gklib; \
+	eval $(CC) -c $(OPT) -o $@ `basename $@ .o`.c
 
 $(GKLIB_OBJS):
 	cd gklib; \
 	eval $(FC) -c $(OPT) -o $@ `basename $@ .o`.f
 
-$(GKLIB): $(GKLIB_OBJS)
+$(GKLIB): $(GKLIB_COBJS) $(GKLIB_OBJS)
 	cd gklib; \
 	ar r $@ $?
 
-aconio.o ave.o cello.o coma.o comap.o comdem.o flood.o:
+$(PROG_OBJS):
 	pwd=`pwd`; \
 	cd `basename $@ .o`; \
+	eval $(FC) -c $(OPT) -o $$pwd/$@ `basename $@ .o`.f
+$(DATAMAN_OBJS):
+	pwd=`pwd`; \
+	cd dataman; \
+	eval $(FC) -c $(OPT) -o $$pwd/$@ `basename $@ .o`.f
+$(LSQMAN_OBJS):
+	pwd=`pwd`; \
+	cd lsqman; \
 	eval $(FC) -c $(OPT) -o $$pwd/$@ `basename $@ .o`.f
 
 $(VOIDOO_OBJ):
@@ -97,25 +130,39 @@ $(VOIDOO_OBJ):
 aconio: $(aconiodir)/aconio.o 
 	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS)
 ave: $(avedir)/ave.o 
-	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS)
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS) $(LDFLAGS_CCP4)
 cello: $(cellodir)/cello.o 
 	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS)
 coma: $(comadir)/coma.o 
-	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS)
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS) $(LDFLAGS_CCP4)
 comap: $(comapdir)/comap.o 
-	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS)
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS) $(LDFLAGS_CCP4)
 comdem: $(comdemdir)/comdem.o 
-	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS)
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS) $(LDFLAGS_CCP4)
 crave: $(cravedir)/crave.o 
 	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS)
-dataman: $(datamandir)/dataman.o 
+dataman: $(datamandir)/dataman.o $(datamandir)/dataman_subs.o 
 	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS)
 essens: $(essensdir)/essens.o 
-	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS)
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS) $(LDFLAGS_CCP4)
 findncs: $(findncsdir)/findncs.o 
 	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS)
 flood: $(flooddir)/flood.o 
 	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS) $(LDFLAGS_CCP4)
+imp: $(impdir)/imp.o 
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS) $(LDFLAGS_CCP4)
+lsqman: $(lsqmandir)/lsqman.o $(lsqmandir)/lsqman_subs.o 
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS)
+mapfix: $(mapfixdir)/mapfix.o 
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS) $(LDFLAGS_CCP4)
+mappage: $(mappagedir)/mappage.o 
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS) $(LDFLAGS_CCP4)
+mave: $(mavedir)/mave.o 
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS) $(LDFLAGS_CCP4)
+ncs6d: $(ncs6ddir)/ncs6d.o 
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS) $(LDFLAGS_CCP4)
+odbman: $(odbmandir)/odbman.o 
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS)
 cavity: $(voidoodir)/cavity.o $(voidoodir)/cavity_subs.o
 	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS)
 voidoo: $(voidoodir)/voidoo.o $(voidoodir)/voidoo_subs.o
@@ -130,10 +177,11 @@ $(comadir)/coma.o: $(comadir)/coma.f
 $(comapdir)/comap.o: $(comapdir)/comap.f
 $(comdemdir)/comdem.o: $(comdemdir)/comdem.f
 $(cravedir)/crave.o: $(cravedir)/crave.f
-$(datamandir)/dataman.o: $(datamandir)/dataman.f
+$(datamandir)/dataman.o: $(datamandir)/dataman.f 
 $(essensdir)/essens.o: $(essensdir)/essens.f
 $(findncsdir)/findncs.o: $(findncsdir)/findncs.f
 $(flooddir)/flood.o: $(flooddir)/flood.f
+$(lsqmandir)/lsqman.o: $(lsqmandir)/lsqman.f 
 $(voidoodir)/cavity.o: $(voidoodir)/cavity.f
 $(voidoodir)/cavity_subs.o: $(voidoodir)/cavity_subs.f
 $(voidoodir)/voidoo.o: $(voidoodir)/voidoo.f
