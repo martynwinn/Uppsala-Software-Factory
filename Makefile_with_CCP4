@@ -74,22 +74,48 @@ findncsdir = findncs
 flooddir = flood
 impdir = imp
 lsqmandir = lsqman
+mamadir = mama
 mapfixdir = mapfix
+mapmandir = mapman
 mappagedir = mappage
 mavedir = mave
+molemandir = moleman
+moleman2dir = moleman2
 ncs6ddir = ncs6d
+o2ddir = o2d
 odbmandir = odbman
+oopsdir = oops
+oops2dir = oops2
+profdir = prof
+seamandir = seaman
+site2rtdir = site2rt
+soddir = sod
+solexdir = solex
+spancsidir = spancsi
+ssencsdir = ssencs
 voidoodir = voidoo
+xpanddir = xpand
+xplo2ddir = xplo2d
 
-PROGS = aconio ave cello coma comap comdem crave dataman essens findncs flood imp lsqman mapfix \
-mappage mave ncs6d odbman
+PROGS = aconio ave cello coma comap comdem crave dataman essens findncs flood imp lsqman \
+mama mapfix mapman mappage mave moleman moleman2 ncs6d o2d odbman oops oops2 prof \
+seaman site2rt sod solex spancsi ssencs xpand xplo2d
 PROG_OBJS = $(aconiodir)/aconio.o $(avedir)/ave.o $(cellodir)/cello.o $(comadir)/coma.o \
 $(comapdir)/comap.o $(comdemdir)/comdem.o $(cravedir)/crave.o \
 $(essensdir)/essens.o $findncsdir)/findncs.o \
 $(flooddir)/flood.o $(impdir)/imp.o $(mapfixdir)/mapfix.o \
-$(mappagedir)/mappage.o $(mavedir)/mave.o $(ncs6ddir)/ncs6d.o $(odbmandir)/odbman.o
+$(mappagedir)/mappage.o $(mavedir)/mave.o $(ncs6ddir)/ncs6d.o $(odbmandir)/odbman.o \
+$(oopsdir)/oops.o $(oops2dir)/oops2.o $(profdir)/prof.o $(site2rt)/site2rt.o \
+$(soddir)/sod.o $(solexdir)/solex.o $(spancsidir)/spancsi.o $(ssencsdir)/ssencs.o \
+$(xpanddir)/xpand.o $(xplo2ddir)/xplo2d.o 
 DATAMAN_OBJS = $(datamandir)/dataman.o $(datamandir)/dataman_subs.o 
 LSQMAN_OBJS = $(lsqmandir)/lsqman.o $(lsqmandir)/lsqman_subs.o 
+MAMA_OBJS = $(mamadir)/mama.o $(mamadir)/mama_subs.o 
+MAPMAN_OBJS = $(mapmandir)/mapman.o $(mapmandir)/mapman_subs.o 
+MOLEMAN_OBJS = $(molemandir)/moleman.o $(molemandir)/moleman_subs.o 
+MOLEMAN2_OBJS = $(moleman2dir)/moleman2.o $(moleman2dir)/moleman2_subs.o 
+O2D_OBJS = $(o2ddir)/o2d.o $(o2ddir)/o2d_subs.o 
+SEAMAN_OBJS = $(seamandir)/seaman.o $(seamandir)/seaman_subs.o 
 
 VOIDOO_PROGS = cavity voidoo maprop
 VOIDOO_OBJ = $(voidoodir)/cavity.o $(voidoodir)/voidoo.o $(voidoodir)/cavity_subs.o \
@@ -121,54 +147,109 @@ $(LSQMAN_OBJS):
 	pwd=`pwd`; \
 	cd lsqman; \
 	eval $(FC) -c $(OPT) -o $$pwd/$@ `basename $@ .o`.f
-
+$(MAMA_OBJS):
+	pwd=`pwd`; \
+	cd mama; \
+	eval $(FC) -c $(OPT) -o $$pwd/$@ `basename $@ .o`.f
+$(MAPMAN_OBJS):
+	pwd=`pwd`; \
+	cd mapman; \
+	eval $(FC) -c $(OPT) -o $$pwd/$@ `basename $@ .o`.f
+$(MOLEMAN_OBJS):
+	pwd=`pwd`; \
+	cd moleman; \
+	eval $(FC) -c $(OPT) -o $$pwd/$@ `basename $@ .o`.f
+$(MOLEMAN2_OBJS):
+	pwd=`pwd`; \
+	cd moleman2; \
+	eval $(FC) -c $(OPT) -o $$pwd/$@ `basename $@ .o`.f
+$(O2D_OBJS):
+	pwd=`pwd`; \
+	cd o2d; \
+	eval $(FC) -c $(OPT) -o $$pwd/$@ `basename $@ .o`.f
+$(SEAMAN_OBJS):
+	pwd=`pwd`; \
+	cd seaman; \
+	eval $(FC) -c $(OPT) -o $$pwd/$@ `basename $@ .o`.f
 $(VOIDOO_OBJ):
 	pwd=`pwd`; \
 	cd voidoo; \
 	eval $(FC) -c $(OPT) -o $$pwd/$@ `basename $@ .o`.f
 
 aconio: $(aconiodir)/aconio.o 
-	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS)
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $^ $(LDFLAGS)
 ave: $(avedir)/ave.o 
-	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS) $(LDFLAGS_CCP4)
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $^ $(LDFLAGS) $(LDFLAGS_CCP4)
 cello: $(cellodir)/cello.o 
-	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS)
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $^ $(LDFLAGS)
 coma: $(comadir)/coma.o 
-	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS) $(LDFLAGS_CCP4)
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $^ $(LDFLAGS) $(LDFLAGS_CCP4)
 comap: $(comapdir)/comap.o 
-	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS) $(LDFLAGS_CCP4)
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $^ $(LDFLAGS) $(LDFLAGS_CCP4)
 comdem: $(comdemdir)/comdem.o 
-	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS) $(LDFLAGS_CCP4)
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $^ $(LDFLAGS) $(LDFLAGS_CCP4)
 crave: $(cravedir)/crave.o 
-	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS)
-dataman: $(datamandir)/dataman.o $(datamandir)/dataman_subs.o 
-	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS)
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $^ $(LDFLAGS)
+dataman: $(datamandir)/dataman.o $(datamandir)/dataman_subs.o
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $^ $(LDFLAGS)
 essens: $(essensdir)/essens.o 
-	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS) $(LDFLAGS_CCP4)
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $^ $(LDFLAGS) $(LDFLAGS_CCP4)
 findncs: $(findncsdir)/findncs.o 
-	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS)
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $^ $(LDFLAGS)
 flood: $(flooddir)/flood.o 
-	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS) $(LDFLAGS_CCP4)
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $^ $(LDFLAGS) $(LDFLAGS_CCP4)
 imp: $(impdir)/imp.o 
-	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS) $(LDFLAGS_CCP4)
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $^ $(LDFLAGS) $(LDFLAGS_CCP4)
 lsqman: $(lsqmandir)/lsqman.o $(lsqmandir)/lsqman_subs.o 
-	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS)
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $^ $(LDFLAGS)
+mama: $(mamadir)/mama.o $(mamadir)/mama_subs.o 
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $^ $(LDFLAGS)
 mapfix: $(mapfixdir)/mapfix.o 
-	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS) $(LDFLAGS_CCP4)
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $^ $(LDFLAGS) $(LDFLAGS_CCP4)
+mapman: $(mapmandir)/mapman.o $(mapmandir)/mapman_subs.o
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $^ $(LDFLAGS) $(LDFLAGS_CCP4)
 mappage: $(mappagedir)/mappage.o 
-	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS) $(LDFLAGS_CCP4)
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $^ $(LDFLAGS) $(LDFLAGS_CCP4)
 mave: $(mavedir)/mave.o 
-	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS) $(LDFLAGS_CCP4)
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $^ $(LDFLAGS) $(LDFLAGS_CCP4)
+moleman: $(molemandir)/moleman.o $(molemandir)/moleman_subs.o
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $^ $(LDFLAGS)
+moleman2: $(moleman2dir)/moleman2.o $(moleman2dir)/moleman2_subs.o
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $^ $(LDFLAGS)
 ncs6d: $(ncs6ddir)/ncs6d.o 
-	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS) $(LDFLAGS_CCP4)
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $^ $(LDFLAGS) $(LDFLAGS_CCP4)
+o2d: $(o2ddir)/o2d.o $(o2ddir)/o2d_subs.o
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $^ $(LDFLAGS)
 odbman: $(odbmandir)/odbman.o 
-	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS)
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $^ $(LDFLAGS)
+oops: $(oopsdir)/oops.o 
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $^ $(LDFLAGS)
+oops2: $(oops2dir)/oops2.o 
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $^ $(LDFLAGS)
+prof: $(profdir)/prof.o 
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $^ $(LDFLAGS) $(LDFLAGS_CCP4)
+seaman: $(seamandir)/seaman.o $(seamandir)/seaman_subs.o
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $^ $(LDFLAGS)
+site2rt: $(site2rtdir)/site2rt.o 
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $^ $(LDFLAGS)
+sod: $(soddir)/sod.o 
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $^ $(LDFLAGS)
+solex: $(solexdir)/solex.o 
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $^ $(LDFLAGS) $(LDFLAGS_CCP4)
+spancsi: $(spancsidir)/spancsi.o 
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $^ $(LDFLAGS) $(LDFLAGS_CCP4)
+ssencs: $(ssencsdir)/ssencs.o 
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $^ $(LDFLAGS)
 cavity: $(voidoodir)/cavity.o $(voidoodir)/cavity_subs.o
-	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS)
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $^ $(LDFLAGS)
 voidoo: $(voidoodir)/voidoo.o $(voidoodir)/voidoo_subs.o
-	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS)
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $^ $(LDFLAGS)
 maprop: $(voidoodir)/maprop.o
-	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $? $(LDFLAGS)
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $^ $(LDFLAGS)
+xpand: $(xpanddir)/xpand.o 
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $^ $(LDFLAGS)
+xplo2d: $(xplo2ddir)/xplo2d.o 
+	rm -f $(bindir)/$@; eval $(FC) -o $(bindir)/$@ $^ $(LDFLAGS)
 
 $(aconiodir)/aconio.o: $(aconiodir)/aconio.f
 $(avedir)/ave.o: $(avedir)/ave.f
