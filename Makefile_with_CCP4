@@ -4,8 +4,8 @@ bindir = $(srcdir)/bin
 CC = gcc
 FC = gfortran
 OPT = -O -cpp
-LDFLAGS_CCP4 = -L/xtal/ccp4-7.0/lib -lccp4f -lccp4c -lmmdb2
-LDFLAGS = -L$(srcdir)/gklib -lgk
+LDFLAGS_CCP4 = -L/xtal/ccp4-7.0-src/ccp4-7.0/lib -lccp4f -lccp4c -lmmdb2
+LDFLAGS = -static -L$(srcdir)/gklib -lgk
 
 GKLIB = libgk.a
 GKLIB_COBJS = fmalloc.o
@@ -131,7 +131,7 @@ $(GKLIB_OBJS):
 	cd gklib; \
 	eval $(FC) -c $(OPT) -o $@ `basename $@ .o`.f
 
-$(GKLIB): $(GKLIB_COBJS) $(GKLIB_OBJS)
+$(GKLIB): $(GKLIB_OBJS) $(GKLIB_COBJS)
 	cd gklib; \
 	ar r $@ $?
 
