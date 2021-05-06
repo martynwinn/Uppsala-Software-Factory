@@ -1,0 +1,1168 @@
+<html><head><!-- This document was created for SPASM at Wed Feb 25 17:21:44 2009 from
+../spasm/spasm.txt by MAN2HTML version 070111/2.0.8 -->
+<title>Uppsala Software Factory - SPASM Manual</title>
+<meta name="DESCRIPTION" content="Manual for Gerard 
+Kleywegt's program SPASM">
+<meta name="KEYWORDS" content="manual software Gerard 
+Kleywegt program SPASM structural biology 
+protein X-ray crystallography macromolecular molecular
+Uppsala Software Factory bioinformatics">
+</head><body bgcolor="#fefefe" background="back.gif">
+
+<A HREF="http://xray.bmc.uu.se/usf/" target="_top">
+<IMG ALIGN="right" BORDER="0" SRC="usf_logo.gif"
+ALT="Uppsala Software Factory"></A>
+
+<H2>  Uppsala Software Factory - SPASM Manual</H2> <P>   
+<UL>  
+<LI><H3>  <A HREF="#H1">1  </A>SPASM - GENERAL INFORMATION</H3> 
+<LI><H3>  <A HREF="#H2">2  </A>REFERENCES</H3> 
+<LI><H3>  <A HREF="#H3">3  </A>VERSION HISTORY</H3> 
+<LI><H3>  <A HREF="#H4">4  </A>INTRODUCTION</H3> 
+<LI><H3>  <A HREF="#H5">5  </A>DATABASE</H3> 
+<LI><H3>  <A HREF="#H6">6  </A>CUSTOM DATABASES (MKSPAZ)</H3> 
+<LI><H3>  <A HREF="#H7">7  </A>SEARCH-PATTERN INPUT FILE</H3> 
+<LI><H3>  <A HREF="#H8">8  </A>RUNNING SPASM</H3> 
+<H5><A HREF="#S1">8.1  </A>startup</H5>
+<H5><A HREF="#S2">8.2  </A>database file</H5>
+<H5><A HREF="#S3">8.3  </A>search-pattern file</H5>
+<H5><A HREF="#S4">8.4  </A>identifier</H5>
+<H5><A HREF="#S5">8.5  </A>cut-off values</H5>
+<H5><A HREF="#S6">8.6  </A>sequence</H5>
+<H5><A HREF="#S7">8.7  </A>output</H5>
+<H5><A HREF="#S8">8.8  </A>main chain and/or side chain</H5>
+<H5><A HREF="#S9">8.9  </A>O macro and datablock files</H5>
+<H5><A HREF="#S10">8.10  </A>LSQMAN input files</H5>
+<LI><H3>  <A HREF="#H9">9  </A>OUTPUT</H3> 
+<LI><H3>  <A HREF="#H10">10  </A>LOOKING FOR LOOPS</H3> 
+<LI><H3>  <A HREF="#H11">11  </A>INTERFACE TO O</H3> 
+<LI><H3>  <A HREF="#H12">12  </A>NON-LOCAL SIMILARITIES</H3> 
+<LI><H3>  <A HREF="#H13">13  </A>LOCAL PDB DIRECTORY STRUCTURE</H3> 
+<LI><H3>  <A HREF="#H14">14  </A>KNOWN BUGS</H3> 
+</UL> 
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H1">1 </A>SPASM - GENERAL INFORMATION</H2> </CENTER>
+<P>   
+Program : SPASM
+ <BR> Version : 090224
+ <BR> Author : Gerard J. Kleywegt, Dept. of Cell and Molecular Biology,
+Uppsala University, Biomedical Centre, Box 596,
+SE-751 24 Uppsala, SWEDEN
+ <BR> E-mail : gerard@xray.bmc.uu.se
+ <BR> Purpose : detection of main and side chain motifs
+ <BR> Package : SPASM
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H2">2 </A>REFERENCES</H2> </CENTER>
+<P>   
+Reference(s) for this program:
+<P>   
+* 1 * M. Harel, G.J. Kleywegt, R.B.G. Ravelli, I. Silman &amp; J.L.
+Sussman (1995). Crystal structure of an acetylcholinesterase-
+fasciculin complex: interaction of a three-fingered toxin
+from snake venom with its target. Structure 3, 1355-1366.
+[http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=PubMed&amp;cmd=Retrieve&amp;list_uids=8747462&amp;dopt=Citation]
+<P>   
+* 2 * G.J. Kleywegt (1998). Deja-vu all over again. CCP4 Newsletter
+on Protein Crystallography 35, July 1998, pp. 10-12.
+[http://xray.bmc.uu.se/usf/factory_9.html]
+<P>   
+* 3 * G.J. Kleywegt &amp; T.A. Jones (1998). Databases in protein
+crystallography. Acta Cryst D54, 1119-1131.
+[http://xray.bmc.uu.se/gerard/papers/databases.html]
+[http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=PubMed&amp;cmd=Retrieve&amp;list_uids=10089488&amp;dopt=Citation]
+[http://scripts.iucr.org/cgi-bin/paper?ba0001]
+<P>   
+* 4 * G.J. Kleywegt (1999). Recognition of spatial motifs in
+protein structures. J Mol Biol 285, 1887-1897.
+[http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=PubMed&amp;cmd=Retrieve&amp;list_uids=9917419&amp;dopt=Citation]
+<P>   
+* 5 * D. Madsen &amp; G.J. Kleywegt (2002). Interactive motif and
+fold recognition in protein structures. J. Appl. Cryst.
+35, 137-139.
+[http://scripts.iucr.org/cgi-bin/paper?wt0007]
+<P>   
+* 6 * Kleywegt, G.J., Zou, J.Y., Kjeldgaard, M. &amp; Jones, T.A. (2001).
+Around O. In: &quot;International Tables for Crystallography, Vol. F.
+Crystallography of Biological Macromolecules&quot; (Rossmann, M.G.
+&amp; Arnold, E., Editors). Chapter 17.1, pp. 353-356, 366-367.
+Dordrecht: Kluwer Academic Publishers, The Netherlands.
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H3">3 </A>VERSION HISTORY</H2> </CENTER>
+<P>   
+950109 - 0.1 - trial quick-n-dirty program -&gt; works well !
+ <BR> 950110 - 0.2 - more bells and whistles; select MC and/or SC to
+use for superpositioning
+ <BR> 950111 - 0.3 - continue; interface to O
+ <BR> 950112 - 1.0 - first version for the &quot;general public&quot; (Uppsala only)
+ <BR> 950118 - 1.1 - sensitive to environment variable GKLIB; debugged
+option to use generic residue type &quot;XXX&quot; (main-chain
+only !); added sketch instructions for the search
+pattern object to the O macro
+ <BR> 950119 - 1.2 - introduced option to conserve neighbours
+ <BR> 950120 - 1.3 - minor changes
+ <BR> 950126 - - added MKSPAZ (v. 1.0) to generate new library entries
+ <BR> 950421 - 2.0 - redid database to use CAs instead of main-chain
+centre-of-gravity to get better results with NHANCE
+when generating coordinates for beta-strands; changes
+propagated through all programs
+ <BR> 951005 - 2.1 - new databse (Hobohm &amp; Sander 95% list); redimensioned
+for 1200 residues
+ <BR> 970124 - 2.2 - optional generation of LSQMAN input file (to detect
+more global similarities)
+ <BR> 971127 - 3.0 - implemented use of BLOSUM-45 substitution matrix to
+decide which substitutions are allowed; optional
+generation of multiple sequence alignment file for
+use with MSEQPRO for profile analysis
+ <BR> 980210 -3.0.1- increased dimensioning so the program can handle 1OCC
+ <BR> 980318 -3.0.2- minor bug fix (first residue of &quot;Your sequence&quot; was
+usually the wrong one ;-)
+ <BR> 980909 - 3.1 - added a new substitution option in which the user
+can define which residue-type substitutions will
+be allowed (e.g., HIS&lt;-&gt;HIS, but GLN&lt;-&gt;GLU,ASP,GLN)
+ <BR> 981007 - X - the jiffy program DEJANA (part of the DEJAVU package)
+has been changed so it can also be used with O macros
+produced by SPASM and RIGOR !
+ <BR> 990301 - 3.2 - separate distance cut-offs for CA/CA and sidechain/SC
+mismatches
+ <BR> 990901 - X - the MKSPAZ program now accepts a command-line flag
+&quot;-all&quot; if you want to process *all* chains in each
+PDB file (rather than just the first one)
+ <BR> 990902 - 3.3 - option to produce input file for SAVANT (does not
+exist yet :-); skip hydrogen atoms in pattern PDB file
+(did not work previously)
+ <BR> 990907 -3.3.1- add commented-out sketch_cpk and sketch_stick instructions
+for every hit in the output O macro file (although
+O ignores these instructions at the moment)
+ <BR> 990920 -3.3.2- use Rot_tran_obj for the CPK and stick models
+ <BR> 990928 -3.3.3- implemented cut-off for the maximum number of residues
+to enable the user to skip very big proteins
+ <BR> 991013 -3.3.4- minor change to SAVANT input file
+ <BR> 991111 -3.3.5- print warning if encountering HETATM or hydrogen in
+user's motif PDB file
+ <BR> 991220 - 3.4 - minor changes and bug fixes
+ <BR> 001208 -3.4.1- fixed a bug in SPASM and MKSPAZ (from now on, the
+side-chain coordinates of alanine residues will be their
+CB coordinates rather than their CA coordinates ...);
+various minor bug fixes and small improvements
+ <BR> 001211 -3.4.2- more minor bug fixes and small improvements
+ <BR> 001213 - 3.5 - more minor bug fixes and small improvements
+ <BR> 010206 - 3.6 - implemented new substitution option in which the
+user may define for each individual residue by
+which residue type(s) it may be replaced
+ <BR> 010208 - 3.7 - implemented use of MAXHITS (to limit number of
+hits generated in case of &quot;unfortunate&quot; parameter
+settings)
+ <BR> 010914 -3.7.1- minor changes
+ <BR> 011108 - X - MKSPAZ (2.2.3) - fixed bug which made it crash in Alphas
+ <BR> 011207 - X - MKSPAZ (2.3) - proper trapping of READ errors and can handle
+absence of COMPND records
+ <BR> 011220 -3.7.2- minor bug fix
+ <BR> 020524 - X - MKSPAZ (2.3.1) - handle alternative conformations (keep
+only the one called 'A'; thanks to Elaine Meng)
+ <BR> 020611 - X - MKSPAZ (2.3.2) - minor bug fix (thanks to Elaine Meng)
+ <BR> 040302 -3.7.3- made O macros produced by SAVANA compatible with
+current O (i.e., they read stereo_chem.odb and they
+use the pdb_read command instead of sam_at_in)
+ <BR> 041001 - 3.8 - replaced Kabsch' routine U3BEST by quaternion-based
+routine (U3QION) to do least-squares superpositioning
+ <BR> 060804 - 3.9 - several changes under the hood (synchronised with SPANA)
+ <BR> 080704 -3.9.1- increased dimensioning
+ <BR> 090224 -3.9.2- minor changes for server version
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H4">4 </A>INTRODUCTION</H2> </CENTER>
+<P>   
+SPASM stands for &quot;SPatial Arrangements of Side chains and Main
+chains&quot;. It is a complementary program to DEJAVU: DEJAVU can be
+used to find similar arrangements of helices and strands, and
+SPASM can be used to find similar arrangements of side chains
+and main chains (e.g., loops, turns, active sites, metal-binding
+sites, etc.).
+ <BR> The program is based on an idea of Artymiuk et al.; reference:
+P. Artymiuk, &quot;Fold Recognition&quot;, in &quot;Making the Most of Your
+Model&quot; (J.N. Thornton &amp; W.N. Hunter, Eds.), Daresbury Laboratory,
+pp. XXX-YYY (1995).
+ <BR> The algorithm is basically the same as that used by DEJAVU (i.e.,
+an exhaustive, recursive, depth-first search with early pruning
+of the search tree), but the input and the database differ, of
+course.
+ <BR> The program is surprisingly fast, and surprisingly little noise
+tends to be generated (unless you have relaxed criteria). SPASM
+is interfaced with O, since it can produce an O macro to read,
+draw and align all hits to your search pattern.
+ <BR> The accompanying program MKSPAZ can be used to generate new
+library entries from standard PDB files. This can be used to
+include new proteins into the librayr, or to generate small
+libraries which contain only those proteins you want to compare
+your structure with.
+<P>   
+NOTE: This program is sensitive to the environment variable
+GKLIB. If set, the name of this directory will be prepended
+to the default name for the library file needed by this
+program. For example, in Uppsala, put the following line
+in your .login or .cshrc file:
+setenv GKLIB /home/gerard/lib
+<P>   
+NOTE: in particular when this program is used unsupervised
+(e.g., in a script on a web-server), you may want to limit
+the total number of hits that will be generated in case of
+&quot;unfortunate&quot; parameters settings. This can be done with
+the environment variable MAXHITS (e.g., setenv MAXHITS 10000),
+or with the command-line argument MAXHITS
+(e.g., run spasm maxhits 500). The default value is 1000.
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H5">5 </A>DATABASE</H2> </CENTER>
+<P>   
+The database (spasm.lib) contains information about the CA atoms and
+the centres-of-gravity of the side-chain atoms of many thousands of
+residues from a large number of proteins (e.g., using the Hobohm &amp;
+Sander 95% homology lists).
+ <BR> The format of the database is simple, and you can easily add
+more proteins to it (with MKSPAZ). An entry for a protein may
+look as follows:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+! Created by MAKEDB V. 950421/2.0 at Fri Oct 6 00:30:06 1995 for user gerard
+!
+PRO 125D
+PDB /nfs/pdb/full/125d.pdb
+RES  99.99
+CMP CD2-GAL4 (65-RESIDUE DNA-BINDING DOMAIN) (YEAST) (NMR, 22 STRUCTURES)
+MET     1  2.427 -14.350 -17.374 -0.570 -14.374 -18.601
+LYS     2  4.409 -11.142 -17.694 3.077 -8.545 -19.102
+...
+PRO    42  3.389 -0.744 -14.643 1.531 -0.759 -14.821
+LYS    43  3.879 -0.178 -18.355 2.235 0.052 -21.732
+END
+!
+PRO 135L
+PDB /nfs/pdb/full/135l.pdb
+RES   1.30
+CMP LYSOZYME (E.C.3.2.1.17)
+LYS     1  25.408 20.195 26.922 27.543 17.709 27.832
+VAL     2  23.949 17.686 24.540 23.390 18.223 22.658
+...
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+Any line starting with an exclamation mark (&quot;!&quot;) is ignored as being
+a comment line. A protein entry starts with &quot;PRO XXXX&quot;, where &quot;XXXX&quot;
+is an identifier (e.g., PDB code). The physical location of the
+protein's PDB file is stored in the PDB record, the resolution (in A;
+99.99 for NMR structures and other files without a resolution remark)
+on the RES record, and the name of the protein in the CMP record.
+These first four records *must* appear in this order, but comment lines
+may be interspersed.
+ <BR> For each residue there is one line which contains the residue
+identifier in columns 1-10 (columns 18-27 of a regular PDB record),
+followed by the coordinates of the CA atom and the centre-of-gravity of
+the side-chain atoms in the order CaX, CaY, CaZ, SX, SY, SZ (can be
+read in free format). The &quot;END&quot; record signals the end of the
+residue list.
+ <BR> In principle, you can add as many proteins to the database as you
+wish, since the file is rewound, read and processed simultaneously.
+This means that the database residues are not stored in memory. There
+is a hard-wired limitation on the maximum number of residues in any
+given individual database protein, though (at present, 1200 residues).
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H6">6 </A>CUSTOM DATABASES (MKSPAZ)</H2> </CENTER>
+<P>   
+If you want to add new structures to the database, or if you want
+to generate a small database which contains only those structures
+to which you want to compare your protein, use the accompanying
+program MKSPAZ.
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ...
+ Name of new SPASM library to create ? (spasm.new) spasm.custom
+<P>   
+ Name of next PDB file to add ? ( ) /nfs/pdb/full/1aaz.pdb
+ 4-Character ID ? (/nfs) 1aaz
+<P>   
+ Processing : (/nfs/pdb/full/1aaz.pdb)
+ Nr of atoms : (        862)
+<P>   
+ Nr of residues found   : (         87)
+ Nr of residues written : (         87)
+<P>   
+ Name of next PDB file to add ? ( ) /nfs/pdb/full/3cbh.pdb
+ 4-Character ID ? (/nfs) 3cbh
+<P>   
+ Processing : (/nfs/pdb/full/3cbh.pdb)
+ Nr of atoms : (        365)
+<P>   
+ Nr of residues found   : (        365)
+ Nr of residues written : (          0)
+<P>   
+ Name of next PDB file to add ? ( ) chra.pdb
+ 4-Character ID ? (chra)
+<P>   
+ Processing : (chra.pdb)
+ Nr of atoms : (       2794)
+ Resolution (A; 99.99 for NMR) ? (  99.990) 3.0
+<P>   
+ Nr of residues found   : (        370)
+ Nr of residues written : (        370)
+<P>   
+ Name of next PDB file to add ? ( )
+<P>   
+ Nr of residues total : (        457)
+ Nr of proteins used  : (          2)
+ ...
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+You can add as many PDB files in one run of the program as you like.
+Note that 3CBH only contains CA coordinates and can therefore not
+be used.
+ <BR> The new database may look as follows:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+! Created by MKSPAZ V. 950421/2.0 at Fri Apr 21 23:04:43 1995 for user gerard
+!
+PRO 1AAZ
+PDB /nfs/pdb/full/1aaz.pdb
+RES   2.00
+CMP GLUTAREDOXIN
+MET A   1  19.791 29.971 -7.982 20.633 31.166 -7.396
+PHE A   2  21.192 26.459 -8.288 19.118 24.939 -9.912
+...
+LYS A  87  11.780 15.553 -16.595 13.488 14.683 -19.464
+END
+!
+PRO 3CBH
+PDB /nfs/pdb/full/3cbh.pdb
+RES   2.00
+CMP CELLOBIOHYDROLASE /II$ CORE PROTEIN (E.C.3.2.1.91) (/CBHII$)
+END
+! NO residues
+!
+PRO CHRA
+PDB chra.pdb
+RES   3.00
+CMP
+MET A   1  12.446 27.113 66.765 12.791 23.902 65.990
+LYS A   2  10.581 29.825 64.962 7.858 30.460 62.815
+ILE A   3  9.320 32.550 67.058 10.543 34.217 67.524
+...
+VAL A 369  6.275 51.912 83.789 5.932 53.474 82.387
+SER A 370  9.658 52.747 85.454 9.533 54.706 84.938
+END
+!
+! total residues    457
+! total proteins      2
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H7">7 </A>SEARCH-PATTERN INPUT FILE</H2> </CENTER>
+<P>   
+Defining a search pattern is very simple: just make a PDB file
+and remove everything *except* all atoms of the residues of interest.
+ <BR> For example, if your catalytic residues are Asp 123, Glu 219 and
+Asp 382, simply make a PDB file which only contains the atoms of each
+of these three residues. SPASM *implicitly* assumes that you present
+the residues in the order in which they appear in the sequence ! This
+is sometimes important, but the program does *not* check if this is
+actually the case !
+ <BR> As an example, the following file contains the residues of the
+catalytic triad of Candida antarctica lipase B (PDB code 1TCA):
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ATOM    768  N   SER   105      -8.424  22.313  13.475  1.00  3.99      1TCA 906
+ATOM    769  CA  SER   105      -8.136  21.862  14.832  1.00  5.02      1TCA 907
+ATOM    770  C   SER   105      -9.268  20.966  15.394  1.00  3.52      1TCA 908
+ATOM    771  O   SER   105      -9.669  20.008  14.737  1.00  3.42      1TCA 909
+ATOM    772  CB  SER   105      -7.904  23.111  15.702  1.00  8.11      1TCA 910
+ATOM    773  OG  SER   105      -7.320  22.766  16.938  1.00 13.88      1TCA 911
+ATOM   1369  N   ASP   187       3.721  21.285  13.689  1.00  8.01      1TCA1507
+ATOM   1370  CA  ASP   187       2.590  21.835  14.434  1.00  6.80      1TCA1508
+ATOM   1371  C   ASP   187       3.008  21.995  15.906  1.00  6.78      1TCA1509
+ATOM   1372  O   ASP   187       3.491  21.052  16.516  1.00  7.57      1TCA1510
+ATOM   1373  CB  ASP   187       1.399  20.880  14.322  1.00  5.92      1TCA1511
+ATOM   1374  CG  ASP   187       0.083  21.509  14.737  1.00  7.68      1TCA1512
+ATOM   1375  OD1 ASP   187       0.020  22.124  15.816  1.00  6.59      1TCA1513
+ATOM   1376  OD2 ASP   187      -0.895  21.386  13.979  1.00  7.36      1TCA1514
+ATOM   1649  N   HIS   224       0.477  25.559  13.397  1.00  6.46      1TCA1787
+ATOM   1650  CA  HIS   224      -0.921  25.162  13.569  1.00  6.60      1TCA1788
+ATOM   1651  C   HIS   224      -1.880  26.075  12.788  1.00  6.98      1TCA1789
+ATOM   1652  O   HIS   224      -2.807  25.591  12.123  1.00  7.10      1TCA1790
+ATOM   1653  CB  HIS   224      -1.273  25.180  15.058  1.00  6.87      1TCA1791
+ATOM   1654  CG  HIS   224      -2.570  24.513  15.386  1.00  7.40      1TCA1792
+ATOM   1655  ND1 HIS   224      -2.851  23.212  15.037  1.00  7.13      1TCA1793
+ATOM   1656  CD2 HIS   224      -3.666  24.948  16.056  1.00  7.87      1TCA1794
+ATOM   1657  CE1 HIS   224      -4.041  22.847  15.458  1.00  8.67      1TCA1795
+ATOM   1658  NE2 HIS   224      -4.541  23.888  16.073  1.00  8.28      1TCA1796
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+The maximum number of atoms and residues in the search pattern is
+printed upon start-up. Any lines which do not start with &quot;ATOM&quot;
+are skipped; hydrogen atoms are ignored. Amino-acid residues are
+recognised by the fact that they have more than three main-chain
+atoms (N, CA, C, O, OTX, OT1, OT2); for example, the database
+contains a handful of pyroglutamate residues (type PCA). If you
+use a residue type &quot;XXX&quot;, the residue will be matched against *any*
+residue type in the database (but only the CA position will be used;
+any side-chain atoms will be ignored).
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H8">8 </A>RUNNING SPASM</H2> </CENTER>
+<P>   
+SPASM is easy-to-use. One thing you need to know in advance is the
+location of the database file on your local computer system. In
+Uppsala, this is: /home/gerard/lib/spasm.lib
+ <BR> Once you start the program, just answer the questions (most of the
+defaults make sense), and let SPASM do the hard work. To explain the
+input etc., we shall work through an example using the pattern file
+shown above (Ser-Asp-His):
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S1">8.1 </A>startup</H3> 
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ *** SPASM *** SPASM *** SPASM *** SPASM *** SPASM *** SPASM *** SPASM ***
+<P>   
+ Version  - 950421/2.0
+ (C) 1993-5 Gerard J. Kleywegt, Dept. Mol. Biology, BMC, Uppsala (S)
+ User I/O - routines courtesy of Rolf Boelens, Univ. of Utrecht (NL)
+ Others   - T.A. Jones, G. Bricogne, Rams, W.A. Hendrickson
+ Others   - W. Kabsch, CCP4, PROTEIN, E. Dodson, etc. etc.
+<P>   
+ Started  - Fri Apr 21 23:07:22 1995
+ User     - gerard
+ Mode     - interactive
+ Host     - jupiter
+ ProcID   - 19870
+ Tty      - /dev/ttyq8
+<P>   
+ *** SPASM *** SPASM *** SPASM *** SPASM *** SPASM *** SPASM *** SPASM ***
+<P>   
+ Max nr of atoms in pattern file : (        500)
+ Max nr of residues in  ,,   ,,  : (         50)
+ Ditto, in database proteins     : (       1024)
+<P>   
+----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S2">8.2 </A>database file</H3> 
+<P>   
+<PRE> <TT>  <B>   
+----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ SPASM database file ? (/home/gerard/lib/spasm.lib) ../spasm.lib
+ CPU total/user/sys :       0.0       0.0       0.0
+----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+Provide the name of the database file on your local computer system.
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S3">8.3 </A>search-pattern file</H3> 
+<P>   
+<PRE> <TT>  <B>   
+----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Which PDB file ? (0xyz.pdb) 1tca.pdb
+<P>   
+ Nr of atoms : (         24)
+<P>   
+ 1TCA SER   105    -8.136  21.862  14.832   -7.612  22.938  16.320
+ 1TCA ASP   187     2.590  21.835  14.434    0.152  21.475  14.714
+ 1TCA HIS   224    -0.921  25.162  13.569   -3.157  24.098  15.511
+<P>   
+ Nr of residues found : (          3)
+ Nr of residues okay  : (          3)
+----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+Provide the name of the PDB file that contains your search pattern.
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S4">8.4 </A>identifier</H3> 
+<P>   
+<PRE> <TT>  <B>   
+----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Four-character ID for this run ? (1TCA)
+----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+Provide a 4-character ID for this run (used in the O macro, for instance).
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S5">8.5 </A>cut-off values</H3> 
+<P>   
+<PRE> <TT>  <B>   
+----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Enter the max RMSD for &quot;good&quot; hits.  If you use
+ only a few residues (3-5), an RMSD &lt; 1 A tends
+ to be obtained for similar arrangements of
+ residues.
+ Max superpositioning RMSD ? (   1.500)
+----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+The maximum allowable value of the RMSD of database residues with
+your search pattern. It is always good to start with a low value
+(e.g., 1 A) to see if there are any *very* similar patterns in the
+database. If not, you can relax the value to 1.5 or 2 A and repeat
+the search.
+<P>   
+<PRE> <TT>  <B>   
+----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ To speed up the search, any match in which at
+ one of the residue-residue distances differs by
+ more than a certain value are not pursued further.
+ Reasonable values are 1 - 2 A.
+ Max distance mismatch ? (   2.000)
+----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+This number should be a little bit larger than the maximum RMSD;
+it can be relaxed further if no hits are found with more restrictive
+values.
+<P>   
+<PRE> <TT>  <B>   
+----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ You may opt to use only structures solved at high
+ resolution by supplying a resolution cut-off.
+ Note: NMR structures have a resolution of 99.99 A,
+ so use a cut-off &gt; 100 if you want to include these.
+ Resolution cut-off (A) ? ( 999.900) 2.5
+----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+Supply a resolution cut-off (or a number &gt;= 100 if you don't want to
+use such a cut-off).
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S6">8.6 </A>sequence</H3> 
+<P>   
+<PRE> <TT>  <B>   
+----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ You may opt to allow substitutions of certain
+ residue types.  You have the following options:
+  (1) Do not allow substitutions
+  (2) Only allow D/E, N/Q, L/I, F/Y and R/K
+  (3) Use BLOSUM-45 to decide
+  (4) User-defined substitutions
+  (5) Residue-specific substitutions
+ Substitution option ? (       3) 5
+ Substitution option : (       5)
+<P>   
+ Enter allowed substitutions in 3-letter code:
+ Which types to allow for |ASP    32 | ? (ASP) asp glu
+ Which types to allow for |ASP    32 | : (ASP GLU)
+ Which types to allow for |HIS    64 | ? (HIS)
+ Which types to allow for |HIS    64 | : (HIS)
+ Which types to allow for |SER   221 | ? (SER) ser thr
+ Which types to allow for |SER   221 | : (SER THR)
+----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+You now have several options to decide which substitutions to allow.
+<P>   
+<PRE> <TT>  <B>   
+----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ If you want to conserve the order in which your
+ residues occur in the sequence, use this constraint.
+ Conserve sequence directionality ? (N) y
+----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+This constraint, when used, speeds up the search considerably, but
+you may not always want to use it.
+<P>   
+<PRE> <TT>  <B>   
+----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ If you want to conserve neighbouring residues, use
+ this constraint.
+ Conserve neighbouring residues ? (N) y
+----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+This constraint is useful when you have multiple loops, helices
+and/or strands with gaps.
+<P>   
+<PRE> <TT>  <B>   
+----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ If you want to conserve the sizes of the sequence
+ gaps between the residues in your search pattern,
+ use this constraint.
+ Conserve sequence gaps ? (N)
+----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+This constraint or the previous one *must* be switched on when you do
+main-chain searches involving sequential residues (loops, turns, etc.).
+Also, if you have a pattern like &quot;GxxTxN&quot; you may want to conserve
+the gaps.
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S7">8.7 </A>output</H3> 
+<P>   
+<PRE> <TT>  <B>   
+----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ You may want to see the MC/MC and/or SC/SC distance
+ matrices of your search pattern and that of any hits
+ found in the database, to help decide if the hit
+ is good enough for your purposes.  Matrices are *only*
+ printed if you search pattern contains 10 or fewer
+ residues.
+ Print distance matrices ? (N) y
+----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+The distance matrices enable you to see how good the fit is, and
+if there are residues which &quot;fan&quot; more than the others.
+<P>   
+<PRE> <TT>  <B>   
+----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ If you are not an O user, you may want the best
+ superpositioning operator to be printed.
+ Print operators ? (N)
+----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+If you create O files, you don't need to see the operators.
+<P>   
+<PRE> <TT>  <B>   
+----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ For debugging purposes, you may request extensive
+ output, listing *all* database proteins which are
+ tried.
+ Extensive output ? (N)
+----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+Not normally used.
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S8">8.8 </A>main chain and/or side chain</H3> 
+<P>   
+<PRE> <TT>  <B>   
+----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ You may opt to use the centres-of-gravity of the
+ side-chain and/or main-chain atoms.  If you have
+ few residues in your search pattern (e.g., 3), it
+ is best to use both.  If you only use main-chains,
+ the residue *types* are ignored.
+ 0=SC, 1=MC+SC, 2=MC ? (       1) 1
+----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+If you look for 3-5 active site residues etc., use MC+SC to get
+a better alignment. If you look for loops etc., use MC only.
+ <BR> If you look for only two residues, MC and SC atoms are always
+used. Note that you will get a lot of noise (false hits) if
+you look for only two residues, so use low values for the maximum
+RMSD and maximum distance difference (e.g., 0.5 and 1.0 A) !
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S9">8.9 </A>O macro and datablock files</H3> 
+<P>   
+<PRE> <TT>  <B>   
+----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ You may want an O macro plus LSQ operator file for
+ easy inspection of the hits.  Use this only once you
+ have found a proper set of search parameters.
+ O macro and operator file ? (N) y
+<P>   
+ O macro file ? (1tca.omac)
+<P>   
+ O operator file ? (1tca.odb)
+----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+If you have found a promising set of hits, you may want to look at
+them on the display. In that case, use the option to generate an
+O macro to do all the hard work for you. This will also generate
+an O datablock file which contains all the relevant LSQ operators.
+ <BR> The jiffy program DEJANA (part of the DEJAVU package) can be used
+to sort the hits in the O macro produced by SPASM !
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S10">8.10 </A>LSQMAN input files</H3> 
+<P>   
+From version 2.2 onwards, you may opt to get an input file for the
+least-squares superpositioning program LSQMAN. This input file
+will read the coordinates, apply the operator found by SPASM,
+and attempt to extend the superpositioning between your model
+and each of the hits. This may enable you to detect more
+global (or: less local) similarities to other structures. In
+order for this to work, LSQMAN will need the PDB file which
+contains your complete model (i.e., not just the motif you
+ran through SPASM).
+<P>   
+<PRE> <TT>  <B>   
+----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ You may want LSQMAN input file to see if the
+ superpositioning of the putative hits extends
+ beyond the motif you have defined.
+ LSQMAN input file ? (Y)
+<P>   
+ LSQMAN input file ? (cra2.lsqman)
+<P>   
+ PDB file of your entire model ? (cra2.pdb) /nfs/pdb/full/1cbs.pdb
+----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H9">9 </A>OUTPUT</H2> </CENTER>
+<P>   
+Now SPASM takes off. It reads the database proteins one at a time.
+It then checks to which residues each of the residues in your pattern
+can be matched. Normally, an &quot;ASP&quot; only matches an &quot;ASP&quot;, but there
+are the following exceptions:
+<P>   
+- if you use only main-chain atoms, the sequence is completely
+ignored, thereby enabling you to find loops etc. (this is not
+unlike the Lego_loop command in O);
+<P>   
+- if you name a residue in your search pattern &quot;XXX&quot; (i.e., instead
+of ALA, ASN, etc.), it can be matched to *any* residue type;
+<P>   
+- if you enabled the substitution option, some residue types can be
+matched with types other than their own (e.g., Asp-Glu).
+<P>   
+When a &quot;hit&quot; is found, SPASM informs you:
+<P>   
+<PRE> <TT>  <B>   
+----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ... Searching ...
+<P>   
+ ==&gt; HIT  : (1CUS)
+ Compound : (CUTINASE (E.C.3.1.1.-))
+ File     : (/nfs/pdb/full/1cus.pdb)
+ Residues : (        197)
+ Resol (A): (   1.250)
+<P>   
+ MATCH with RMSD   0.48 A for   6 pseudo-atoms
+ SER   105  &lt;---&gt; SER   120  *
+ ASP   187  &lt;---&gt; ASP   175  *
+ HIS   224  &lt;---&gt; HIS   188  *
+ Target SC distance matrix
+ SER   105    0.0   8.1   4.7
+ ASP   187    8.1   0.0   4.3
+ HIS   224    4.7   4.3   0.0
+ Hit SC distance matrix
+ SER   120    0.0   8.6   5.0
+ ASP   175    8.6   0.0   4.7
+ HIS   188    5.0   4.7   0.0
+ Target MC distance matrix
+ SER   105    0.0  10.7   8.0
+ ASP   187   10.7   0.0   4.9
+ HIS   224    8.0   4.9   0.0
+ Hit MC distance matrix
+ SER   120    0.0  10.5   8.2
+ ASP   175   10.5   0.0   5.0
+ HIS   188    8.2   5.0   0.0
+----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+It shows the ID, file and compound name of the hit and the number
+of residues in it. Then it lists how many possible matches there
+exist for each of the individual residues in your search pattern.
+ <BR> Subsequently, it prints the successfull match, including the RMSD.
+An asterisk (&quot;*&quot;) after a matched residue means that the residue
+type is conserved. If you requested this, the MC/MC and/or SC/SC
+distance matrices in your search pattern and in the hit are shown.
+ <BR> Finally, the operator which superimposes the database protein with
+your search pattern is shown (if you don't generate an O macro,
+you can still use this to quickly superimpose the database protein
+and your own).
+<P>   
+In this example, we find two more hits, both of which make sense
+(actually, with a bit more relaxed criteria, we find 6 reasonable
+hits):
+<P>   
+<PRE> <TT>  <B>   
+----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ==&gt; HIT  : (1HPL)
+ Compound : (LIPASE (E.C.3.1.1.3) (TRIACYLGLYCEROL HYDROLASE))
+ File     : (/nfs/pdb/full/1hpl.pdb)
+ Residues : (        449)
+ Resol (A): (   2.300)
+<P>   
+ MATCH with RMSD   1.10 A for   6 pseudo-atoms
+ SER   105  &lt;---&gt; SER A 152  *
+ ASP   187  &lt;---&gt; ASP A 205  *
+ HIS   224  &lt;---&gt; HIS A 263  *
+<P>   
+ ...
+<P>   
+ ==&gt; HIT  : (1TCA)
+ Compound : (LIPASE (E.C.3.1.1.3) (TRIACYLGLYCEROL HYDROLASE))
+ File     : (/nfs/pdb/full/1tca.pdb)
+ Residues : (        317)
+ Resol (A): (   1.550)
+<P>   
+ MATCH with RMSD   0.00 A for   6 pseudo-atoms
+ SER   105  &lt;---&gt; SER   105  *
+ ASP   187  &lt;---&gt; ASP   187  *
+ HIS   224  &lt;---&gt; HIS   224  *
+<P>   
+ Nr of proteins found : (          3)
+ Nr of proteins tried : (        472)
+ Total number of hits : (          3)
+ CPU total/user/sys :      23.6      23.1       0.5
+<P>   
+ Run again ? (Y) n
+<P>   
+ *** SPASM *** SPASM *** SPASM *** SPASM *** SPASM *** SPASM *** SPASM ***
+<P>   
+ Version - 950421/2.0
+ Started - Fri Apr 21 23:07:22 1995
+ Stopped - Fri Apr 21 23:12:55 1995
+<P>   
+ CPU-time taken :
+ User    -     23.1 Sys    -      0.6 Total   -     23.7
+<P>   
+ *** SPASM *** SPASM *** SPASM *** SPASM *** SPASM *** SPASM *** SPASM ***
+<P>   
+ &gt;&gt;&gt; This program (C) 1993-95, GJ Kleywegt &amp; TA Jones &lt;&lt;&lt;
+ E-mail: &quot;gerard@xray.bmc.uu.se&quot; or &quot;alwyn@xray.bmc.uu.se&quot;
+<P>   
+ *** SPASM *** SPASM *** SPASM *** SPASM *** SPASM *** SPASM *** SPASM ***
+----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+If you want to run the program again, simply reply &quot;Y(es)&quot;, and
+off you go again. By the way: note that the search took less than
+half a minute (on an SGI XZ; using an older database) !
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H10">10 </A>LOOKING FOR LOOPS</H2> </CENTER>
+<P>   
+As an example of the use of SPASM in locating loops, turns, etc. which
+are similar to those in your protein, we use residues Lys 98 - Lys 106
+of holo-CRABP II (PDB code 1CBS).
+ <BR> The input could be as follows:
+<P>   
+<PRE> <TT>  <B>   
+----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Which PDB file ? (0xyz.pdb) cra5.pdb
+<P>   
+ Nr of atoms : (         67)
+<P>   
+ CRA5 LYS    98     3.696  23.952  23.582    0.544  25.481  24.450
+ CRA5 LEU    99     4.357  26.721  21.041    5.674  26.130  18.846
+ CRA5 LEU   100     2.879  30.070  22.051    4.009  31.225  24.034
+ CRA5 LYS   101     2.282  30.961  18.413    3.437  33.815  19.258
+ CRA5 GLY   102     2.423  28.993  15.184    2.423  28.993  15.184
+ CRA5 GLU   103     2.988  25.348  14.377    0.150  25.311  13.383
+ CRA5 GLY   104     5.967  23.024  14.231    5.967  23.024  14.231
+ CRA5 PRO   105     7.338  19.640  15.418    8.813  20.317  14.469
+ CRA5 LYS   106     6.255  18.453  18.868    4.927  17.885  21.479
+<P>   
+ Nr of residues found : (          9)
+ Nr of residues okay  : (          9)
+<P>   
+ Four-character ID for this run ? (CRA5)
+<P>   
+ Enter the max RMSD for &quot;good&quot; hits.  If you use
+ only a few residues (3-5), an RMSD &lt; 1 A tends
+ to be obtained for similar arrangements of
+ residues.
+ Max superpositioning RMSD ? (   1.500) 1.0
+<P>   
+ To speed up the search, any match in which at
+ one of the residue-residue distances differs by
+ more than a certain value are not pursued further.
+ Reasonable values are 1 - 2 A.
+ Max distance mismatch ? (   2.000)
+<P>   
+ You may opt to use only structures solved at high
+ resolution by supplying a resolution cut-off.
+ Note: NMR structures have a resolution of 99.99 A,
+ so use a cut-off &gt; 100 if you want to include these.
+ Resolution cut-off (A) ? ( 999.900)
+<P>   
+ You may opt to allow substitutions of certain residue
+ types.  At present, the following are hard-wired:
+ ASP/GLU, ASN/GLN, LEU/ILE, PHE/TYR and LYS/ARG.
+ Allow for these substitutions ? (N)
+<P>   
+ If you want to conserve the order in which your
+ residues occur in the sequence, use this constraint.
+ Conserve sequence directionality ? (N) y
+<P>   
+ If you want to conserve neighbouring residues, use
+ this constraint.
+ Conserve neighbouring residues ? (N) y
+<P>   
+ If you want to conserve the sizes of the sequence
+ gaps between the residues in your search pattern,
+ use this constraint.
+ Conserve sequence gaps ? (N) y
+<P>   
+ You may want to see the MC/MC and/or SC/SC distance
+ matrices of your search pattern and that of any hits
+ found in the database, to help decide if the hit
+ is good enough for your purposes.  Matrices are *only*
+ printed if you search pattern contains 10 or fewer
+ residues.
+ Print distance matrices ? (N) y
+<P>   
+ If you are not an O user, you may want the best
+ superpositioning operator to be printed.
+ Print operators ? (N)
+<P>   
+ For debugging purposes, you may request extensive
+ output, listing *all* database proteins which are
+ tried.
+ Extensive output ? (N)
+<P>   
+ You may opt to use the centres-of-gravity of the
+ side-chain and/or main-chain atoms.  If you have
+ few residues in your search pattern (e.g., 3), it
+ is best to use both.  If you only use main-chains,
+ the residue *types* are ignored.
+ 0=SC, 1=MC+SC, 2=MC ? (       1) 2
+<P>   
+ You may want an O macro plus LSQ operator file for
+ easy inspection of the hits.  Use this only once you
+ have found a proper set of search parameters.
+ O macro and operator file ? (N) y
+<P>   
+ O macro file ? (cra5.omac)
+<P>   
+ O operator file ? (cra5.odb)
+----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+The only hit (with the parameters used above):
+<P>   
+<PRE> <TT>  <B>   
+----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ... Searching ...
+<P>   
+ ==&gt; HIT  : (1HNA)
+ Compound : (GLUTATHIONE S-TRANSFERASE (HUMAN, CLASS MU) (GSTM2-2) FORM A
+  (E.C.2.5.1.18)
+ File     : (/nfs/pdb/full/1hna.pdb)
+ Residues : (        217)
+ Resol (A): (   1.850)
+<P>   
+ MATCH with RMSD   0.92 A for   9 pseudo-atoms
+ LYS    98  &lt;---&gt; PHE   147
+ LEU    99  &lt;---&gt; LEU   148  *
+ LEU   100  &lt;---&gt; GLY   149
+ LYS   101  &lt;---&gt; ASP   150
+ GLY   102  &lt;---&gt; LYS   151
+ GLU   103  &lt;---&gt; ILE   152
+ GLY   104  &lt;---&gt; THR   153
+ PRO   105  &lt;---&gt; PHE   154
+ LYS   106  &lt;---&gt; VAL   155
+ Target MC distance matrix
+ LYS    98    0.0   3.8   6.4   8.8   9.9   9.3   9.7   9.9   7.7
+ LEU    99    3.8   0.0   3.8   5.4   6.6   6.9   7.9   9.5   8.8
+ LEU   100    6.4   3.8   0.0   3.8   7.0   9.0  11.0  13.1  12.5
+ LYS   101    8.8   5.4   3.8   0.0   3.8   6.9   9.7  12.8  13.1
+ GLY   102    9.9   6.6   7.0   3.8   0.0   3.8   7.0  10.6  11.8
+ GLU   103    9.3   6.9   9.0   6.9   3.8   0.0   3.8   7.3   8.9
+ GLY   104    9.7   7.9  11.0   9.7   7.0   3.8   0.0   3.8   6.5
+ PRO   105    9.9   9.5  13.1  12.8  10.6   7.3   3.8   0.0   3.8
+ LYS   106    7.7   8.8  12.5  13.1  11.8   8.9   6.5   3.8   0.0
+ Hit MC distance matrix
+ PHE   147    0.0   3.8   5.6   8.3   8.4   7.7   8.0   9.6   7.2
+ LEU   148    3.8   0.0   3.8   6.9   6.9   7.4   7.3   9.7   8.1
+ GLY   149    5.6   3.8   0.0   3.8   5.7   7.7   9.2  12.3  11.3
+ ASP   150    8.3   6.9   3.8   0.0   3.8   7.0   9.7  13.2  13.1
+ LYS   151    8.4   6.9   5.7   3.8   0.0   3.8   6.4  10.2  10.9
+ ILE   152    7.7   7.4   7.7   7.0   3.8   0.0   3.8   7.0   8.1
+ THR   153    8.0   7.3   9.2   9.7   6.4   3.8   0.0   3.8   5.6
+ PHE   154    9.6   9.7  12.3  13.2  10.2   7.0   3.8   0.0   3.8
+ VAL   155    7.2   8.1  11.3  13.1  10.9   8.1   5.6   3.8   0.0
+<P>   
+ Nr of proteins found : (          1)
+ Nr of proteins tried : (        580)
+ Total number of hits : (          1)
+ CPU total/user/sys :     124.0     123.6       0.4
+----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H11">11 </A>INTERFACE TO O</H2> </CENTER>
+<P>   
+The O macro generated by the second example above, looks as follows:
+<P>   
+<PRE> <TT>  <B>   
+----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+! Created by SPASM V. 950421/2.0 at Fri Apr 14 23:23:15 1995 for user gerard
+! Search pattern from cra5.pdb
+! LYS    98
+! LEU    99
+! LEU   100
+! LYS   101
+! GLY   102
+! GLU   103
+! GLY   104
+! PRO   105
+! LYS   106
+read cra5.odb
+sam_atom_in cra5.pdb CRA5 PDB
+mol CRA5
+pa_case atom_z 4 6 7 8 16 green cyan magenta yellow
+object CRA5 ca ; end
+centre_xyz   4.12  25.52  18.25
+!
+sketch_setup stick smooth 0.1 8
+sketch_setup sphere smooth 0
+db_create .cpk_radii 110 r
+db_set_dat .cpk_radii ; 0.2
+sketch_stick CRA5
+sketch_cpk CRA5
+!
+! HIT 1HNA
+! GLUTATHIONE S-TRANSFERASE (HUMAN, CLASS MU) (GSTM2-2) FORM A (E.C.2.5.1.18
+sam_atom_in /nfs/pdb/full/1hna.pdb 1HNA PDB
+! Hit nr      1
+! RMSD   0.92
+! LYS    98  &lt;---&gt; PHE   147
+! LEU    99  &lt;---&gt; LEU   148  *
+! LEU   100  &lt;---&gt; GLY   149
+! LYS   101  &lt;---&gt; ASP   150
+! GLY   102  &lt;---&gt; LYS   151
+! GLU   103  &lt;---&gt; ILE   152
+! GLY   104  &lt;---&gt; THR   153
+! PRO   105  &lt;---&gt; PHE   154
+! LYS   106  &lt;---&gt; VAL   155
+mol 1HNA delete 1HNA1  ; object 1HNA1
+ca ; end
+lsq_obj 1HNA1_to_CRA5 1HNA1
+on_off bell message Done
+----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+The file with the LSQ operators looks as follows:
+<P>   
+<PRE> <TT>  <B>   
+----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+! Created by SPASM V. 950421/2.0 at Fri Apr 14 23:23:15 1995 for user gerard
+.lsq_rt_1HNA1_to_CRA5 r 12 (6f12.6)
+    0.894604   -0.413836   -0.168596   -0.296522   -0.832013    0.468859
+   -0.334304   -0.369451   -0.867033   25.347286   31.042042   30.984348
+----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+Now start O, type &quot;@cra5.omac&quot;, go and have a cup of coffee if you
+have many hits, and admire the result ...
+<P>   
+NOTE: the macro will *only* work if the PDB file names in the SPASM
+database file actually point to the corresponding PDB files on
+your local file system. To this end, your local system manager
+should do something like this:
+<P>   
+<PRE> <TT>  <B>   
+----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ unix&gt; sed -e 's%/nfs/pdb/full%/your/pdb/directory/%' spasm.lib &gt; local.lib
+----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H12">12 </A>NON-LOCAL SIMILARITIES</H2> </CENTER>
+<P>   
+By running LSQMAN with the input file produced by SPASM (optional;
+only available in version 2.2 and later), you may detect similarities
+between your model and any of the hits. LSQMAN will read your complete
+model, and then for each of the hits apply the operator found by
+SPASM, and subsequently try to find more residues which are
+superimposed through that operator (or an &quot;improved&quot; version).
+In addition, LSQMAN will produce a new O macro with the (improved)
+operators for the hits.
+<P>   
+<PRE> <TT>  <B>   
+----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ unix&gt; run lsqman &lt; cra6.lsqman &gt;&amp; cra6_lsqman.out
+----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+After this, you can of course use the DEJAVU companion program DEJANA
+to sort the hits and remove those you're not impressed by. See the
+DEJAVU manual for details.
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H13">13 </A>LOCAL PDB DIRECTORY STRUCTURE</H2> </CENTER>
+<P>   
+Some labs mirror the PDB directory structure (i.e., the one where
+entry 1CBS goes into a subdirectory &quot;cb&quot;, and where the file
+is called &quot;pdb1cbs.ent&quot; instead of &quot;1cbs.pdb&quot;). Morten Kjeldgaard
+contributed the following to help you generate a SPASM database
+with MKSPAZ.
+<P>   
+<PRE> <TT>  <B>   
+----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+Hiya Gerard,
+<P>   
+I had a problem generating a 'spasm.lib' file because we are mirroring the
+PDB directory structure, (e.g.  pdb1aak.ent is in aa/pdb1aak.ent) so I
+could not do a simple sed job on spasm.lib. PDB supplies a script hash.pl
+to generate a dbm database relating entry code to filename.
+<P>   
+Therefore I had to re-run mkspaz with the list of 1563 pdb ident codes, but
+I found that it was not straightforward to create the input file as most
+entries are in different directories, and because the mkspaz program wants
+extra input when the file contains an NMR structure. So I created this
+little perl script to generate the mkspaz input file from a list of pdb
+idents. Run it by
+<P>   
+        rsdb &lt; names
+<P>   
+The script is useful for people mirroring the PDB directory structure. I
+thought you might wanna include it in yer spasm manual.
+<P>   
+Cheers from MOK!
+<P>   
+PS: Now I have my very personalized spasm.lib file! Whooy!
+<P>   
+PPS: This is my first (input file generator (input file generator)) program
+;-)
+<P>   
+----8&lt;-- *snip* -----
+<P>   
+#!/usr/sbin/perl
+# Make an input file for mkspaz from a list
+# of PDB ident codes. mok 980409.
+<P>   
+# define the location of the pdb index files...
+$dir = &quot;/pdb/index&quot;;
+<P>   
+print &quot;spazzzzzm.lib\n&quot;;
+dbmopen(%loc,&quot;$dir/loc&quot;,0644);
+<P>   
+while (&lt;&gt;) {
+    $id = $_;
+    chop ($id);
+    $filename = $loc{$id};
+<P>   
+    # only do something if the file exists...
+    if ( -s $filename) {
+        open(FILE, $filename);
+<P>   
+        print &quot;$filename\n&quot;;
+        print &quot;$id\n&quot;;
+<P>   
+        # check if this is an nmr structure...
+        do {
+            $_ = &lt;FILE&gt;;
+            chop;
+        } until (/^(EXPDTA|ATOM)/) ;
+        $nmr = m/NMR/;
+        if ($nmr) {
+            print &quot;100.0\n&quot;;
+        }
+    } else {
+        print STDERR &quot;$filename does not exist...\n&quot;;
+    }
+}
+<P>   
+--
+Morten Kjeldgaard                                | e-mail: mok@imsb.au.dk
+Institute of Molecular and Structural Biology    | Phone : +45 89 42 50 26
+Aarhus University                                | Fax   : +45 86 20 12 22
+Gustav Wieds Vej 10, DK-8000 Aarhus C, Denmark   | Home  : +45 86 18 81 80
+----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H14">14 </A>KNOWN BUGS</H2> </CENTER>
+<P>   
+None, at present.
+<HR NOSHADE>    <A HREF="http://xray.bmc.uu.se/usf/" target="_top">
+<IMG ALIGN="right" BORDER="0" SRC="usf_logo.gif"
+ALT="Uppsala Software Factory"></A>
+<FONT SIZE=-1>
+<B> <I> Created at Wed Feb 25 17:21:44 2009
+by MAN2HTML version 070111/2.0.8 . This manual
+describes SPASM, a program of the <A HREF="http://xray.bmc.uu.se/usf/" target="_top">Uppsala
+Software Factory</A> (USF), written and maintained by <A HREF="http://xray.bmc.uu.se/gerard"
+target="_blank">Gerard Kleywegt</A>. &copy; 1992-2007.
+</I> </B> </FONT><P>
+<IMG SRC="http://xray.bmc.uu.se/cgi-bin/nph-count?width=6&link=http://alpha2.bmc.uu.se/~gerard/www/manuals/spasm_man.html">
+</body></html>

@@ -1,0 +1,917 @@
+<html><head><!-- This document was created for HETZE at Tue Feb 1 20:56:55 2005 from
+../utils/hetze.txt by MAN2HTML version 050114/2.0.6 -->
+<title>Uppsala Software Factory - HETZE Manual</title>
+<meta name="DESCRIPTION" content="Manual for Gerard 
+Kleywegt's program HETZE">
+<meta name="KEYWORDS" content="manual software Gerard 
+Kleywegt program HETZE structural biology 
+protein X-ray crystallography macromolecular molecular
+Uppsala Software Factory bioinformatics">
+</head><body bgcolor="#fefefe" background="back.gif">
+
+<A HREF="http://xray.bmc.uu.se/usf/" target="_top">
+<IMG ALIGN="right" BORDER="0" SRC="usf_logo.gif"
+ALT="Uppsala Software Factory"></A>
+
+<H2>  Uppsala Software Factory - HETZE Manual</H2> <P>   
+<UL>  
+<LI><H3>  <A HREF="#H1">1  </A>HETZE - GENERAL INFORMATION</H3> 
+<LI><H3>  <A HREF="#H2">2  </A>REFERENCES</H3> 
+<LI><H3>  <A HREF="#H3">3  </A>VERSION HISTORY</H3> 
+<LI><H3>  <A HREF="#H4">4  </A>INTRODUCTION</H3> 
+<LI><H3>  <A HREF="#H5">5  </A>LIBRARY FILE</H3> 
+<LI><H3>  <A HREF="#H6">6  </A>RUNNING THE PROGRAM</H3> 
+<H5><A HREF="#S1">6.1  </A>Input and parameters</H5>
+<H5><A HREF="#S2">6.2  </A>Reading the PDB file</H5>
+<H5><A HREF="#S3">6.3  </A>Finding bonds</H5>
+<H5><A HREF="#S4">6.4  </A>Finding neighbours and hydrogen atoms</H5>
+<H5><A HREF="#S5">6.5  </A>Finding angles</H5>
+<H5><A HREF="#S6">6.6  </A>Finding dihedrals</H5>
+<H5><A HREF="#S7">6.7  </A>Finding impropers</H5>
+<H5><A HREF="#S8">6.8  </A>Finding planes</H5>
+<H5><A HREF="#S9">6.9  </A>Summary</H5>
+<LI><H3>  <A HREF="#H7">7  </A>EXAMPLES</H3> 
+<H5><A HREF="#S10">7.1  </A>Trp</H5>
+<H5><A HREF="#S11">7.2  </A>AlF4</H5>
+<H5><A HREF="#S12">7.3  </A>FAD</H5>
+<LI><H3>  <A HREF="#H8">8  </A>KNOWN BUGS</H3> 
+<LI><H3>  <A HREF="#H9">9  </A>UNKNOWN BUGS</H3> 
+</UL> 
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H1">1 </A>HETZE - GENERAL INFORMATION</H2> </CENTER>
+<P>   
+Program : HETZE
+ <BR> Version : 050127
+ <BR> Author : Gerard J. Kleywegt, Dept. of Cell and Molecular Biology,
+Uppsala University, Biomedical Centre, Box 596,
+SE-751 24 Uppsala, SWEDEN
+ <BR> E-mail : gerard@xray.bmc.uu.se
+ <BR> Purpose : check quality of hetero entities
+ <BR> Package : X-UTIL
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H2">2 </A>REFERENCES</H2> </CENTER>
+<P>   
+Reference(s) for this program:
+<P>   
+* 1 * G.J. Kleywegt &amp; T.A. Jones (1998). Databases in protein
+crystallography. Acta Cryst D54, 1119-1131.
+[http://xray.bmc.uu.se/gerard/papers/databases.html]
+[http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=PubMed&amp;cmd=Retrieve&amp;list_uids=10089488&amp;dopt=Citation]
+[http://scripts.iucr.org/cgi-bin/paper?ba0001]
+<P>   
+* 2 * G.J. Kleywegt (2000). Validation of protein crystal
+structures. Acta Cryst. D56, 249-265 (Topical Review).
+[http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=PubMed&amp;cmd=Retrieve&amp;list_uids=10713511&amp;dopt=Citation]
+[http://scripts.iucr.org/cgi-bin/paper?gr0949]
+<P>   
+* 3 * G.J. Kleywegt (2001). Validation of protein crystal structures.
+In: &quot;International Tables for Crystallography, Volume F.
+Crystallography of Biological Macromolecules&quot; (Rossmann, M.G.
+&amp; Arnold, E., Editors). Chapter 21.1, pp. 497-506, 526-528.
+Dordrecht: Kluwer Academic Publishers, The Netherlands.
+<P>   
+* 4 * Kleywegt, G.J., Zou, J.Y., Kjeldgaard, M. &amp; Jones, T.A. (2001).
+Around O. In: &quot;International Tables for Crystallography, Vol. F.
+Crystallography of Biological Macromolecules&quot; (Rossmann, M.G.
+&amp; Arnold, E., Editors). Chapter 17.1, pp. 353-356, 366-367.
+Dordrecht: Kluwer Academic Publishers, The Netherlands.
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H3">3 </A>VERSION HISTORY</H2> </CENTER>
+<P>   
+970715 - 0.3 - first documented version
+ <BR> 970730 - 0.4 - changed plane detection a trifle
+ <BR> 010903 - 0.5 - check for distances &lt; 0.5 A and angles &lt; 60 degrees;
+better handling of FORMUL records
+ <BR> 011018 - 0.6 - check the correspondence of the FORMUL formula
+and the one derived from the file contents;
+make sure that the number of bonds found is not
+less than the number of atoms minus one
+ <BR> 020703 - 0.7 - check for bonded distances &lt; 0.8 A and bond
+angles &lt; 55 degrees
+ <BR> 020704 - 0.8 - skip hydrogen atoms unless they are *all* in the PDB
+file; changed definition of a bad angle to be one
+that is &lt; 80 degrees, does not occur inside a
+three-membered ring, and the central atom is not
+heavier than sulfur
+ <BR> 020709 - 1.0 - change max value of CUTBND to 0.5 A; flag bad angles
+only if the central atom is one of C, N, O, Si, P,
+or S
+ <BR> 020819 -1.0.1- minor changes
+ <BR> 020926 -1.0.2- minor bug fix
+ <BR> 041001 - 1.1 - replaced Kabsch' routine U3BEST by quaternion-based
+routine (U3QION) to do least-squares superpositioning
+ <BR> 050127 - 1.2 - increased dimensioning
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H4">4 </A>INTRODUCTION</H2> </CENTER>
+<P>   
+This program checks the &quot;quality&quot; of hetero entities in PDB format.
+It can be used to:
+ <BR> - check the quality of a ligand etc. obtained elsewhere before
+including it in refinement
+ <BR> - get pointers as to which aspects of the structure's geometry
+should be restrained during refinement (dihedrals, impropers,
+flat planes)
+ <BR> - judge the quality of a ligand etc. after refinement
+<P>   
+At present, the program will read a PDB file and scrutinise the
+first residue it encounters (irrespective of whether it comes
+on ATOM or HETATM cards). If there are multiple copies of
+this residue in the PDB file, the additional copies will be
+used to calculate statistics for bond lengths etc.
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H5">5 </A>LIBRARY FILE</H2> </CENTER>
+<P>   
+The program needs a library file which, at present, contains
+information regarding ideal lengths for a number of types
+of bond. (This may be extended in the future.)
+<P>   
+The file may look as follows (note that the bond_type_code is
+ignored at present):
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+!
+! hetze.lib-standard bond lengths for various types of bond
+!
+! Gerard J Kleywegt @ 970708
+!
+! Version 0.1 @ 970708
+!
+! Sources:
+! - Handbook of Chemistry and Physics (75th edition)
+! - Handbook of Chemistry and Physics (63rd edition)
+! - FH Allen et al., J Chem Soc Perkin Trans II, S1-S19 (1987)
+!
+! BONDS
+! =====
+!
+! Element1 Element2 Bond_type_code Target_value Remark_string
+!
+' C' ' H' 1 1.09 'C-H range 1.056-1.115'
+' C' 'Be' 1 1.93 'C-Be'
+' C' 'Hg' 1 2.07 'C-Hg'
+' C' ' B' 1 1.56 'C-B'
+...
+' O' ' P' 1 1.38 'O-P double'
+' O' ' P' 2 1.63 'O-P single'
+' O' ' S' 1 1.43 'O-S double'
+!
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H6">6 </A>RUNNING THE PROGRAM</H2> </CENTER>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S1">6.1 </A>Input and parameters</H3> 
+<P>   
+The first thing you need to supply is the name of the library file.
+If you have set up a local directory with library and database
+files for all Gerard's programs, and the environment GKLIB points
+to this directory, the program will automatically come up with
+the correct default name for this file. (In Uppsala: put the
+following into your .cshrc file: setenv GKLIB /nfs/public/lib)
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ *** HETZE *** HETZE *** HETZE *** HETZE *** HETZE *** HETZE *** HETZE ***
+<P>   
+ Version  - 970730/0.4
+ (C) 1992-1999 Gerard J. Kleywegt, Dept. Cell Mol. Biol., Uppsala (S)
+ User I/O - routines courtesy of Rolf Boelens, Univ. of Utrecht (NL)
+ Others   - T.A. Jones, G. Bricogne, Rams, W.A. Hendrickson
+ Others   - W. Kabsch, CCP4, PROTEIN, E. Dodson, etc. etc.
+<P>   
+ Started  - Mon Oct 11 19:39:28 1999
+ User     - gerard
+ Mode     - interactive
+ Host     - sarek
+ ProcID   - 13627
+ Tty      - /dev/ttyq12
+<P>   
+ *** HETZE *** HETZE *** HETZE *** HETZE *** HETZE *** HETZE *** HETZE ***
+<P>   
+ Reference(s) for this program:
+<P>   
+ *  1 * G.J. Kleywegt &amp; T.A. Jones (1998). Databases in protein
+        crystallography. Acta Cryst D54, 1119-1131.
+        [http://xray.bmc.uu.se/gerard/papers/databases.html]
+        [http://www.ncbi.nlm.nih.gov/htbin-post/Entrez/query?uid=10089488&amp;form=6&amp;db=m&amp;Dopt=b]
+        [http://www.iucr.org/iucr-top/journals/acta/tocs/actad/1998/actad5406_1.html]
+<P>   
+ *  2 * G.J. Kleywegt, J.Y. Zou, M. Kjeldgaard &amp; T.A. Jones (1999 ?).
+        Chapter 25.2.6.  Around O. Int. Tables for
+        Crystallography, Volume F. Submitted.
+<P>   
+ ==&gt; For manuals and up-to-date references, visit:
+ ==&gt; http://xray.bmc.uu.se/usf
+<P>   
+ *** HETZE *** HETZE *** HETZE *** HETZE *** HETZE *** HETZE *** HETZE ***
+<P>   
+ Max nr of atoms         : (        250)
+ Max nr of neighbours    : (         10)
+ Max nr of bond types    : (      31250)
+ Max nr of angle types   : (      62500)
+ Max nr of dihedrals     : (        250)
+ Max nr of impropers     : (        250)
+ Max nr of library bonds : (        500)
+ Max nr of planes        : (        100)
+ Max nr atoms per plane  : (         50)
+<P>   
+ Name of library file ? (/home/gerard/lib/hetze.lib)
+<P>   
+ Reading library file
+ Nr of library bonds read : (         69)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+The next required item is the name of your PDB file:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Supply the name of a PDB file containing your
+ ligand or whatever.
+ The *first* residue in the file will be processed
+ All others will be used as extra example to get
+ better bonds length, angle, etc. statistics !
+ Name of PDB file ? ( ) alf.pdb
+ Name of PDB file : (alf.pdb)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+Your PDB file should either contain *ALL* hydrogen atoms, or *NONE*
+of them. Tell the program which is the case:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Are *all* hydrogens in this file ? (N)
+ Are *all* hydrogens in this file : (N)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+Finally, if you want you can change the value of various program
+parameters, but this will usually not be necessary. In any event,
+the program will list the values it will use for these parameters.
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Edit program parameters (Y/N) ? (N) n
+<P>   
+ Program parameters :
+ Bond tolerance (A)               : (   0.450)
+ Bond deviation tolerance (A)     : (   0.050)
+ Large range for bond lengths (A) : (   0.075)
+ Large range for bond angles (d)  : (   8.000)
+ Large range for dihedrals (d)    : (  10.000)
+ Large range for impropers (d)    : (   8.000)
+ Improper deviation tolerance (d) : (   8.000)
+ Flat improper cut-off (d)        : (  15.000)
+ Max distance to a flat plane (A) : (   0.200)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S2">6.2 </A>Reading the PDB file</H3> 
+<P>   
+The program will read your PDB file, figure out which residue to
+scrutinise, and store any additional copies of the same residue
+type (provided they contain all atoms also contained in the
+original residue). If your PDB file contains a PDB FORMUL record,
+this will also be read (also if the formula is on a REMARK
+record as in the &quot;hetero.pdb&quot; file). This formula will also be
+used to verify atom types. For instance, if you have called your
+carbon atoms &quot;AC1 &quot; etc., the program would deduce that these are
+actinium, rather than carbon, atoms. However, if the formula was
+provided, the program will note that the compound does not contain
+any actinium, and will guess that the atom is really a carbon.
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Reading PDB file ...
+ Using residue : (MAN)
+ Identifier    : (A 503)
+ Segment ID    : ( )
+ Atom #    1 =  C1  @     -0.041    48.314    51.297  1.00 97.46
+ Atom #    2 =  C2  @     -0.688    48.942    52.525  1.00 97.46
+ Atom #    3 =  C3  @     -1.689    47.975    53.150  1.00 97.46
+ Atom #    4 =  C4  @     -2.700    47.509    52.106  1.00 97.46
+ Atom #    5 =  C5  @     -1.979    46.908    50.901  1.00 97.46
+ Atom #    6 =  C6  @     -2.966    46.527    49.799  1.00 97.46
+ Atom #    7 =  O2  @     -1.335    50.144    52.168  1.00 97.46
+ Atom #    8 =  O3  @     -2.358    48.597    54.224  1.00 97.46
+ Atom #    9 =  O4  @     -3.563    46.548    52.673  1.00 97.46
+ Atom #   10 =  O5  @     -1.043    47.861    50.374  1.00 97.46
+ Atom #   11 =  O6  @     -2.285    46.326    48.577  1.00 97.46
+ Extra example ? (MAN A 504)
+ Example OK # (          1)
+ Extra example ? (MAN A 505)
+ Example OK # (          2)
+...
+ Extra example ? (MAN B 509)
+ Example OK # (         13)
+<P>   
+ Nr of atoms read     : (         11)
+ Nr of extra examples : (         13)
+<P>   
+ RMSD (all atoms) for example #   1 =    0.392 A
+ RMSD (all atoms) for example #   2 =    0.539 A
+ RMSD (all atoms) for example #   3 =    0.458 A
+ RMSD (all atoms) for example #   4 =    0.100 A
+ RMSD (all atoms) for example #   5 =    0.206 A
+ RMSD (all atoms) for example #   6 =    0.550 A
+ RMSD (all atoms) for example #   7 =    0.000 A
+ RMSD (all atoms) for example #   8 =    0.392 A
+ RMSD (all atoms) for example #   9 =    0.539 A
+ RMSD (all atoms) for example #  10 =    0.458 A
+ RMSD (all atoms) for example #  11 =    0.100 A
+ RMSD (all atoms) for example #  12 =    0.206 A
+ RMSD (all atoms) for example #  13 =    0.550 A
+<P>   
+ ==&gt; Deduced formula  : (C 6 O 5)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+If there are extra copies of the residue, the RMSD on all atoms will
+be listed for each copy (note that high values may be due to large
+variations in unrestrained conformational torsion angles).
+<P>   
+The deduced chemical formula will be listed, along with the formula
+read from the file (if any).
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S3">6.3 </A>Finding bonds</H3> 
+<P>   
+In the next step, the program will try to figure out which atoms are
+bonded. Two atoms are bonded if their distance does not exceed the
+sum of their covalent bond radii plus a small tolerance (0.45 &Aring; by
+default; the cut-off will be printed). If there are extra copies of
+the residue, the ESD, minimum and maximum lengths of this bond will
+also be listed, and a warning issued if the range is large. Finally,
+the program will look for examples of this type of bond in the
+library, and if there are any, it will list the type. If the length
+is far away from the ideal value, a warning will be printed.
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Looking for bonded atoms ...
+<P>   
+ Bond  C1  -  C2  =    1.523 A (cutoff :    1.810)
+ ESD, Min, Max :    0.001   1.521   1.525
+ Nr of entries in library : (          5)
+ Closest to   1.53 (devn.   0.01)
+ For: C-C single; range 1.49-1.54
+<P>   
+ Bond  C1  -  O5  =    1.430 A (cutoff :    1.810)
+ ESD, Min, Max :    0.004   1.422   1.436
+ Nr of entries in library : (          5)
+ Closest to   1.43 (devn.   0.00)
+ For: C-O single
+<P>   
+...
+<P>   
+ Bond  C6  -  O6  =    1.412 A (cutoff :    1.810)
+ ESD, Min, Max :    0.002   1.409   1.414
+ Nr of entries in library : (          5)
+ Closest to   1.43 (devn.   0.02)
+ For: C-O single
+<P>   
+ Nr of bonds found : (         11)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S4">6.4 </A>Finding neighbours and hydrogen atoms</H3> 
+<P>   
+The program will now generate a list of neighbour atoms for every
+atom. Also, if the PDB file did not contain all hydrogen atoms
+explicitly, the number of hydrogen atoms will be guesstimated
+by the program using the same simple algorithm as in XPLO2D.
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Generating neighbour lists ...
+<P>   
+ Trying to guess number of hydrogens ...
+ Minimum C-C single bond (A) : (   1.480)
+ Minimum C-C double bond (A) : (   1.280)
+ Minimum C-N single bond (A) : (   1.400)
+ Minimum C-N double bond (A) : (   1.200)
+ Minimum C-O single bond (A) : (   1.300)
+ Minimum C-S single bond (A) : (   1.770)
+     Carbon  C1  Nbrs:  2 ~Hs: 2
+     Carbon  C2  Nbrs:  3 ~Hs: 1
+     Carbon  C3  Nbrs:  3 ~Hs: 1
+     Carbon  C4  Nbrs:  3 ~Hs: 1
+     Carbon  C5  Nbrs:  3 ~Hs: 1
+     Carbon  C6  Nbrs:  2 ~Hs: 2
+     Oxygen  O2  Nbrs:  1 ~Hs: 1
+     Oxygen  O3  Nbrs:  1 ~Hs: 1
+     Oxygen  O4  Nbrs:  1 ~Hs: 1
+     Oxygen  O5  Nbrs:  2 ~Hs: 0
+     Oxygen  O6  Nbrs:  1 ~Hs: 1
+ Est. total nr of hydrogens : (      12)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S5">6.5 </A>Finding angles</H3> 
+<P>   
+The program will generate all unique angles and list their values.
+If there were extra copies, the ESD, minimum and maximum value
+will also be listed. If the observed range of values is large,
+a warning message will be printed.
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Looking for angles ...
+<P>   
+     AtmJ    AtmI    AtmK   &lt;Angle&gt;       ESD       Min       Max     Range
+     ----    ----    ----   -------       ---       ---       ---     -----
+      C2      C1      O5     109.76      0.53    108.90    110.64      1.74
+      C1      C2      C3     110.42      0.33    109.92    110.98      1.06
+      C1      C2      O2     109.94      0.19    109.73    110.35      0.62
+      C3      C2      O2     109.88      0.19    109.51    110.20      0.70
+      C2      C3      C4     110.54      0.29    110.26    111.20      0.93
+      C2      C3      O3     110.06      0.19    109.70    110.33      0.63
+      C4      C3      O3     109.79      0.17    109.45    110.04      0.59
+      C3      C4      C5     110.51      0.23    110.20    110.86      0.66
+      C3      C4      O4     109.82      0.11    109.63    109.98      0.35
+      C5      C4      O4     109.74      0.16    109.43    110.01      0.58
+      C4      C5      C6     111.19      0.17    110.82    111.38      0.56
+      C4      C5      O5     109.33      0.27    108.90    109.72      0.81
+      C6      C5      O5     108.94      0.26    108.46    109.27      0.80
+      C5      C6      O6     110.21      0.17    109.87    110.36      0.48
+      C1      O5      C5     114.46      0.50    113.98    115.37      1.39
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S6">6.6 </A>Finding dihedrals</H3> 
+<P>   
+Next, the program will define all dihedral angles it can detect. Again,
+statistics are listed if there are extra copies. Note that a large
+range for a dihedral could point to a free, conformational torsion.
+If the (average) dihedral is close to 0 or 180 degrees, the program
+will guess that the related atoms should be &quot;flat&quot;.
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Looking for dihedrals ...
+<P>   
+     AtmK    AtmI    AtmJ    AtmL  &lt;Dihedral&gt;     Min     Max   Range
+     ----    ----    ----    ----   ---------     ---     ---   -----
+      O5      C1      C2      C3        55.29   53.92   57.71    3.78
+      O5      C1      C2      O2       -66.12  -67.91  -63.33    4.58
+      C2      C1      O5      C5       -61.03  -64.06  -57.87    6.19
+      C1      C2      C3      C4       -52.89  -54.50  -50.44    4.06
+      C1      C2      C3      O3      -174.33 -176.13 -171.67    4.47 Flat ?
+      O2      C2      C3      C4        68.56   66.62   70.99    4.36
+      O2      C2      C3      O3       -52.89  -55.01  -50.24    4.77
+      C2      C3      C4      C5        53.04   50.09   55.00    4.92
+      C2      C3      C4      O4       174.25  171.20  176.06    4.86 Flat ?
+      O3      C3      C4      C5       174.64  171.47  176.67    5.20 Flat ?
+      O3      C3      C4      O4       -64.14  -67.45  -62.28    5.17
+      C3      C4      C5      C6      -175.66 -177.24 -173.55    3.69 Flat ?
+      C3      C4      C5      O5       -55.34  -56.66  -53.64    3.02
+      O4      C4      C5      C6        63.09   61.51   65.11    3.59
+      O4      C4      C5      O5      -176.59 -177.89 -174.99    2.90 Flat ?
+      C4      C5      C6      O6       141.67   50.86  238.04  172.82
+ &gt;&gt;&gt; WARNING - large range for previous dihedral !
+      O5      C5      C6      O6        20.95  -69.32  117.51  173.17
+ &gt;&gt;&gt; WARNING - large range for previous dihedral !
+      C4      C5      O5      C1        60.88   58.40   63.62    5.22
+      C6      C5      O5      C1      -177.43 -179.77 -174.73    5.04 Flat ?
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S7">6.7 </A>Finding impropers</H3> 
+<P>   
+Every atom with 3 or more neighbours gives rise to an improper. If the
+atom and its neighbours are flat, this improper should be zero; if
+they are terahedral, the improper should be +35 or -35 degrees. If
+impropers do not have a value near any of these three, a warning is
+issued. Also, if the range of observed values is large, a warning
+message is printed.
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Looking for impropers (and planes) ...
+<P>   
+     Atm*    Nbr1    Nbr2    Nbr3  &lt;Improper&gt;     Min     Max   Range
+     ----    ----    ----    ----   ---------     ---     ---   -----
+      C2      C1      C3      O2        33.47   32.97   33.73    0.76
+      C3      C2      C4      O3        33.41   33.20   33.72    0.52
+      C4      C3      C5      O4       -33.61  -33.77  -33.50    0.26
+      C5      C4      C6      O5       -34.56  -34.69  -34.43    0.26
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S8">6.8 </A>Finding planes</H3> 
+<P>   
+When it looks for impropers, the program starts a list of atoms which
+might be part of planar groups. Subsequently, it will look for any
+other sets of atoms that might be part of planar groups. For all
+the potential planes found, the program then starts looking for any
+other atoms which might also be in this plane (and which are bonded
+to at least one atom already in the plane). Finally, planes which
+are copies or subsets of other planes are removed. The remaining
+planes and their atoms are listed, along with the RMSD to the
+least-squares plane and the distance of each atom to that plane.
+(The plane analysis only uses the coordinates of the first copy
+of the compound !)
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Number of possible flat planes : (          0)
+<P>   
+ Looking for more planes ...
+<P>   
+ Number of possible flat planes : (          1)
+<P>   
+ Expanding planes ...
+<P>   
+ Removing non-unique planes ...
+<P>   
+ Plane nr    : (          1)
+ Nr of atoms : (          4)
+ RMSD to least-squares plane (A): (   0.001)
+ Atom   Dist (A)
+  O5      -0.002
+  C1       0.002
+  C5      -0.001
+  C6       0.001
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S9">6.9 </A>Summary</H3> 
+<P>   
+Finally, a summary is printed.
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+<P>   
+            -------------------
+            ----- SUMMARY -----
+            -------------------
+<P>   
+ Residue type                   : (MAN)
+ Identifier                     : (A 503)
+ Segment ID                     : ( )
+<P>   
+ Nr of atoms                    : (      11)
+ Deduced formula                : (C 6 O 5)
+ Guestimated total nr of Hs     : (      12)
+ Nr of extra examples           : (      13)
+<P>   
+ Nr of bonds found              : (      11)
+ ... bonds with large ranges    : (       0)
+          -&quot;-                 % : (   0.000)
+ ... bonds without ideal value  : (       0)
+ ... bonds near ideal value     : (      11)
+ ... bonds far from ideal value : (       0)
+          -&quot;-                 % : (   0.000)
+<P>   
+ Nr of angles found             : (      15)
+ ... angles with large ranges   : (       0)
+          -&quot;-                 % : (   0.000)
+<P>   
+ Nr of dihedrals found          : (      19)
+<P>   
+ Nr of atoms with impropers     : (       4)
+ ... imprs with large ranges    : (       0)
+          -&quot;-                 % : (   0.000)
+ ... imprs far from ideal value : (       0)
+          -&quot;-                 % : (   0.000)
+<P>   
+ Nr of flat planes              : (       1)
+<P>   
+ All done ...
+<P>   
+ *** HETZE *** HETZE *** HETZE *** HETZE *** HETZE *** HETZE *** HETZE ***
+<P>   
+ Version - 970710/0.2
+ Started - Tue Jul 15 16:45:28 1997
+ Stopped - Tue Jul 15 16:45:32 1997
+<P>   
+ CPU-time taken :
+ User    -      0.1 Sys    -      0.0 Total   -      0.1
+<P>   
+ *** HETZE *** HETZE *** HETZE *** HETZE *** HETZE *** HETZE *** HETZE ***
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H7">7 </A>EXAMPLES</H2> </CENTER>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S10">7.1 </A>Trp</H3> 
+<P>   
+The variety of hetero compounds is enormous compared to that of the
+amino acids and nucleic acids. Therefore, a geometry-checking
+program is mor edifficult to make for these compounds. One test
+to see if it doesn't give too many false positives (i.e., things
+which are flagged as error/outlier/warning, while they are correct)
+is to run it on a set of protein residues from a high-resolution
+structure. Below is the result for all tryptophan residues taken
+from PDB entry 1CEL (cellobiohydrolase I at 1.8 &Aring;):
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+...
+ Looking for angles ...
+<P>   
+     AtmJ    AtmI    AtmK   &lt;Angle&gt;       ESD       Min       Max     Range
+     ----    ----    ----   -------       ---       ---       ---     -----
+      N       CA      C      111.24      3.15    105.67    115.67      9.99
+ &gt;&gt;&gt; WARNING - large range for previous angle !
+      N       CA      CB     109.92      1.55    106.16    111.88      5.72
+      C       CA      CB     109.46      1.92    105.35    113.39      8.04
+ &gt;&gt;&gt; WARNING - large range for previous angle !
+      CA      C       O      120.82      0.56    119.66    121.62      1.95
+      CA      CB      CG     114.73      1.23    113.04    117.05      4.01
+...
+ Looking for impropers (and planes) ...
+<P>   
+     Atm*    Nbr1    Nbr2    Nbr3  &lt;Improper&gt;     Min     Max   Range
+     ----    ----    ----    ----   ---------     ---     ---   -----
+      CA      N       C       CB        34.95   32.19   37.35    5.17
+      CG      CB      CD1     CD2        0.14   -4.46    2.85    7.32
+      CD2     CG      CE2     CE3        0.01   -0.29    0.15    0.44
+      CE2     CD2     NE1     CZ2        0.01   -0.10    0.13    0.23
+...
+            -------------------
+            ----- SUMMARY -----
+            -------------------
+<P>   
+ Residue type                   : (TRP)
+ Identifier                     : (A  16)
+ Segment ID                     : (1CEL)
+<P>   
+ Nr of atoms                    : (      14)
+ Deduced formula                : (C 11 N 2 O 1)
+ Guestimated total nr of Hs     : (      11)
+ Nr of extra examples           : (      17)
+<P>   
+ Nr of bonds found              : (      15)
+ ... bonds with large ranges    : (       0)
+          -&quot;-                 % : (   0.000)
+ ... bonds without ideal value  : (       0)
+ ... bonds near ideal value     : (      15)
+ ... bonds far from ideal value : (       0)
+          -&quot;-                 % : (   0.000)
+<P>   
+ Nr of angles found             : (      20)
+ ... angles with large ranges   : (       2)
+          -&quot;-                 % : (  10.000)
+<P>   
+ Nr of dihedrals found          : (      26)
+<P>   
+ Nr of atoms with impropers     : (       4)
+ ... imprs with large ranges    : (       0)
+          -&quot;-                 % : (   0.000)
+ ... imprs far from ideal value : (       0)
+          -&quot;-                 % : (   0.000)
+<P>   
+ Nr of flat planes              : (       2)
+...
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+Note that all bond lengths are okay (even though HETZE knows nothing
+about the Engh &amp; Huber parameters, and uses a rather broad
+classification). The largest angle variations occur for TAU(N-CA-C),
+which actually depends upon the secondary structure. No angle has a
+range exceding 10 degrees. All impropers are in order. This indicates
+that the conservative checks that the program carries out are
+justified, and that one should worry if one gets lots of warning
+messages.
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S11">7.2 </A>AlF4</H3> 
+<P>   
+A single copy of this ion was used, so no statistics will be printed
+regarding ranges of bond lengths etc. The formula was included.
+There are no ideal Al-F bond lengths in the library. The entire
+group is planar.
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Nr of atoms read     : (          5)
+ Nr of extra examples : (          0)
+<P>   
+ ==&gt; List of elements : ( AL1 F4 1-)
+ ==&gt; Deduced formula  : (F 4 AL 1)
+<P>   
+ Looking for bonded atoms ...
+<P>   
+ Bond AL   -  F1  =    1.788 A (cutoff :    2.440)
+ Nr of entries in library : (          0)
+<P>   
+...
+<P>   
+ Est. total nr of hydrogens : (       0)
+<P>   
+ Looking for angles ...
+<P>   
+     AtmJ    AtmI    AtmK     Angle
+     ----    ----    ----     -----
+      F1     AL       F2     178.80
+      F1     AL       F3      90.41
+      F1     AL       F4      90.04
+      F2     AL       F3      89.86
+      F2     AL       F4      89.65
+      F3     AL       F4     178.31
+<P>   
+ Looking for dihedrals ...
+<P>   
+     AtmK    AtmI    AtmJ    AtmL    Dihedral
+     ----    ----    ----    ----     -------
+<P>   
+ Looking for impropers (and planes) ...
+<P>   
+     Atm*    Nbr1    Nbr2    Nbr3    Improper
+     ----    ----    ----    ----    --------
+ --- Atom with 4 or more non-H neighbours ---
+     AL       F1      F3      F2        -0.83
+     AL       F2      F3      F4         1.15
+     AL       F3      F1      F4         1.15
+     AL       F4      F1      F2        -0.82
+<P>   
+ Number of possible flat planes : (          4)
+<P>   
+ Looking for more planes ...
+<P>   
+ Number of possible flat planes : (          4)
+<P>   
+ Expanding planes ...
+<P>   
+ Removing non-unique planes ...
+  Plane            1 is a subset of plane            2
+  Plane            2 is a subset of plane            4
+  Plane            3 is a subset of plane            4
+<P>   
+ Plane nr    : (          4)
+ Nr of atoms : (          5)
+ RMSD to least-squares plane (A): (   0.009)
+ Atom   Dist (A)
+ AL        0.017
+  F4      -0.008
+  F1      -0.001
+  F2      -0.001
+  F3      -0.008
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S12">7.3 </A>FAD</H3> 
+<P>   
+This used 12 FAD copies from structures refined to 2.0 &Aring; resolution
+or better. Note that even at these resolutions, the geometry of
+the compound varies enormously, and several copies contain errors.
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+...
+ ==&gt; List of elements : ( C27 H33 N9 O15 P2)
+ ==&gt; Deduced formula  : (C 27 N 9 O 15 P 2)
+<P>   
+ Looking for bonded atoms ...
+<P>   
+ Bond AP   - AO1  =    1.482 A (cutoff :    2.180)
+ ESD, Min, Max :    0.038   1.453   1.602
+ &gt;&gt;&gt; WARNING - Large variation in previous bond length : (   0.149)
+ Nr of entries in library : (          2)
+ &gt;&gt;&gt; WARNING - Too far from ideal   1.38 (devn.   0.10)
+ For: O-P double
+...
+ Bond  C4  -  C4A =    1.460 A (cutoff :    1.810)
+ ESD, Min, Max :    0.029   1.388   1.514
+ &gt;&gt;&gt; WARNING - Large variation in previous bond length : (   0.127)
+ Nr of entries in library : (          5)
+ Closest to   1.44 (devn.   0.02)
+ For: C-C single shortened; range 1.421-1.46
+...
+ Bond  C5* -  O5* =    1.489 A (cutoff :    1.810)
+ ESD, Min, Max :    0.069   1.406   1.647
+ &gt;&gt;&gt; WARNING - Large variation in previous bond length : (   0.241)
+ Nr of entries in library : (          5)
+ Closest to   1.47 (devn.   0.02)
+ For: C-O single strained
+...
+ Est. total nr of hydrogens : (      38)
+<P>   
+ Looking for angles ...
+<P>   
+     AtmJ    AtmI    AtmK   &lt;Angle&gt;       ESD       Min       Max     Range
+     ----    ----    ----   -------       ---       ---       ---     -----
+     AO1     AP      AO2     119.99      3.36    115.18    125.67     10.49
+ &gt;&gt;&gt; WARNING - large range for previous angle !
+     AO1     AP      AO5*    106.23      3.24     97.56    110.66     13.11
+ &gt;&gt;&gt; WARNING - large range for previous angle !
+     AO1     AP       O3     109.05      3.16    103.66    114.34     10.68
+ &gt;&gt;&gt; WARNING - large range for previous angle !
+     AO2     AP      AO5*    105.89      4.29     93.94    112.77     18.84
+ &gt;&gt;&gt; WARNING - large range for previous angle !
+     AO2     AP       O3     111.29      4.68    105.16    118.91     13.76
+ &gt;&gt;&gt; WARNING - large range for previous angle !
+     AO5*    AP       O3     102.08      4.31     92.65    106.87     14.21
+ &gt;&gt;&gt; WARNING - large range for previous angle !
+     AP      AO5*    AC5*    119.83      4.73    110.49    125.02     14.54
+ &gt;&gt;&gt; WARNING - large range for previous angle !
+     AO5*    AC5*    AC4*    106.21      2.86     98.84    110.06     11.22
+ &gt;&gt;&gt; WARNING - large range for previous angle !
+     AC5*    AC4*    AO4*    108.62      2.18    103.63    111.20      7.57
+     AC5*    AC4*    AC3*    114.75      3.41    110.09    119.93      9.84
+ &gt;&gt;&gt; WARNING - large range for previous angle !
+     AO4*    AC4*    AC3*    106.03      2.23    101.46    109.36      7.89
+     AC4*    AO4*    AC1*    106.61      1.39    104.98    109.28      4.30
+...
+ Looking for dihedrals ...
+<P>   
+     AtmK    AtmI    AtmJ    AtmL  &lt;Dihedral&gt;     Min     Max   Range
+     ----    ----    ----    ----   ---------     ---     ---   -----
+     AO1     AP      AO5*    AC5*      -56.52 -177.88  -21.02  156.86
+ &gt;&gt;&gt; WARNING - large range for previous dihedral !
+     AO2     AP      AO5*    AC5*     -164.80  173.02  319.73  146.71
+ &gt;&gt;&gt; WARNING - large range for previous dihedral !
+...
+     AC1*    AN9     AC8     AN7      -173.05 -177.33 -159.78   17.55 Flat ?
+ &gt;&gt;&gt; WARNING - large range for previous dihedral !
+     AC4     AN9     AC8     AN7         1.07   -3.06    7.10   10.16 Flat ?
+ &gt;&gt;&gt; WARNING - large range for previous dihedral !
+     AC1*    AN9     AC4     AC5       173.79  161.77  182.25   20.48 Flat ?
+ &gt;&gt;&gt; WARNING - large range for previous dihedral !
+     AC1*    AN9     AC4     AN3        -6.08  -15.75   -0.15   15.60 Flat ?
+ &gt;&gt;&gt; WARNING - large range for previous dihedral !
+     AC8     AN9     AC4     AC5        -0.49   -4.51    4.00    8.51 Flat ?
+     AC8     AN9     AC4     AN3       179.64  176.32  185.45    9.13 Flat ?
+     AN9     AC8     AN7     AC5        -1.12   -9.32    1.82   11.14 Flat ?
+ &gt;&gt;&gt; WARNING - large range for previous dihedral !
+...
+ Looking for impropers (and planes) ...
+<P>   
+     Atm*    Nbr1    Nbr2    Nbr3  &lt;Improper&gt;     Min     Max   Range
+     ----    ----    ----    ----   ---------     ---     ---   -----
+ --- Atom with 4 or more non-H neighbours ---
+     AP      AO1     AO2     AO5*       28.75  -39.90   49.19   89.10
+ &gt;&gt;&gt; WARNING - large range for previous improper !
+     AP      AO2     AO5*     O3       -28.10  -48.27   43.90   92.17
+ &gt;&gt;&gt; WARNING - large range for previous improper !
+     AP      AO5*     O3     AO1        27.30  -36.67   41.70   78.38
+ &gt;&gt;&gt; WARNING - large range for previous improper !
+     AP       O3     AO1     AO2       -16.95  -28.72   29.87   58.59
+ &gt;&gt;&gt; WARNING - large range for previous improper !
+ &gt;&gt;&gt; WARNING - previous improper not near 0 or +/-35 !
+<P>   
+     AC4*    AC5*    AO4*    AC3*      -34.52  -37.34  -31.69    5.65
+     AC3*    AC4*    AO3*    AC2*      -36.70  -41.44  -32.62    8.82
+ &gt;&gt;&gt; WARNING - large range for previous improper !
+     AC2*    AC3*    AO2*    AC1*      -40.62  -44.65  -37.28    7.37
+     AC1*    AO4*    AC2*    AN9        34.78   31.21   37.49    6.28
+...
+            -------------------
+            ----- SUMMARY -----
+            -------------------
+<P>   
+ Residue type                   : (FAD)
+ Identifier                     : (X   1)
+ Segment ID                     : ( )
+<P>   
+ Nr of atoms                    : (      53)
+ List of elements (from file)   : ( C27 H33 N9 O15 P2)
+ Deduced formula                : (C 27 N 9 O 15 P 2)
+ Guestimated total nr of Hs     : (      38)
+ Nr of extra examples           : (      11)
+<P>   
+ Nr of bonds found              : (      58)
+ ... bonds with large ranges    : (      25)
+          -&quot;-                 % : (  43.103)
+ ... bonds without ideal value  : (       0)
+ ... bonds near ideal value     : (      52)
+ ... bonds far from ideal value : (       6)
+          -&quot;-                 % : (  10.345)
+<P>   
+ Nr of angles found             : (      89)
+ ... angles with large ranges   : (      31)
+          -&quot;-                 % : (  34.831)
+<P>   
+ Nr of dihedrals found          : (     117)
+<P>   
+ Nr of atoms with impropers     : (      22)
+ ... imprs with large ranges    : (      15)
+          -&quot;-                 % : (  68.182)
+ ... imprs far from ideal value : (       1)
+          -&quot;-                 % : (   4.545)
+<P>   
+ Nr of flat planes              : (       5)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H8">8 </A>KNOWN BUGS</H2> </CENTER>
+<P>   
+None, at present (&quot;peppar, peppar&quot;).
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H9">9 </A>UNKNOWN BUGS</H2> </CENTER>
+<P>   
+Does not compute.
+<HR NOSHADE>    <A HREF="http://xray.bmc.uu.se/usf/" target="_top">
+<IMG ALIGN="right" BORDER="0" SRC="usf_logo.gif"
+ALT="Uppsala Software Factory"></A>
+<FONT SIZE=-1>
+<B> <I> Created at Tue Feb 1 20:56:55 2005
+by MAN2HTML version 050114/2.0.6 . This manual
+describes HETZE, a program of the <A HREF="http://xray.bmc.uu.se/usf/" target="_top">Uppsala
+Software Factory</A> (USF), written and maintained by <A HREF="http://xray.bmc.uu.se/gerard"
+target="_blank">Gerard Kleywegt</A>. &copy; 1992-2005.
+</I> </B> </FONT><P>
+<IMG SRC="http://xray.bmc.uu.se/cgi-bin/nph-count?width=6&link=http://alpha2.bmc.uu.se/~gerard/www/manuals/hetze_man.html">
+</body></html>

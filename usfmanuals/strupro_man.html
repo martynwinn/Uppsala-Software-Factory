@@ -1,0 +1,928 @@
+<html><head><!-- This document was created for STRUPRO at Fri Jan 14 20:12:42 2005 from
+../prosite/strupro.txt by MAN2HTML version 050114/2.0.6 -->
+<title>Uppsala Software Factory - STRUPRO Manual</title>
+<meta name="DESCRIPTION" content="Manual for Gerard 
+Kleywegt's program STRUPRO">
+<meta name="KEYWORDS" content="manual software Gerard 
+Kleywegt program STRUPRO structural biology 
+protein X-ray crystallography macromolecular molecular
+Uppsala Software Factory bioinformatics">
+</head><body bgcolor="#fefefe" background="back.gif">
+
+<A HREF="http://xray.bmc.uu.se/usf/" target="_top">
+<IMG ALIGN="right" BORDER="0" SRC="usf_logo.gif"
+ALT="Uppsala Software Factory"></A>
+
+<H2>  Uppsala Software Factory - STRUPRO Manual</H2> <P>   
+<UL>  
+<LI><H3>  <A HREF="#H1">1  </A>STRUPRO - GENERAL INFORMATION</H3> 
+<LI><H3>  <A HREF="#H2">2  </A>REFERENCES</H3> 
+<LI><H3>  <A HREF="#H3">3  </A>VERSION HISTORY</H3> 
+<LI><H3>  <A HREF="#H4">4  </A>INTRODUCTION</H3> 
+<LI><H3>  <A HREF="#H5">5  </A>INPUT TO THE PROGRAM</H3> 
+<H5><A HREF="#S1">5.1  </A>Start-up</H5>
+<H5><A HREF="#S2">5.2  </A>Random-number seed</H5>
+<H5><A HREF="#S3">5.3  </A>Random sequence</H5>
+<H5><A HREF="#S4">5.4  </A>Substitution matrix</H5>
+<H5><A HREF="#S5">5.5  </A>Cut-off distance and frameshifts</H5>
+<H5><A HREF="#S6">5.6  </A>Minimum fragment length</H5>
+<H5><A HREF="#S7">5.7  </A>Indel penalty</H5>
+<H5><A HREF="#S8">5.8  </A>Sequence weighting</H5>
+<H5><A HREF="#S9">5.9  </A>PDB and profile files</H5>
+<LI><H3>  <A HREF="#H6">6  </A>OUTPUT</H3> 
+<LI><H3>  <A HREF="#H7">7  </A>RESULTS</H3> 
+<LI><H3>  <A HREF="#H8">8  </A>PROFILE FILE</H3> 
+<LI><H3>  <A HREF="#H9">9  </A>SEQUENCE ALIGNMENT FILE</H3> 
+<LI><H3>  <A HREF="#H10">10  </A>KNOWN BUGS</H3> 
+<LI><H3>  <A HREF="#H11">11  </A>UNKNOWN BUGS</H3> 
+</UL> 
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H1">1 </A>STRUPRO - GENERAL INFORMATION</H2> </CENTER>
+<P>   
+Program : STRUPRO
+ <BR> Version : 041001
+ <BR> Author : Gerard J. Kleywegt, Dept. of Cell and Molecular Biology,
+Uppsala University, Biomedical Centre, Box 596,
+SE-751 24 Uppsala, SWEDEN
+ <BR> E-mail : gerard@xray.bmc.uu.se
+ <BR> Purpose : generate PROSITE profiles from aligned 3D protein structures
+ <BR> Package : SBIN
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H2">2 </A>REFERENCES</H2> </CENTER>
+<P>   
+Reference(s) for this program:
+<P>   
+* 1 * G.J. Kleywegt &amp; T.A. Jones (1998). Databases in protein
+crystallography. Acta Cryst D54, 1119-1131.
+[http://xray.bmc.uu.se/gerard/papers/databases.html]
+[http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=PubMed&amp;cmd=Retrieve&amp;list_uids=10089488&amp;dopt=Citation]
+[http://scripts.iucr.org/cgi-bin/paper?ba0001]
+<P>   
+* 2 * Kleywegt, G.J., Zou, J.Y., Kjeldgaard, M. &amp; Jones, T.A. (2001).
+Around O. In: &quot;International Tables for Crystallography, Vol. F.
+Crystallography of Biological Macromolecules&quot; (Rossmann, M.G.
+&amp; Arnold, E., Editors). Chapter 17.1, pp. 353-356, 366-367.
+Dordrecht: Kluwer Academic Publishers, The Netherlands.
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H3">3 </A>VERSION HISTORY</H2> </CENTER>
+<P>   
+970728 - 0.1 - first version
+ <BR> 970804 - 0.4 - first documented version
+ <BR> 970805 - 0.5 - try to extend alignments backwards as well; minor changes
+ <BR> 971103 - 1.0 - cleaned up code and manual
+ <BR> 980206 - 1.1 - minor changes
+ <BR> 980211 - 1.2 - bug fix; slightly changed mult. seq. alignment
+output file format for easier conversion to ALSCRIPT
+ <BR> 000508 - 1.3 - implemented Henikoff &amp; Henikoff method to weight the
+sequences (JMB 243, pp. 574-578, 1994), which is now
+the default
+ <BR> 001122 - 1.4 - better profile parameters; flexible indel penalty
+ <BR> 020819 - 1.5 - can now handle both real and integer substitution matrices
+ <BR> 020823 - 1.6 - skip alt. conf. (B, C, ...) when reading PDB files
+ <BR> 041001 - 1.7 - replaced Kabsch' routine U3BEST by quaternion-based
+routine (U3QION) to do least-squares superpositioning
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H4">4 </A>INTRODUCTION</H2> </CENTER>
+<P>   
+This program generates PROSITE profiles from a set of aligned
+three-dimensional protein structures in PDB format.
+<P>   
+A profile is a matrix where every residue has a row of numbers
+associated with it, which indicate how well each of the twenty
+residue types &quot;fit in&quot; at that particular position in the sequence.
+For instance:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+            Gly Ala Ser ... Phe Tyr Trp ...
+ ...
+ Ala 263      2   5   3      -2  -2  -4
+ Phe 264     -4  -3  -4      10   9   7
+ ...
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+A profile can be aligned with all sequences in a database. A sequence
+which is &quot;compatible&quot; with the profile will receive a high score.
+For instance, a sequence containing the dipeptide Ala-Tyr would
+obtain a score of 5 + 9 = 14; Tyr-Ala, on the other hand, would only
+score -2 + -3 = -5.
+<P>   
+Note that, in addition to the twenty values for each of the common
+amino-acid residue types, the matrix also contains two columns
+which contain a score (or penalty) for the opening and extension
+of a gap (in the alignment of a database sequence to the profile).
+<P>   
+Whereas patterns are very strict (if one strictly conserved residue
+is not conserved in one sequence, this sequence will not be
+matched to the pattern, even if it satisfies the rest of the pattern),
+profiles are more tolerant/subtle. For instance, if a residue
+is a tyrosine in all known sequences, a related sequence which
+happens to have a phenylalanine in that position may still obtain
+a high score.
+<P>   
+Traditionally, profiles have been generated from multiple aligned
+sequences. The actual values in the profile matrix depend on
+three factors:
+ <BR> - the variety of residues observed in each position in the aligned
+sequences (e.g., a strictly conserved Trp will lead to a high
+value for the Trp-entry in that row of the matrix)
+ <BR> - knowledge about the likelihood of residue substitutions (e.g.,
+Phe and Tyr are closely related residues, so a strictly conserved
+Phe will also give a fairly high value for a Tyr in that position).
+This knowledge is encoded in residue substitution tables (e.g.,
+PAM and BLOSUM matrices)
+ <BR> - weights assigned to the individual sequences in the alignment to
+reduce the effect of sample bias. For instance, if three sequences
+AAAA, AAAA, and GGGG are used to generate a profile, the first
+two are redundant and should receive a weight of 1/4 each, whereas
+the third should be weighted by 1/2.
+<P>   
+The program STRUPRO takes a slightly different approach. It takes
+as input a set of superimposed *structures*, and generates a
+profile only for stretches of residues that are in structurally
+equivalent positions. Inside such stretches, insertions are
+strongly penalised; in between insertions are &quot;cost-neutral&quot;.
+The rationale is that, since structure is generally better conserved
+than sequence, a profile based only on the structurally-conserved
+core of a set of proteins stands a better chance of picking up
+other proteins from the database with a similar structure.
+<P>   
+The profile can then be scanned against SWISS-PROT to reveal more
+proteins that could belong to the same class (structurally,
+functionally, evolutionarily).
+<P>   
+In order to scan sequence profiles against SWISS-PROT, you will
+also need:
+<P>   
+(1) the &quot;pftools&quot; suite of programs, written by Philipp
+Bucher (
+<A HREF="mailto:pbucher@isrec-sun1.unil.ch">
+mailto:pbucher@isrec-sun1.unil.ch</A>
+) and available by ftp from
+<A HREF="http://ulrec3.unil.ch:80/ftp-server/pftools/">
+http://ulrec3.unil.ch:80/ftp-server/pftools/</A>
+(the suite should compile on most Unix machines).
+<P>   
+(2) the SWISS-PROT database of protein sequences (
+<A HREF="http://www.expasy.ch/sprot/sprot-top.html" target="_blank">
+http://www.expasy.ch/sprot/sprot-top.html</A>
+), which can be downloaded by ftp from
+<A HREF="ftp://ftp.expasy.ch/databases/swiss-prot/">
+ftp://ftp.expasy.ch/databases/swiss-prot/</A>
+(at the time of writing, the file &quot;compressed/sprot40.dat.gz&quot;).
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H5">5 </A>INPUT TO THE PROGRAM</H2> </CENTER>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S1">5.1 </A>Start-up</H3> 
+<P>   
+When you start the program, it prints some information:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ *** STRUPRO *** STRUPRO *** STRUPRO *** STRUPRO *** STRUPRO *** STRUPRO ***
+<P>   
+ Version  - 001122/1.4
+ (C) 1992-2000 Gerard J. Kleywegt, Dept. Cell Mol. Biol., Uppsala (S)
+ User I/O - routines courtesy of Rolf Boelens, Univ. of Utrecht (NL)
+ Others   - T.A. Jones, G. Bricogne, Rams, W.A. Hendrickson
+ Others   - W. Kabsch, CCP4, PROTEIN, E. Dodson, etc. etc.
+<P>   
+ Started  - Wed Nov 22 20:58:34 2000
+ User     - gerard
+ Mode     - interactive
+ Host     - sarek
+ ProcID   - 11422
+ Tty      - /dev/ttyq12
+<P>   
+ *** STRUPRO *** STRUPRO *** STRUPRO *** STRUPRO *** STRUPRO *** STRUPRO ***
+<P>   
+ Reference(s) for this program:
+<P>   
+ *  1 * G.J. Kleywegt &amp; T.A. Jones (1998). Databases in protein
+        crystallography. Acta Cryst D54, 1119-1131.
+        [http://xray.bmc.uu.se/gerard/papers/databases.html]
+        [http://www.ncbi.nlm.nih.gov/htbin-post/Entrez/query?uid=10089488&amp;form=6&amp;db=m&amp;Dopt=b]
+        [http://www.iucr.org/iucr-top/journals/acta/tocs/actad/1998/actad5406_1.html]
+<P>   
+ *  2 * G.J. Kleywegt, J.Y. Zou, M. Kjeldgaard &amp; T.A. Jones (2000).
+        Chapter 17.1.  Around O. Int. Tables for Crystallography,
+        Volume F. Submitted.
+<P>   
+ ==&gt; For manuals and up-to-date references, visit:
+ ==&gt; http://xray.bmc.uu.se/usf
+ ==&gt; For downloading up-to-date versions, visit:
+ ==&gt; ftp://xray.bmc.uu.se/pub/gerard
+<P>   
+ *** STRUPRO *** STRUPRO *** STRUPRO *** STRUPRO *** STRUPRO *** STRUPRO ***
+<P>   
+ Max nr of atoms/residues       : (      50000)
+ Max nr of molecules            : (        500)
+ Max nr of residues in sequence : (       2000)
+ Nr of amino-acid types         : (         20)
+ Random sequence length         : (    2000000)
+ One-letter codes   : ( A R N D C E Q G H I L K M F P S T W Y V)
+ Three-letter codes : ( ALA ARG ASN ASP CYS GLU GLN GLY HIS ILE LEU LYS
+  MET PHE PRO SER THR TRP TYR VAL)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S2">5.2 </A>Random-number seed</H3> 
+<P>   
+The first bit of input is an integer seed for the random-number
+generator. This will be used to generate a random amino-acid
+sequence, and to generate random sequences when calculating the
+weight of each structure/sequence. If you repeat this run of
+the program on the same machine with the same seed, you should
+be getting identical results.
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Random-number seed ? (  123456)
+ Random-number seed : (  123456)
+ =&gt; Random number generator initialised with seed :     123456
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S3">5.3 </A>Random sequence</H3> 
+<P>   
+The program will now generate a random amino-acid sequence of (at
+present) 2,000,000 residues. This sequence has an amino-acid
+distribution similar to that found in proteins in the PDB (GJK,
+unpublished results). It will be used later to calculate scores
+for the profile parts, which gives you some idea of the
+&quot;signal-to-noise&quot;.
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Generating random sequence ...
+ Target composition    : (   0.081    0.044    0.046    0.058    0.019
+  0.058    0.037    0.080    0.022    0.053    0.081    0.059    0.020
+  0.040    0.047    0.068    0.063    0.016    0.038    0.071)
+ Working ...
+ Actual composition    : (   0.081    0.044    0.046    0.058    0.019
+  0.057    0.037    0.080    0.022    0.053    0.081    0.060    0.020
+  0.040    0.046    0.068    0.063    0.015    0.038    0.070)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S4">5.4 </A>Substitution matrix</H3> 
+<P>   
+Next, you need to provide the name of a file which contains the
+matrix to be used in the construction of the profiles. A number
+of matrices are available; others can be made by the user.
+<P>   
+Note: if you have defined the environment variable GKLIB so that
+it points to the directory where you keep your collection of these
+matrix files (in Uppsala: /nfs/public/lib), the program will use
+this to generate the default file name.
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Library file with matrix ? (/home/gerard/lib/sbin_blosum45.lib)
+ Library file with matrix : (/home/gerard/lib/sbin_blosum45.lib)
+ Comment : (! BLOSUM 45 matrix made from BLOCKS v. 5.0 and scaled in half-
+  bits.)
+ Comment : (! ARNDCQEGHILKMFPSTWYVBZX)
+ Comment : (! integer matrix)
+ Average matrix value : (  -0.918)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+Such a matrix file may look as follows (if it would contain real,
+instead of integer, numbers, replace the MATI by MATR and the
+format by something appropriate):
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+!
+! PAM 250 matrix recommended by Gonnet, Cohen &amp; Benner
+! Science June 5, 1992.
+! Values rounded to nearest integer
+!
+TYPE 22 (30(2x,a1))
+  C  S  T  P  A  G  N  D  E  Q  H  R  K  M  I  L  V  F  Y  W  X  *
+!
+MATI (30i3)
+ 12  0  0 -3  0 -2 -2 -3 -3 -2 -1 -2 -3 -1 -1 -2  0 -1  0 -1 -3 -8
+  0  2  2  0  1  0  1  0  0  0  0  0  0 -1 -2 -2 -1 -3 -2 -3  0 -8
+  0  2  2  0  1 -1  0  0  0  0  0  0  0 -1 -1 -1  0 -2 -2 -4  0 -8
+ -3  0  0  8  0 -2 -1 -1  0  0 -1 -1 -1 -2 -3 -2 -2 -4 -3 -5 -1 -8
+  0  1  1  0  2  0  0  0  0  0 -1 -1  0 -1 -1 -1  0 -2 -2 -4  0 -8
+ -2  0 -1 -2  0  7  0  0 -1 -1 -1 -1 -1 -4 -4 -4 -3 -5 -4 -4 -1 -8
+ -2  1  0 -1  0  0  4  2  1  1  1  0  1 -2 -3 -3 -2 -3 -1 -4  0 -8
+ -3  0  0 -1  0  0  2  5  3  1  0  0  0 -3 -4 -4 -3 -4 -3 -5 -1 -8
+ -3  0  0  0  0 -1  1  3  4  2  0  0  1 -2 -3 -3 -2 -4 -3 -4 -1 -8
+ -2  0  0  0  0 -1  1  1  2  3  1  2  2 -1 -2 -2 -2 -3 -2 -3 -1 -8
+ -1  0  0 -1 -1 -1  1  0  0  1  6  1  1 -1 -2 -2 -2  0  2 -1 -1 -8
+ -2  0  0 -1 -1 -1  0  0  0  2  1  5  3 -2 -2 -2 -2 -3 -2 -2 -1 -8
+ -3  0  0 -1  0 -1  1  0  1  2  1  3  3 -1 -2 -2 -2 -3 -2 -4 -1 -8
+ -1 -1 -1 -2 -1 -4 -2 -3 -2 -1 -1 -2 -1  4  2  3  2  2  0 -1 -1 -8
+ -1 -2 -1 -3 -1 -4 -3 -4 -3 -2 -2 -2 -2  2  4  3  3  1 -1 -2 -1 -8
+ -2 -2 -1 -2 -1 -4 -3 -4 -3 -2 -2 -2 -2  3  3  4  2  2  0 -1 -1 -8
+  0 -1  0 -2  0 -3 -2 -3 -2 -2 -2 -2 -2  2  3  2  3  0 -1 -3 -1 -8
+ -1 -3 -2 -4 -2 -5 -3 -4 -4 -3  0 -3 -3  2  1  2  0  7  5  4 -2 -8
+  0 -2 -2 -3 -2 -4 -1 -3 -3 -2  2 -2 -2  0 -1  0 -1  5  8  4 -2 -8
+ -1 -3 -4 -5 -4 -4 -4 -5 -4 -3 -1 -2 -4 -1 -2 -1 -3  4  4 14 -4 -8
+ -3  0  0 -1  0 -1  0 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -2 -2 -4 -1 -8
+ -8 -8 -8 -8 -8 -8 -8 -8 -8 -8 -8 -8 -8 -8 -8 -8 -8 -8 -8 -8 -8 -8
+!
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+Note that the matrix may contain entries for residue types not used
+by STRUPRO (e.g., &quot;X&quot;, &quot;B&quot;, &quot;Z&quot;, &quot;*&quot;); the program will ignore these.
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S5">5.5 </A>Cut-off distance and frameshifts</H3> 
+<P>   
+You are to provide a cut-off distance (in &Aring;) for CA atoms of
+different molecules to be considered equivalent. If this
+number is very high, frameshifts may occur in the structural
+alignments, although the program can be instructed to try
+and correct for these. Another cut-off distance determines
+how bits of equivalent structure are extended at their ends.
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Equivalent CA distance ? (   3.500)
+ Equivalent CA distance : (   3.500)
+<P>   
+ Extension CA distance ? (   5.000)
+ Extension CA distance : (   5.000)
+<P>   
+ Try to correct frame-shifts (Y/N) ? (Y)
+ Try to correct frame-shifts (Y/N) : (Y)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S6">5.6 </A>Minimum fragment length</H3> 
+<P>   
+Only structurally conserved, sequential stretches of a certain minimum
+length will be used in the profile (they must be at least 3 residues
+for the RMSD calculations to work).
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Min fragment length ? (      10)
+ Min fragment length : (      10)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S7">5.7 </A>Indel penalty</H3> 
+<P>   
+You may supply a (negative) penalty for indels (or, rather, for
+MI, MD, IM and ID transitions inside the structurally
+conserved bits of the sequences). If you don't, a reasonable
+penalty will be calculated as minus one times the maximum
+of 100 and 1/10-th of the minimum raw score.
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Indel penalty (&gt;=0 auto) ? (       0)
+ Indel penalty (&gt;=0 auto) : (       0)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S8">5.8 </A>Sequence weighting</H3> 
+<P>   
+Appropriate weighting of the various structures/sequences is important
+to minimise bias in the profile (e.g., five different structures
+of the same human protein and only one of an insect form of the
+protein will bias the profile towards human sequences). The
+following weights can be used:
+<P>   
+- uniform weights, i.e. all weights equal; this is not advisable
+<P>   
+- rms(rmsd) weights, i.e. based on the structural variation; this
+is probably not very useful since it may be determined to a
+certain extent by practices of the crystallographer ;-)
+<P>   
+- sequence distance weights, as defined by Sibbald and Argos; this
+is probably the most sensible choice (in this implementation,
+the number of &quot;Monte Carlo&quot; cycles executed lies between 100,000
+and 1,000,000, or fewer if the weights converge to within 1%)
+<P>   
+- Henikoff &amp; Henikoff weights (strongly prefered !)
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Sequences may be weighted:
+ U = uniform weights
+ R = rms(rmsd) weights
+ S = Sibbald-Argos sequence distance weights
+ H = Henikoff^2 position-based sequence weights
+ Weighting scheme ? (H)
+ Weighting scheme : (H)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S9">5.9 </A>PDB and profile files</H3> 
+<P>   
+Provide the name of the PDB file which contains ALL molecules. Note
+that the molecules must have been superimposed previously (e.g.,
+with O or LSQMAN; LSQMAN contains a BRute_force command to find
+structural alignments &quot;ab initio&quot;). Any two subsequent molecules
+in the file must have different chain identifiers. However, not
+all identifiers have to be unique (which would otherwise limit
+you to a maximum of 26 molecules), e.g. you could alternate chain
+identifiers A and B. Note that the program *ONLY* reads the CA
+atoms, so you can make your files considerably smaller by only
+including these (e.g.: grep ^ATOM myfile.pdb | grep ' CA ' &gt; new.pdb).
+Note: any unknown amino acid types will be renamed to ALA !
+<P>   
+You must also provide the name of the (output) profile file (these
+customarily have an extension &quot;.prf&quot;).
+<P>   
+In addition, the program writes a structure-based multiple-sequence
+alignment to a new file.
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Name of PDB file ? (aligned.pdb) paofam.pdb
+ Name of PDB file : (paofam.pdb)
+<P>   
+ Name of profile file ? (aligned.prf)
+ Name of profile file : (aligned.prf)
+<P>   
+ Name of sequence alignment file ? (aligned.seq)
+ Name of sequence alignment file : (aligned.seq)
+<P>   
+ Remark : (REMARK Created by MOLEMAN2 V. 001117/2.8 at Tue Nov 21 20:09:46
+  2000 for gerard)
+ Remark : (REMARK Created by MOLEMAN2 V. 001117/2.8 at Tue Nov 21 20:08:21
+  2000 for gerard)
+ Nr of CA atoms  : (       1900)
+ Nr of molecules : (          4)
+<P>   
+ Mol #   1 Atoms      1 to    459
+ Mol #   2 Atoms    460 to   1108
+ Mol #   3 Atoms   1109 to   1499
+ Mol #   4 Atoms   1500 to   1900
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H6">6 </A>OUTPUT</H2> </CENTER>
+<P>   
+STRUPRO will now start looking for residues that are structurally
+equivalent in all aligned structures (i.e., a residue in the first
+protein has a partner in each of the other structures within the
+cut-off distance). When it encounters such a residue, it checks to
+see if neighbouring residues (on either side) also have partners
+in all the other structures (now using the second distance cut-off).
+<P>   
+In this way, a set of residues is equivalenced between all structures.
+However, the structural superposition may not always be optimal,
+so the program will try to detect and fix any frameshift errors.
+It does this simply by checking for each structure if shifting
+the alignment to the first structure by one residue forward or
+backward would improve the superpositioning RMSD. If so, the
+equivalenced residues are altered accordingly, and the frameshift
+test is carried out again, until no more frameshifts occur.
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ----------------------------------------------------------------------
+ Shift mol   2 by -1 (RMSD -1/0/+1 :    4.3   6.4   8.9 A)
+ Shift mol   3 by -1 (RMSD -1/0/+1 :    1.8   3.7   6.3 A)
+ Shift mol   4 by -1 (RMSD -1/0/+1 :    4.2   6.3   8.8 A)
+ Shift mol   7 by -1 (RMSD -1/0/+1 :    3.9   6.0   8.3 A)
+<P>   
+ ----------------------------------------------------------------------
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+At that stage, the program will again try to extend the alignments
+in both directions using the extension distance cut-off. If the
+resulting conserved set of residues contains at least the minimum
+number of residues defined by the user, a potential pattern has
+been found.
+<P>   
+For every structurally conserved stretch of residues that the program
+encounters, the output includes:
+<P>   
+- a listing of the first residue of the stretch of structurally
+conserved residues in every molecule
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ New structurally conserved stretch !
+ Starts at residue ASP -   30
+   molecule    2 @ LYS -   37
+   molecule    3 @ ASP -   27
+   molecule    4 @ GLU -   29
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+- information about the structural variation. For every residue
+the RMS(RMSD) of the comparisons to all other Nmol-1 structures
+is printed.
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Number of residues       : (      10)
+ RMS (RMSD) all pairs (A) : (   0.947)
+ RMS(RMSD) (A): (   0.796    0.991    0.939    1.045)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+- weights are calculated and printed. In the case of sequence
+distance weights ,this may take a little while since thousands
+of random sequences need to be generated, and statistics accumulated.
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Calculating sequence distances ...
+ Weights      : (   0.242    0.275    0.225    0.258)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+- for every residue, the amino acid for every molecule, and the
+profile matrix entries are listed
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ AA-TYPE :  ALA ARG ASN ASP CYS GLU GLN GLY HIS ILE LEU LYS MET PHE PRO SER THR TRP TYR VAL
+ |DKDE|
+ PROFILE :  -15   6   9  33 -30  18  17 -15   0 -32 -27  16 -17 -37 -10  -3 -10 -29 -15 -27
+ |LVNV|
+ PROFILE :   -5 -16 -10 -19 -15 -21 -21 -23 -19  16  11 -18   6  -2 -28 -10  -2 -30 -10  22
+ |LRVT|
+ PROFILE :   -8   7 -14 -19 -18 -11 -14 -25 -17   1   6  -6   2  -6 -22  -7   8 -25  -8   8
+ |IIIL|
+ PROFILE :  -10 -27 -23 -37 -27 -20 -27 -37 -27  42  28 -30  20   3 -23 -23 -10 -20   0  25
+ |LILI|
+ PROFILE :  -10 -25 -25 -35 -25 -20 -25 -35 -25  36  34 -30  20   5 -25 -25 -10 -20   0  21
+ |EDEE|
+ PROFILE :  -13   5   6  19 -30  44  20 -17   7 -26 -23   7  -8 -40 -10   0 -10 -26 -13 -30
+ |AKRP|
+ PROFILE :    2  14  -8 -10 -28   0   0 -15 -13 -23 -23  16 -13 -25  14  -5  -8 -23 -18 -18
+ |TRQN|
+ PROFILE :  -10  17  16   5 -23   5  11 -15  -2 -23 -20   8 -15 -20 -13   5   7 -30 -15 -20
+ |DSTT|
+ PROFILE :   -2 -10   8  12 -15  -5   0 -12 -12 -20 -20  -8 -18 -20 -10  21  27 -35 -15 -10
+ |HTPD|
+ PROFILE :  -12 -10   3  13 -27  -3   2 -17  14 -25 -22  -7 -15 -25  10   1   4 -33 -10 -22
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+- next, the program slides the profile along the entire random amino
+acid sequence and calculates statistics:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Random sequence tests :      1999991
+ Average, St.dev.      :        -76.4        54.0
+ Minimum, Maximum      :       -274.0       195.0
+ Z-min, Z-max          :        -3.66        5.02
+<P>   
+ Mol #   1 Raw score =          205 Z-score =     5.21
+ Mol #   2 Raw score =          200 Z-score =     5.11
+ Mol #   3 Raw score =          213 Z-score =     5.36
+ Mol #   4 Raw score =          226 Z-score =     5.60
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H7">7 </A>RESULTS</H2> </CENTER>
+<P>   
+When the program has finished, it will print a summary:
+<P>   
+- the pairwise sequence identity matrix (in %), *ONLY* counting the
+residues that ended up being in the profile:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Nr of residues in profile : (         91)
+<P>   
+ Sequence identity for these residues only:
+ % Seq id mol #   1 -&gt;  100.0  19.8  22.0  19.8
+ % Seq id mol #   2 -&gt;   19.8 100.0  29.7  15.4
+ % Seq id mol #   3 -&gt;   22.0  29.7 100.0  18.7
+ % Seq id mol #   4 -&gt;   19.8  15.4  18.7 100.0
+<P>   
+ Average sequence identity (%) : (  20.879)
+ St. dev.                      : (   4.396)
+ Minimum                       : (  15.385)
+ Maximum                       : (  29.670)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+- some results pertaining to the random sequence
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Sum of maximum random scores : (       1301)
+ Sum AVE+3SIGMA random scores : (        371)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+- the accumulated raw scores of the input structures/sequences.
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Score for molecule   1 =       1893
+ Score for molecule   2 =       2001
+ Score for molecule   3 =       2043
+ Score for molecule   4 =       1829
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+- a suggestion is made for the minimum raw score to be used
+in searches against the (SWISS-PROT) sequence database (note
+that it is better to scan the whole sequence database to get
+realistic statistics)
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Minimum raw score : (       1500)
+ Indel penalty : (    -150)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H8">8 </A>PROFILE FILE</H2> </CENTER>
+<P>   
+For the example above, the following profile file is generated:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ID   STRUPRO; MATRIX.
+AC   PS99999;
+DT   JAN-1900 (CREATED);
+DE   Created by STRUPRO V. 001122/1.4 at Wed Nov 22 21:05:35 2000 for gerard
+CC
+CC   Substitution matrix file : /home/gerard/lib/sbin_blosum45.lib
+CC   Nr of structures used : 4
+CC   Equivalent CA distance (A) : 3.500000
+CC   Extension CA distance (A) : 5.000000
+CC   Frameshift correction used
+CC   Min fragment length : 10
+CC   Indel penalty : -150
+CC   Weighting scheme : H
+CC
+MA   /GENERAL_SPEC: ALPHABET='ARNDCEQGHILKMFPSTWYV'; LENGTH= 91;
+MA   TOPOLOGY=LINEAR;
+MA   /DISJOINT: DEFINITION=PROTECT; N1=1; N2= 91;
+MA   /CUT_OFF: LEVEL=0; SCORE= 1500;
+MA   /DEFAULT: MI=    -150; IM=    -150; MD=    -150; DM=    -150;
+MA   /M: SY='Q'; M=-15,21,5,20,-30,10,24,-18,-3,-32,-25,23,-17,-30,-9,-5,-10,-27,-15,-25;
+MA   /M: SY='V'; M=0,-20,-30,-30,-10,-30,-30,-30,-30,30,10,-20,10,0,-30,-10,0,-30,-10,50;
+MA   /M: SY='V'; M=9,-22,-22,-29,-17,-20,-22,-24,-25,21,16,-22,9,-3,-22,-12,-5,-23,-8,23;
+MA   /M: SY='I'; M=-5,-25,-25,-35,-20,-25,-30,-35,-30,40,15,-25,15,0,-25,-15,-5,-25,-5,40;
+MA   /M: SY='V'; M=-3,-23,-27,-33,-15,-27,-30,-33,-30,35,13,-23,13,0,-27,-13,-3,-27,-7,45;
+MA   /M: SY='G'; M=0,-20,0,-10,-30,-20,-20,70,-20,-40,-30,-20,-20,-30,-20,0,-20,-20,-30,-30;
+MA   /M: SY='A'; M=36,-20,-7,-17,-16,-13,-13,19,-20,-18,-16,-13,-13,-23,-13,7,-6,-20,-23,-8;
+MA   /M: SY='G'; M=0,-20,0,-10,-30,-20,-20,70,-20,-40,-30,-20,-20,-30,-20,0,-20,-20,-30,-30;
+MA   /M: SY='P'; M=-7,-15,-14,-14,-27,-8,-7,-20,-16,-9,-14,-10,0,-18,39,-4,7,-28,-18,-13;
+MA   /M: SY='S'; M=17,-15,2,-8,-16,-8,-8,19,-15,-23,-25,-13,-18,-23,-13,22,4,-30,-23,-13;
+MA   /M: SY='G'; M=0,-20,0,-10,-30,-20,-20,70,-20,-40,-30,-20,-20,-30,-20,0,-20,-20,-30,-30;
+MA   /M: SY='L'; M=7,-22,-22,-29,-19,-17,-19,-24,-22,18,27,-24,12,0,-22,-17,-7,-20,-6,12;
+MA   /M: SY='M'; M=-3,-13,-11,-18,-15,-8,-13,-18,-13,3,9,-15,13,-4,-18,1,13,-27,-7,3;
+MA   /M: SY='A'; M=34,-20,-15,-23,-13,-13,-13,-8,-20,-2,6,-15,-2,-12,-15,-1,-3,-20,-15,3;
+MA   /M: SY='A'; M=37,-20,-7,-17,-15,-13,-13,19,-20,-18,-15,-13,-13,-23,-13,7,-5,-20,-23,-8;
+MA   /M: SY='K'; M=-12,31,0,3,-30,13,21,-20,-5,-30,-25,34,-13,-28,-10,-7,-10,-23,-13,-23;
+MA   /M: SY='Y'; M=-13,2,-21,-23,-23,-13,-18,-28,-7,6,12,-9,6,7,-28,-18,-8,-9,18,8;
+MA   /M: SY='L'; M=-10,-23,-27,-33,-23,-20,-23,-33,-23,28,42,-30,20,7,-27,-27,-10,-20,0,16;
+MA   /M: SY='H'; M=-4,4,7,0,-21,5,3,-11,20,-25,-27,7,-12,-23,-13,13,1,-32,-6,-18;
+MA   /M: SY='E'; M=-10,7,-8,-8,-27,24,6,-23,-4,-12,-3,10,3,-23,-16,-11,-10,-20,-7,-16;
+MA   /M: SY='A'; M=33,-18,-12,-20,-15,-10,-12,-7,-10,-8,-8,-10,-8,-8,-15,3,-2,-8,4,-2;
+MA   /M: SY='G'; M=-6,-17,-2,7,-25,-17,-11,24,-17,-23,-20,-14,-16,-26,-20,-2,-12,-28,-22,-11;
+MA     /I: MI=0; MD=0; IM=0; DM=0; /M: SY='X'; M=0;
+MA   /M: SY='D'; M=-15,6,9,33,-30,18,17,-15,0,-32,-27,16,-17,-37,-10,-3,-10,-29,-15,-27;
+MA   /M: SY='V'; M=-5,-16,-10,-19,-15,-21,-21,-23,-19,16,11,-18,6,-2,-28,-10,-2,-30,-10,22;
+MA   /M: SY='T'; M=-8,7,-14,-19,-18,-11,-14,-25,-17,1,6,-6,2,-6,-22,-7,8,-25,-8,8;
+MA   /M: SY='I'; M=-10,-27,-23,-37,-27,-20,-27,-37,-27,42,28,-30,20,3,-23,-23,-10,-20,0,25;
+MA   /M: SY='I'; M=-10,-25,-25,-35,-25,-20,-25,-35,-25,36,34,-30,20,5,-25,-25,-10,-20,0,21;
+MA   /M: SY='E'; M=-13,5,6,19,-30,44,20,-17,7,-26,-23,7,-8,-40,-10,0,-10,-26,-13,-30;
+MA   /M: SY='K'; M=2,14,-8,-10,-28,0,0,-15,-13,-23,-23,16,-13,-25,14,-5,-8,-23,-18,-18;
+MA   /M: SY='R'; M=-10,17,16,5,-23,5,11,-15,-2,-23,-20,8,-15,-20,-13,5,7,-30,-15,-20;
+MA   /M: SY='T'; M=-2,-10,8,12,-15,-5,0,-12,-12,-20,-20,-8,-18,-20,-10,21,27,-35,-15,-10;
+MA   /M: SY='H'; M=-12,-10,3,13,-27,-3,2,-17,14,-25,-22,-7,-15,-25,10,1,4,-33,-10,-22;
+MA     /I: MI=0; MD=0; IM=0; DM=0; /M: SY='X'; M=0;
+MA   /M: SY='R'; M=-10,16,-5,-14,-25,-2,-7,-25,-15,-6,-11,11,-3,-15,-15,-5,5,-23,-8,-3;
+MA   /M: SY='V'; M=-5,-13,-15,-13,-17,-11,-1,-25,-18,3,8,-13,0,-7,-18,-5,8,-28,-10,9;
+MA   /M: SY='V'; M=-5,-7,-15,-10,-20,6,6,-25,-12,2,-5,-5,0,-18,-17,-5,-5,-27,-13,9;
+MA   /M: SY='Y'; M=-13,6,-20,-22,-23,-12,-17,-27,-7,4,10,-7,5,5,-27,-18,-8,-10,15,7;
+MA   /M: SY='H'; M=-12,-5,12,7,-30,5,15,-15,21,-25,-25,-3,-15,-25,14,-2,-10,-33,-13,-30;
+MA   /M: SY='D'; M=3,-5,-6,4,-22,-5,-1,-15,-13,-14,-4,2,-7,-19,-15,-8,-8,-25,-12,-9;
+MA   /M: SY='V'; M=12,-20,-13,-23,-15,-15,-18,-18,-23,13,-2,-18,1,-10,-18,4,2,-27,-12,18;
+MA   /M: SY='P'; M=7,-13,-15,-15,-23,2,-5,-18,-15,-5,-13,-8,-5,-23,11,-3,-5,-25,-18,-3;
+MA   /M: SY='R'; M=-8,13,-8,-12,-20,8,-5,-23,-10,-8,-10,3,-2,-18,-18,0,7,-25,-10,0;
+MA   /M: SY='R'; M=-10,23,0,-5,-30,15,3,1,-5,-30,-25,18,-10,-30,-15,-5,-12,-20,-15,-25;
+MA   /M: SY='I'; M=-10,-22,-23,-35,-25,-15,-25,-32,-20,35,28,-25,31,3,-23,-23,-10,-20,0,20;
+MA   /M: SY='H'; M=-15,8,7,17,-30,21,13,-18,25,-30,-25,13,-10,-33,-13,-5,-13,-27,-5,-28;
+MA   /M: SY='Y'; M=-15,-18,-10,0,-32,-10,-8,-25,-8,-2,-9,-13,-7,-10,6,-13,-10,-15,8,-9;
+MA     /I: MI=0; MD=0; IM=0; DM=0; /M: SY='X'; M=0;
+MA   /M: SY='N'; M=-9,3,11,-9,-27,-8,-13,6,-10,-12,-16,-6,-9,-18,-20,-4,-10,-25,-16,-14;
+MA   /M: SY='A'; M=12,-10,-7,-12,-17,7,-3,-11,-10,-8,-4,-10,-4,-18,-14,7,1,-25,-13,-7;
+MA   /M: SY='R'; M=-7,11,-8,-13,-20,9,-5,-23,-10,-6,-10,2,-2,-18,-18,0,7,-25,-10,1;
+MA   /M: SY='F'; M=-13,-17,-25,-30,-20,-25,-25,-30,-12,11,16,-22,7,33,-30,-20,-8,-1,27,11;
+MA   /M: SY='H'; M=-6,-10,9,13,-25,-3,-1,13,15,-32,-28,-11,-18,-27,-15,8,-7,-32,-14,-25;
+MA   /M: SY='C'; M=3,-22,-17,-25,43,-19,-22,-22,-13,-16,-12,-19,-12,-6,-29,-7,-7,-20,3,-7;
+MA   /M: SY='D'; M=-18,-1,15,54,-30,2,18,-12,-2,-38,-30,12,-25,-38,-10,-2,-10,-35,-18,-28;
+MA   /M: SY='Y'; M=-20,12,-14,-17,-30,-4,-14,-27,14,-8,-6,1,-3,16,-27,-17,-10,16,55,-13;
+MA   /M: SY='V'; M=-5,-25,-25,-32,22,-28,-30,-32,-30,18,4,-25,4,-6,-31,-12,-5,-33,-13,29;
+MA   /M: SY='V'; M=6,-20,-21,-30,-17,-15,-23,-23,-20,23,11,-17,21,-4,-21,-11,-5,-23,-7,24;
+MA   /M: SY='G'; M=0,-20,-16,-21,-19,-25,-25,15,-25,-2,-8,-20,-4,-14,-25,-5,-9,-25,-19,14;
+MA   /M: SY='C'; M=12,-22,-9,-19,49,-16,-16,-14,-22,-22,-20,-19,-17,-20,-24,9,1,-39,-25,-7;
+MA   /M: SY='D'; M=2,-15,1,24,-27,-5,6,-10,-11,-26,-25,-5,-22,-32,18,0,-7,-32,-23,-22;
+MA   /M: SY='G'; M=3,-17,3,-7,-25,-15,-15,51,-17,-35,-30,-17,-20,-27,-17,11,-9,-25,-27,-25;
+MA     /I: MI=0; MD=0; IM=0; DM=0; /M: SY='X'; M=0;
+MA   /M: SY='H'; M=-14,-8,0,6,-24,-4,-5,-21,39,-14,-13,-11,-3,-18,-21,-8,-12,-32,2,-6;
+MA   /M: SY='G'; M=-5,1,0,-5,-30,6,-3,25,-11,-33,-28,6,-13,-32,-15,-3,-15,-20,-20,-27;
+MA   /M: SY='R'; M=-14,45,0,-10,-30,1,-6,6,-6,-33,-23,16,-13,-23,-20,-7,-13,-20,-16,-23;
+MA   /M: SY='V'; M=-5,-23,-27,-33,-18,-25,-28,-33,-28,34,21,-25,15,2,-27,-17,-5,-25,-5,36;
+MA   /M: SY='Y'; M=-20,-11,-11,-23,-26,-17,-19,-27,26,-9,-2,-18,0,37,-27,-17,-13,5,42,-12;
+MA   /M: SY='F'; M=-10,-22,-25,-35,-19,-29,-28,-32,-25,23,20,-27,11,26,-28,-19,-7,-14,6,23;
+MA   /M: SY='A'; M=18,-20,-10,-23,-16,-13,-16,-17,-23,7,-1,-16,-1,-11,-13,4,12,-23,-11,9;
+MA   /M: SY='G'; M=0,-20,0,-10,-30,-20,-20,70,-20,-40,-30,-20,-20,-30,-20,0,-20,-20,-30,-30;
+MA   /M: SY='D'; M=-17,-4,14,49,-30,18,20,-13,3,-34,-27,3,-21,-40,-10,0,-10,-34,-17,-30;
+MA   /M: SY='A'; M=29,-14,-4,-14,-16,-4,-7,-6,16,-16,-13,-10,-7,-20,-13,4,-6,-23,-8,-9;
+MA     /I: MI=0; MD=0; IM=0; DM=0; /M: SY='X'; M=0;
+MA   /M: SY='K'; M=-7,9,0,2,-30,5,15,4,-10,-33,-27,22,-15,-30,-10,-5,-13,-23,-18,-25;
+MA   /M: SY='G'; M=-3,-15,-3,-10,-25,-12,-15,26,-7,-24,-22,-15,-15,-12,-20,5,-7,-12,1,-20;
+MA   /M: SY='M'; M=-5,-17,-20,-25,-20,-18,-23,-2,-18,7,12,-20,17,-5,-25,-15,-10,-23,-10,10;
+MA   /M: SY='H'; M=-15,-3,27,5,-25,0,-5,-13,36,-18,-20,-5,-10,-7,-23,-3,-8,-20,16,-25;
+MA   /M: SY='T'; M=0,-15,-4,-12,-18,-12,-12,6,-17,-13,-6,-17,-8,-13,-17,8,10,-28,-15,-8;
+MA   /M: SY='A'; M=40,-17,-5,-15,-10,-7,-7,0,-17,-13,-15,-10,-13,-20,-10,18,5,-25,-20,-3;
+MA   /M: SY='Y'; M=1,-10,3,-12,-20,-5,-13,-13,3,-2,-5,-7,8,-2,-20,-5,-5,-12,11,-8;
+MA   /M: SY='M'; M=0,-13,-8,-15,-15,-5,-10,-13,-10,1,4,-15,11,-7,-18,6,5,-30,-10,0;
+MA   /M: SY='D'; M=-10,-7,12,39,-25,5,25,-10,-3,-32,-27,0,-25,-32,-7,10,-2,-37,-20,-25;
+MA   /M: SY='G'; M=0,-17,-7,-15,-20,-20,-20,24,-22,-16,-16,-17,-11,-18,-20,3,2,-25,-20,-4;
+MA   /M: SY='Y'; M=-8,-5,-8,-16,-25,-5,-10,-23,-8,1,-9,0,-2,-5,-18,-4,-3,-12,13,-2;
+MA   /M: SY='N'; M=-8,-10,13,13,-18,-10,-5,-15,-10,-10,-15,-7,-13,-18,-18,5,9,-35,-15,-3;
+MA   /M: SY='L'; M=10,-17,-14,-20,-15,-12,-12,-15,-17,2,14,-20,2,-5,-20,-2,0,-25,-10,2;
+MA   /M: SY='A'; M=21,-18,-10,-17,-20,-13,-15,11,-11,-15,-13,-13,-10,-11,-17,1,-7,-8,1,-10;
+MA   /M: SY='W'; M=0,9,-13,-18,-30,10,-5,-15,-10,-20,-17,2,-10,-18,-17,-10,-13,23,-2,-20;
+MA   /M: SY='I'; M=5,-10,-15,-22,-23,-10,-12,-22,-20,8,7,-5,5,-10,-17,-12,-7,-20,-8,5;
+MA   /M: SY='L'; M=-7,-20,-30,-30,-17,-23,-23,-30,-23,23,40,-27,17,7,-30,-25,-7,-23,-3,20;
+MA   /M: SY='I'; M=-5,-23,-20,-28,-23,-23,-25,-7,-25,15,12,-25,7,-5,-25,-15,-10,-23,-10,15;
+MA   /M: SY='V'; M=-7,-3,0,-10,-20,-10,-10,-20,-12,1,0,-1,0,-10,-23,-10,-5,-28,-10,3;
+MA   /M: SY='C'; M=6,-23,-23,-28,21,-23,-23,-23,-25,3,8,-23,0,-7,-28,-10,-5,-30,-15,13;
+MA   /M: SY='L'; M=3,-18,-22,-25,-20,-15,-17,-22,-11,8,23,-20,8,7,-25,-17,-7,-8,13,3;
+MA   /M: SY='R'; M=-10,21,0,0,-25,8,16,-20,-8,-25,-20,20,-13,-23,-10,0,5,-25,-13,-18;
+//
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+Note that insertions and deletions in the structurally conserved
+stretches are severely penalised (since there were none in the
+set of aligned structures !), whereas they may occur anywhere
+in between such stretches (since they occur in (almost) all the
+input structures !).
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H9">9 </A>SEQUENCE ALIGNMENT FILE</H2> </CENTER>
+<P>   
+STRUPRO also produces a file which contains the structure-based
+multiple-sequence alignment of the input models. This file
+can be used to add and align additional protein sequences,
+which can then in turn be used with the program MSEQPRO to
+generate a profile based on this multiple-sequence alignment.
+<P>   
+The format of this file is simple:
+ <BR> - lines beginning with an exclamation mark (&quot;!&quot;) are ignored
+ <BR> - other lines represent one sequence each
+ <BR> - an empty line signals a break, and will reset the program's
+sequence counter to 1
+<P>   
+The file may look as follows:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+!
+! Sequence alignment file
+! Created by STRUPRO V. 001122/1.4 at Wed Nov 22 21:01:15 2000 for gerard
+!
+! REMARK Created by MOLEMAN2 V. 001117/2.8 at Tue Nov 21 20:09:46 2000 for gerard
+! REMARK Created by MOLEMAN2 V. 001117/2.8 at Tue Nov 21 20:08:21 2000 for gerard
+<P>   
+! NOT ALIGNED MOL   1 FROM PRO-   5 TO PRO-   5
+!&gt; P
+! NOT ALIGNED MOL   2 FROM THR-   1 TO CYS-   8
+!&gt; TKYSESYC
+! NOT ALIGNED MOL   3 FROM MET-   1 TO THR-   3
+!&gt; MKT
+! NOT ALIGNED MOL   4 FROM ALA-   1 TO ARG-   3
+!&gt; AGR
+! ALIGNED MOL   1 FROM ARG-   6 TO GLY-  27
+RVIVVGAGMSGISAAKRLSEAG-
+! ALIGNED MOL   2 FROM ASP-   9 TO VAL-  30
+DVLIVGAGPAGLMAARVLSEYV-
+! ALIGNED MOL   3 FROM GLN-   4 TO GLY-  25
+QVAIIGAGPSGLLLGQLLHKAG-
+! ALIGNED MOL   4 FROM LYS-   4 TO ASP-  25
+KVVVVGGGTGGATAAKYIKLAD-
+<P>   
+! NOT ALIGNED MOL   1 FROM ILE-  28 TO THR-  29
+!&gt; IT
+! NOT ALIGNED MOL   2 FROM ARG-  31 TO LEU-  36
+!&gt; RQKPDL
+! NOT ALIGNED MOL   3 FROM ILE-  26 TO ILE-  26
+!&gt; I
+! NOT ALIGNED MOL   4 FROM PRO-  26 TO ILE-  28
+!&gt; PSI
+! ALIGNED MOL   1 FROM ASP-  30 TO HIS-  39
+DLLILEATDH-
+! ALIGNED MOL   2 FROM LYS-  37 TO THR-  46
+KVRIIDKRST-
+! ALIGNED MOL   3 FROM ASP-  27 TO PRO-  36
+DNVILERQTP-
+! ALIGNED MOL   4 FROM GLU-  29 TO ASP-  38
+EVTLIEPNTD-
+<P>   
+! NOT ALIGNED MOL   1 FROM ILE-  40 TO PRO- 229
+!&gt; IGGRMHKTNFAGINVELGANWVEGVNGGKMNPIWPIVNSTLKLRNFRSDFDYLAQNVYKEDGGVYDEDYVQKRIELADSVEEMGEKLSATLHASGRDDMSILAMQRLNEHQPNGPATPVDMVVDYYKFDYEFAEPPRVTSLQNTVPLATFSDFGDDVYFVADQRGYEAVVYYLAGQYLKTDDKSGKIVDP
+! NOT ALIGNED MOL   2 FROM LYS-  47 TO ILE- 136
+!&gt; KVYNGQADGLQCRTLESLKNLGLADKILSEANDMSTIALYNPDENGHIRRTDRIPDTLPGISRYHQVVLHQGRIERHILDSIAEISDTRI
+! NOT ALIGNED MOL   3 FROM ASP-  37 TO ALA- 118
+!&gt; DYVLGRIRAGVLEQGMVDLLREAGVDRRMARDGLVHEGVEIAFAGQRRRIDLKRLSGGKTVTVYGQTEVTRDLMEAREACGA
+! NOT ALIGNED MOL   4 FROM TYR-  39 TO GLY-  69
+!&gt; YYTCYLSNEVIGGDRKLESIKHGYDGLRAHG
+! ALIGNED MOL   1 FROM ARG- 230 TO TYR- 242
+RLQLNKVVREIKY-
+! ALIGNED MOL   2 FROM LYS- 137 TO ILE- 149
+KVERPLIPEKMEI-
+! ALIGNED MOL   3 FROM THR- 119 TO ASP- 131
+TTVYQAAEVRLHD-
+! ALIGNED MOL   4 FROM ILE-  70 TO PRO-  82
+IQVVHDSATGIDP-
+<P>   
+! NOT ALIGNED MOL   1 FROM SER- 243 TO ASP- 253
+!&gt; SPGGVTVKTED
+! NOT ALIGNED MOL   2 FROM ASP- 150 TO GLU- 212
+!&gt; DSSKAEDPEAYPVTMTLRYMSDHESTPLQFGHKTENSLFHSNLQTQEEEDANYRLPEGKEAGE
+! NOT ALIGNED MOL   3 FROM LEU- 132 TO GLU- 146
+!&gt; LQGERPYVTFERDGE
+! NOT ALIGNED MOL   4 FROM ASP-  83 TO GLY-  91
+!&gt; DKKLVKTAG
+! ALIGNED MOL   1 FROM ASN- 254 TO SER- 267
+NSVYSADYVMVSAS-
+! ALIGNED MOL   2 FROM ILE- 213 TO GLY- 226
+IETVHCKYVIGCDG-
+! ALIGNED MOL   3 FROM ARG- 147 TO GLY- 160
+RLRLDCDYIAGCDG-
+! ALIGNED MOL   4 FROM GLY-  92 TO GLY- 105
+GAEFGYDRCVVAPG-
+<P>   
+! NOT ALIGNED MOL   1 FROM LEU- 268 TO PRO- 421
+!&gt; LGVLQSDLIQFKPKLPTWKVRAIYQFDMAVYTKIFLKFPRKFWPEGKGREFFLYASSRRGYYGVWQEFEKQYPDANVLLVTVTDEESRRIEQQSDEQTKAEIMQVLRKMFPGKDVPDATDILVPRWWSDRFYKGTFSNWPVGVNRYEYDQLRAP
+! NOT ALIGNED MOL   2 FROM GLY- 227 TO LYS- 348
+!&gt; GHSWVRRTLGFEMIGEQTDYIWGVLDAVPASNFPDIRSRCAIHSAESGSIMIIPRENNLVRFYVQLQFTPEVVIANAKKIFHPYTFDVQQLDWFTAYHIGQRVTEKFSK
+! NOT ALIGNED MOL   3 FROM PHE- 161 TO GLN- 277
+!&gt; FHGISRQSIPAERLKVFERVYPFGWLGLLADTPPVSHELIYANHPRGFALCSQRSATRSRYYVQVPLTEKVEDWSDERFWTELKARLPAEVAEKLVTGPSLEKSIAPLRSFVVEPMQ
+! NOT ALIGNED MOL   4 FROM ILE- 106 TO ILE- 285
+!&gt; IELIYDKIEGYSEEAAAKLPHAWKAGEQTAILRKQLEDMADGGTVVIAPPAAPFRCPPGPYERASQVAYYLKAHKPMSKVIILDSSQTFSKQSQFSKGWERLYGFGTENAMIEWHPGPDSAVVKVDGGEMMVETAFGDEFKADVINLIPPQRAGKIAQIAGLTNDAGWCPVDIKTFESSI
+! ALIGNED MOL   1 FROM VAL- 422 TO HIS- 431
+VGRVYFTGEH-
+! ALIGNED MOL   2 FROM ASP- 349 TO ALA- 358
+DERVFIAGDA-
+! ALIGNED MOL   3 FROM HIS- 278 TO ALA- 287
+HGRLFLAGDA-
+! ALIGNED MOL   4 FROM HIS- 286 TO ALA- 295
+HKGIHVIGDA-
+<P>   
+! NOT ALIGNED MOL   1 FROM THR- 432 TO ASN- 437
+!&gt; TSEHYN
+! NOT ALIGNED MOL   2 FROM CYS- 359 TO GLY- 367
+!&gt; CHTHSPKAG
+! NOT ALIGNED MOL   3 FROM ALA- 288 TO ALA- 296
+!&gt; AHIVPPTGA
+! NOT ALIGNED MOL   4 FROM SER- 296 TO PRO- 302
+!&gt; SIANPMP
+! ALIGNED MOL   1 FROM GLY- 438 TO GLN- 459
+GYVHGAYLSGIDSAEILINCAQ-
+! ALIGNED MOL   2 FROM GLN- 368 TO THR- 389
+QGMNTSMMDTYNLGWKLGLVLT-
+! ALIGNED MOL   3 FROM LYS- 297 TO ARG- 318
+KGLNLAASDVSTLYRLLLKAYR-
+! ALIGNED MOL   4 FROM LYS- 303 TO LYS- 324
+KSGYSANSQGKVAAAAVVVLLK-
+<P>   
+! NOT ALIGNED MOL   1 FROM LYS- 460 TO CYS- 463
+!&gt; KKMC
+! NOT ALIGNED MOL   2 FROM GLY- 390 TO SER- 662
+!&gt; GRAKRDILKTYEEERHAFAQALIDFDHQFSRLFSGRPAKDVADEMGVSMDVFKEAFVKGNEFASGTAINYDENLVTDKKSSKQELAKNCVVGTRFKSQPVVRHSEGLWMHFGDRLVTDGRFRIIVFAGKATDATQMSRIKKFSAYLDSENSVISLYTPKVSDRNSRIDVITIHSCHRDDIEMHDFPAPALHPKWQYDFIYADCDSWHHPHPKSYQAWGVDETKGAVVVVRPDGYTSLVTDLEGTAEIDRY
+! NOT ALIGNED MOL   3 FROM GLU- 319 TO GLU- 391
+!&gt; EGRGELLERYSAICLRRIWKAERFSWWMTSVLHRFPDTDAFSQRIQQTELEYYLGSEAGLATIAENYVGLPYE
+! NOT ALIGNED MOL   4 FROM GLY- 325 TO GLY- 401
+!&gt; GEEPGTPSYLNTCYSILAPAYGISVAAIYRPNADGSAIESVPDSGGVTPVDAPDWVLEREVQYAYSWYNNIVHDTFG
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H10">10 </A>KNOWN BUGS</H2> </CENTER>
+<P>   
+None, at present (&quot;peppar, peppar&quot;).
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H11">11 </A>UNKNOWN BUGS</H2> </CENTER>
+<P>   
+Does not compute.
+<HR NOSHADE>    <A HREF="http://xray.bmc.uu.se/usf/" target="_top">
+<IMG ALIGN="right" BORDER="0" SRC="usf_logo.gif"
+ALT="Uppsala Software Factory"></A>
+<FONT SIZE=-1>
+<B> <I> Created at Fri Jan 14 20:12:42 2005
+by MAN2HTML version 050114/2.0.6 . This manual
+describes STRUPRO, a program of the <A HREF="http://xray.bmc.uu.se/usf/" target="_top">Uppsala
+Software Factory</A> (USF), written and maintained by <A HREF="http://xray.bmc.uu.se/gerard"
+target="_blank">Gerard Kleywegt</A>. &copy; 1992-2005.
+</I> </B> </FONT><P>
+<IMG SRC="http://xray.bmc.uu.se/cgi-bin/nph-count?width=6&link=http://alpha2.bmc.uu.se/~gerard/www/manuals/strupro_man.html">
+</body></html>

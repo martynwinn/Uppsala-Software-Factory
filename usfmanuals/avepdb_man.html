@@ -1,0 +1,287 @@
+<html><head><!-- This document was created for AVEPDB at Fri Jan 14 20:12:04 2005 from
+../avepdb/avepdb.txt by MAN2HTML version 050114/2.0.6 -->
+<title>Uppsala Software Factory - AVEPDB Manual</title>
+<meta name="DESCRIPTION" content="Manual for Gerard 
+Kleywegt's program AVEPDB">
+<meta name="KEYWORDS" content="manual software Gerard 
+Kleywegt program AVEPDB structural biology 
+protein X-ray crystallography macromolecular molecular
+Uppsala Software Factory bioinformatics">
+</head><body bgcolor="#fefefe" background="back.gif">
+
+<A HREF="http://xray.bmc.uu.se/usf/" target="_top">
+<IMG ALIGN="right" BORDER="0" SRC="usf_logo.gif"
+ALT="Uppsala Software Factory"></A>
+
+<H2>  Uppsala Software Factory - AVEPDB Manual</H2> <P>   
+<UL>  
+<LI><H3>  <A HREF="#H1">1  </A>AVEPDB - GENERAL INFORMATION</H3> 
+<LI><H3>  <A HREF="#H2">2  </A>REFERENCES</H3> 
+<LI><H3>  <A HREF="#H3">3  </A>INTRODUCTION</H3> 
+<LI><H3>  <A HREF="#H4">4  </A>AVERAGING PDB FILES</H3> 
+<LI><H3>  <A HREF="#H5">5  </A>AVERAGING BAD FILES</H3> 
+<LI><H3>  <A HREF="#H6">6  </A>KNOWN BUGS</H3> 
+</UL> 
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H1">1 </A>AVEPDB - GENERAL INFORMATION</H2> </CENTER>
+<P>   
+Program : AVEPDB
+ <BR> Version : 990901
+ <BR> Author : Gerard J. Kleywegt, Dept. of Cell and Molecular Biology,
+Uppsala University, Biomedical Centre, Box 596,
+SE-751 24 Uppsala, SWEDEN
+ <BR> E-mail : gerard@xray.bmc.uu.se
+ <BR> Purpose : average molecular structures using Cartesian or internal
+coordinates
+ <BR> Package : X-UTIL
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H2">2 </A>REFERENCES</H2> </CENTER>
+<P>   
+Reference(s) for this program:
+<P>   
+* 1 * G.J. Kleywegt (1992-2004).
+Uppsala University, Uppsala, Sweden.
+Unpublished program.
+<P>   
+* 2 * Kleywegt, G.J., Zou, J.Y., Kjeldgaard, M. &amp; Jones, T.A. (2001).
+Around O. In: &quot;International Tables for Crystallography, Vol. F.
+Crystallography of Biological Macromolecules&quot; (Rossmann, M.G.
+&amp; Arnold, E., Editors). Chapter 17.1, pp. 353-356, 366-367.
+Dordrecht: Kluwer Academic Publishers, The Netherlands.
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H3">3 </A>INTRODUCTION</H2> </CENTER>
+<P>   
+Compute an average structure from the coordinates of several
+identical copies of a molecule, for example those related by
+non-crystallographical symmetry.
+<P>   
+You may either average PDB files or BAD files (created with
+MOLEMAN; see the MOLEMAN manual for mor info); the latter
+is recommended for structures which are considerably different.
+<P>   
+Version 1.0 @ 19990901 - the atom numbers in the various PDB files
+no longer have to be identical. Cleaned up the code a trifle.
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H4">4 </A>AVERAGING PDB FILES</H2> </CENTER>
+<P>   
+you have to supply the number of files
+and their names, as well as a symmetry opeartor for EACH
+file.
+ <BR> Note that the atoms must have the same names, atom numbers
+etc. in all files (use MOLEMAN if this is not yet the case) !
+ <BR> Note that temperature factors and occupancies are also
+averaged !
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+<P>   
+ *** AVEPDB *** AVEPDB *** AVEPDB *** AVEPDB *** AVEPDB *** AVEPDB ***
+<P>   
+ Version  - 930214/0.5
+ By       - Gerard J. Kleywegt, Dept. Mol. Biology, BMC, Uppsala (S)
+ User I/O - routines courtesy of Rolf Boelens, Univ. of Utrecht (NL)
+<P>   
+ Started  - Sun Feb 14 21:11:53 1993
+ User     - gerard
+ Mode     - interactive
+ Tty      - /dev/ttyq1
+<P>   
+ *** AVEPDB *** AVEPDB *** AVEPDB *** AVEPDB *** AVEPDB *** AVEPDB ***
+<P>   
+ Max number of input files : (         50)
+<P>   
+ Average PDB or BAD files (P/B) ? (P)
+p
+ How many PDB files (2-99) ? (       3)
+2
+ Name of file nr 1 ? (junk.pdb)
+m3a.pdb
+ Symm oper ? (  1.000E+00   0.000E+00   0.000E+00   0.000E+00   1.000E+00   0.000E+00   0.000E+00   0.000E+00   1.000E+00   0.000E+00   0.000E+00   0.000E+00)
+0.2797650     -0.9576010      0.0687860 -0.8472310     -0.2799500     -0.4514730  0.4515880      0.0680290     -0.8896290 33.8939018     20.3593006    126.2659988
+ Name of file nr 2 ? (m3a.pdb)
+m3b.pdb
+ Symm oper ? (  1.000E+00   0.000E+00   0.000E+00   0.000E+00   1.000E+00   0.000E+00   0.000E+00   0.000E+00   1.000E+00   0.000E+00   0.000E+00   0.000E+00)
+<P>   
+ Output (average) PDB file ? (average.pdb)
+m3ave.pdb
+<P>   
+  Nr of atoms averaged :         1099
+  Nr in main-chain     :          500
+  RMS distance ALL ATOMS  =    1.200431
+  RMS distance MAIN CHAIN =   0.9593915
+<P>   
+ *** AVEPDB *** AVEPDB *** AVEPDB *** AVEPDB *** AVEPDB *** AVEPDB ***
+<P>   
+ Version - 930214/0.5
+ Started - Sun Feb 14 21:11:53 1993
+ Stopped - Sun Feb 14 21:12:27 1993
+<P>   
+ CPU-time taken :
+ User    -      1.5 Sys    -      0.2 Total   -      1.7
+<P>   
+ *** AVEPDB *** AVEPDB *** AVEPDB *** AVEPDB *** AVEPDB *** AVEPDB ***
+<P>   
+STOP ... All done ... statement executed
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+&lt; % 236 gerard rigel 21:00:56 progs/avepdb&gt; head m3a.pdb m3b.pdb m3ave.pdb
+==&gt; m3a.pdb &lt;==
+REMARK FILENAME=&quot;m3a.pdb&quot;
+REMARK PDB file created by MOLEMAN      version 930205/2.6   at Fri Feb  5 22:17:19 1993
+REMARK MoleMan PDB file
+REMARK DATE:12-Feb-93  14:01:33       created by user: gerard
+ATOM      1  CB  PRO     2       3.860  27.223 -12.947  1.00 20.00      AAA1
+ATOM      2  CG  PRO     2       3.165  26.246 -13.837  1.00 20.00      AAA1
+ATOM      3  C   PRO     2       5.651  28.742 -13.736  1.00 20.00      AAA1
+ATOM      4  O   PRO     2       6.479  27.910 -14.137  1.00 20.00      AAA1
+ATOM      5  HT1 PRO     2       3.287  28.951 -15.673  1.00  0.00      AAA1
+ATOM      6  HT2 PRO     2       4.327  27.587 -15.734  1.00  0.00      AAA1
+<P>   
+==&gt; m3b.pdb &lt;==
+REMARK PDB file created by MOLEMAN      version 930214/3.2   at Sun Feb 14 21:04:01 1993
+REMARK MoleMan PDB file
+REMARK FILENAME=&quot;m3b.pdb&quot;
+REMARK PDB file created by MOLEMAN      version 930205/2.6   at Fri Feb  5 22:17:19 1993
+REMARK MoleMan PDB file
+REMARK DATE:12-Feb-93  14:01:34       created by user: gerard
+ATOM      1  CB  PRO     2       4.484   6.667 127.718  1.00 20.00      BBB1
+ATOM      2  CG  PRO     2       5.661   6.912 128.669  1.00 20.00      BBB1
+ATOM      3  C   PRO     2       3.240   4.410 127.666  1.00 20.00      BBB1
+ATOM      4  O   PRO     2       2.695   3.489 128.288  1.00 20.00      BBB1
+<P>   
+==&gt; m3ave.pdb &lt;==
+ATOM      1  CB  PRO     2       5.273   7.414 126.739  1.00 20.00      AAA1
+ATOM      2  CG  PRO     2       5.978   7.976 127.807  1.00 20.00      AAA1
+ATOM      3  C   PRO     2       4.080   5.189 126.782  1.00 20.00      AAA1
+ATOM      4  O   PRO     2       4.186   4.434 127.488  1.00 20.00      AAA1
+ATOM      5  HT1 PRO     2       3.385   6.580 128.905  1.00  0.00      AAA1
+ATOM      6  HT2 PRO     2       4.731   5.959 128.809  1.00  0.00      AAA1
+ATOM      7  N   PRO     2       4.244   6.667 128.508  1.00 20.00      AAA1
+ATOM      8  CD  PRO     2       4.982   7.882 128.690  1.00 20.00      AAA1
+ATOM      9  CA  PRO     2       4.142   6.594 127.233  1.00 20.00      AAA1
+ATOM     10  N   ALA     3       3.909   4.883 125.597  1.00 20.00      AAA1
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H5">5 </A>AVERAGING BAD FILES</H2> </CENTER>
+<P>   
+BAD files contain internal coordinates (generate with MOLEMAN):
+read the relevant parts of the MOLEMAN manual FIRST (options EXPO,
+SAME and IMPO) !
+ <BR> Do NOT use this option for disconnected fragments or chains;
+run each of the fragments separately !!!
+ <BR> Note that the dihedrals are averaged by averaging their cosines
+and their sines separately, and the average angle is computed
+from the ATAN(sin_ave/cos_ave) !
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+<P>   
+ *** AVEPDB *** AVEPDB *** AVEPDB *** AVEPDB *** AVEPDB *** AVEPDB ***
+<P>   
+ Version  - 930214/0.5
+ By       - Gerard J. Kleywegt, Dept. Mol. Biology, BMC, Uppsala (S)
+ User I/O - routines courtesy of Rolf Boelens, Univ. of Utrecht (NL)
+<P>   
+ Started  - Sun Feb 14 21:19:53 1993
+ User     - gerard
+ Mode     - interactive
+ Tty      - /dev/ttyq1
+<P>   
+ *** AVEPDB *** AVEPDB *** AVEPDB *** AVEPDB *** AVEPDB *** AVEPDB ***
+<P>   
+ Max number of input files : (         50)
+<P>   
+ Average PDB or BAD files (P/B) ? (P)
+b
+ How many BAD files (2-99) ? (       3)
+2
+ Name of file nr 1 ? (junk.pdb)
+m3a.bad
+ Name of file nr 2 ? (m3a.bad)
+m3b.bad
+ Output (average) BAD file ? (average.bad)
+m3ave.bad
+<P>   
+  Nr of atoms averaged :         1099
+  RMSD distances   =   8.0489449E-02
+  RMSD angles      =    3.912222
+  RMSD cosines     =   0.3223881
+  RMSD sines       =   0.3494238
+  RMSD occupancies =   0.0000000E+00
+  RMSD tem factors =   0.0000000E+00
+<P>   
+ *** AVEPDB *** AVEPDB *** AVEPDB *** AVEPDB *** AVEPDB *** AVEPDB ***
+<P>   
+ Version - 930214/0.5
+ Started - Sun Feb 14 21:19:53 1993
+ Stopped - Sun Feb 14 21:20:06 1993
+<P>   
+ CPU-time taken :
+ User    -      1.4 Sys    -      0.2 Total   -      1.6
+<P>   
+ *** AVEPDB *** AVEPDB *** AVEPDB *** AVEPDB *** AVEPDB *** AVEPDB ***
+<P>   
+STOP ... All done ... statement executed
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+&lt; % 249 gerard rigel 21:00:56 progs/avepdb&gt; head m3a.bad m3b.bad m3ave.bad
+==&gt; m3a.bad &lt;==
+BAD       1  N   PRO     2       0.000   0.000   0.000  1.00 20.00     0     0     0
+BAD       2  CA  PRO     2       1.483   0.000   0.000  1.00 20.00     1     0     0
+BAD       3  C   PRO     2       1.544 116.750   0.000  1.00 20.00     2     1     0
+BAD       4  O   PRO     2       1.240 118.965 -58.380  1.00 20.00     3     2     1
+BAD       5  CB  PRO     2       2.477  34.960-122.016  1.00 20.00     3     2     1
+BAD       6  CG  PRO     2       1.493 123.219  67.598  1.00 20.00     5     3     2
+BAD       7  CD  PRO     2       1.522 100.087 -61.115  1.00 20.00     6     5     3
+BAD       8  HT1 PRO     2       2.073 130.444  37.363  1.00  0.00     7     6     5
+BAD       9  HT2 PRO     2       2.027  93.021  73.293  1.00  0.00     7     6     5
+BAD      10  N   ALA     3       1.359 115.762 125.518  1.00 20.00     3     2     1
+<P>   
+==&gt; m3b.bad &lt;==
+BAD       1  N   PRO     2       0.000   0.000   0.000  1.00 20.00     0     0     0
+BAD       2  CA  PRO     2       1.479   0.000   0.000  1.00 20.00     1     0     0
+BAD       3  C   PRO     2       1.527 108.358   0.000  1.00 20.00     2     1     0
+BAD       4  O   PRO     2       1.238 117.202  50.223  1.00 20.00     3     2     1
+BAD       5  CB  PRO     2       2.578  32.836-116.704  1.00 20.00     3     2     1
+BAD       6  CG  PRO     2       1.533 121.535  69.951  1.00 20.00     5     3     2
+BAD       7  CD  PRO     2       1.516 102.795 -50.341  1.00 20.00     6     5     3
+BAD       8  HT1 PRO     2       2.096 129.866  24.404  1.00  0.00     7     6     5
+BAD       9  HT2 PRO     2       2.053  96.661  63.538  1.00  0.00     7     6     5
+BAD      10  N   ALA     3       1.358 117.896-132.394  1.00 20.00     3     2     1
+<P>   
+==&gt; m3ave.bad &lt;==
+BAD       1  N   PRO     2       0.000   0.000   0.000  1.00 20.00     0     0     0
+BAD       2  CA  PRO     2       1.481   0.000   0.000  1.00 20.00     1     0     0
+BAD       3  C   PRO     2       1.536 112.554   0.000  1.00 20.00     2     1     0
+BAD       4  O   PRO     2       1.239 118.083  -4.079  1.00 20.00     3     2     1
+BAD       5  CB  PRO     2       2.528  33.898-119.360  1.00 20.00     3     2     1
+BAD       6  CG  PRO     2       1.513 122.377  68.774  1.00 20.00     5     3     2
+BAD       7  CD  PRO     2       1.519 101.441 -55.728  1.00 20.00     6     5     3
+BAD       8  HT1 PRO     2       2.084 130.155  30.883  1.00  0.00     7     6     5
+BAD       9  HT2 PRO     2       2.040  94.841  68.415  1.00  0.00     7     6     5
+BAD      10  N   ALA     3       1.359 116.829 176.562  1.00 20.00     3     2     1
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H6">6 </A>KNOWN BUGS</H2> </CENTER>
+<P>   
+None, at present.
+<HR NOSHADE>    <A HREF="http://xray.bmc.uu.se/usf/" target="_top">
+<IMG ALIGN="right" BORDER="0" SRC="usf_logo.gif"
+ALT="Uppsala Software Factory"></A>
+<FONT SIZE=-1>
+<B> <I> Created at Fri Jan 14 20:12:04 2005
+by MAN2HTML version 050114/2.0.6 . This manual
+describes AVEPDB, a program of the <A HREF="http://xray.bmc.uu.se/usf/" target="_top">Uppsala
+Software Factory</A> (USF), written and maintained by <A HREF="http://xray.bmc.uu.se/gerard"
+target="_blank">Gerard Kleywegt</A>. &copy; 1992-2005.
+</I> </B> </FONT><P>
+<IMG SRC="http://xray.bmc.uu.se/cgi-bin/nph-count?width=6&link=http://alpha2.bmc.uu.se/~gerard/www/manuals/avepdb_man.html">
+</body></html>

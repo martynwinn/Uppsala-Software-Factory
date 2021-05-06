@@ -1,0 +1,409 @@
+<html><head><!-- This document was created for CRAVE at Fri Jan 14 20:12:05 2005 from
+../average/crave.txt by MAN2HTML version 050114/2.0.6 -->
+<title>Uppsala Software Factory - CRAVE Manual</title>
+<meta name="DESCRIPTION" content="Manual for Gerard 
+Kleywegt's program CRAVE">
+<meta name="KEYWORDS" content="manual software Gerard 
+Kleywegt program CRAVE structural biology 
+protein X-ray crystallography macromolecular molecular
+Uppsala Software Factory bioinformatics">
+</head><body bgcolor="#fefefe" background="back.gif">
+
+<A HREF="http://xray.bmc.uu.se/usf/" target="_top">
+<IMG ALIGN="right" BORDER="0" SRC="usf_logo.gif"
+ALT="Uppsala Software Factory"></A>
+
+<H2>  Uppsala Software Factory - CRAVE Manual</H2> <P>   
+<UL>  
+<LI><H3>  <A HREF="#H1">1  </A>CRAVE - GENERAL INFORMATION</H3> 
+<LI><H3>  <A HREF="#H2">2  </A>REFERENCES</H3> 
+<LI><H3>  <A HREF="#H3">3  </A>VERSION HISTORY</H3> 
+<LI><H3>  <A HREF="#H4">4  </A>DESCRIPTION</H3> 
+<LI><H3>  <A HREF="#H5">5  </A>KNOWN BUGS</H3> 
+</UL> 
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H1">1 </A>CRAVE - GENERAL INFORMATION</H2> </CENTER>
+<P>   
+Program : CRAVE
+ <BR> Version : 960415
+ <BR> Author : Gerard J. Kleywegt &amp; T. Alwyn Jones,
+Dept. of Cell and Molecular Biology,
+Uppsala University, Biomedical Centre, Box 596,
+SE-751 24 Uppsala, SWEDEN
+ <BR> E-mail : gerard@xray.bmc.uu.se
+ <BR> Purpose : auto-generate C-shell script for multiple-crystal averaging
+of electron-density maps
+ <BR> Package : RAVE
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H2">2 </A>REFERENCES</H2> </CENTER>
+<P>   
+Reference(s) for this program:
+<P>   
+* 1 * T.A. Jones (1992). A, yaap, asap, @#*? A set of averaging
+programs. In &quot;Molecular Replacement&quot;, edited by E.J. Dodson,
+S. Gover and W. Wolf. SERC Daresbury Laboratory, Warrington,
+pp. 91-105.
+<P>   
+* 2 * G.J. Kleywegt &amp; T.A. Jones (1994). Halloween ... Masks and
+Bones. In &quot;From First Map to Final Model&quot;, edited by
+S. Bailey, R. Hubbard and D. Waller. SERC Daresbury
+Laboratory, Warrington, pp. 59-66.
+[http://xray.bmc.uu.se/gerard/papers/halloween.html]
+<P>   
+* 3 * G.J. Kleywegt &amp; R.J. Read (1997). Not your average density.
+Structure 5, 1557-1569.
+[http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=PubMed&amp;cmd=Retrieve&amp;list_uids=9438862&amp;dopt=Citation]
+<P>   
+* 4 * R.J. Read &amp; G.J. Kleywegt (2001). Density modification:
+theory and practice. In: &quot;Methods in Macromolecular
+Crystallography&quot; (D Turk &amp; L Johnson, Eds.), IOS Press,
+Amsterdam, pp. 123-135.
+<P>   
+* 5 * Kleywegt, G.J., Zou, J.Y., Kjeldgaard, M. &amp; Jones, T.A. (2001).
+Around O. In: &quot;International Tables for Crystallography, Vol. F.
+Crystallography of Biological Macromolecules&quot; (Rossmann, M.G.
+&amp; Arnold, E., Editors). Chapter 17.1, pp. 353-356, 366-367.
+Dordrecht: Kluwer Academic Publishers, The Netherlands.
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H3">3 </A>VERSION HISTORY</H2> </CENTER>
+<P>   
+960409 - 0.01 - first version
+ <BR> 960410 - 0.02 - minor changes
+ <BR> 960415 - 0.03 - minor bug fixes
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H4">4 </A>DESCRIPTION</H2> </CENTER>
+<P>   
+Since writing C-shell scripts for doing multiple-crystal form averaging
+with RAVE can be an accountant's nightmare, this little jiffy will
+auto-generate such a script from a simple input file.
+<P>   
+The input file defines the path names of executables, some file names
+and a few other things. The output will be a complete C-shell
+script for executing N cycles of averaging over M crystal forms
+(1 &lt; M &lt; 26, at present; single-domain averaging only), each
+with or without NCS.
+<P>   
+An example of such an input file is shown below. Cut it out and
+edit it to suit your needs. Then run CRAVE (takes about a second
+of CPU time), and execute the resulting script.
+<P>   
+Comment lines start with an exclamation mark in column 1; all other
+lines contain a keyword (4 characters, sometimes including a
+trailing space), 1 space, and then the value(s).
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+!
+! input file to generate C-shell script for RAVE
+! to do multiple crystal averaging
+! (sorry, only single domain at present)
+!
+! format for all lines: KEYWORD (4 characters), 1 space, VALUE
+!
+! gj kleywegt @ 960409
+!
+! usage: run crave &lt; jiffy.inp
+! then: chmod +x output_file
+! then execute the output_file
+! to get a log file, use: output_file |&amp; tee rave.log
+!
+! commands to invoke various programs:
+SFAL sfall
+RSTA rstats
+FFT  /public/src/ccp4_2.13/bin/fft
+MAVE run mave
+COMA run comap
+MAPM run mapman
+!
+! your work directory
+WORK /nfs/scr_uu5/gerard/testmave
+! identifier
+IDEN lipase
+! number of cycles
+CYCL 10
+! scratch directory
+SCRA /nfs/scr_uu1/gerard/scratch/
+! mask in reference crystal
+MASK p21_new.mask
+!
+! data for crystal form 1 (reference)
+!
+! identifier
+COPY p21
+! mtz file
+MTZ  p21.mtz
+! input unit cell map
+MAP  p21_start.E
+! mtz file labels for f and sigf
+LABF F
+SIGF SIGF
+! fft grid and extent
+GRID 70 48 88
+EXTE 0 69 0 47 0 87
+! resolution
+RESO 8.0 3.0
+! O symm-op file
+OSYM p21.sym
+! all ncs operators
+NCSO rt_unit.o
+NCSO p21_a_to_b.o
+! cross-crystal operator (= unit oper for form 1)
+XXRT rt_unit.o
+!
+! data for crystal form 2 (target)
+!
+COPY p212121
+MTZ  p212121.mtz
+MAP  p212121_start.E
+LABF F
+SIGF SIGF
+GRID 60 48 90
+EXTE 0 59 0 47 0 89
+RESO 8.0 3.0
+OSYM p212121.sym
+NCSO rt_unit.o
+XXRT p21_to_p212121.o
+!
+! output C-shell script
+FILE lipase_rave.csh
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+NOTES:
+ <BR> - the RESOlution should be identical for all crystal forms
+ <BR> - the reflections in the input MTZ files *MUST* have been put on
+the same temperature factor scale prior to cross-crystal averaging
+(see the DATAMAN manual on how to do this) !!!
+ <BR> - OSYM symmetry-operator files are O-style
+ <BR> - NCSO and XXRT operators are based on Cartesian coordinates; use
+program IMP to improve NCS operators and the Improve option of
+program MAVE to improve cross-crystal operators prior to averaging;
+they are in O style
+ <BR> - all FFTs are done in spacegroup P1 for simplicity, so make sure
+that the input (unaveraged) maps cover a complete unit cell
+ <BR> - the IDEN and COPY names are used to generate map and log-file names
+<P>   
+The program shows what it is doing:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ unix&gt; run crave &lt; crave.inp
+<P>   
+ ...
+<P>   
+ Max nr of crystal forms    : (         25)
+ Max nr of NCS-ops per form : (        100)
+ Main keywords : ( SFAL RSTA FFT MAVE COMA FILE MAPM WORK IDEN CYCL SCRA
+  MASK)
+ Form keywords : ( COPY MTZ MAP LABF SIGF GRID EXTE RESO OSYM XXRT NCSO)
+ Crystal form : (          1)
+ Crystal form : (          2)
+<P>   
+ SFAL &gt; (sfall)
+ RSTA &gt; (rstats)
+ FFT  &gt; (/public/src/ccp4_2.13/bin/fft)
+ MAVE &gt; (run mave)
+ COMA &gt; (run comap)
+ FILE &gt; (lipase_rave.csh)
+ MAPM &gt; (run mapman)
+ WORK &gt; (/nfs/scr_uu5/gerard/testmave)
+ IDEN &gt; (lipase)
+ CYCL &gt; (10)
+ SCRA &gt; (/nfs/scr_uu1/gerard/scratch/)
+ MASK &gt; (p21_new.mask)
+<P>   
+   COPY &gt; (p21)
+   MTZ  &gt; (p21.mtz)
+   MAP  &gt; (p21_start.E)
+   LABF &gt; (F)
+   SIGF &gt; (SIGF)
+   GRID &gt; (70 48 88)
+   EXTE &gt; (0 69 0 47 0 87)
+   RESO &gt; (8.0 3.0)
+   OSYM &gt; (p21.sym)
+   XXRT &gt; (rt_unit.o)
+   NCSO &gt; (rt_unit.o)
+   NCSO &gt; (p21_a_to_b.o)
+<P>   
+   COPY &gt; (p212121)
+   MTZ  &gt; (p212121.mtz)
+   MAP  &gt; (p212121_start.E)
+   LABF &gt; (F)
+   SIGF &gt; (SIGF)
+   GRID &gt; (60 48 90)
+   EXTE &gt; (0 59 0 47 0 89)
+   RESO &gt; (8.0 3.0)
+   OSYM &gt; (p212121.sym)
+   XXRT &gt; (p21_to_p212121.o)
+   NCSO &gt; (rt_unit.o)
+<P>   
+ Nr of crystal forms    : (          2)
+ Nr of averaging cycles : (         10)
+<P>   
+ TASK &gt; (CYCLE lipase 0)
+ TASK &gt; (average p21 0)
+ TASK &gt; (average p212121 0)
+ TASK &gt; (comap lipase 0)
+<P>   
+ TASK &gt; (CYCLE lipase 1)
+ TASK &gt; (expand p21 1)
+ TASK &gt; (expand p212121 1)
+ TASK &gt; (sfall p21 1)
+ TASK &gt; (rstats p21 1)
+ TASK &gt; (fft p21 1)
+ TASK &gt; (average p21 1)
+ TASK &gt; (sfall p212121 1)
+ TASK &gt; (rstats p212121 1)
+ TASK &gt; (fft p212121 1)
+ TASK &gt; (average p212121 1)
+ TASK &gt; (comap lipase 1)
+<P>   
+ TASK &gt; (CYCLE lipase 2)
+<P>   
+ ...
+<P>   
+ TASK &gt; (comap lipase 10)
+<P>   
+ TASK &gt; (mapman lipase 10)
+ TASK &gt; (all done lipase 10)
+<P>   
+ *** CRAVE *** CRAVE *** CRAVE *** CRAVE *** CRAVE *** CRAVE *** CRAVE ***
+<P>   
+ Version - 960410/0.02
+ Started - Wed Apr 10 19:38:43 1996
+ Stopped - Wed Apr 10 19:38:44 1996
+<P>   
+ CPU-time taken :
+ User    -      1.3 Sys    -      0.1 Total   -      1.4
+<P>   
+ *** CRAVE *** CRAVE *** CRAVE *** CRAVE *** CRAVE *** CRAVE *** CRAVE ***
+<P>   
+ &gt;&gt;&gt; This program (C) 1993-96, GJ Kleywegt &amp; TA Jones &lt;&lt;&lt;
+ E-mail: &quot;gerard@xray.bmc.uu.se&quot; or &quot;alwyn@xray.bmc.uu.se&quot;
+<P>   
+ *** CRAVE *** CRAVE *** CRAVE *** CRAVE *** CRAVE *** CRAVE *** CRAVE ***
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+The example above produces a script for ten cycles of averaging over
+two crystal forms, one in P21 with two-fold NCS, and one in P212121
+without NCS:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+#!/bin/csh -f
+# Created by CRAVE V. 960410/0.02 at Wed Apr 10 19:38:43 1996 for user gerard
+<P>   
+cd /nfs/scr_uu5/gerard/testmave
+<P>   
+echo
+echo CYCLE lipase 0
+echo
+if (! -e p21_new.mask ) then
+  echo ERROR ... file p21_new.mask not found ... aborting
+  exit -1
+endif
+if (! -e p21_start.E ) then
+  echo ERROR ... file p21_start.E not found ... aborting
+  exit -1
+endif
+if (! -e rt_unit.o ) then
+  echo ERROR ... file rt_unit.o not found ... aborting
+  exit -1
+endif
+if (! -e p21.sym ) then
+  echo ERROR ... file p21.sym not found ... aborting
+  exit -1
+endif
+if (! -e rt_unit.o ) then
+  echo ERROR ... file rt_unit.o not found ... aborting
+  exit -1
+endif
+if (! -e p21_a_to_b.o ) then
+  echo ERROR ... file p21_a_to_b.o not found ... aborting
+  exit -1
+endif
+echo
+echo average p21 0
+echo
+run mave -b &lt;&lt; EOF &gt;&amp; p21_average_0.log
+average
+p21_start.E
+p21_new.mask
+rt_unit.o
+p21.sym
+rt_unit.o
+p21_a_to_b.o
+<P>   
+p21_start.E
+/nfs/scr_uu1/gerard/scratch/p21_0x.E
+EOF
+<P>   
+if (! -e /nfs/scr_uu1/gerard/scratch/p21_0x.E ) then
+  echo ERROR ... file /nfs/scr_uu1/gerard/scratch/p21_0x.E not found ... aborting
+  exit -1
+endif
+grep -i &quot;error&quot; p21_average_0.log
+grep -i &quot;Corr. coeff. for operator&quot; p21_average_0.log
+grep -i &quot;R-factor for operator&quot; p21_average_0.log
+<P>   
+ ...
+<P>   
+if (! -e /nfs/scr_uu1/gerard/scratch/lipase_10.E ) then
+  echo ERROR ... file /nfs/scr_uu1/gerard/scratch/lipase_10.E not found ... aborting
+  exit -1
+endif
+grep -i &quot;error&quot; lipase_comap_10.log
+grep -i &quot;Corr coeff       :&quot; lipase_comap_10.log
+echo
+echo mapman lipase 10
+echo
+run mapman -b &lt;&lt; EOF &gt;&amp; lipase_mapman_10.log
+read m1 /nfs/scr_uu1/gerard/scratch/lipase_10.E ccp4
+mappage m1 final.omap
+EOF
+<P>   
+if (! -e final.omap ) then
+  echo ERROR ... file final.omap not found ... aborting
+  exit -1
+endif
+echo
+echo all done lipase 10
+echo
+exit 0
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+To run the script, do something like:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ unix&gt; chmod +x lipase_rave.csh
+ unix&gt; nohup lipase_rave.csh |&amp; tee lipase.log &amp;
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+When executed, the script takes about 20 CPU minutes on a DEC/Alpha
+(in fact, 6 cycles would have been enough). The R-factors (Fo,Fc)
+start at &gt; 40% and come down to ~18%; the correlation of the
+density in the two crystal forms goes up from ~0.55 to &gt; 0.85.
+<P>   
+The final averaged map will always be called final.omap in your
+work directory; you can contour it in O immediately (the intermediate
+CCP4 maps will be in your scratch directory).
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H5">5 </A>KNOWN BUGS</H2> </CENTER>
+<P>   
+None, at present.
+<HR NOSHADE>    <A HREF="http://xray.bmc.uu.se/usf/" target="_top">
+<IMG ALIGN="right" BORDER="0" SRC="usf_logo.gif"
+ALT="Uppsala Software Factory"></A>
+<FONT SIZE=-1>
+<B> <I> Created at Fri Jan 14 20:12:05 2005
+by MAN2HTML version 050114/2.0.6 . This manual
+describes CRAVE, a program of the <A HREF="http://xray.bmc.uu.se/usf/" target="_top">Uppsala
+Software Factory</A> (USF), written and maintained by <A HREF="http://xray.bmc.uu.se/gerard"
+target="_blank">Gerard Kleywegt</A>. &copy; 1992-2005.
+</I> </B> </FONT><P>
+<IMG SRC="http://xray.bmc.uu.se/cgi-bin/nph-count?width=6&link=http://alpha2.bmc.uu.se/~gerard/www/manuals/crave_man.html">
+</body></html>

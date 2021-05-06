@@ -1,0 +1,1596 @@
+<html><head><!-- This document was created for SBIN_MAN at Fri Jan 14 20:12:40 2005 from
+../prosite/sbin_man.txt by MAN2HTML version 050114/2.0.6 -->
+<title>Uppsala Software Factory - SBIN_MAN Manual</title>
+<meta name="DESCRIPTION" content="Manual for Gerard 
+Kleywegt's program SBIN_MAN">
+<meta name="KEYWORDS" content="manual software Gerard 
+Kleywegt program SBIN_MAN structural biology 
+protein X-ray crystallography macromolecular molecular
+Uppsala Software Factory bioinformatics">
+</head><body bgcolor="#fefefe" background="back.gif">
+
+<A HREF="http://xray.bmc.uu.se/usf/" target="_top">
+<IMG ALIGN="right" BORDER="0" SRC="usf_logo.gif"
+ALT="Uppsala Software Factory"></A>
+
+<H2>  Uppsala Software Factory - SBIN_MAN Manual</H2> <P>   
+<UL>  
+<LI><H3>  <A HREF="#H1">1  </A>SBIN - GENERAL INFORMATION</H3> 
+<LI><H3>  <A HREF="#H2">2  </A>REFERENCES</H3> 
+<LI><H3>  <A HREF="#H3">3  </A>VERSION HISTORY</H3> 
+<LI><H3>  <A HREF="#H4">4  </A>INTRODUCTION</H3> 
+<LI><H3>  <A HREF="#H5">5  </A>PATTERNS</H3> 
+<H5><A HREF="#S1">5.1  </A>Introduction</H5>
+<H5><A HREF="#S2">5.2  </A>STRUPAT</H5>
+<H5><A HREF="#S3">5.3  </A>Quality</H5>
+<LI><H3>  <A HREF="#H6">6  </A>PROFILES</H3> 
+<H5><A HREF="#S4">6.1  </A>Introduction</H5>
+<H5><A HREF="#S5">6.2  </A>Generation</H5>
+<H5><A HREF="#S6">6.3  </A>STRUPRO</H5>
+<H5><A HREF="#S7">6.4  </A>Iteration</H5>
+<H5><A HREF="#S8">6.5  </A>Practice</H5>
+<H5><A HREF="#S9">6.6  </A>Example</H5>
+<LI><H3>  <A HREF="#H7">7  </A>WORKED EXAMPLE: BETA-SANDWICH</H3> 
+<H5><A HREF="#S10">7.1  </A>Introduction</H5>
+<H5><A HREF="#S11">7.2  </A>Aligning the molecules</H5>
+<H5><A HREF="#S12">7.3  </A>PROSITE patterns</H5>
+<H5><A HREF="#S13">7.4  </A>Profile</H5>
+<H5><A HREF="#S14">7.5  </A>Scan SWISS-PROT</H5>
+<H5><A HREF="#S15">7.6  </A>Refinement</H5>
+<LI><H3>  <A HREF="#H8">8  </A>LITERATURE</H3> 
+</UL> 
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H1">1 </A>SBIN - GENERAL INFORMATION</H2> </CENTER>
+<P>   
+Version : 971103
+ <BR> Author : Gerard J. Kleywegt, Dept. of Cell and Molecular Biology,
+Uppsala University, Biomedical Centre, Box 596,
+SE-751 24 Uppsala, SWEDEN
+ <BR> E-mail : gerard@xray.bmc.uu.se
+ <BR> Purpose : introduction to the SBIN package
+ <BR> Package : SBIN
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H2">2 </A>REFERENCES</H2> </CENTER>
+<P>   
+Reference(s) for this program:
+<P>   
+* 1 * G.J. Kleywegt &amp; T.A. Jones (1998). Databases in protein
+crystallography. Acta Cryst D54, 1119-1131.
+[http://xray.bmc.uu.se/gerard/papers/databases.html]
+[http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=PubMed&amp;cmd=Retrieve&amp;list_uids=10089488&amp;dopt=Citation]
+[http://scripts.iucr.org/cgi-bin/paper?ba0001]
+<P>   
+* 2 * Kleywegt, G.J., Zou, J.Y., Kjeldgaard, M. &amp; Jones, T.A. (2001).
+Around O. In: &quot;International Tables for Crystallography, Vol. F.
+Crystallography of Biological Macromolecules&quot; (Rossmann, M.G.
+&amp; Arnold, E., Editors). Chapter 17.1, pp. 353-356, 366-367.
+Dordrecht: Kluwer Academic Publishers, The Netherlands.
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H3">3 </A>VERSION HISTORY</H2> </CENTER>
+<P>   
+971024 - 0.1 - first version
+ <BR> 971103 - 0.2 - expanded
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H4">4 </A>INTRODUCTION</H2> </CENTER>
+<P>   
+SBIN (&quot;Structural Bio-INformatics&quot;) is a package of programs that
+operate at the interface of structural biology and the world
+of protein sequences. Its major purpose is to help structural
+biologists to use the results of their structural studies in
+order to detect other proteins which may be related in structure
+and/or function.
+<P>   
+In order to scan sequence profiles against SWISS-PROT, you will
+also need:
+<P>   
+(1) the &quot;pftools&quot; suite of programs, written by Philipp
+Bucher (
+<A HREF="mailto:pbucher@isrec-sun1.unil.ch">
+mailto:pbucher@isrec-sun1.unil.ch</A>
+) and available by ftp from
+<A HREF="http://ulrec3.unil.ch:80/ftp-server/pftools/">
+http://ulrec3.unil.ch:80/ftp-server/pftools/</A>
+(the suite should compile on most Unix machines).
+<P>   
+(2) the SWISS-PROT database of protein sequences (
+<A HREF="http://www.expasy.ch/sprot/sprot-top.html" target="_blank">
+http://www.expasy.ch/sprot/sprot-top.html</A>
+), which can be downloaded by ftp from
+<A HREF="ftp://ftp.expasy.ch/databases/swiss-prot/">
+ftp://ftp.expasy.ch/databases/swiss-prot/</A>
+(at the time of writing, the file &quot;compressed/sprot40.dat.gz&quot;).
+<P>   
+If you only want to scan PROSITE (
+<A HREF="http://www.expasy.ch/sprot/prosite.html" target="_blank">
+http://www.expasy.ch/sprot/prosite.html</A>
+) patterns against the SWISS-PROT (and TREMBL) database, you
+don't need a local copy of the SWISS-PROT database or the
+pftools programs. Instead, you can use the WWW-based PROSITE
+server at
+<A HREF="http://www.expasy.ch/sprot/scnpsit2.html" target="_blank">
+http://www.expasy.ch/sprot/scnpsit2.html</A>
+at ExPASy in Geneva.
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H5">5 </A>PATTERNS</H2> </CENTER>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S1">5.1 </A>Introduction</H3> 
+<P>   
+Suppose that you solve a new protein structure which turns out
+to contain a fold which is (partly) similar to that of one or
+more other proteins (e.g., using DEJAVU or SPASM). If you
+align the two structures (e.g., using LSQMAN), you can feed
+them into the program STRUPAT which will look for more or
+less conserved residues in structurally conserved regions.
+It will use these to generate PROSITE-type sequence patterns
+(a.k.a. footprints, fingerprints, motifs, ...).
+<P>   
+Such a pattern may look as follows: G-x(3)-C-x(2)-[ILV]. This
+means: glycine - three residues of any type - cysteine -
+two residues of any type - one residue of type Ile/Leu/Val.
+A protein which contains the peptide GYAVCPSV would fit this
+pattern.
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S2">5.2 </A>STRUPAT</H3> 
+<P>   
+STRUPAT requires as input (sensible defaults are provided):
+ <BR> - a random number seed (to generate a random sequence to see how
+informative any generated patterns are, i.e. how often they
+occur by chance)
+ <BR> - a distance cut-off to define core equivalent residues in the
+aligned structures
+ <BR> - a distance cut-off to extent the structurally equivalent core
+with residues which are a bit further apart
+ <BR> - whether or not the program should try to correct &quot;frame-shifts&quot;
+in the aligned structures
+ <BR> - minimum number of residues in any generated patterns
+ <BR> - parameters determining when 2, 3 or 4 different residue types
+should be used in the pattern
+ <BR> - name of the PDB file which contains the *superimposed* structures
+<P>   
+Example output (when STRUPAT encounters a sufficiently long,
+structurally conserved stretch) for a few aligned lipocalin
+models:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ New structurally conserved stretch !
+ Starts at residue ASN -   14
+   molecule    2 @ ASN -   14
+   molecule    3 @ ASP -    5
+   molecule    4 @ ASN -   17
+   molecule    5 @ ASN -   13
+ |NNDNN| ==&gt;  [ND] -
+ |FFFFF| ==&gt;  F -
+ |DDDDN| ==&gt;  [DN] -
+ |KKIWV| ==&gt;  X -
+ |AASSE| ==&gt;  X -
+ |RRKNK| ==&gt;  X -
+ |FFFYI| ==&gt;  X -
+ |SALHN| ==&gt;  X -
+ |GGGGG| ==&gt;  G -
+ |TTFKE| ==&gt;  X -
+ |WWWWW| ==&gt;  W -
+ |YYYWH| ==&gt;  X -
+ |AAEET| ==&gt;  X -
+ |MMIVI| ==&gt;  X -
+ |AAAAI| ==&gt;  [AI] -
+ |KKFKL| ==&gt;  X -
+ |KKAYA| ==&gt;  X -
+ Nr of residues  : (      17)
+ RMS (RMSD) (A)  : (   0.828)
+ PROSITE pattern : ([ND] - F - [DN] - X(5) - G - X - W - X(3) - [AI])
+ Length          : (      15)
+ &quot;Information&quot;   : (   7.577)
+ Nr of matches to random sequence : (          0)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+Running this pattern on the PROSITE server gives a set of 29 matches,
+all of which are lipocalins. However, this is only a subset of
+all lipocalin sequences in the database. The reason why the
+others are not picked up is that there were too few sequence
+in the input which leads to too strict a pattern (e.g., in
+some sequences the required tryptophan is actually a tyrosine).
+<P>   
+The program also found another pattern, namely:
+[IV]-X(2)-T-D-[YN]-X-[TN]-[FY]. This pattern generates 39 matches,
+but this includes some false hits. False hits occur when the pattern
+is too weak/general/aspecific.
+<P>   
+If we combine the two patterns, allowing 50-150 residues in between
+them (indicated by &quot;-x(50,150)-&quot; in the pattern), 20 matches are
+found, all of which are lipocalins (of course, since they all
+match the first pattern which only yielded lipocalins as hits).
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S3">5.3 </A>Quality</H3> 
+<P>   
+The following four numbers are relevant when judging the quality
+of a pattern:
+ <BR> - true positives: matches which are really hits
+ <BR> - true negatives: non-matching sequences which are not hits
+ <BR> - false positives: matching sequences which are not hits
+ <BR> - false negatives: real hits which do not match the pattern
+<P>   
+Two simple statistics can be used to capture the database retrieval
+quality:
+ <BR> - recall = #truepos / (#truepos + #falseneg)
+ <BR> - reliability = #truepos / (#truepos + #falsepos)
+<P>   
+Recall is the fraction of real hits which match the pattern (between
+0 and 1, the higher the better); reliability is the fraction of
+patterns which match the sequence and which are real hits (also
+between 0 and 1, the higher the better).
+<P>   
+For an ideal pattern, the number of false positives and negatives
+is zero. Only real hits match the pattern, and all sequences
+that match the pattern are real hits. In that case, both
+recall and reliability are one. Longer patterns, with more
+highly conserved residues are likely to have better reliability,
+whereas shorter and/or less specific patterns will have better
+recall.
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H6">6 </A>PROFILES</H2> </CENTER>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S4">6.1 </A>Introduction</H3> 
+<P>   
+A more sophisticated technique to find related sequences is the
+use of profiles. A profile is a matrix where every residue
+has a row of numbers associated with it, which indicate how
+well each of the twenty residue types &quot;fit in&quot; at that
+particular position in the sequence. For instance:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+            Gly Ala Ser ... Phe Tyr Trp ...
+ ...
+ Ala 263      2   5   3      -2  -2  -4
+ Phe 264     -4  -3  -4      10   9   7
+ ...
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+A profile can be aligned with all sequences in a database. A sequence
+which is &quot;compatible&quot; with the profile will receive a high score.
+For instance, a sequence containing the dipeptide Ala-Tyr would
+obtain a score of 5 + 9 = 14; Tyr-Ala, on the other hand, would only
+score -2 + -3 = -5.
+<P>   
+Note that, in addition to the twenty values for each of the common
+amino-acid residue types, the matrix also contains two columns
+which contain a score (or penalty) for the opening and extension
+of a gap (in the alignment of a database sequence to the profile).
+<P>   
+Whereas patterns are very strict (if one strictly conserved residue
+is not conserved in one sequence, this sequence will not be
+matched to the pattern, even if it satisfies the rest of the pattern),
+profiles are more tolerant/subtle. For instance, if a residue
+is a tyrosine in all known sequences, a related sequence which
+happens to have a phenylalanine in that position may still obtain
+a high score.
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S5">6.2 </A>Generation</H3> 
+<P>   
+Traditionally, profiles have been generated from multiple aligned
+sequences. The actual values in the profile matrix depend on
+three factors:
+ <BR> - the variety of residues observed in each position in the aligned
+sequences (e.g., a strictly conserved Trp will lead to a high
+value for the Trp-entry in that row of the matrix)
+ <BR> - knowledge about the likelihood of residue substitutions (e.g.,
+Phe and Tyr are closely related residues, so a strictly conserved
+Phe will also give a fairly high value for a Tyr in that position).
+This knowledge is encoded in residue substitution tables (e.g.,
+PAM and BLOSUM matrices)
+ <BR> - weights assigned to the individual sequences in the alignment to
+reduce the effect of sample bias. For instance, if three sequences
+AAAA, AAAA, and GGGG are used to generate a profile, the first
+two are redundant and should receive a weight of 1/4 each, whereas
+the third should be weighted by 1/2.
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S6">6.3 </A>STRUPRO</H3> 
+<P>   
+The program STRUPRO takes a slightly different approach. It takes
+as input a set of superimposed *structures*, and generates a
+profile only for stretches of residues that are in structurally
+equivalent positions. Inside such stretches, insertions are
+strongly penalised; in between insertions are &quot;cost-neutral&quot;.
+The rationale is that, since structure is generally better conserved
+than sequence, a profile based only on the structurally-conserved
+core of a set of proteins stands a better chance of picking up
+other proteins from the database with a similar structure.
+<P>   
+The profile can then be scanned against SWISS-PROT to reveal more
+proteins that could belong to the same class (structurally,
+functionally, evolutionarily).
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S7">6.4 </A>Iteration</H3> 
+<P>   
+A profile can be refined in an iterative process. For example,
+the program PRF2MSEQ can be used to produce a multiple-sequence
+alignment of the matches found by scanning SWISS-PROT with a
+profile. This alignment can subsequently be fed into MSEQPRO,
+which does the same as STRUPRO, but using aligned sequences
+(rather than 3D structures) as input. Like STRUPRO, MSEQPRO
+uses a conservative approach in that it only generates bits
+of profile for stretches of residues without any insertions
+and deletions in the multiple alignment.
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S8">6.5 </A>Practice</H3> 
+<P>   
+Profile analysis can proceed in myriad ways. At the outset one
+needs either a set of aligned sequences, or a set of related
+and superimposed structures. If one solves a structure which
+does not look like any other structure in the PDB, one could
+start instead with only those residues which occur in secondary
+structure elements; generate a profile; scan SWISS-PROT; add
+the sequences of encouraging matches; generate a new profile,
+etc.
+<P>   
+Below is a simple flow-chart. A hash &quot;#&quot; indicates a program from
+the SBIN package; a dollar &quot;$&quot; a program of the pftools package,
+and an ampersand &quot;&amp;&quot; indicates a Unix command. The bottom part
+of the chart (below &quot;happy ?&quot;) deals with running the profile
+against the entire SWISS-PROT database in order to obtain
+statistics to determine normalised scores as well as cut-offs.
+These may be relevant if you want to generate a library of
+profiles, or if you want to add them to PROSITE's set of profiles.
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+<P>   
+  one or more structures                     one or more sequences
+          |                                          |
+          V                                          V
+       STRUPRO # &lt;----- substitution matrix ----&gt; MSEQPRO # &lt;----
+          |                                          |          |
+          -----------&gt; profile &lt;----------------------          |
+                          |                                     |
+                          V                                     |
+                       pfsearch -ry $                           |
+                          |                                     |
+                          V                                     |
+                       matching sequences                       |
+                          |                                     |
+                          V                                     |
+                       happy ? --&gt; NO --&gt; PRF2MSEQ # --&gt; aligned sequences
+                          |
+                          V
+                         YES
+                          |
+                          V
+                       pfsearch -a $
+                          |
+                          V
+                       sort -nr &amp;
+                          |
+                          V
+        scores for all proteins in SWISS-PROT
+                |                |
+                V                V
+             pfscale $          ZPROF #
+                |                |
+                V                V
+       score normalisation    Z-score normalisation
+                      |          |
+                      ------------
+                           |
+                           V
+                      final profile
+<P>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+Example commands:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ STRUPRO (interactive)
+ pfsearch -ry pfx.prf /home/gerard/lib/sprot.dat | &amp; tee pfx.hits
+ PRF2MSEQ &lt; pfx.hits &gt; pfx.seq
+ MSEQPRO (interactive)
+ pfsearch -a aligned.prf /home/gerard/lib/sprot.dat | &amp; tee pfsearch_all.log
+ sort -nr pfsearch_all.log &gt; pfsearch_all.sorted ; rm pfsearch_all.log
+ pfscale pfsearch_all.sorted &gt; pfsearch.scale
+ ZPROF &lt; pfsearch_all.sorted |&amp; tee zprof.top
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S9">6.6 </A>Example</H3> 
+<P>   
+A profile file may look as follows:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ID   MSEQPRO; MATRIX.
+AC   PS99999;
+DT   JAN-1900 (CREATED);
+DE   Created by MSEQPRO V. 971023/0.3 at Thu Oct 23 21:51:45 1997 for user gerard
+CC
+CC   Substitution matrix file : ../strupro_blosum45.lib
+CC   Nr of sequences used : 33
+CC   Min fragment length : 5
+CC   Weighting scheme : S
+CC
+MA   /GENERAL_SPEC: ALPHABET='ARNDCEQGHILKMFPSTWYV'; LENGTH= 56;
+MA   TOPOLOGY=LINEAR;
+MA   /DISJOINT: DEFINITION=PROTECT; N1=1; N2= 56;
+MA   /CUT_OFF: LEVEL=0; SCORE= 500;
+MA   /DEFAULT: MI=-100; I=-10; IM=0 ; MD=-100; D=-3; DM=0;
+MA   /M: SY='E'; M=3,2,7,3,-20,12,4,-9,-2,-21,-23,3,-13,-26,-12,12,4,-29,-15,-17;
+MA   /M: SY='R'; M=-9,31,1,-4,-27,9,7,-18,-6,-24,-20,28,-9,-24,-14,-8,-9,-22,-11,-18;
+MA   /M: SY='Y'; M=-16,-18,-21,-30,-26,-21,-25,-32,-6,14,10,-21,6,33,-28,-20,-10,8,41,6;
+MA   /M: SY='A'; M=9,-12,3,-11,-16,-7,-9,-10,-5,-6,-2,-13,-2,-11,-18,3,1,-28,-11,-6;
+MA   /M: SY='G'; M=0,-20,0,-10,-30,-20,-20,70,-20,-40,-30,-20,-20,-30,-20,0,-20,-20,-30,-30;
+MA   /M: SY='R'; M=-9,22,-3,-5,-26,7,1,-20,-6,-20,-16,17,-8,-17,-16,-6,-4,-18,-4,-15;
+MA   /M: SY='W'; M=-20,-20,-40,-40,-50,-20,-30,-20,-30,-20,-20,-20,-20,10,-30,-40,-30,150,30,-30;
+MA   /M: SY='Y'; M=-20,-11,-17,-22,-29,-13,-19,-28,22,-6,-2,-14,-1,30,-29,-20,-13,25,60,-12;
+MA   /M: SY='E'; M=8,-6,-1,-6,-20,17,6,-9,-7,-15,-18,-3,-8,-26,-10,11,3,-26,-15,-14;
+MA   /M: SY='I'; M=-6,-23,-20,-33,-23,-18,-26,-33,-23,33,14,-23,17,1,-22,-14,-4,-19,2,25;
+MA   /M: SY='A'; M=24,-16,-10,-18,-17,-4,-10,-5,-10,-6,-6,-12,-4,-19,-15,1,-5,-21,-14,-2;
+MA   /M: SY='K'; M=-10,7,-12,-14,-26,-2,-4,-25,-14,-6,-1,14,2,-12,-18,-16,-9,-19,-5,-4;
+MA   /M: SY='A'; M=15,-10,-12,-20,-20,-7,-11,-16,-16,1,-3,-2,2,-12,-15,-6,-6,-17,-6,2;
+MA   /M: SY='S'; M=-3,-12,4,12,-24,1,4,-4,-9,-26,-29,-7,-21,-29,13,14,2,-35,-22,-22;
+MA   /M: SY='N'; M=-8,-9,13,8,-25,-6,-2,-12,-5,-16,-20,-5,-15,-19,5,0,-2,-30,-14,-19;
+MA   /M: SY='E'; M=0,2,-2,-7,-21,17,3,-15,-6,-14,-17,7,-1,-24,-12,6,2,-26,-12,-11;
+MA     /I: MI=0; I=-1; MD=0; /M: SY='X'; M=0; D=-1;
+MA   /M: SY='Y'; M=-12,2,-9,-7,-26,-2,-6,-23,-7,-7,-9,2,-1,-8,-15,-11,-8,-17,3,-4;
+MA   /M: SY='E'; M=-11,0,-2,8,-28,31,15,-17,2,-18,-10,1,-4,-31,-13,-5,-10,-24,-11,-23;
+MA   /M: SY='N'; M=-4,2,18,7,-25,13,7,-1,-1,-24,-26,7,-14,-28,-13,4,-5,-28,-17,-25;
+MA   /M: SY='G'; M=-5,-8,3,-6,-28,-11,-10,25,-14,-27,-20,-4,-13,-24,-13,-5,-14,-23,-21,-23;
+MA   /M: SY='K'; M=-4,8,7,-1,-22,5,3,-9,-3,-22,-23,10,-12,-22,-13,8,1,-29,-13,-17;
+MA   /M: SY='M'; M=0,-18,-22,-29,-6,-16,-22,-24,-18,15,16,-19,21,-2,-24,-14,-4,-25,-7,17;
+MA   /M: SY='T'; M=-3,-7,-11,-18,-3,-12,-13,-21,-19,-5,-6,-6,-4,-8,-20,-1,4,-27,-10,2;
+MA   /M: SY='V'; M=8,-17,-17,-23,-14,-18,-14,-20,-20,5,4,-16,2,3,-20,-4,3,-21,-7,13;
+MA   /M: SY='T'; M=2,-6,-8,-14,-17,-8,-10,-18,-14,-7,-6,-3,-3,-6,-15,3,14,-20,-2,-1;
+MA   /M: SY='N'; M=3,-13,5,-13,-11,-13,-13,-13,-11,-8,-10,-12,-5,0,-14,0,0,-24,-10,-6;
+MA   /M: SY='H'; M=-10,0,-4,-5,-28,6,6,-21,18,-16,-15,3,-6,-12,-15,-6,-9,-14,14,-17;
+MA   /M: SY='T'; M=-7,-6,-3,-11,-23,-1,-9,-3,0,-18,-13,-10,-7,-9,-18,2,4,-17,0,-15;
+MA   /M: SY='V'; M=-7,-2,-18,-23,-20,-15,-17,-26,-20,11,5,-11,4,-6,-17,-9,-4,-26,-9,16;
+MA   /M: SY='V'; M=-6,-2,-13,-18,-19,-8,-15,-24,-16,9,0,-8,8,-10,-21,-5,0,-27,-9,15;
+MA     /I: MI=0; I=-1; MD=0; /M: SY='X'; M=0; D=-1;
+MA   /M: SY='D'; M=1,0,5,15,-24,13,10,-11,-5,-26,-24,9,-15,-32,-10,5,-5,-28,-16,-20;
+MA   /M: SY='T'; M=1,-10,1,-9,-10,-9,-9,-18,-19,-11,-12,-10,-11,-11,-10,22,46,-31,-11,-1;
+MA   /M: SY='D'; M=-19,-9,25,64,-29,0,18,-9,1,-38,-30,0,-29,-38,-11,1,-9,-40,-20,-30;
+MA   /M: SY='Y'; M=-19,-9,-14,-17,-29,-9,-18,-28,19,-2,-2,-9,-2,26,-29,-18,-9,25,72,-12;
+MA   /M: SY='D'; M=-15,0,10,38,-29,9,15,-15,-2,-30,-23,9,-18,-34,-11,-3,-8,-32,-15,-25;
+MA   /M: SY='N'; M=-6,1,26,5,-18,8,1,-10,-1,-18,-22,-1,-13,-21,-15,13,14,-33,-15,-19;
+MA   /M: SY='Y'; M=-20,-12,-20,-24,-28,-16,-22,-30,12,0,2,-14,0,40,-30,-20,-10,26,70,-8;
+MA   /M: SY='A'; M=24,-19,-11,-21,-14,-12,-14,-12,-21,2,-1,-15,-3,-12,-14,5,5,-23,-14,6;
+MA   /M: SY='I'; M=-8,-21,-24,-33,-16,-19,-25,-31,-21,27,24,-24,24,6,-25,-20,-9,-21,-1,20;
+MA   /M: SY='M'; M=-2,-16,-11,-19,-21,-12,-10,-16,-13,5,2,-15,6,-4,-19,-8,-5,-22,-7,5;
+MA   /M: SY='Y'; M=-20,-8,-9,-11,-30,-7,-13,-25,38,-13,-8,-12,-3,14,-26,-16,-14,9,47,-17;
+MA   /M: SY='S'; M=5,-14,-3,-13,-15,-8,-10,-13,-12,-4,-4,-15,-6,-8,-17,10,10,-26,-6,-2;
+MA   /M: SY='C'; M=-9,-24,-16,-29,48,-22,-25,-31,-28,-2,-6,-23,-5,-13,-28,-10,-3,-36,-17,4;
+MA   /M: SY='R'; M=-10,20,13,-1,-24,1,-2,-10,-6,-21,-22,14,-12,-21,-17,0,-1,-27,-14,-16;
+MA   /M: SY='T'; M=-8,-4,-10,-15,-18,-2,-9,-24,-9,-4,1,-6,0,-3,-19,-5,7,-17,4,-4;
+MA     /I: MI=0; I=-1; MD=0; /M: SY='X'; M=0; D=-1;
+MA   /M: SY='H'; M=-3,-5,2,-2,-20,-3,-5,-16,19,-15,-13,-7,-6,-17,-17,1,2,-30,-4,-9;
+MA   /M: SY='F'; M=-10,-12,0,2,-20,-13,-5,-18,-6,-11,-9,-13,-8,3,-19,0,-1,-25,-4,-6;
+MA   /M: SY='D'; M=-9,0,4,11,-26,7,11,-10,-1,-21,-20,-1,-13,-26,-12,3,-4,-29,-14,-19;
+MA   /M: SY='Y'; M=-15,-14,-16,-25,-25,-14,-19,-28,10,6,11,-19,11,18,-25,-18,-9,-5,27,-1;
+MA   /M: SY='A'; M=12,-15,-11,-20,-13,-9,-14,-12,-14,5,-3,-13,11,-10,-17,6,3,-27,-12,10;
+MA   /M: SY='W'; M=-14,-10,-20,-27,-31,-14,-19,-17,-19,-14,-11,-13,-10,13,-24,-18,-12,45,12,-15;
+MA   /M: SY='I'; M=-8,-24,-26,-34,-22,-22,-26,-34,-26,34,29,-28,18,4,-26,-21,-8,-22,-2,27;
+MA   /M: SY='F'; M=-16,-17,-24,-31,-23,-25,-24,-30,-9,7,21,-24,7,41,-30,-24,-10,5,33,1;
+MA   /M: SY='G'; M=10,-15,2,-7,-17,-9,-9,22,-15,-23,-23,-15,-17,-22,-15,19,2,-30,-22,-15;
+MA   /M: SY='R'; M=-19,66,0,-9,-30,10,1,-20,-1,-30,-21,32,-10,-21,-19,-10,-10,-20,-10,-20;
+MA   /M: SY='N'; M=-3,0,17,11,-19,7,4,-8,2,-23,-25,0,-16,-24,-13,15,6,-34,-15,-19;
+//
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H7">7 </A>WORKED EXAMPLE: BETA-SANDWICH</H2> </CENTER>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S10">7.1 </A>Introduction</H3> 
+<P>   
+In order to demonstrate the use of the SBIN programs, we'll have a look
+at a set of proteins which all fold into a beta-sandwich, namely:
+ <BR> - 1CEL = T. reesei cellobiohydrolase I
+ <BR> - 1EG1 = T. reesei endoglucanase I
+ <BR> - 1AYH = a hybrid beta-glucanase
+ <BR> - 1LTE = coral tree lectin
+<P>   
+The first two of these proteins are very related (which means that
+their sequence weights should be smaller than those for the other
+two), the other two are unrelated. The only thing all have in
+common is the fold class (beta-sandwich).
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S11">7.2 </A>Aligning the molecules</H3> 
+<P>   
+We shall use 1CEL (chain A) as our &quot;reference molecule&quot;, to which the
+other three will be aligned. This can be done with your favourite
+superpositioning program, for instance LSQMAN. LSQMAN contains a
+&quot;BRute_force&quot; command which will automatically align just about
+any structure with just about any other structure.
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ LSQMAN &gt; read m1 /nfs/pdb/full/1cel.pdb
+ Cell : (  84.000   86.200  111.800   90.000   90.000   90.000)
+ Old chain |A| becomes chain A
+ Old chain |B| becomes chain B
+ Old chain | | becomes chain C
+ Nr of lines read from file : (       7524)
+ Nr of atoms in molecule    : (       7038)
+ Nr of chains or models     : (          3)
+ Stripped hydrogen atoms    : (          0)
+ Nr of HETATMs              : (        598)
+ LSQMAN &gt; read m2 /nfs/pdb/full/1ayh.pdb
+ Cell : (  64.320   78.520   39.300   90.000   90.000   90.000)
+ Old chain | | becomes chain A
+ Nr of lines read from file : (       1995)
+ Nr of atoms in molecule    : (       1856)
+ Nr of chains or models     : (          1)
+ Stripped hydrogen atoms    : (          0)
+ Nr of HETATMs              : (        159)
+ LSQMAN &gt; br
+ Mol 1 ? (M2) m1
+ Chain 1 ? (A)
+ Mol 2 ? (M1) m2
+ Chain 2 ? (A)
+ Fragment length ? (          50)
+ Fragment step ? (          25)
+ Min nr of residues to match ? (         100)
+ Brute-force fit of M1 A
+ And                M2 A
+ Atom types     | CA |
+ B-factor range used  -1000.00 - 10000.00 A2
+ Fragment length            50
+ Fragment step size         25
+ Min matched residues      100
+ Mol 1 zone to try : (A1-764)
+ Mol 2 zone to try : (A1-373)
+<P>   
+ Try zone : (A1-50)
+ Max match so far : (          6)
+ RMSD (A)         : (   0.928)
+ Max match so far : (         10)
+ RMSD (A)         : (   1.600)
+ Max match so far : (         17)
+ RMSD (A)         : (   2.083)
+ Max match so far : (         21)
+ RMSD (A)         : (   1.698)
+ Try zone : (A26-75)
+ Max match so far : (         22)
+ RMSD (A)         : (   1.970)
+ Try zone : (A51-100)
+ Try zone : (A76-125)
+ Max match so far : (        123)
+ RMSD (A)         : (   1.715)
+<P>   
+ Max match : (        123)
+ RMSD (A)  : (   1.715)
+ Mol 1 res : (         76)
+ Mol 2 res : (         32)
+<P>   
+ Regenerating best alignment ...
+ The    123 atoms have an RMS distance of    1.715 A
+ SI = RMS * Nmin / Nmatch             =      2.98401
+ MI = (1+Nmatch)/{(1+W*RMS)*(1+Nmin)} =      0.21242
+ MC = Maiorov-Crippen RHO (0-2)       =      0.12160
+ RMS delta B for matched atoms        =     4.972 A2
+ Corr. coefficient matched atom Bs    =        0.488
+ Rotation     :   0.00118718  0.78486478  0.61966598
+                 -0.99711239  0.04798083 -0.05886189
+                 -0.07593071 -0.61780673  0.78265536
+ Translation  :      47.5729     52.6618     47.1068
+ CPU total/user/sys :      11.2      11.2       0.0
+ LSQMAN &gt; apply m1 m2
+ Bring Mol 2 on top of Mol 1 ...
+ Molecule 1 : (M1)
+ Molecule 2 : (M2)
+ Apply to mol 2 chain : (*)
+ Nr of atoms moved : (       1856)
+ Resetting ALL operators of mol 2 ...
+ LSQMAN &gt; wr m1 1cel.pdb a
+ Write mol : (M1)
+ Chain id  : (A)
+ PDB file  : (1cel.pdb)
+ Number of atoms written : (       3518)
+ LSQMAN &gt; wr m2 1ayh.pdb a
+ Write mol : (M2)
+ Chain id  : (A)
+ PDB file  : (1ayh.pdb)
+ Number of atoms written : (       1856)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+When you are done, put all superimposed models in one big PDB file
+(only CA atoms are really needed). Make sure that the chain names
+are different for subsequent molecules !!! This can all be done
+easily with MOLEMAN2:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MOLEMAN2 &gt; read 1cel.pdb
+ MOLEMAN2 &gt; append 1eg1.pdb
+ MOLEMAN2 &gt; append  1ayh.pdb
+ MOLEMAN2 &gt; append 1lte.pdb
+ MOLEMAN2 &gt; chain auto
+ MOLEMAN2 &gt; pdb remark &quot;ALIGNED LSQMAN: 1CEL 1EG1 1AYH 1LTE&quot;
+ Add REMARK record : (ALIGNED LSQMAN: 1CEL 1EG1 1AYH 1LTE)
+     2: REMARK ALIGNED LSQMAN: 1CEL 1EG1 1AYH 1LTE
+ MOLEMAN2 &gt; write aligned.pdb pdb calpha
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S12">7.3 </A>PROSITE patterns</H3> 
+<P>   
+Let's first use STRUPAT to see if the sequences of the structurally
+conserved parts of these four proteins yield any patterns, using
+the following parameters:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Equivalent CA distance ? (   3.500) 6
+ Equivalent CA distance : (   6.000)
+<P>   
+ Extension CA distance ? (   6.000) 8
+ Extension CA distance : (   8.000)
+<P>   
+ Try to correct frame-shifts (Y/N) ? (Y)
+ Try to correct frame-shifts (Y/N) : (Y)
+<P>   
+ Min pattern length ? (      10) 5
+ Min pattern length : (       5)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+There is only one pattern that fits the bill, but it's not a very
+selective one:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ New structurally conserved stretch !
+ Starts at residue GLY -  139
+   molecule    2 @ GLY -  140
+   molecule    3 @ GLY -   86
+   molecule    4 @ ALA -   88
+ |GGGA| ==&gt;  [AG] -
+ |LEID| ==&gt;  X -
+ |NNVG| ==&gt;  X -
+ |GGSL| ==&gt;  X -
+ |ASSV| ==&gt;  X -
+ |LLFF| ==&gt;  X -
+ |YYFF| ==&gt;  [FY] -
+ |FLTM| ==&gt;  X -
+ |VSYG| ==&gt;  X -
+ |SQTP| ==&gt;  X -
+ |MMGT| ==&gt;  X -
+ Nr of residues  : (      11)
+ RMS (RMSD) (A)  : (   1.407)
+ PROSITE pattern : ([AG] - X(5) - [FY])
+ Length          : (       7)
+ Score 1         : (   1.386)
+ Score 2         : (      13)
+ Nr of matches to random sequence : (      25298)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S13">7.4 </A>Profile</H3> 
+<P>   
+Clearly, the sequence similarities (if any) between these proteins
+are too low to yield any useful patterns. Let's use STRUPRO then
+to generate a profile with the following input:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Library file with matrix ? (/nfs/public/lib/strupro_blosum45.lib) ../strupro_blosum45.lib
+ Library file with matrix : (../strupro_blosum45.lib)
+ Comment : (! BLOSUM 45 matrix made from BLOCKS v. 5.0 and scaled in half-
+  bits.)
+ Comment : (! ARNDCQEGHILKMFPSTWYVBZX)
+ Comment : (! integer matrix)
+<P>   
+ Equivalent CA distance ? (   5.000) 6
+ Equivalent CA distance : (   6.000)
+<P>   
+ Extension CA distance ? (   8.000)
+ Extension CA distance : (   8.000)
+<P>   
+ Try to correct frame-shifts (Y/N) ? (Y)
+ Try to correct frame-shifts (Y/N) : (Y)
+<P>   
+ Min fragment length ? (       5)
+ Min fragment length : (       5)
+<P>   
+ Sequences may be weighted:
+ U = uniform weights
+ R = rms(rmsd) weights
+ S = sequence distance weights
+ Weighting scheme ? (S)
+ Weighting scheme : (S)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+The result:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Nr of residues in profile : (        189)
+<P>   
+ Sequence identity for these residues only:
+ % Seq id mol #   1 -&gt;  100.0  49.7  11.1   7.9
+ % Seq id mol #   2 -&gt;   49.7 100.0  10.1   7.9
+ % Seq id mol #   3 -&gt;   11.1  10.1 100.0   9.0
+ % Seq id mol #   4 -&gt;    7.9   7.9   9.0 100.0
+<P>   
+ Average sequence identity (%) : (  15.961)
+ St. dev.                      : (  15.146)
+ Minimum                       : (   7.937)
+ Maximum                       : (  49.735)
+<P>   
+ Sum of maximum random scores : (       3275)
+ Sum AVE+3SIGMA random scores : (       1088)
+<P>   
+ Score for molecule   1 =       3780
+ Score for molecule   2 =       3806
+ Score for molecule   3 =       3205
+ Score for molecule   4 =       2879
+<P>   
+ Minimum raw score : (       2400)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+The profile looks as follows:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ID   STRUPRO; MATRIX.
+AC   PS99999;
+DT   JAN-1900 (CREATED);
+DE   Created by STRUPRO V. 971103/1.0 at Mon Nov 3 17:01:47 1997 for user gerard
+CC
+CC   Substitution matrix file : ../strupro_blosum45.lib
+CC   Nr of structures used : 4
+CC   Equivalent CA distance (A) : 6.000000
+CC   Extension CA distance (A) : 8.000000
+CC   Frameshift correction used
+CC   Min fragment length : 5
+CC   Weighting scheme : S
+CC
+MA   /GENERAL_SPEC: ALPHABET='ARNDCEQGHILKMFPSTWYV'; LENGTH=189;
+MA   TOPOLOGY=LINEAR;
+MA   /DISJOINT: DEFINITION=PROTECT; N1=1; N2=189;
+MA   /CUT_OFF: LEVEL=0; SCORE= 2400;
+MA   /DEFAULT: MI=-100; I=-10; IM=0 ; MD=-100; D=-3; DM=0;
+MA   /M: SY='T'; M=-2,-15,-13,-19,-18,-15,-17,-17,-22,-4,-12,-15,-10,-6,-19,5,13,5,-4,4;
+MA   /M: SY='Y'; M=-15,0,-11,-12,-27,-7,2,-25,-2,-14,-9,4,-7,15,-19,-13,-10,0,23,-14;
+MA   /M: SY='K'; M=-13,12,-5,0,-30,8,15,-23,0,-22,-20,24,-10,-15,-12,-10,-10,-10,10,-20;
+MA   /M: SY='C'; M=8,-22,-12,-22,53,-20,-20,-20,-25,-20,-15,-20,-15,-17,-25,3,8,-37,-22,-5;
+MA   /M: SY='S'; M=7,-10,7,-3,-10,-3,-3,-6,-13,-17,-24,-10,-17,-17,-10,34,28,-37,-17,-7;
+MA     /I: MI=0; I=-1; MD=0; /M: SY='X'; M=0; D=-1;
+<P>   
+[...]
+<P>   
+MA     /I: MI=0; I=-1; MD=0; /M: SY='X'; M=0; D=-1;
+MA   /M: SY='N'; M=6,11,17,-1,-18,0,-2,-5,-4,-20,-23,3,-15,-20,-15,12,2,-30,-17,-16;
+MA   /M: SY='D'; M=-10,-8,19,24,-28,-1,14,12,-3,-33,-28,-3,-23,-30,-13,2,-11,-32,-23,-30;
+MA   /M: SY='A'; M=27,-13,11,-6,-12,-5,-5,0,-11,-15,-19,-8,-15,-20,-12,17,5,-29,-20,-9;
+MA   /M: SY='P'; M=5,-14,5,-4,-27,-7,-3,-9,-12,-17,-25,-7,-17,-25,34,1,-5,-30,-25,-22;
+MA   /M: SY='N'; M=-10,-3,22,7,-28,12,5,-11,2,-20,-27,0,-15,-28,13,2,-5,-32,-20,-30;
+MA   /M: SY='T'; M=9,-15,-11,-18,-13,-13,-13,-18,-20,-2,7,-16,-2,-7,-16,4,21,-25,-10,3;
+MA   /M: SY='H'; M=-18,4,-1,-6,-30,4,-3,-23,51,-22,-17,4,-2,-8,-20,-13,-15,-11,30,-22;
+MA   /M: SY='V'; M=9,-17,-12,-2,-15,-17,-12,-17,-20,1,-6,-12,-6,-16,-19,-2,-3,-30,-15,16;
+MA   /M: SY='V'; M=-3,-9,-14,-17,-16,0,-11,-25,-16,6,-3,-9,2,-14,-20,0,9,-27,-10,15;
+MA   /M: SY='Y'; M=-20,-15,-20,-29,-25,-24,-25,-30,1,0,5,-19,0,53,-30,-20,-10,21,57,-5;
+MA   /M: SY='S'; M=2,-10,13,20,-16,0,6,-3,-7,-26,-30,-7,-23,-26,-10,29,12,-40,-20,-16;
+MA   /M: SY='W'; M=-15,-11,7,-12,-36,-11,-16,-11,-11,-20,-25,-11,-20,-4,-25,-17,-16,61,7,-30;
+MA   /M: SY='I'; M=-2,-22,-15,-27,-19,-18,-22,-27,-25,27,5,-22,7,-5,-20,-2,0,-28,-8,26;
+MA   /M: SY='R'; M=-15,27,-5,-12,-27,-3,-2,-23,-10,-22,-18,25,-7,0,-17,-13,-10,-12,0,-15;
+MA   /M: SY='W'; M=-17,-12,-20,-19,-32,-12,-5,-25,-6,-12,-7,-12,-10,22,-22,-20,-15,38,32,-17;
+MA   /M: SY='G'; M=13,-17,-3,-13,-19,-15,-15,27,-20,-24,-19,-15,-15,-22,-15,8,5,-23,-22,-14;
+MA   /M: SY='S'; M=-2,-12,5,14,-22,-2,5,-7,-10,-25,-30,-8,-22,-27,14,19,6,-38,-22,-19;
+//
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+The program also generates a structure-based sequence alignment:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+!
+! Sequence alignment file
+! Created by STRUPRO V. 971103/1.0 at Mon Nov 3 16:59:34 1997 for user gerard
+!
+! REMARK Created by MOLEMAN2 V. 970924/2.1.3 at Mon Nov 3 16:48:35 1997 for user gerard
+! REMARK ALIGNED LSQMAN: 1CEL 1EG1 1AYH 1LTE
+<P>   
+! NOT ALIGNED MOL   1 FROM PCA-   1 TO THR-  15
+! ASACTLQSETHPPLT
+! NOT ALIGNED MOL   2 FROM PYR-   1 TO THR-  15
+! AQPGTSTPEVHPKLT
+! NOT ALIGNED MOL   3 FROM GLN-   1 TO TRP- 208
+! QTGGSFFEPFNSYNSGTWEKADGYSNGGVFNCTWRANNVNFTNDGKLKLGLTSSAYNKFDCAEYRSTNIYGYGLYEVSMKPAKNTGIVSSFFTYTGPAHGTQWDEIDIEFLGKDTTKVQFNYYTNGVGGHEKVISLGFDASKGFHTYAFDWQPGYIKWYVDGVLKHTATANIPSTPGKIMMNLWNGTGVDDWLGSYNGANPLYAEYDW
+! NOT ALIGNED MOL   4 FROM VAL-   1 TO TRP- 231
+! VETISFSFSEFEPGNDNLTLQGASLITQSGVLQLTKINQNGMPAWDSTGRTLYAKPVHIWDMTTGTVASFETRFSFSIEQPYTRPLPADGLVFFMGPTKSKPAQGYGYLGIFNQSKQDNSYQTLGVEFDTFSNPWDPPQVPHIGIDVNSIRSIKTQPFQLDNGQVANVVIKYDASSKLLHAVLVYPSSGAIYTIAEIVDVKQVLPEWVDVGLSGATGAQRDAAETHDVYSW
+! ALIGNED MOL   1 FROM TRP-  16 TO SER-  20
+WQKCS-
+! ALIGNED MOL   2 FROM THR-  16 TO THR-  20
+TYKCT-
+! ALIGNED MOL   3 FROM VAL- 209 TO SER- 213
+VKYTS-
+! ALIGNED MOL   4 FROM SER- 232 TO SER- 236
+SFQAS-
+<P>   
+! NOT ALIGNED MOL   1 FROM SER-  21 TO GLN-  28
+! SGGTCTQQ
+! NOT ALIGNED MOL   2 FROM LYS-  21 TO GLN-  28
+! KSGGCVAQ
+! ALIGNED MOL   1 FROM THR-  29 TO ASP-  35
+TGSVVID-
+! ALIGNED MOL   2 FROM ASP-  29 TO ASP-  35
+DTSVVLD-
+! ALIGNED MOL   3 FROM GLY-  16 TO ASP-  22
+GTWEKAD-
+! ALIGNED MOL   4 FROM ASP-  16 TO GLY-  22
+DNLTLQG-
+<P>   
+[...]
+<P>   
+! NOT ALIGNED MOL   1 FROM ILE- 426 TO GLY- 434
+! IGSTGNPSG
+! NOT ALIGNED MOL   2 FROM ILE- 367 TO THR- 371
+! IGSTT
+! NOT ALIGNED MOL   3 FROM ASN- 214 TO ASN- 214
+! N
+! NOT ALIGNED MOL   4 FROM LEU- 237 TO GLU- 239
+! LPE
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S14">7.5 </A>Scan SWISS-PROT</H3> 
+<P>   
+Let's scan our profile against SWISS-PROT (release 34) using the
+&quot;pfsearch&quot; program (&quot;pftools&quot; suite of programs). Using the
+&quot;-a&quot; flag will print a score for every sequence in the database;
+this will enable us to calculate the average score etc. and, from
+that, Z-scores.
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+../pftools/pfsearch -a aligned.prf /home/gerard/lib/sprot.dat &gt; pfsearch_all.log
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+Sort the output file so that the top-scoring entries are at the top:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+sort -nr pfsearch_all.log &gt; pfsearch_all.sorted
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+Let's see what the top-scoring entries are:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ % 1004 gerard sarek 16:03:00 prosite/1cel &gt; head -20 pfsearch_all.sorted
+  3662 P07981|GUN1_TRIRE ENDOGLUCANASE EG-1 PRECURSOR (EC 3.2.1.4) (ENDO-1,4-BETA-GLUCANASE) (CELLULASE).
+  3577 P00725|GUX1_TRIRE EXOGLUCANASE I PRECURSOR (EC 3.2.1.91) (EXOCELLOBIOHYDROLASE I) (1,4-BETA-CELLOBIOHYDROLASE).
+  3557 P19355|GUX1_TRIVI EXOGLUCANASE I PRECURSOR (EC 3.2.1.91) (EXOCELLOBIOHYDROLASE) (1,4- BETA-CELLOBIOHYDROLASE).
+  2937 P13860|GUX1_PHACH EXOGLUCANASE I PRECURSOR (EC 3.2.1.91) (EXOCELLOBIOHYDROLASE I) (1,4-BETA-CELLOBIOHYDROLASE).
+  2876 P15828|GUX1_HUMGR EXOGLUCANASE I PRECURSOR (EC 3.2.1.91) (EXOCELLOBIOHYDROLASE I) (1,4- BETA-CELLOBIOHYDROLASE) (BETA-GLUCANC
+  2836 P23904|GUB_BACMA BETA-GLUCANASE PRECURSOR (EC 3.2.1.73) (ENDO-BETA-1,3-1,4 GLUCANASE) (1,3-1,4-BETA-D-GLUCAN 4-GLUCANOHYDROLA
+  2814 P38676|GUX1_NEUCR EXOGLUCANASE 1 PRECURSOR (EC 3.2.1.91) (EXOCELLOBIOHYDROLASE 1) (1,4-BETA-CELLOBIOHYDROLASE).
+  2805 Q06886|GUX1_PENJA EXOGLUCANASE I PRECURSOR (EC 3.2.1.91) (EXOCELLOBIOHYDROLASE I) (1,4-BETA-CELLOBIOHYDROLASE).
+  2741 P45797|GUB_BACPO BETA-GLUCANASE PRECURSOR (EC 3.2.1.73) (ENDO-BETA-1,3-1,4 GLUCANASE) (1,3-1,4-BETA-D-GLUCAN 4-GLUCANOHYDROLA
+  2692 P46238|GUXC_FUSOX PUTATIVE EXOGLUCANASE TYPE C PRECURSOR (EC 3.2.1.91) (EXOCELLOBIOHYDROLASE I) (1,4-BETA-CELLOBIOHYDROLASE)
+  2492 P46237|GUNC_FUSOX PUTATIVE ENDOGLUCANASE TYPE C PRECURSOR (EC 3.2.1.4) (ENDO-1,4-BETA- GLUCANASE) (CELLULASE).
+  2334 P16404|LEC_ERYCO LECTIN PRECURSOR.
+  2326 P04957|GUB_BACSU BETA-GLUCANASE PRECURSOR (EC 3.2.1.73) (ENDO-BETA-1,3-1,4 GLUCANASE) (1,3-1,4-BETA-D-GLUCAN 4-GLUCANOHYDROLA
+  2317 P07980|GUB_BACAM BETA-GLUCANASE PRECURSOR (EC 3.2.1.73) (ENDO-BETA-1,3-1,4 GLUCANASE) (1,3-1,4-BETA-D-GLUCAN 4-GLUCANOHYDROLA
+  2194 P27051|GUB_BACLI BETA-GLUCANASE PRECURSOR (EC 3.2.1.73) (ENDO-BETA-1,3-1,4 GLUCANASE) (1,3-1,4-BETA-D-GLUCAN 4-GLUCANOHYDROLA
+  1971 P37073|GUB_BACBR BETA-GLUCANASE PRECURSOR (EC 3.2.1.73) (ENDO-BETA-1,3-1,4 GLUCANASE) (1,3-1,4-BETA-D-GLUCAN 4-GLUCANOHYDROLA
+  1863 P29716|GUB_CLOTM BETA-GLUCANASE PRECURSOR (EC 3.2.1.73) (ENDO-BETA-1,3-1,4 GLUCANASE) (1,3-1,4-BETA-D-GLUCAN 4-GLUCANOHYDROLA
+  1400 Q01806|LEC1_MEDTR LECTIN 1 PRECURSOR.
+  1364 P02867|LEC_PEA LECTIN PRECURSOR.
+  1354 P29257|LEC2_CYTSC 2-ACETAMIDO-2-DEOXY-D-GALACTOSE-BINDING SEED LECTIN II (CSII).
+  ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+As hoped and expected, these are all CBH I, EG I, beta-glucanase and lectin-type
+proteins.
+<P>   
+Let's put the (arbitrary) scores on a better scale. One option is to use the
+&quot;pfscale&quot; program (&quot;pftools&quot; package):
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+../pftools/pfscale pfsearch_all.sorted &gt; pfsearch.scale
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+This gives us:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+# -LogP = -2.5931 +   0.00803501 * raw-score
+#
+#   rank raw-score  -logFreq  -logProb
+#
+       1   3662.00    7.4517   26.8312
+       2   3577.00    6.9746   26.1482
+       3   3557.00    6.7527   25.9875
+       4   2937.00    6.6066   21.0058
+       5   2876.00    6.4975   20.5157
+       6   2836.00    6.4103   20.1942
+       7   2814.00    6.3378   20.0175
+       8   2805.00    6.2756   19.9452
+       9   2741.00    6.2213   19.4309
+      10   2692.00    6.1730   19.0372
+      11   2492.00    6.1295   17.4302
+      12   2334.00    6.0900   16.1607
+      13   2326.00    6.0538   16.0964
+      14   2317.00    6.0203   16.0241
+      15   2194.00    5.9893   15.0358
+      16   1971.00    5.9603   13.2440
+      17   1863.00    5.9332   12.3762
+      18   1400.00    5.9076    8.6560
+      19   1364.00    5.8835    8.3667
+      20   1354.00    5.8606    8.2864
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+The expression for -LogP can be inserted into the profile if you wish.
+<P>   
+Alternatively, simple Z-scores can be calculated, e.g. with ZPROF:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ZPROF &lt; pfsearch_all.sorted &gt; zprof.top
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+This gives:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Working ...
+<P>   
+ Nr of sequences scored : (      59021)
+ Average : ( 527.689)
+ St.dev. : ( 186.136)
+ Minimum : (  47.000)
+ Maximum : (3662.000)
+<P>   
+ Remove &quot;outliers&quot; and re-calc ...
+ Nr of sequences left : (      58998)
+ Average : ( 526.978)
+ St.dev. : ( 182.065)
+ Minimum : (  47.000)
+ Maximum : (1231.000)
+<P>   
+ Remove &quot;outliers&quot; and re-calc ...
+ Nr of sequences left : (      58998)
+ Average : ( 526.978)
+ St.dev. : ( 182.065)
+ Minimum : (  47.000)
+ Maximum : (1231.000)
+<P>   
+ Converged !
+<P>   
+MA   /NORMALIZATION: MODE=1; FUNCTION=LINEAR;
+MA     R1=    -2.89445400; R2=     0.00549255; TEXT ='Z-score';
+MA   /CUT_OFF: LEVEL=0; SCORE=    1255; N_SCORE=     4.00000000; MODE=1;
+<P>   
+ Z-score of  0 requires raw score      527
+ Z-score of  1 requires raw score      709
+ Z-score of  2 requires raw score      891
+ Z-score of  3 requires raw score     1073
+ Z-score of  4 requires raw score     1255
+ Z-score of  5 requires raw score     1437
+ Z-score of  6 requires raw score     1619
+ Z-score of  7 requires raw score     1801
+ Z-score of  8 requires raw score     1983
+ Z-score of  9 requires raw score     2166
+ Z-score of 10 requires raw score     2348
+ Z-score of 11 requires raw score     2530
+ Z-score of 12 requires raw score     2712
+ Z-score of 13 requires raw score     2894
+ Z-score of 14 requires raw score     3076
+ Z-score of 15 requires raw score     3258
+ Z-score of 16 requires raw score     3440
+ Z-score of 17 requires raw score     3622
+ Z-score of 18 requires raw score     3804
+ Z-score of 19 requires raw score     3986
+ Z-score of 20 requires raw score     4168
+ Z-score of 21 requires raw score     4350
+ Z-score of 22 requires raw score     4532
+ Z-score of 23 requires raw score     4714
+ Z-score of 24 requires raw score     4897
+ Z-score of 25 requires raw score     5079
+<P>   
+        1    17.22   3662 P07981|GUN1_TRIRE ENDOGLUCANASE EG-1 PRECURSOR (EC 3.2.1.4) (ENDO-1,4-BET
+        2    16.75   3577 P00725|GUX1_TRIRE EXOGLUCANASE I PRECURSOR (EC 3.2.1.91) (EXOCELLOBIOHYDR
+        3    16.64   3557 P19355|GUX1_TRIVI EXOGLUCANASE I PRECURSOR (EC 3.2.1.91) (EXOCELLOBIOHYDR
+        4    13.24   2937 P13860|GUX1_PHACH EXOGLUCANASE I PRECURSOR (EC 3.2.1.91) (EXOCELLOBIOHYDR
+        5    12.90   2876 P15828|GUX1_HUMGR EXOGLUCANASE I PRECURSOR (EC 3.2.1.91) (EXOCELLOBIOHYDR
+        6    12.68   2836 P23904|GUB_BACMA BETA-GLUCANASE PRECURSOR (EC 3.2.1.73) (ENDO-BETA-1,3-1,
+        7    12.56   2814 P38676|GUX1_NEUCR EXOGLUCANASE 1 PRECURSOR (EC 3.2.1.91) (EXOCELLOBIOHYDR
+        8    12.51   2805 Q06886|GUX1_PENJA EXOGLUCANASE I PRECURSOR (EC 3.2.1.91) (EXOCELLOBIOHYDR
+        9    12.16   2741 P45797|GUB_BACPO BETA-GLUCANASE PRECURSOR (EC 3.2.1.73) (ENDO-BETA-1,3-1,
+       10    11.89   2692 P46238|GUXC_FUSOX PUTATIVE EXOGLUCANASE TYPE C PRECURSOR (EC 3.2.1.91) (E
+       11    10.79   2492 P46237|GUNC_FUSOX PUTATIVE ENDOGLUCANASE TYPE C PRECURSOR (EC 3.2.1.4) (E
+       12     9.93   2334 P16404|LEC_ERYCO LECTIN PRECURSOR.
+       13     9.88   2326 P04957|GUB_BACSU BETA-GLUCANASE PRECURSOR (EC 3.2.1.73) (ENDO-BETA-1,3-1,
+       14     9.83   2317 P07980|GUB_BACAM BETA-GLUCANASE PRECURSOR (EC 3.2.1.73) (ENDO-BETA-1,3-1,
+       15     9.16   2194 P27051|GUB_BACLI BETA-GLUCANASE PRECURSOR (EC 3.2.1.73) (ENDO-BETA-1,3-1,
+       16     7.93   1971 P37073|GUB_BACBR BETA-GLUCANASE PRECURSOR (EC 3.2.1.73) (ENDO-BETA-1,3-1,
+       17     7.34   1863 P29716|GUB_CLOTM BETA-GLUCANASE PRECURSOR (EC 3.2.1.73) (ENDO-BETA-1,3-1,
+       18     4.80   1400 Q01806|LEC1_MEDTR LECTIN 1 PRECURSOR.
+       19     4.60   1364 P02867|LEC_PEA LECTIN PRECURSOR.
+       20     4.54   1354 P29257|LEC2_CYTSC 2-ACETAMIDO-2-DEOXY-D-GALACTOSE-BINDING SEED LECTIN II
+       21     4.45   1338 P53301|YG46_YEAST HYPOTHETICAL 52.8 KD PROTEIN IN BUB1-HIP1 INTERGENIC RE
+       22     4.41   1329 P05046|LEC_SOYBN LECTIN PRECURSOR.
+       23     4.34   1317 Q01807|LEC2_MEDTR TRUNCATED LECTIN 2 PRECURSOR.
+       24     3.87   1231 P33693|EXOK_RHIME SUCCINOGLYCAN BIOSYNTHESIS PROTEIN EXOK.
+<P>   
+ Z-score cut-off : (   4.000)
+ Nr of &quot;hits&quot;    : (         23)
+ % of database   : (   0.039)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+There is one protein in this list of those that have Z-score &gt; 4 which is
+not an obvious hit: YG46_YEAST HYPOTHETICAL 52.8 KD PROTEIN.
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ID   YG46_YEAST     STANDARD;      PRT;   507 AA.
+AC   P53301;
+DT   01-OCT-1996 (REL. 34, CREATED)
+DT   01-OCT-1996 (REL. 34, LAST SEQUENCE UPDATE)
+DT   01-FEB-1997 (REL. 35, LAST ANNOTATION UPDATE)
+DE   HYPOTHETICAL 52.8 KD PROTEIN IN BUB1-HIP1 INTERGENIC REGION.
+GN   YGR189C OR G7553.
+OS   SACCHAROMYCES CEREVISIAE (BAKER'S YEAST).
+OC   EUKARYOTA; FUNGI; ASCOMYCOTINA; HEMIASCOMYCETES.
+RN   [1]
+RP   SEQUENCE FROM N.A.
+RC   STRAIN=S288C;
+RX   MEDLINE; 97279231. [NCBI, Geneva]
+RA   ARROYO J., GARCIA-GONZALEZ M., GARCIA-SAEZ M.I., SANCHEZ-PEREZ M.,
+RA   NOMBELA C.;
+RL   YEAST 13:357-363(1997).
+CC   -!- SIMILARITY: SOME, TO YEAST UTR2.
+DR   EMBL; Z72974; E243566; -. [EMBL / GenBank / DDBJ] [CoDingSequence]
+DR   EMBL; X99074; E252633; -. [EMBL / GenBank / DDBJ] [CoDingSequence]
+DR   PRODOM [Domain structure / List of seq. sharing at least 1 domain]
+DR   SWISS-2DPAGE; GET REGION ON 2D PAGE.
+KW   HYPOTHETICAL PROTEIN.
+FT   DOMAIN       63     66       POLY-SER.
+FT   DOMAIN      301    310       POLY-SER.
+FT   DOMAIN      345    357       POLY-SER.
+FT   DOMAIN      387    391       POLY-SER.
+FT   DOMAIN      467    470       POLY-SER.
+SQ   SEQUENCE   507 AA;  52757 MW;  4CC1838E CRC32;
+     MKVLDLLTVL SASSLLSTFA AAESTATADS TTAASSTASC NPLKTTGCTP DTALATSFSE
+     DFSSSSKWFT DLKHAGEIKY GSDGLSMTLA KRYDNPSLKS NFYIMYGKLE VILKAANGTG
+     IVSSFYLQSD DLDEIDIEWV GGDNTQFQSN FFSKGDTTTY DRGEFHGVDT PTDKFHNYTL
+     DWAMDKTTWY LDGESVRVLS NTSSEGYPQS PMYLMMGIWA GGDPDNAAGT IEWAGGETNY
+     NDAPFTMYIE KVIVTDYSTG KKYTYGDQSG SWESIEADGG SIYGRYDQAQ EDFAVLANGG
+     SISSSSTSSS TVSSSASSTV SSSVSSTVSS SASSTVSSSV SSTVSSSSSV SSSSSTSPSS
+     STATSSKTLA SSSVTTSSSI SSFEKQSSSS SKKTVASSST SESIISSTKT PATVSSTTRS
+     TVAPTTQQSS VSSDSPVQDK GGVATSSNDV TSSTTQISSK YTSTIQSSSS EASSTNSVQI
+     SNGADLAQSL PREGKLFSVL VALLALL
+//
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+The similarity of this sequence to those used to construct the profile is
+not noted in the entry. However, the link to the PRODOM database
+reveals similarities in particular to several beta-glucanases. The
+entry EXOK_RHIME also shows similarities, and this is also the first
+protein to have a Z-score below 4.0. Let's see what some of the other
+proteins with Z-score &lt; 4.0 are:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+  1231 P33693|EXOK_RHIME SUCCINOGLYCAN BIOSYNTHESIS PROTEIN EXOK.
+  1229 P02871|LEC_VICFA FAVIN (LECTIN).
+  1219 P17989|GUB_FIBSU BETA-GLUCANASE PRECURSOR (EC 3.2.1.73) (ENDO-BETA-1,3-1,4 GLUCANASE) (1,3-1,4-BETA-D-GLUCAN 4-GLUCANOHYDROLA
+  1199 P22972|LEC1_ULEEU ANTI-H(O) LECTIN I (UEA-I).
+  1198 P16030|LEC_BAUPU LECTIN PRECURSOR.
+  1183 P23558|LEC1_LABAL LECTIN I (SEED LECTIN ANTI-H(O)) (LAA-I).
+  1167 P22973|LEC2_ULEEU ANTI-H(O) LECTIN II (UEA-II).
+  1131 P35694|BRU1_SOYBN BRASSINOSTEROID-REGULATED PROTEIN BRU1.
+  1125 P15231|PHAM_PHAVU LEUCOAGGLUTINATING PHYTOHEMAGGLUTININ PRECURSOR (PHA-L).
+  1123 P16349|LEC_LATSP LECTIN.
+  1115 P05088|PHAE_PHAVU ERYTHROAGGLUTINATING PHYTOHEMAGGLUTININ PRECURSOR (PHA-E).
+  1115 P02873|LEC_PHAVU LECTIN PRECURSOR (ALPHA-AMYLASE INHIBITOR).
+  1111 P39795|TREC_BACSU TREHALOSE-6-PHOSPHATE HYDROLASE (EC 3.2.1.93) (ALPHA,ALPHA- PHOSPHOTREHALASE).
+  1110 P02874|LEC_ONOVI LECTIN.
+  1102 P05087|PHAL_PHAVU LEUCOAGGLUTINATING PHYTOHEMAGGLUTININ PRECURSOR (PHA-L).
+  1082 P24806|MER5_ARATH MERI-5 PROTEIN.
+  1074 P45798|GUB_RHOMR BETA-GLUCANASE PRECURSOR (EC 3.2.1.73) (ENDO-BETA-1,3-1,4 GLUCANASE) (1,3-1,4-BETA-D-GLUCAN 4-GLUCANOHYDROLA
+  1066 P02870|LEC_LENCU LECTIN.
+  1065 P02866|CONA_CANEN CONCANAVALIN A PRECURSOR (CON A).
+  1034 P19588|LEC5_DOLBI LECTIN DB58 PRECURSOR.
+  1031 P14894|CONA_CANGL CONCANAVALIN A PRECURSOR (CON A).
+  1030 P24146|LEC4_GRISI LECTIN IV (GS4).
+  1029 P43478|CGKA_ALTCA KAPPA-CARRAGEENASE PRECURSOR (EC 3.2.1.83).
+  1027 P32623|UTR2_YEAST UTR2 PROTEIN (UNKNOWN TRANSCRIPT 2 PROTEIN).
+  1024 P05045|LEC1_DOLBI SEED LECTIN SUBUNITS I AND II PRECURSOR.
+  1024 P04122|LECB_LATOC LECTIN BETA-1 AND BETA-2 CHAINS.
+  1019 P07067|VG37_BPT2 TAIL FIBER PROTEIN GP37.
+  1018 P20847|GUN1_BUTFI ENDOGLUCANASE 1 (EC 3.2.1.4) (ENDO-1,4-BETA-GLUCANASE) (CELLULASE).
+  1002 P32818|AMYM_BACAD MALTOGENIC ALPHA-AMYLASE PRECURSOR (EC 3.2.1.133) (GLUCAN 1,4-ALPHA- MALTOHYDROLASE).
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+In fact, many of these sequences are &quot;hits&quot;: more beta-glucanases and
+lectins, and concanavalins. It therefore appears not impossible that
+some of the &quot;unknown&quot; hits may also adopt a beta-sandwich fold.
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S15">7.6 </A>Refinement</H3> 
+<P>   
+We can try to &quot;refine&quot; the profile by adding more sequences to those
+that were used to generate the original profile. Let's first include
+a scoring formula into the profile, based on the output of ZPROF
+(except that we use a cut-off Z-score of 3.0 instead of 4.0):
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+MA   /NORMALIZATION: MODE=1; FUNCTION=LINEAR;
+MA     R1=    -2.89445400; R2=     0.00549255; TEXT ='Z-score';
+MA   /CUT_OFF: LEVEL=0; SCORE=    1073; N_SCORE=     3.00000000; MODE=1;
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+Now scan the database again with the original profile, but use the &quot;-ry&quot;
+flags for the &quot;pfsearch&quot; program, so it will only display hits as
+well as an alignment of each sequence with the profile:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+../pftools/pfsearch -ry aligned.prf /home/gerard/lib/sprot.dat | &amp; tee strupro.hits
+  1131 pos.     28 -   250 P35694|BRU1_SOYBN BRASSINOSTEROID-REGULATED PROTEIN BRU1.
+#
+# P       4 CSXDNWTVADXNGVTTS----------------XSLQLGQITQ-XNVCARYYYMNXYKMF    -164
+# S      28 CA--GSFYQD-----FDltwggdrakifnggqlLSLSLDKVSGsGFKSKKEYLFG-----    -209
+#
+# P      47 HLWXGLYSFDVDPAEQP------XGLNGSFFMGPM-XCCDEMDIEFDNXPHIALNPHXCD    -111
+# S      76 RID----------MQLKlvagnsAGTVTAYYLSSQgPTHDEIDFEFLG----NLSGD---    -166
+#
+# P     100 SGGCEWNPY--XTGPFS-------------XLDTSKFHTVVFQWDPSXKITRYYQ----X     -70
+# S     119 -------PYilHTNIFTqgkgnreqqfylwFDPTRNFHTYSIIWKPQ-HIIFLVDntpiR    -113
+#
+# P     141 TFPQAXNTLTAXGLANMPKAPXSWMDIMMSLWNGTXFSNPWLD-----------------     -27
+# S     171 VFKNA-EPLGV----PFPKNQ--PMRIYSSLWNAD----DWATrgglvktdwskapftay     -65
+#
+# P     183 -----------------XGAPNDAEXNDAPNTHVVYS      -7
+# S     220 yrnfkaiefsskssisnSGAEYEAN------ELDAYS     -34
+#
+[...]
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+The output file can be converted into a mutliple-sequence alignment
+file with PRF2MSEQ, which can in turn serve as input to MSEQPRO to
+generate a new profile using all matching sequences:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+PRF2MSEQ &lt; strupro.hits &gt; hits.mseq
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+The multiple-sequence alignment file may look as follows:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+!   1131 pos.     28 -   250 P35694|BRU1_SOYBN BRASSINOSTEROID-REGULATED PROTEIN BRU1.
+   CA  GSFYQD     FD SLSLDKVSG FKSKKEYLFG     RID          MQLK GTVTAYYLSSQ THDEIDFEFLG    NLSGD          PY TNIFT DPTRNFHTYSIIWKPQ HIIFLVD VFKNA EPLGV    PFPKNQ  PMRIYSSLWNAD    DWAT GAEYEAN      ELDAYS
+!   1231 pos.     64 -   268 P33693|EXOK_RHIME SUCCINOGLYCAN BIOSYNTHESIS PROTEIN EXOK.
+   CT   WSKKQ   VKTV ILELTFEEK FACGEIQTRK   RFGYG  TYEARIKAADGS GLNSAFFTYIG PHDEIDFEVLG AKVQINQY SAKGGNEFLAD  VPGG  ANQGFNDYAFVWEKN RIRYYVN     G HEVTD  PAKIPVNA   QKIFFSLWGTD TLTDWMG GDECQFA AQS
+!   2317 pos.     40 -   236 P07980|GUB_BACAM BETA-GLUCANASE PRECURSOR (EC 3.2.1.73) (ENDO-BETA-1,3-1,4 GLUCANASE) (1,3-1,4-BETA-D-GLU
+    S DGYSNGD NNVSMT EMRLALTSP FDCGENRSVQ   TYGYG  LYEVRMKPAKNT GIVSSFFTYTG PWDEIDIEFLG TKVQFNYY NGAGNHEKFAD    LG DAANAYHTYAFDWQPN SIKWYVD     G HTATT    QIPAAP   GKIMMNLWNGT GVDDWLG  SYNGVN     PIYAHYDWMRY
+!   1971 pos.     41 -   251 P37073|GUB_BACBR BETA-GLUCANASE PRECURSOR (EC 3.2.1.73) (ENDO-BETA-1,3-1,4 GLUCANASE) (1,3-1,4-BETA-D-GLU
+ FYES      FD AGVWTN RLTIAKKTT   SARNYKAG NDFYHYG  LFEVSMKPAKVE GTVSSFFTYTG PWDEIDIEFLG TRIQFNYF NGVGGNEFYYD    LG DASESFNTYAFEWRED SITWYVN   GEA HTATE    NIPQTP   QKIMMNLWPGV GVDGWTG      VF GDNTPVYSYYDWVRYTP
+<P>   
+[...]
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+Now run MSEQPRO with these aligned sequences as input:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Random-number seed ? (  123456)
+ Random-number seed : (  123456)
+ =&gt; Random number generator initialised with seed :     123456
+<P>   
+ Generating random sequence ...
+ Target composition    : (   0.081    0.044    0.046    0.058    0.019
+  0.058    0.037    0.080    0.022    0.053    0.081    0.059    0.020
+  0.040    0.047    0.068    0.063    0.016    0.038    0.071)
+ Working ...
+ Actual composition    : (   0.081    0.044    0.046    0.058    0.019
+  0.057    0.037    0.080    0.022    0.053    0.081    0.060    0.020
+  0.040    0.046    0.068    0.063    0.015    0.038    0.070)
+<P>   
+ Library file with matrix ? (/nfs/public/lib/strupro_blosum45.lib) ../strupro_blosum45.lib
+ Library file with matrix : (../strupro_blosum45.lib)
+ Comment : (! BLOSUM 45 matrix made from BLOCKS v. 5.0 and scaled in half-
+  bits.)
+ Comment : (! ARNDCQEGHILKMFPSTWYVBZX)
+ Comment : (! integer matrix)
+<P>   
+ Min fragment length ? (       5)
+ Min fragment length : (       5)
+<P>   
+ Sequences may be weighted:
+ U = uniform weights
+ S = sequence distance weights
+ Weighting scheme ? (S)
+ Weighting scheme : (S)
+<P>   
+ Name of sequence file ? (aligned.seq) hits.mseq
+ Name of sequence file : (hits.mseq)
+<P>   
+ Name of profile file ? (aligned.prf) hits.prf
+ Name of profile file : (hits.prf)
+<P>   
+ Remark : (!   1131 pos.     28 -   250 P35694|BRU1_SOYBN BRASSINOSTEROID-
+  REGULATED PROTEIN BRU1.)
+ Remark : (!   1231 pos.     64 -   268 P33693|EXOK_RHIME SUCCINOGLYCAN
+  BIOSYNTHESIS PROTEIN EXOK.)
+<P>   
+[...]
+<P>   
+ Remark : (!   1338 pos.     23 -   287 P53301|YG46_YEAST HYPOTHETICAL
+  52.8 KD PROTEIN IN BUB1-HIP1 INTERGENIC REGION.)
+ Nr of sequences : (         40)
+ Nr of residues  : (        209)
+ SEQ &gt; (---CA--GSFYQD-----FD-SLSLDKVSG-FKSKKEYLFG-----RID----------MQLK-
+  GTVTAYYLSSQ-THDEIDFEFLG----NLSGD----------PY-TNIFT-DPTRNFHTYSIIWKPQ-
+  HIIFLVD-VFKNA-EPLGV----PFPKNQ--PMRIYSSLWNAD----DWAT-GAEYEAN------ELDAYS)
+ SEQ &gt; (---CT---WSKKQ---VKTV-ILELTFEEK-FACGEIQTRK---RFGYG--TYEARIKAADGS-
+  GLNSAFFTYIG-PHDEIDFEVLG-AKVQINQY-SAKGGNEFLAD--VPGG--ANQGFNDYAFVWEKN-
+  RIRYYVN-----G-HEVTD--PAKIPVNA---QKIFFSLWGTD-TLTDWMG-GDECQFA-AQS)
+<P>   
+[...]
+<P>   
+ SEQ &gt; (--EST-DSTTAAS-NPLKTT-ALATSFSED-FSSSSKWFTD-AGEIKYG-GKLEVILKAANGT-
+  GIVSSFYLQSD-DLDEIDIEWVG-DNTQFQSN-----------F----FS-TPTDKFHNYTLDWAMD-
+  KTTWYLD-SVRVL-NTSSE------GYPQ-SPMYLMMGIWAGG-GTIEWAG-GSWESIE-ADGGSIYGRYD)
+<P>   
+ Nr of positions without INDELs : (         60)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ New conserved stretch !
+ Length : (         11)
+ Calculating sequence distances ...
+ Weights converged : (     110000)
+ Largest shift (%) : (   0.865)
+ Weights      : (   0.028    0.047    0.007    0.007    0.007    0.013
+  0.013    0.007    0.007    0.044    0.062    0.048    0.046    0.011
+  0.011    0.023    0.023    0.011    0.011    0.024    0.023    0.021
+  0.011    0.019    0.021    0.037    0.022    0.051    0.017    0.032
+  0.016    0.036    0.028    0.013    0.028    0.016    0.014    0.014
+  0.087    0.045)
+<P>   
+ AA-TYPE :  ALA ARG ASN ASP CYS GLU GLN GLY HIS ILE LEU LYS MET PHE PRO SER THR TRP TYR VAL
+ |TPPPPQQPPPDCCCCCCCCCSSSSSSKSTNTKGTTNNNHD|
+ PROFILE :   -7 -11   3   1   6  -7  -4 -13  -4 -25 -25  -9 -18 -24  -5   5   1 -37 -19 -19
+ |HHWWWWWWWWNCCCCCCCCCNIYNINNYIETGDAWAFFYL|
+ PROFILE :  -12 -15  -5 -15   2 -12 -17 -18  -3 -14 -12 -16 -10  -5 -27 -12 -11   0   6 -15
+ |DDDDDDDDDVGNNSSATSSPQQQQQQQQHTQDQQDHHHDD|
+ PROFILE :  -10  -7  11  27 -26   2  19  -8   2 -28 -23  -2 -20 -29  -8   3  -5 -34 -17 -23
+ |EEEEEEEEEEEEEEEEEEEEITTITIVTTVTTVTETTTSE|
+ PROFILE :   -5  -2  -3  -8 -22  25   3 -21  -5  -8 -13  -2  -2 -25 -12   6   7 -25 -10 -10
+ |IIIIIIIIIVIMLMMMMMMMIVVVVIVLVVVVVVIVVVMI|
+ PROFILE :   -7 -21 -24 -33 -20 -18 -27 -31 -22  33  20 -22  27   1 -24 -18  -7 -23  -3  30
+ |DDDDDDDDDDDDDDDDDDDDAAAAAAAGAAATAADAAATD|
+ PROFILE :    5 -14   7  29 -21  -5   5  -4 -10 -27 -21  -5 -21 -30 -11   5   0 -32 -19 -17
+ |FFIIIIIIIIIIIIIIIIIIVVVVVVVVVVVVVVFVVVVI|
+ PROFILE :   -6 -24 -25 -35 -19 -27 -30 -34 -29  35  14 -25  13   8 -26 -15  -5 -22  -2  36
+ |EEEEEEEEEEMLWWWWWWWWEEEEEEEEEEEEEEEEEEGE|
+ PROFILE :  -11   0  -9 -11 -32  33   4 -13  -1 -17 -15  -1   0 -26 -16  -9 -14   7  -4 -26
+ |FVFFFFFFFVEEEEEEEEEEFIFFIFFFFFFFFFFFFFEW|
+ PROFILE :  -14 -10 -15 -25 -24  -2 -12 -26 -11  -3  -2 -14   1  23 -22 -13 -10   1  11  -6
+ |LLLLLLLLLLHGAAAAAAAADDDDDDDDDDDDDDLDDDMV|
+ PROFILE :   -4 -14  -2  13 -23  -7  -2 -11  -3 -14  -3 -11  -4 -19 -17  -7  -9 -29 -12 -10
+ |GGGGGGGGGGVNNNNNNNNNTTTTTSTTTTTTTTGTTTSG|
+ PROFILE :   -1 -11  12  -4 -17 -10 -10   9 -13 -18 -20 -11 -15 -18 -16  13  15 -31 -18 -12
+<P>   
+ Random sequence tests :      1999990
+ Average, St.dev.      :        -93.2        46.5
+ Minimum, Maximum      :       -270.0       149.0
+ Z-min, Z-max          :        -3.80        5.20
+<P>   
+ Mol #   1 Raw score =          182 Z-score =     5.91
+ Mol #   2 Raw score =          147 Z-score =     5.16
+ Mol #   3 Raw score =          206 Z-score =     6.43
+ Mol #   4 Raw score =          206 Z-score =     6.43
+ Mol #   5 Raw score =          206 Z-score =     6.43
+ Mol #   6 Raw score =          207 Z-score =     6.45
+ Mol #   7 Raw score =          207 Z-score =     6.45
+ Mol #   8 Raw score =          206 Z-score =     6.43
+ Mol #   9 Raw score =          206 Z-score =     6.43
+ Mol #  10 Raw score =          124 Z-score =     4.67
+ Mol #  11 Raw score =           93 Z-score =     4.00
+ Mol #  12 Raw score =          119 Z-score =     4.56
+ Mol #  13 Raw score =          141 Z-score =     5.03
+ Mol #  14 Raw score =          140 Z-score =     5.01
+ Mol #  15 Raw score =          140 Z-score =     5.01
+ Mol #  16 Raw score =          127 Z-score =     4.73
+ Mol #  17 Raw score =          132 Z-score =     4.84
+ Mol #  18 Raw score =          140 Z-score =     5.01
+ Mol #  19 Raw score =          140 Z-score =     5.01
+ Mol #  20 Raw score =          129 Z-score =     4.78
+ Mol #  21 Raw score =          169 Z-score =     5.63
+ Mol #  22 Raw score =          146 Z-score =     5.14
+ Mol #  23 Raw score =          192 Z-score =     6.13
+ Mol #  24 Raw score =          166 Z-score =     5.57
+ Mol #  25 Raw score =          146 Z-score =     5.14
+ Mol #  26 Raw score =          167 Z-score =     5.59
+ Mol #  27 Raw score =          150 Z-score =     5.23
+ Mol #  28 Raw score =          173 Z-score =     5.72
+ Mol #  29 Raw score =          151 Z-score =     5.25
+ Mol #  30 Raw score =          131 Z-score =     4.82
+ Mol #  31 Raw score =          171 Z-score =     5.68
+ Mol #  32 Raw score =          157 Z-score =     5.38
+ Mol #  33 Raw score =          136 Z-score =     4.93
+ Mol #  34 Raw score =          170 Z-score =     5.66
+ Mol #  35 Raw score =          185 Z-score =     5.98
+ Mol #  36 Raw score =          155 Z-score =     5.33
+ Mol #  37 Raw score =          162 Z-score =     5.48
+ Mol #  38 Raw score =          162 Z-score =     5.48
+ Mol #  39 Raw score =           92 Z-score =     3.98
+ Mol #  40 Raw score =          171 Z-score =     5.68
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Nr of residues in profile : (         43)
+<P>   
+ Sequence identity for these residues only:
+ % Seq id mol #   1 -&gt;  100.0  30.2  32.6  37.2  32.6  32.6  32.6  32.6  32.6  32.6
+                         27.9  23.3  23.3  20.9  23.3  18.6  23.3  23.3  23.3  18.6
+                         16.3   4.7  11.6  16.3   7.0  16.3  11.6   7.0  11.6  14.0
+                          9.3  11.6  11.6   9.3  55.8  11.6  11.6  11.6  11.6  30.2
+ % Seq id mol #   2 -&gt;   30.2 100.0  58.1  48.8  58.1  51.2  53.5  58.1  55.8  37.2
+                         25.6   9.3  16.3  16.3  16.3  16.3  16.3  16.3  16.3  16.3
+                         11.6  16.3  14.0  14.0  16.3  18.6  16.3  14.0  11.6  16.3
+                         11.6   9.3  16.3  14.0  34.9  11.6  11.6  14.0  11.6  27.9
+<P>   
+[...]
+<P>   
+ % Seq id mol #  40 -&gt;   30.2  27.9  41.9  39.5  41.9  44.2  44.2  41.9  41.9  39.5
+                         23.3  20.9  16.3  23.3  18.6  14.0  16.3  14.0  14.0  16.3
+                         14.0   9.3  11.6   9.3   9.3  16.3  11.6   9.3  11.6  14.0
+                          9.3  14.0   9.3   7.0  34.9   9.3   9.3   9.3  18.6 100.0
+<P>   
+ Average sequence identity (%) : (  27.961)
+ St. dev.                      : (  24.095)
+ Minimum                       : (   2.326)
+ Maximum                       : ( 100.000)
+<P>   
+ Sum of maximum random scores : (        746)
+ Sum AVE+3SIGMA random scores : (        243)
+<P>   
+ Score for molecule   1 =        513
+ Score for molecule   2 =        487
+ Score for molecule   3 =        617
+ Score for molecule   4 =        589
+ Score for molecule   5 =        617
+ Score for molecule   6 =        615
+ Score for molecule   7 =        626
+ Score for molecule   8 =        617
+ Score for molecule   9 =        592
+ Score for molecule  10 =        518
+ Score for molecule  11 =        454
+ Score for molecule  12 =        549
+ Score for molecule  13 =        516
+ Score for molecule  14 =        576
+ Score for molecule  15 =        586
+ Score for molecule  16 =        544
+ Score for molecule  17 =        561
+ Score for molecule  18 =        597
+ Score for molecule  19 =        597
+ Score for molecule  20 =        492
+ Score for molecule  21 =        596
+ Score for molecule  22 =        629
+ Score for molecule  23 =        564
+ Score for molecule  24 =        665
+ Score for molecule  25 =        602
+ Score for molecule  26 =        620
+ Score for molecule  27 =        600
+ Score for molecule  28 =        626
+ Score for molecule  29 =        617
+ Score for molecule  30 =        636
+ Score for molecule  31 =        640
+ Score for molecule  32 =        537
+ Score for molecule  33 =        632
+ Score for molecule  34 =        606
+ Score for molecule  35 =        553
+ Score for molecule  36 =        608
+ Score for molecule  37 =        610
+ Score for molecule  38 =        586
+ Score for molecule  39 =        435
+ Score for molecule  40 =        526
+<P>   
+ Minimum raw score : (        400)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+Now scan the database again with the new profile to see what comes up:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+../pftools/pfsearch -a hits.prf /home/gerard/lib/sprot.dat | &amp; tee pfs_hits.log
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+Sorting the resulting file and running ZPROF again yields:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Working ...
+<P>   
+ Nr of sequences scored : (      59021)
+ Average : ( 178.673)
+ St.dev. : (  44.654)
+ Minimum : (  26.000)
+ Maximum : ( 594.000)
+<P>   
+ Remove &quot;outliers&quot; and re-calc ...
+ Nr of sequences left : (      58969)
+ Average : ( 178.394)
+ St.dev. : (  43.636)
+ Minimum : (  26.000)
+ Maximum : ( 355.000)
+<P>   
+ Remove &quot;outliers&quot; and re-calc ...
+ Nr of sequences left : (      58967)
+ Average : ( 178.388)
+ St.dev. : (  43.625)
+ Minimum : (  26.000)
+ Maximum : ( 351.000)
+<P>   
+ Remove &quot;outliers&quot; and re-calc ...
+ Nr of sequences left : (      58967)
+ Average : ( 178.388)
+ St.dev. : (  43.625)
+ Minimum : (  26.000)
+ Maximum : ( 351.000)
+<P>   
+ Converged !
+<P>   
+MA   /NORMALIZATION: MODE=1; FUNCTION=LINEAR;
+MA     R1=    -4.08913898; R2=     0.02292266; TEXT ='Z-score';
+MA   /CUT_OFF: LEVEL=0; SCORE=     353; N_SCORE=     4.00000000; MODE=1;
+<P>   
+ Z-score of  0 requires raw score      178
+ Z-score of  1 requires raw score      222
+ Z-score of  2 requires raw score      266
+ Z-score of  3 requires raw score      309
+ Z-score of  4 requires raw score      353
+ Z-score of  5 requires raw score      397
+ Z-score of  6 requires raw score      440
+ Z-score of  7 requires raw score      484
+ Z-score of  8 requires raw score      527
+ Z-score of  9 requires raw score      571
+ Z-score of 10 requires raw score      615
+ Z-score of 11 requires raw score      658
+ Z-score of 12 requires raw score      702
+ Z-score of 13 requires raw score      746
+ Z-score of 14 requires raw score      789
+ Z-score of 15 requires raw score      833
+ Z-score of 16 requires raw score      876
+ Z-score of 17 requires raw score      920
+ Z-score of 18 requires raw score      964
+ Z-score of 19 requires raw score     1007
+ Z-score of 20 requires raw score     1051
+ Z-score of 21 requires raw score     1095
+ Z-score of 22 requires raw score     1138
+ Z-score of 23 requires raw score     1182
+ Z-score of 24 requires raw score     1225
+ Z-score of 25 requires raw score     1269
+<P>   
+        1     9.53    594 P29257|LEC2_CYTSC 2-ACETAMIDO-2-DEOXY-D-GALACTOSE-BINDING SEED LECTIN II
+        2     9.21    580 P45797|GUB_BACPO BETA-GLUCANASE PRECURSOR (EC 3.2.1.73) (ENDO-BETA-1,3-1,
+        3     9.00    571 P27051|GUB_BACLI BETA-GLUCANASE PRECURSOR (EC 3.2.1.73) (ENDO-BETA-1,3-1,
+        4     9.00    571 P07980|GUB_BACAM BETA-GLUCANASE PRECURSOR (EC 3.2.1.73) (ENDO-BETA-1,3-1,
+        5     9.00    571 P04957|GUB_BACSU BETA-GLUCANASE PRECURSOR (EC 3.2.1.73) (ENDO-BETA-1,3-1,
+        6     8.95    569 P23904|GUB_BACMA BETA-GLUCANASE PRECURSOR (EC 3.2.1.73) (ENDO-BETA-1,3-1,
+        7     8.79    562 P02874|LEC_ONOVI LECTIN.
+        8     8.79    562 P02867|LEC_PEA LECTIN PRECURSOR.
+        9     8.77    561 P04122|LECB_LATOC LECTIN BETA-1 AND BETA-2 CHAINS.
+       10     8.66    556 P05046|LEC_SOYBN LECTIN PRECURSOR.
+       11     8.54    551 P16349|LEC_LATSP LECTIN.
+       12     8.47    548 Q01806|LEC1_MEDTR LECTIN 1 PRECURSOR.
+       13     8.45    547 P37073|GUB_BACBR BETA-GLUCANASE PRECURSOR (EC 3.2.1.73) (ENDO-BETA-1,3-1,
+       14     8.43    546 P29716|GUB_CLOTM BETA-GLUCANASE PRECURSOR (EC 3.2.1.73) (ENDO-BETA-1,3-1,
+       15     8.43    546 P16404|LEC_ERYCO LECTIN PRECURSOR.
+       16     8.40    545 P22973|LEC2_ULEEU ANTI-H(O) LECTIN II (UEA-II).
+       17     8.13    533 P05087|PHAL_PHAVU LEUCOAGGLUTINATING PHYTOHEMAGGLUTININ PRECURSOR (PHA-L)
+       18     8.04    529 P05088|PHAE_PHAVU ERYTHROAGGLUTINATING PHYTOHEMAGGLUTININ PRECURSOR (PHA-
+       19     7.99    527 Q01807|LEC2_MEDTR TRUNCATED LECTIN 2 PRECURSOR.
+       20     7.99    527 P19588|LEC5_DOLBI LECTIN DB58 PRECURSOR.
+       21     7.99    527 P05045|LEC1_DOLBI SEED LECTIN SUBUNITS I AND II PRECURSOR.
+       22     7.97    526 P23558|LEC1_LABAL LECTIN I (SEED LECTIN ANTI-H(O)) (LAA-I).
+       23     7.97    526 P02871|LEC_VICFA FAVIN (LECTIN).
+       24     7.88    522 P02870|LEC_LENCU LECTIN.
+       25     7.76    517 P24146|LEC4_GRISI LECTIN IV (GS4).
+       26     7.76    517 P16030|LEC_BAUPU LECTIN PRECURSOR.
+       27     7.69    514 P24806|MER5_ARATH MERI-5 PROTEIN.
+       28     7.58    509 P15231|PHAM_PHAVU LEUCOAGGLUTINATING PHYTOHEMAGGLUTININ PRECURSOR (PHA-L)
+       29     7.53    507 P22972|LEC1_ULEEU ANTI-H(O) LECTIN I (UEA-I).
+       30     7.28    496 P53301|YG46_YEAST HYPOTHETICAL 52.8 KD PROTEIN IN BUB1-HIP1 INTERGENIC RE
+       31     7.10    488 P35694|BRU1_SOYBN BRASSINOSTEROID-REGULATED PROTEIN BRU1.
+       32     6.96    482 P02873|LEC_PHAVU LECTIN PRECURSOR (ALPHA-AMYLASE INHIBITOR).
+       33     6.59    466 P17989|GUB_FIBSU BETA-GLUCANASE PRECURSOR (EC 3.2.1.73) (ENDO-BETA-1,3-1,
+       34     6.50    462 P07981|GUN1_TRIRE ENDOGLUCANASE EG-1 PRECURSOR (EC 3.2.1.4) (ENDO-1,4-BET
+       35     6.41    458 P33693|EXOK_RHIME SUCCINOGLYCAN BIOSYNTHESIS PROTEIN EXOK.
+       36     6.32    454 P38676|GUX1_NEUCR EXOGLUCANASE 1 PRECURSOR (EC 3.2.1.91) (EXOCELLOBIOHYDR
+       37     6.27    452 P19355|GUX1_TRIVI EXOGLUCANASE I PRECURSOR (EC 3.2.1.91) (EXOCELLOBIOHYDR
+       38     6.27    452 P00725|GUX1_TRIRE EXOGLUCANASE I PRECURSOR (EC 3.2.1.91) (EXOCELLOBIOHYDR
+       39     6.20    449 P38662|LECA_DOLLA LECTIN.
+       40     6.20    449 P19664|LEC_LOTTE ANTI-H(O) LECTIN (LTA).
+       41     6.04    442 P15828|GUX1_HUMGR EXOGLUCANASE I PRECURSOR (EC 3.2.1.91) (EXOCELLOBIOHYDR
+       42     5.72    428 P45798|GUB_RHOMR BETA-GLUCANASE PRECURSOR (EC 3.2.1.73) (ENDO-BETA-1,3-1,
+       43     5.70    427 P13860|GUX1_PHACH EXOGLUCANASE I PRECURSOR (EC 3.2.1.91) (EXOCELLOBIOHYDR
+       44     5.49    418 P42088|LEC_BOWMI LECTIN (AGGLUTININ) (BMA).
+       45     5.29    409 P19329|ARC1_PHAVU ARCELIN-1 PRECURSOR.
+       46     5.29    409 P02872|LECG_ARAHY GALACTOSE-BINDING LECTIN PRECURSOR (AGGLUTININ) (PNA).
+       47     5.13    402 Q06886|GUX1_PENJA EXOGLUCANASE I PRECURSOR (EC 3.2.1.91) (EXOCELLOBIOHYDR
+       48     5.08    400 P46237|GUNC_FUSOX PUTATIVE ENDOGLUCANASE TYPE C PRECURSOR (EC 3.2.1.4) (E
+       49     4.90    392 P19330|ARC2_PHAVU ARCELIN-2 PRECURSOR.
+       50     4.85    390 P32623|UTR2_YEAST UTR2 PROTEIN (UNKNOWN TRANSCRIPT 2 PROTEIN).
+       51     4.64    381 P39795|TREC_BACSU TREHALOSE-6-PHOSPHATE HYDROLASE (EC 3.2.1.93) (ALPHA,AL
+       52     4.48    374 P16270|LECN_PEA NONSEED LECTIN PRECURSOR.
+       53     4.05    355 P14894|CONA_CANGL CONCANAVALIN A PRECURSOR (CON A).
+       54     4.05    355 P02866|CONA_CANEN CONCANAVALIN A PRECURSOR (CON A).
+       55     3.96    351 P49254|CRP_CAVPO C-REACTIVE PROTEIN PRECURSOR.
+<P>   
+ Z-score cut-off : (   4.000)
+ Nr of &quot;hits&quot;    : (         54)
+ % of database   : (   0.091)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+Now it seems that virtually all sequences with Z &gt; 4 are real hits (true positives).
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H8">8 </A>LITERATURE</H2> </CENTER>
+<P>   
+The following papers may be of interest:
+<P>   
+* Bairoch, A. (1993). The PROSITE dictionary of sites and patterns
+in proteins, its current status. Nucl. Acids Res. 21, 3097-3103.
+ <BR> * Bairoch, A. and Bucher, P. (1994). PROSITE: recent developments.
+Nucl. Acids Res. 22, 3583-3589.
+ <BR> * Gonnet, G.H., Cohen, M.A. and Benner, S.A. (1992). Exhaustive
+matching of the entire protein sequence database. Science 256,
+1443-1445.
+ <BR> * Gribskov, M., McLachlan, A.D. and Eisenberg, D. (1987). Profile
+analysis: detection of distantly related proteins. Proc. Natl.
+Acad. Sci. USA 84, 4355-4358.
+ <BR> * Gribskov, M., L&uuml;thy, R. and Eisenberg, D. (1990). Profile analysis.
+Meth. Enzymol. 183, 146-159.
+ <BR> * Henikoff, S. and Henikoff, J.G. (1992). Amino acid substitution
+matrices from protein blocks. Proc. Natl. Acad. Sci. USA 89,
+10915-10919.
+ <BR> * L&uuml;thy, R., Xenarios, I. and Bucher, P. (1994). Improving the
+sensitivity of the sequence profile method. Prot. Sci. 3, 139-146.
+ <BR> * Sibbald, P.R. and Argos, P. (1990). Weighting aligned protein or
+nucleic acid sequences to correct for unequal representation.
+J. Mol. Biol. 216, 813-818.
+<HR NOSHADE>    <A HREF="http://xray.bmc.uu.se/usf/" target="_top">
+<IMG ALIGN="right" BORDER="0" SRC="usf_logo.gif"
+ALT="Uppsala Software Factory"></A>
+<FONT SIZE=-1>
+<B> <I> Created at Fri Jan 14 20:12:40 2005
+by MAN2HTML version 050114/2.0.6 . This manual
+describes SBIN_MAN, a program of the <A HREF="http://xray.bmc.uu.se/usf/" target="_top">Uppsala
+Software Factory</A> (USF), written and maintained by <A HREF="http://xray.bmc.uu.se/gerard"
+target="_blank">Gerard Kleywegt</A>. &copy; 1992-2005.
+</I> </B> </FONT><P>
+<IMG SRC="http://xray.bmc.uu.se/cgi-bin/nph-count?width=6&link=http://alpha2.bmc.uu.se/~gerard/www/manuals/sbin_man_man.html">
+</body></html>

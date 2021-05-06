@@ -1,0 +1,317 @@
+<html><head><!-- This document was created for SPANCSI at Thu Jun 26 11:57:42 2008 from
+../average/spancsi.txt by MAN2HTML version 070111/2.0.8 -->
+<title>Uppsala Software Factory - SPANCSI Manual</title>
+<meta name="DESCRIPTION" content="Manual for Gerard 
+Kleywegt's program SPANCSI">
+<meta name="KEYWORDS" content="manual software Gerard 
+Kleywegt program SPANCSI structural biology 
+protein X-ray crystallography macromolecular molecular
+Uppsala Software Factory bioinformatics">
+</head><body bgcolor="#fefefe" background="back.gif">
+
+<A HREF="http://xray.bmc.uu.se/usf/" target="_top">
+<IMG ALIGN="right" BORDER="0" SRC="usf_logo.gif"
+ALT="Uppsala Software Factory"></A>
+
+<H2>  Uppsala Software Factory - SPANCSI Manual</H2> <P>   
+<UL>  
+<LI><H3>  <A HREF="#H1">1  </A>SPANCSI - GENERAL INFORMATION</H3> 
+<LI><H3>  <A HREF="#H2">2  </A>REFERENCES</H3> 
+<LI><H3>  <A HREF="#H3">3  </A>VERSION HISTORY</H3> 
+<LI><H3>  <A HREF="#H4">4  </A>MAP AND MASK SIZE</H3> 
+<LI><H3>  <A HREF="#H5">5  </A>PURPOSE</H3> 
+<LI><H3>  <A HREF="#H6">6  </A>NOTES</H3> 
+<LI><H3>  <A HREF="#H7">7  </A>EXAMPLE</H3> 
+<LI><H3>  <A HREF="#H8">8  </A>ERRORS</H3> 
+<LI><H3>  <A HREF="#H9">9  </A>KNOWN BUGS</H3> 
+</UL> 
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H1">1 </A>SPANCSI - GENERAL INFORMATION</H2> </CENTER>
+<P>   
+Program : SPANCSI
+ <BR> Version : 080625
+ <BR> Author : Gerard J. Kleywegt &amp; T. Alwyn Jones,
+Dept. of Cell and Molecular Biology,
+Uppsala University, Biomedical Centre, Box 596,
+SE-751 24 Uppsala, SWEDEN
+ <BR> E-mail : gerard@xray.bmc.uu.se
+ <BR> Purpose : SPAnish NCS Inquisition; can also be used for
+averaging with variance scaling for each of the
+NCS-related molecules (substitute for AVE)
+ <BR> Package : RAVE
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H2">2 </A>REFERENCES</H2> </CENTER>
+<P>   
+Reference(s) for this program:
+<P>   
+* 1 * T.A. Jones (1992). A, yaap, asap, @#*? A set of averaging
+programs. In &quot;Molecular Replacement&quot;, edited by E.J. Dodson,
+S. Gover and W. Wolf. SERC Daresbury Laboratory, Warrington,
+pp. 91-105.
+<P>   
+* 2 * G.J. Kleywegt &amp; T.A. Jones (1994). Halloween ... Masks and
+Bones. In &quot;From First Map to Final Model&quot;, edited by
+S. Bailey, R. Hubbard and D. Waller. SERC Daresbury
+Laboratory, Warrington, pp. 59-66.
+[http://xray.bmc.uu.se/gerard/papers/halloween.html]
+<P>   
+* 3 * G.J. Kleywegt &amp; R.J. Read (1997). Not your average density.
+Structure 5, 1557-1569.
+[http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=PubMed&amp;cmd=Retrieve&amp;list_uids=9438862&amp;dopt=Citation]
+<P>   
+* 4 * R.J. Read &amp; G.J. Kleywegt (2001). Density modification:
+theory and practice. In: &quot;Methods in Macromolecular
+Crystallography&quot; (D Turk &amp; L Johnson, Eds.), IOS Press,
+Amsterdam, pp. 123-135.
+<P>   
+* 5 * Kleywegt, G.J., Zou, J.Y., Kjeldgaard, M. &amp; Jones, T.A. (2001).
+Around O. In: &quot;International Tables for Crystallography, Vol. F.
+Crystallography of Biological Macromolecules&quot; (Rossmann, M.G.
+&amp; Arnold, E., Editors). Chapter 17.1, pp. 353-356, 366-367.
+Dordrecht: Kluwer Academic Publishers, The Netherlands.
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H3">3 </A>VERSION HISTORY</H2> </CENTER>
+<P>   
+970522 - 0.1 - first version (options A and C)
+ <BR> 970523 - 0.2 - added option B
+ <BR> 010122 - 1.0 - use C routines to do dynamic memory allocation
+and port to Linux
+ <BR> 040701 -1.0.1- changed checks of dynamic memory allocation to allow
+for pointers with negative values as returned by
+some recent Linux versions
+ <BR> 080625 -1.0.2- suppress error messages if more than 10 of them
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H4">4 </A>MAP AND MASK SIZE</H2> </CENTER>
+<P>   
+SPANCSI allocates memory for maps and masks dynamically. This means that
+you can increase the size of maps and masks that the program can handle
+on the fly:
+<P>   
+1 - through the environment variables MAPSIZE and MASKSIZE (must be
+in capital letters !), for example put the following in your
+.cshrc file or your RAVE script:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ setenv MAPSIZE 8000000
+ setenv MASKSIZE 3000000
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+2 - by using command-line arguments MAPSIZE and MASKSIZE (need not
+be in capitals), for example in your RAVE script:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ run spancsi -b mapsize 10000000 masksize 5000000 &lt; spancsi.inp &gt;&amp; spancsi.out
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+Note that command-line arguments take precedence over environment
+variables. So you can set the environment variables in your .cshrc
+file to &quot;typical&quot; values, and if you have to deal with a map and/or
+mask which is bigger than that, you can use the command-line argument(s).
+<P>   
+If sufficient memory cannot be allocated, the program will print
+a message and quit. In that case, increase the amount of virtual
+memory (this will not help, of course, if you try to allocate more
+memory than can be addressed by your machine (for 32-bit machines,
+something like 2**32-1 bytes, I think), or reduce the size requirements.
+<P>   
+SPANCSI needs space for 3 maps and 1 mask.
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H5">5 </A>PURPOSE</H2> </CENTER>
+<P>   
+SPANCSI can be useful if you have indications that (of want
+to investigate if) your NCS-related molecules have very
+different average temperature factors, for example due to
+differences in the packing. For example, in the structure
+of P2 myelin protein (PDB code 1PMP), molecule &quot;C&quot; has
+a considerably higher average temperature factor than the
+other two molecules, &quot;A&quot; and &quot;B&quot;. This is visible in the
+skeletons, but was also verified using Rfree by refining
+an overall B-factor shift for each of the three molecules
+with X-PLOR. R and Rfree both dropped, and the average
+B-factor for the &quot;C&quot; molecule ended up being ~10 &Aring;**2
+higher than those of the other two molecules.
+<P>   
+SPANCSI allows you to:
+<P>   
+- calculate density statistics for each of your NCS-related
+molecules separately
+<P>   
+- calculate correlation coefficients etc. for each pair of
+NCS-related molecules
+<P>   
+- average and expand density using variance weighting for
+each of the NCS-related molecules. For example, suppose
+you have two molecules for which the variance of the
+molecular density is 100 and 50, respectively. Now in
+the averaging, the contribution of the second molecule
+will be upweighted by a factor of 100/50 = 2.0, and
+when the averaged density is expanded back into the unit
+cell or asymmetric unit, the density for the second
+molecule will be downweighted by a factor of 50/100 = 0.5.
+This hopefully leads to better convergence and better
+phases and maps.
+<P>   
+If you find that there are differences between the molecules,
+change your averaging script so it uses SPANCSI instead of AVE.
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H6">6 </A>NOTES</H2> </CENTER>
+<P>   
+NOTE: this program is sensitive to the environment variable
+CCP4_OPEN. If this variable has *not* been set, you will
+not be able to create any CCP4 maps. If this happens, the
+program will abort execution on startup. To fix this,
+put the following line in your .login or .cshrc file:
+setenv CCP4_OPEN UNKNOWN
+<P>   
+NOTE: this program is sensitive to the environment variable OSYM.
+It should point to your local copy of $ODAT/symm, the directory
+which contains the spacegroup symmetry operators in O format.
+When asked for a file with spacegroup operators in O format,
+you may either provide a filename, or the name of a sapcegroup
+(including blanks if you like, case doesn't matter). The program
+will try to open the following files, assuming that STRING is the
+what you input:
+ <BR> (1) open a file called STRING
+ <BR> (2) if this fails, check if OSYM is defined and open $OSYM/STRING
+ <BR> (3) if this fails, open $OSYM/string.sym
+ <BR> (4) if this fails, open $OSYM/string.o
+ <BR> Hint: if you make soft links in the OSYM directory, you can also type
+spacegroup numbers (e.g.: \ln -s p212121.sym 19.sym).
+<P>   
+NOTE: you may choose to enter NCS operators
+either one by one, or all in one go (by
+putting them all in one file), or a mixture of this.
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H7">7 </A>EXAMPLE</H2> </CENTER>
+<P>   
+The input consists of:
+ <BR> - name of the input map (CCP4 format)
+ <BR> - name of the mask file (any MAMA format)
+ <BR> - name of the output map (only if the program is used for doing
+variance-scaled averaging and expansion)
+ <BR> - spacegroup symmetry operators (O format)
+ <BR> - file(s) with NCS operators (O format; include the unit operator;
+signal end of input by an empty line)
+<P>   
+The use of the program is demonstrated using the unaveraged
+MIR map (2.7 &Aring;) of P2 myelin protein:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Select one of the following options:
+<P>   
+ A = Analyse density for individual NCS molecules
+ C = Correlate density for pairs of NCS molecules
+ B = Both average and expand using variance scaling
+ Q = Quit this program
+<P>   
+ Option (A/C/S/Q) ? (A)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+The result for option A (note that the variance for the third, &quot;C&quot;
+molecule is quite a bit lower than that for the other two molecules):
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option (A/C/S/Q) ? (A) a
+<P>   
+ NCS  Aver. dens.     St. dev.     Variance      Minimum      Maximum    Sum dens.
+   1   2.7474E-01   1.9177E+01   3.6777E+02  -6.4726E+01   7.6205E+01   8.4767E+03
+   2   2.0014E-01   1.9173E+01   3.6762E+02  -7.0932E+01   7.9255E+01   6.1751E+03
+   3   2.1734E-01   1.6254E+01   2.6421E+02  -5.9129E+01   8.4527E+01   6.7057E+03
+<P>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+The result for option C (again, the first two molecules are better
+correlated than either is with the third molecule):
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option (A/C/S/Q) ? (A) c
+<P>   
+  NCSi  NCSj         RMSD  Corr.coeff. R (wrt NCSi) R (wrt NCSj)
+     2     1   1.5185E+01        0.686        0.624        0.623
+     3     1   1.4988E+01        0.653        0.715        0.609
+     3     2   1.5236E+01        0.641        0.731        0.624
+<P>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+The result for option B:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option (A/C/S/Q) ? (C) b
+<P>   
+ Add density for operator : (          1)
+             Scale factor : (   1.000)
+ Add density for operator : (          2)
+             Scale factor : (   1.000)
+ Add density for operator : (          3)
+             Scale factor : (   1.392)
+ Average density
+ Zero output map
+ Expand for operator : (          1)
+        Scale factor : (   1.000)
+ Expand for operator : (          2)
+        Scale factor : (   1.000)
+ Expand for operator : (          3)
+        Scale factor : (   0.718)
+ Flatten solvent
+ Nr of points in map  : (     704000)
+ Nr of masked points  : (     398001)
+ Nr of solvent points : (     305999)
+ Solvent fraction (%) : (  43.466)
+ Average density inside masks : (  2.050E-01)
+ Average density in solvent   : ( -2.667E-01)
+ Setting background ...
+ Average density overall      : (  1.769E-05)
+<P>   
+ Stamp : (Created by SPANCSI V. 970523/0.2 at Fri May 23 17:56:11 1997 for
+  user gerard)
+  (Q)QOPEN allocated #  1
+ User:   gerard               Logical Name: p2_new.E
+ Status: UNKNOWN    Filename: p2_new.E
+<P>   
+  File name for output map file on unit   4 : p2_new.E
+     logical name p2_new.E
+<P>   
+   Minimum density in map  =      -53.21290   Maximum density         =       67.12795
+   Mean density            =        0.00002
+   Rms deviation from mean =       11.66415
+<P>   
+ Map written out
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H8">8 </A>ERRORS</H2> </CENTER>
+<P>   
+- if you get &quot;severe FRCSYM errors&quot; during the averaging
+step, your map probably does not encompass N asymmetric
+units PLUS ONE POINT ON ALL SIDES
+<P>   
+- if you get &quot;interpolation errors&quot; during the expansion
+step, your mask probably extends too close to the
+border(s) of its grid (use MAMA to test and remedy this)
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H9">9 </A>KNOWN BUGS</H2> </CENTER>
+<P>   
+None, at present.
+<HR NOSHADE>    <A HREF="http://xray.bmc.uu.se/usf/" target="_top">
+<IMG ALIGN="right" BORDER="0" SRC="usf_logo.gif"
+ALT="Uppsala Software Factory"></A>
+<FONT SIZE=-1>
+<B> <I> Created at Thu Jun 26 11:57:42 2008
+by MAN2HTML version 070111/2.0.8 . This manual
+describes SPANCSI, a program of the <A HREF="http://xray.bmc.uu.se/usf/" target="_top">Uppsala
+Software Factory</A> (USF), written and maintained by <A HREF="http://xray.bmc.uu.se/gerard"
+target="_blank">Gerard Kleywegt</A>. &copy; 1992-2007.
+</I> </B> </FONT><P>
+<IMG SRC="http://xray.bmc.uu.se/cgi-bin/nph-count?width=6&link=http://alpha2.bmc.uu.se/~gerard/www/manuals/spancsi_man.html">
+</body></html>

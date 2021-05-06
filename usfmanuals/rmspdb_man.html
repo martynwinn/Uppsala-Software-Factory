@@ -1,0 +1,416 @@
+<html><head><!-- This document was created for RMSPDB at Fri Jan 14 20:12:33 2005 from
+../rmspdb/rmspdb.txt by MAN2HTML version 050114/2.0.6 -->
+<title>Uppsala Software Factory - RMSPDB Manual</title>
+<meta name="DESCRIPTION" content="Manual for Gerard 
+Kleywegt's program RMSPDB">
+<meta name="KEYWORDS" content="manual software Gerard 
+Kleywegt program RMSPDB structural biology 
+protein X-ray crystallography macromolecular molecular
+Uppsala Software Factory bioinformatics">
+</head><body bgcolor="#fefefe" background="back.gif">
+
+<A HREF="http://xray.bmc.uu.se/usf/" target="_top">
+<IMG ALIGN="right" BORDER="0" SRC="usf_logo.gif"
+ALT="Uppsala Software Factory"></A>
+
+<H2>  Uppsala Software Factory - RMSPDB Manual</H2> <P>   
+<UL>  
+<LI><H3>  <A HREF="#H1">1  </A>RMSPDB - GENERAL INFORMATION</H3> 
+<LI><H3>  <A HREF="#H2">2  </A>REFERENCES</H3> 
+<LI><H3>  <A HREF="#H3">3  </A>VERSION HISTORY</H3> 
+<LI><H3>  <A HREF="#H4">4  </A>NOTES</H3> 
+<LI><H3>  <A HREF="#H5">5  </A>DESCRIPTION</H3> 
+<H5><A HREF="#S1">5.1  </A>purpose</H5>
+<H5><A HREF="#S2">5.2  </A>order</H5>
+<H5><A HREF="#S3">5.3  </A>selecting atoms and residues</H5>
+<H5><A HREF="#S4">5.4  </A>plot files</H5>
+<H5><A HREF="#S5">5.5  </A>output</H5>
+<H5><A HREF="#S6">5.6  </A>miscellaneous</H5>
+<LI><H3>  <A HREF="#H6">6  </A>EXAMPLE</H3> 
+<H5><A HREF="#S7">6.1  </A>input</H5>
+<H5><A HREF="#S8">6.2  </A>plot files</H5>
+<LI><H3>  <A HREF="#H7">7  </A>KNOWN BUGS</H3> 
+</UL> 
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H1">1 </A>RMSPDB - GENERAL INFORMATION</H2> </CENTER>
+<P>   
+Program : RMSPDB
+ <BR> Version : 991230
+ <BR> Author : Gerard J. Kleywegt, Dept. of Cell and Molecular Biology,
+Uppsala University, Biomedical Centre, Box 596,
+SE-751 24 Uppsala, SWEDEN
+ <BR> E-mail : gerard@xray.bmc.uu.se
+ <BR> Purpose : compare molecules in different PDB files
+ <BR> Package : X-UTIL
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H2">2 </A>REFERENCES</H2> </CENTER>
+<P>   
+Reference(s) for this program:
+<P>   
+* 1 * G.J. Kleywegt (1992-2004).
+Uppsala University, Uppsala, Sweden.
+Unpublished program.
+<P>   
+* 2 * Kleywegt, G.J., Zou, J.Y., Kjeldgaard, M. &amp; Jones, T.A. (2001).
+Around O. In: &quot;International Tables for Crystallography, Vol. F.
+Crystallography of Biological Macromolecules&quot; (Rossmann, M.G.
+&amp; Arnold, E., Editors). Chapter 17.1, pp. 353-356, 366-367.
+Dordrecht: Kluwer Academic Publishers, The Netherlands.
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H3">3 </A>VERSION HISTORY</H2> </CENTER>
+<P>   
+940415 - 1.2 - improved O2D plot files
+ <BR> 991230 - 1.3 - minor changes for Linux
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H4">4 </A>NOTES</H2> </CENTER>
+<P>   
+This program is largely obsolete, since LSQMAN provides a superset
+of most of its functionality.
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H5">5 </A>DESCRIPTION</H2> </CENTER>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S1">5.1 </A>purpose</H3> 
+<P>   
+RMSPDB is a very simple program that compares two PDB files. The program
+ask you to supply filenames for two PDB files. Their order is important,
+since the program searches the second file for every atom it found in the
+first. Hence, the second file may contain atoms that do not occur in the
+first, but not the other way around !
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S2">5.2 </A>order</H3> 
+<P>   
+The order of the atoms WITHIN a residue need not be the same in both files.
+You are asked if there are any such differences. If there aren't any, and
+the program knows that, it can search the second file much faster. A small
+problem (1140 atoms) in which the ordering is the same in both files required
+1.4 CPU seconds on an Indigo (0.9u + 0.4s); the same problem when allowing
+for different atom ordering takes about 15 times longer: 21.5 CPU seconds
+(5.3u + 16.2s; the extra system time is taken for backspacing the second file
+to the start of the current residue for each atom in each residue).
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S3">5.3 </A>selecting atoms and residues</H3> 
+<P>   
+You have some flexibility in selecting which residues and atoms should be
+compared:
+<P>   
+- you may choose to compare a single chain or any/all chains by providing
+a 2-character chain identifier in the first case (e.g., &quot;S2&quot; or &quot; A&quot;),
+or by typing &quot;**&quot; in the latter
+<P>   
+- you may allow for homology, which will cause the program to ignore the
+residue NAMES (when it looks for counterparts of atoms from the first file),
+but NOT the residue NUMBERS
+<P>   
+- as for the residues, you may compare all residues, or just a range (use
+the latter option, for example to compare just the protein, but not the
+ligands, solvent molecules, salt ions etc.). Alternatively, you may supply
+several ranges of residue numbers to use or exclude (e.g., when you compare
+two homologous but not identical proteins)
+<P>   
+- as for atoms, you may compare all atoms, just the C-alpha atoms, just the
+main-chain atoms (N, CA, C, O) or all non-main-chain atoms (i.e., including
+solvent etc.). Alternatively, you may enter the names of atoms which you
+want to compare or to exclude explicitly. Note that the second and third
+option imply that only amino-acid residues are compared !
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S4">5.4 </A>plot files</H3> 
+<P>   
+Optionally, you may produce plot output files which can be viewed with O2D
+and turned into PostScript files by the same program. In that case, you must
+provide the following information:
+<P>   
+- name of the three plot files (one for the atom-by-atom distances, one for
+the average per-residue distance and one for a histogram of distances
+<P>   
+- the number of intervals in your histogram plot plus the values at the
+interval boundaries (i.e., one value more than thee number of intervals ...)
+<P>   
+- whether you want the atoms and residues in the plot files to be numbered
+consecutively (i.e., 1, 2, ...) or explicitly (for atoms: the number of the
+atom in the first PDB file; for residues: the actual residue number)
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S5">5.5 </A>output</H3> 
+<P>   
+The output consists of information regarding the differences in X-, Y- and
+Z-coordinates, occupancy factors and individual isotropic temperature
+factors as well as information about the total, average and RMS positional
+shifts (i.e., combining X-, Y- and Z-shifts).
+<P>   
+You may then go back to any part of the input stage, to run the program
+for different residues, atom types or even files, or quit the program.
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S6">5.6 </A>miscellaneous</H3> 
+<P>   
+Use this program, for example, to compare two different models of your
+protein, to compare your protein with and without ligand, to get quantitative
+information about the effect of a cycle of XPLOR or PROLSQ refinement, to
+compare your structure with someone else's XRAY or NMR structure, etc.
+<P>   
+The (optional) plot files are ASCII files suitable for O2D. See the O2D
+manual for information about the keywords. You may for example want to
+change the colour of the plots or the viewport (in particular, when you
+want to compare a number of plots on the same scale). O2D can create
+PostScript files which you may subsequently view or plot.
+<P>   
+HINT: if you want to compare different parts of separate chains, do a
+comparison of each pair of chains separately, add the &quot;sum of
+distances**2&quot; for all runs, divide by the TOTAL number of atoms compared
+in all runs combined and take th square root; this gives you the TOTAL
+RMS distance for the combined set of atoms in the various chains.
+<P>   
+NOTE: make sure that the files are similar (i.e., not hydrogens in file 1
+but no hydrogens in file 2); the atom numbers must be the same, as
+well as the chain ids etc. Use MOLEMAN to fix these things.
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H6">6 </A>EXAMPLE</H2> </CENTER>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S7">6.1 </A>input</H3> 
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ &lt; % 304 gerard daisy 14:09:20 progs/rmspdb&gt; /home/gerard/bin/4d_rmspdb
+<P>   
+ *** RMSPDB *** RMSPDB *** RMSPDB *** RMSPDB *** RMSPDB *** RMSPDB ***
+<P>   
+ Version - 920807/1.1
+ By      - Gerard J. Kleywegt,
+           Dept. Mol. Biology, BMC, Uppsala
+<P>   
+ Started - Fri Aug  7 14:33:28 1992
+ User    - gerard
+ Tty     - /dev/ttyq1
+<P>   
+ *** RMSPDB *** RMSPDB *** RMSPDB *** RMSPDB *** RMSPDB *** RMSPDB ***
+<P>   
+ --- Current dimensions ---
+ Max nr of intervals in histograms :        100
+ Max nr of atoms                   :     250000
+ Max nr of residues                :      50000
+<P>   
+ PDB file 1 ? (first.pdb)
+ old.pdb
+<P>   
+ PDB file 2 ? (second.pdb)
+ ran.pdb
+<P>   
+ Is the order of the atoms different in file 2 ? (N)
+ n
+<P>   
+ ... Enter ATOM compare option :
+     1 = ALL atoms
+     2 = CA atoms only
+     3 = main-chain atoms only (N,CA,C,O)
+     4 = non-main-chain atoms only
+     5 = enter atom types to USE
+     6 = enter atom types to EXCLUDE
+ Atom option ? (       1)
+ 3
+<P>   
+ ... You may compare any and all chains, or just a
+     a single chain.  In the first case, provide
+     &quot;**&quot; as the chain identifier; in the second
+     case, provide the chain id (TWO characters !).
+ Which chain (** = ignore) ? (**)
+  A
+<P>   
+ ... You may want to compare homologous proteins.
+     In that case, reply &quot;Y&quot; to the following question
+     and the program will ignore differences in
+     residue NAMES (but NOT their NUMBERS !).
+ Allow for homology (Y/N) ? (N)
+ y
+<P>   
+ ... Enter RESIDUE compare range :
+     0 0 = ALL residues
+     0 N = residues 1 through N
+     N 0 = residues N and on
+     M N = residues M through N only
+    -1   = enter several ranges of residues to USE
+    -2   = enter several ranges of residues to EXCLUDE
+ Residue range ? (          0           0)
+ -1
+ Residue range (0 0 to end input) ? (          0           0)
+ 2 12
+ I will use residues : (          2          12)
+ Residue range (0 0 to end input) ? (          2          12)
+ 15 43
+ I will use residues : (         15          43)
+ Residue range (0 0 to end input) ? (         15          43)
+ 47 92
+ I will use residues : (         47          92)
+ Residue range (0 0 to end input) ? (         47          92)
+ 98 129
+ I will use residues : (         98         129)
+ Residue range (0 0 to end input) ? (         98         129)
+ 0 0
+ Total nr of residues to use : (        118)
+ Plot output for O2D required (Y/N) (Y)
+ yes
+ Plot file for per-atom distances            ? (per_atom.plt)
+ ap.plt
+ Plot file for average per-residue distances ? (per_residue.plt)
+ rp.plt
+ Plot file for histogram of distances        ? (histogram.plt)
+ hi.plt
+ ERROR --- XOPXNA - error # 126 while opening NEW file : hi.plt
+ Open file as OLD (Y/N) ? (N)
+ no
+ Open with other name (Y/N) ? (N)
+ yes
+ File ? (hi.plt)
+ hp.plt
+ Number of intervals in your histogram       ? (      10)
+<P>   
+ Intervals : (      10)
+ Boundaries : (  0.000E+00   1.000E-01   2.000E-01   3.000E-01   4.000E-01   5.000E-01   6.000E-01   7.000E-01   8.000E-01   9.000E-01   1.000E+00)
+<P>   
+ Explicit or Consecutive atom numbers (E/C) ? (E)
+ e
+ Explicit or Consecutive residue numbers (E/C) ? (E)
+ e
+<P>   
+ *** RMSPDB *** RMSPDB *** RMSPDB *** RMSPDB *** RMSPDB ***
+<P>   
+  compared : (old.pdb)
+       and : (ran.pdb)
+  examined residues      2 through    129
+  in all chains
+  total # of atoms in file 1      =         1140
+  # main-chain atoms compared     =          472
+  # residues compared             =          118
+         item  X-coord    Y-coord    Z-coord     Occupy       Biso
+         sums  7.599E+03 -1.279E+02 -1.707E+03  4.720E+02  3.267E+03
+    sums difs  9.636E+01  1.089E+02  1.196E+02  0.000E+00  2.201E+03
+  sums dif**2  3.552E+01  4.838E+01  4.996E+01  0.000E+00  1.707E+04
+      rms dif  2.743E-01  3.202E-01  3.253E-01  0.000E+00  6.013E+00
+      ave dif  2.042E-01  2.306E-01  2.533E-01  0.000E+00  4.664E+00
+ total positional shift   :    2.184E+02
+ average positional shift :    4.626E-01
+ sum of distances**2      :    1.338E+02
+ RMS distance             :    5.325E-01
+<P>   
+ *** RMSPDB *** RMSPDB *** RMSPDB *** RMSPDB *** RMSPDB ***
+<P>   
+ ... Enter option :
+     1 = compare different residues
+     2 = compare different atoms
+     3 = compare with different file
+     4 = rerun from the start
+     anything else = QUIT
+ Option ? (      99)
+ 111
+<P>   
+ ... Toodle-pip ...
+<P>   
+ *** RMSPDB *** RMSPDB *** RMSPDB *** RMSPDB *** RMSPDB *** RMSPDB ***
+<P>   
+ Version - 920807/1.1
+ Started - Fri Aug  7 14:33:28 1992
+ Stopped - Fri Aug  7 14:36:44 1992
+<P>   
+ CPU-time taken :
+ User    -      1.3 Sys    -      3.1 Total   -      4.4
+<P>   
+ *** RMSPDB *** RMSPDB *** RMSPDB *** RMSPDB *** RMSPDB *** RMSPDB ***
+<P>   
+ STOP ... All done ... statement executed
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S8">6.2 </A>plot files</H3> 
+<P>   
+The example above yields three plot files, excerpts of which look as follows:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+&lt; % 306 gerard daisy 14:09:20 progs/rmspdb&gt; more ap.plt
+REMARK  Per-atom distance file produced by RMSPDB at Thu Aug  6 15:38:45 1992
+REMARK  Compared : old.pdb
+REMARK       and : ran.pdb
+REMARK
+NPOINT    472
+COLOUR      3
+XLABEL Atom
+YLABEL Distance (A)
+XVALUE (8f10.0)
+         8         9        13        14        15        16        21        22
+        23        24        32        33        34        35        40        41
+        42        43        44        45        46        47        56        57
+(...)
+      1040      1041      1047      1048      1049      1050      1054      1055
+YVALUE (8f10.4)
+    0.1579    0.4720    0.6663    1.4847    0.3286    0.2821    0.1337    0.9471
+    0.4601    0.3600    0.2733    0.2482    0.3173    0.3340    0.2791    0.4519
+(...)
+    0.5271    0.5187    0.3110    0.5274    0.3801    0.4072    0.5082    0.9801
+    0.2549    0.5120    0.1636    0.4356    0.1164    0.3519    0.2545    0.3519
+END
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+&lt; % 307 gerard daisy 14:09:20 progs/rmspdb&gt;  more rp.plt
+REMARK  Per-residue average distance
+REMARK  file produced by RMSPDB at Thu Aug  6 15:38:45 1992
+REMARK  Compared : old.pdb
+REMARK       and : ran.pdb
+REMARK
+NPOINT    118
+COLOUR      3
+XLABEL Residue
+YLABEL Average distance (A)
+XVALUE (8f10.0)
+         2         3         4         5         6         7         8         9
+        10        11        12        15        16        17        18        19
+(...)
+       116       117       118       119       120       121       122       123
+       124       125       126       127       128       129
+YVALUE (8f10.4)
+    0.6953    0.4229    0.3354    0.3456    0.6019    0.5414    0.3976    0.4899
+    0.4066    0.3979    0.4206    0.5789    0.4496    0.3623    0.4929    0.6115
+(...)
+    0.4459    0.3117    0.2443    0.1782    0.4541    0.5393    0.3977    0.5294
+    0.2741    0.3557    0.4711    0.5689    0.3415    0.2687
+END
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+&lt; % 308 gerard daisy 14:09:20 progs/rmspdb&gt; more hp.plt
+REMARK  Histogram file produced by RMSPDB at Thu Aug  6 15:38:45 1992
+REMARK  Compared : old.pdb
+REMARK       and : ran.pdb
+REMARK
+NPOINT     11
+COLOUR      3
+XLABEL Distance intervals (A)
+YLABEL Number of distances
+XVALUE (1p,5e15.7)
+  0.0000000E+00  1.0000000E-01  2.0000000E-01  3.0000001E-01  4.0000001E-01
+  5.0000000E-01  6.0000002E-01  6.9999999E-01  8.0000001E-01  9.0000004E-01
+  1.0000000E+00
+YVALUE (5f15.0)
+              9             49             83             90             78
+             51             37             23             13             39
+              0
+END
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H7">7 </A>KNOWN BUGS</H2> </CENTER>
+<P>   
+None, at present.
+<HR NOSHADE>    <A HREF="http://xray.bmc.uu.se/usf/" target="_top">
+<IMG ALIGN="right" BORDER="0" SRC="usf_logo.gif"
+ALT="Uppsala Software Factory"></A>
+<FONT SIZE=-1>
+<B> <I> Created at Fri Jan 14 20:12:33 2005
+by MAN2HTML version 050114/2.0.6 . This manual
+describes RMSPDB, a program of the <A HREF="http://xray.bmc.uu.se/usf/" target="_top">Uppsala
+Software Factory</A> (USF), written and maintained by <A HREF="http://xray.bmc.uu.se/gerard"
+target="_blank">Gerard Kleywegt</A>. &copy; 1992-2005.
+</I> </B> </FONT><P>
+<IMG SRC="http://xray.bmc.uu.se/cgi-bin/nph-count?width=6&link=http://alpha2.bmc.uu.se/~gerard/www/manuals/rmspdb_man.html">
+</body></html>

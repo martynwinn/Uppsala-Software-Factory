@@ -1,0 +1,2259 @@
+<html><head><!-- This document was created for RAVE at Fri Jan 14 20:12:32 2005 from
+../average/rave.txt by MAN2HTML version 050114/2.0.6 -->
+<title>Uppsala Software Factory - RAVE Manual</title>
+<meta name="DESCRIPTION" content="Manual for Gerard 
+Kleywegt's program RAVE">
+<meta name="KEYWORDS" content="manual software Gerard 
+Kleywegt program RAVE structural biology 
+protein X-ray crystallography macromolecular molecular
+Uppsala Software Factory bioinformatics">
+</head><body bgcolor="#fefefe" background="back.gif">
+
+<A HREF="http://xray.bmc.uu.se/usf/" target="_top">
+<IMG ALIGN="right" BORDER="0" SRC="usf_logo.gif"
+ALT="Uppsala Software Factory"></A>
+
+<H2>  Uppsala Software Factory - RAVE Manual</H2> <P>   
+<UL>  
+<LI><H3>  <A HREF="#H1">1  </A>RAVE - GENERAL INFORMATION</H3> 
+<LI><H3>  <A HREF="#H2">2  </A>REFERENCES</H3> 
+<LI><H3>  <A HREF="#H3">3  </A>VERSION HISTORY</H3> 
+<LI><H3>  <A HREF="#H4">4  </A>DYNAMIC MEMORY ALLOCATION</H3> 
+<LI><H3>  <A HREF="#H5">5  </A>FARQ (FREQUENTLY-ASKED RAVE QUESTIONS)</H3> 
+<H5><A HREF="#S1">5.1  </A>When I average, I get FRCSYM errors.  What do these mean ?</H5>
+<H5><A HREF="#S2">5.2  </A>Why can't I output maps from any RAVE program ?</H5>
+<H5><A HREF="#S3">5.3  </A>How do I add symmetry operators to my CCP4 map ?</H5>
+<H5><A HREF="#S4">5.4  </A> I want to learn how to use RAVE.</H5>
+<H5><A HREF="#S5">5.5  </A>Why do some RAVE programs coredump at startup ?</H5>
+<H5><A HREF="#S6">5.6  </A>Can I skew maps with MAPMAN ?</H5>
+<LI><H3>  <A HREF="#H6">6  </A>USER GUIDE</H3> 
+<LI><H3>  <A HREF="#H7">7  </A>EXAMPLE SCA SCRIPTS</H3> 
+<H5><A HREF="#S7">7.1  </A>initial averaging step</H5>
+<H5><A HREF="#S8">7.2  </A>extracting the map around the mask</H5>
+<H5><A HREF="#S9">7.3  </A>one complete averaging cycle</H5>
+<LI><H3>  <A HREF="#H8">8  </A>EXAMPLE MCA SCRIPTS</H3> 
+<H5><A HREF="#S10">8.1  </A>initial steps</H5>
+<H5><A HREF="#S11">8.2  </A>one cycle</H5>
+<H5><A HREF="#S12">8.3  </A>p21_av0.com</H5>
+<H5><A HREF="#S13">8.4  </A>p212121_av0.com</H5>
+<H5><A HREF="#S14">8.5  </A>comap0.com</H5>
+<H5><A HREF="#S15">8.6  </A>p21_ex0.com</H5>
+<H5><A HREF="#S16">8.7  </A>p212121_ex0.com</H5>
+<H5><A HREF="#S17">8.8  </A>p21_cycle.com</H5>
+<H5><A HREF="#S18">8.9  </A>p212121_cycle.com</H5>
+<H5><A HREF="#S19">8.10  </A>comex.com</H5>
+<LI><H3>  <A HREF="#H9">9  </A>ITERATIVE SKELETONISATION</H3> 
+</UL> 
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H1">1 </A>RAVE - GENERAL INFORMATION</H2> </CENTER>
+<P>   
+Version : 970613
+ <BR> Author : Gerard J. Kleywegt &amp; T. Alwyn Jones,
+Dept. of Cell and Molecular Biology,
+Uppsala University, Biomedical Centre, Box 596,
+SE-751 24 Uppsala, SWEDEN
+ <BR> E-mail : gerard@xray.bmc.uu.se
+ <BR> Purpose : averaging of electron-density maps
+ <BR> Package : RAVE
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H2">2 </A>REFERENCES</H2> </CENTER>
+<P>   
+For literature references, see the output or manuals for the
+individual RAVE programs.
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H3">3 </A>VERSION HISTORY</H2> </CENTER>
+<P>   
+930331 - first version
+ <BR> 930616 - new options in MAMA (spherical and cubic masks;
+expansion into asymmetric unit); bugs removed
+from BONES options; simple macro facility
+- averaging and expansion step separated in AVE;
+note: INPUT HAS CHANGED !!! alter your scripts !
+- smaller versions, specifically for ESVs, of DATAMAN,
+MAPMAN and MAMA
+- included MAPMAN and NCS6D
+- much improved C-shell script for N cycles of single-
+crystal averaging !!!
+- improved documentation for some of the programs
+- AVE and MAVE print corr. coeff. between first
+NCS operator density and each of the others
+- MAMA, MAPMAN and DATAMAN support shell commands ($)
+- see the individual manuals for more info
+ <BR> 931129 - better SCA script
+- added iterative skeletonisation script
+- some minor changes
+ <BR> 931216 - included multiple-domain averaging &amp; positivity
+ <BR> 931221 - cleaned up (old stuff is now in &quot;paper&quot; manual)
+ <BR> 940803 - added some FAQs to this document
+ <BR> 960410 - wrote CRAVE -&gt; automatically generates a complete C-shell
+script to do multiple-crystal averaging (single-domain
+only) from a simple input file; see the CRAVE manual for
+details !
+ <BR> 961126 - dynamic memory allocation in most programs
+ <BR> 970613 - changed some hyperlinks
+ <BR> 020920 - changed a hyperlink
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H4">4 </A>DYNAMIC MEMORY ALLOCATION</H2> </CENTER>
+<P>   
+From the end of November, 1996, basically all RAVE programs use
+dynamic memory allocation. This means that you can set the
+maximum size of maps and masks that the programs can handle,
+as well as the maximum number of maps for MAPMAN and the maximum
+number of masks for MAMA (both can be set to any number between
+1 and 10).
+<P>   
+You can set these parameters in two different ways:
+<P>   
+(1) use environment variables MAPSIZE, MASKSIZE, NUMMAPS and
+NUMMASKS (these names must be in all-capitals). For instance,
+you could put the following into your .cshrc file:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+setenv MAPSIZE   10000000
+setenv NUMMAPS 2
+setenv MASKSIZE   5000000
+setenv NUMMASKS 4
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+(2) to change the settings on the fly, you can use command-line
+arguments, for example:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ run ave -b mapsize 20000000 &lt; ave.inp &gt;&amp; ave.out
+ run mapman nummaps 2 mapsize 15000000
+ run mapman nummaps 10 mapsize 2000000
+ run mama masksize 3000000 nummasks 8
+ ------ EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+The following table shows how many maps and/or masks each program
+allocates, so you can figure out the memory requirements:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+    - MAPMAN (version 5.0; NUMMAPS + 1 maps  )
+    - MAMA   (version 4.0; NUMMASKS + 2 masks)
+    - AVE    (version 4.0; 2 maps, 1 mask    )
+    - NCS6D  (version 2.0; 1 map             )
+    - IMP    (version 2.0; 2 maps, 1 mask    )
+    - MAVE   (version 3.0; 2 maps, 1 mask    )
+    - COMAP  (version 2.0; 3 maps            )
+    - COMDEM (version 2.0; 3 maps            )
+    - MAPFIX (version 2.0; 1 map             )
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+NOTE: DATAMAN 5.0 also uses dynamic memory allocation, but uses other
+control parameters (NUMSETS and SETSIZE). See the DATAMAN manual for
+details.
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H5">5 </A>FARQ (FREQUENTLY-ASKED RAVE QUESTIONS)</H2> </CENTER>
+<P>   
+NOTE: a complete and up-to-date list of FAQs can be retrieved
+from the Uppsala ftp-server, the filename is:
+ <BR> pub/bin/gerard/omac/software.faq
+ <BR> This document also tells you how to browse the FAQ using Mosaic.
+ <BR> An even quicker way to get the FAQ is to use:
+ <BR> finger gerard@sarek.bmc.uu.se &gt; software.faq
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S1">5.1 </A>When I average, I get FRCSYM errors.  What do these mean ?</H3> 
+ <BR> If the errors occur in the averaging step, your map does not
+contain at least a correct asymmetric unit (plus a few points on all
+sides).
+ <BR> If the error occurs in the expansion step, the most likely cause is
+that your mask is touching the border(s) of its grid. Use MAMA to
+enlarge the grid:
+<P>   
+read m1 oldmask
+ <BR> new same m1
+ <BR> new padding 10 10 10
+ <BR> new copy m2 m1
+ <BR> write m2 newmask
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S2">5.2 </A>Why can't I output maps from any RAVE program ?</H3> 
+ <BR> If you don't have CCP4 set up at your site, you need
+to set the following environment variable:
+<P>   
+setenv CCP4_OPEN UNKNOWN
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S3">5.3 </A>How do I add symmetry operators to my CCP4 map ?</H3> 
+ <BR> Run MAPFIX. With this program you may:
+<P>   
+* add a title
+ <BR> * alter the write-order of the axes
+ <BR> * add (or change) the spacegroup's symmetry operators
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S4">5.4 </A> I want to learn how to use RAVE.</H3> 
+<P>   
+There is a tutorial for using RAVE in the case of single-domain,
+single-crystal averaging (using P2 myelin data). Get the following file:
+ftp://xray.bmc.uu.se/pub/gerard/rave/exam.tar.gz
+<P>   
+This is a compressed, tar-ed directory that contains all the files you need
+to do the averaging as described in RAVE_TUTORIAL; it also contains worked
+answers and a sub-directory with all the files that are generated if you
+re-work the exercises and answers.
+<P>   
+NOTE: the example directory also contains the skeleton of P2 myelin. You
+could use this to learn or teach the use of O for building protein structures
+from a set of Bones atoms.
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S5">5.5 </A>Why do some RAVE programs coredump at startup ?</H3> 
+ <BR> If a program coredumps because it is too big, check the following:
+<P>   
+- limit - this gives the limits on CPU usage, stack size etc.:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ % 1190 gerard rigel 20:59:38 home/gerard &gt; limit
+cputime         unlimited
+filesize        2097151 kbytes
+datasize        262143 kbytes
+stacksize       262143 kbytes
+coredumpsize    0 kbytes
+memoryuse       29759 kbytes
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+Try increasing the stack size, for example, by simply typing:
+limit stacksize 300000 (or some other number).
+ <BR> Note that the coredumpsize is set to zero, which means that you get
+empty cores (no clogging of your disks) AND extremely fast &quot;coredumps&quot;.
+<P>   
+- swap - this shows the allocated swap space (ask your system
+manager to increase this, if necessary):
+<P>   
+* on SGI:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ # 248 root sirius 20:53:42 nfs/public &gt; /etc/swap -l
+path               dev  swaplo blocks   free
+/dev/dsk/dks0d1s1 22,33      0  81600  55520
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+* on ESV:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+&lt;622 vega average/esv&gt; /etc/swap -l
+path                dev  swaplo blocks   free
+/dev/dsk/isc0d0s1  16,1       0  65536  60696
+/dev/dsk/isc0d0s7  16,7       0 156672 151912
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+* on Dec/Alpha/OSF1:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+# swapon -s
+Total swap allocation:
+    Allocated space:       139258 pages (1087MB)
+    Reserved space:         19646 pages ( 14%)
+    Available space:       119612 pages ( 85%)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+940124: Note that if you put the &quot;limit&quot; statements in your
+.login file, they may or may not take effect, depending on
+how you start your session. If you use rlogin, for example,
+your .login file will NOT be executed, whereas if you use
+telnet, it will !
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S6">5.6 </A>Can I skew maps with MAPMAN ?</H3> 
+ <BR> The complete question:
+<P>   
+&quot;Is there any way to &quot;SKEW&quot; a map using MAPMAN ? I am aware of the
+possibility of multiplying, dividing, adding and so on. I have a map
+of my molecule in the crystal cell. I want to relate that to the
+standard orientation of the molecule.&quot;
+<P>   
+There's no option in MAPMAN to do this, but you can probably
+use the averaging program AVE (or MAVE) to do it. I would try
+this:
+<P>   
+- take your standard molecule and generate a mask with MAMA
+(use the NEw PDb command with a large radius around the
+atoms)
+<P>   
+- run AVE (or MAVE if you put your standard molecule in a
+different cell) to merely average the density (i.e., do
+not expand)
+<P>   
+- get the Cartesian operator FROM your standard molecule
+TO the one in the cell around which the mask was calculated
+(e.g., with O or LSQMAN)
+<P>   
+- supply only one operator to AVE, namely the one you generated
+in the previous step (if you use MAVE, supply this operator
+as the inter-crystal operator and supply the identity
+operator as the only NCS operator)
+<P>   
+- run MAPMAN to mappage the resulting map
+<P>   
+Of course, the simple way of doing things is to draw the map
+around the molecule in the cell and then use the O command
+&quot;Rot_tran_obj&quot; to bring the map on top of your standard molecule.
+ <BR> This also requires an operator, but now FROM your molecule
+in the crystal TO the standard molecule.
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H6">6 </A>USER GUIDE</H2> </CENTER>
+<P>   
+ABBREVIATIONS
+<P>   
+NCS	non-crystallographic symmetry
+ <BR> RT	rotation-translation (operator)
+ <BR> MIR	multiple-isomorphous replacement
+ <BR> CC	correlation coefficient
+ <BR> Fo	observed structure-factor amplitudes
+ <BR> Fc	calculated structure-factor amplitudes
+ <BR> SCA	single-crystal averaging
+ <BR> MCA	multiple-crystal averaging
+ <BR> MDA	multiple-domain averaging
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H7">7 </A>EXAMPLE SCA SCRIPTS</H2> </CENTER>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S7">7.1 </A>initial averaging step</H3> 
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+#!/bin/csh -f
+AVE -b &lt;&lt; EOF
+both average and expand
+abc.E
+m12a_edit.mask
+av_0.E
+symop.o
+rt_unit.o
+rt_a_to_b.o
+rt_a_to_c.o
+<P>   
+EOF
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S8">7.2 </A>extracting the map around the mask</H3> 
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+#!/bin/csh -f
+AVE -b &lt;&lt; EOF
+average only
+av_2.E
+m12a_edit.mask
+av_2x.E
+symop.o
+rt_unit.o
+<P>   
+EOF
+<P>   
+MAPMAN -b &lt;&lt; EOF
+read m1 av_2x.E ccp4
+range m1 0 50 (sets &quot;prod&quot; and &quot;plus&quot;; optional)
+mappage m1 av_2x.map
+quit
+EOF
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S9">7.3 </A>one complete averaging cycle</H3> 
+ <BR> The latest version of this script is avilable as OMAC/average.csh
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+#!/bin/csh -f
+<P>   
+#alias run '/nfs/taj/gerard/bin/run'
+<P>   
+# do N cycles of single-crystal averaging with RAVE/CCP4
+# includes error checks to test if the appropriate files
+# exist or have been generated
+<P>   
+# Gerard J. Kleywegt @ 931104
+# E-mail: &quot;gerard@xray.bmc.uu.se&quot;
+<P>   
+# edit this file, then execute with:
+#    script_name | tee rave.log
+# or
+#    nohup script_name &gt;&amp; rave.log &amp;
+<P>   
+# Molecular Replacement version
+<P>   
+set version='molrep_averaging @ 931104 / gj kleywegt'
+set starttime=`date`
+<P>   
+# set echo
+<P>   
+# IMPORTANT: when you start RAVE-ing, a map file called
+#            &quot;$scrat/{$myid}_{$prev}.E&quot; MUST exist !
+# EXAMPLE: if your scratch directory is $SCR,
+#          your id is &quot;model1&quot; and the previous
+#          cycle number is &quot;0&quot;, then the map file
+#          $SCR/model1_0.E must exist
+<P>   
+# change the following symbols as appropriate #################
+<P>   
+# re-assign CCP4 scratch areas (not necessary)
+setenv CCP4_SCR /nfs/scr_uu5/gerard/scratch
+setenv BINSORT_SCR /nfs/scr_uu1/gerard/binsort
+<P>   
+# CCP4 2.2 temporary patch (problems with path names)
+set path=($CBIN $path)
+rehash
+# echo $path
+<P>   
+# go to YOUR work directory
+cd /nfs/gerard/proteins/eg1/average
+<P>   
+# set id (e.g., the ID of this macro-cycle)
+set myid=o13
+<P>   
+# NEXT cycle NUMBER (MUST BE A NUMBER !!!)
+@ cycle = 1
+# note that a map with ($cycle - 1) in the name MUST exist
+# see &quot;IMPORTANT&quot; note above
+<P>   
+# final cycle nr (I.E.: NOT THE NUMBER OF CYCLES !!!) (MUST BE A NUMBER !!!)
+@ end = 4
+<P>   
+# scratch directory (where map, scratch and log files go to)
+set scrat=/nfs/scr_uu1/gerard/scratch
+<P>   
+# input reflection file (MTZ)
+# use full path name if not in your work directory
+set hklin=../hkl/eg1_36.mtz
+<P>   
+# define labels in your input MTZ file
+# observed structure factor amplitude and its sigma
+set lab_fp='F'
+set lab_sf='SIGF'
+<P>   
+# grid &amp; map extent
+set grid=&quot;132 132 264&quot;
+set ext=&quot;0 131 0 131 0 263&quot;
+<P>   
+# resolution limits
+set lores=8.0
+set hires=3.6
+<P>   
+# current mask file
+set mask=m13.mask
+<P>   
+# spacegroup symmetry operators in &quot;O&quot; datablock file
+set sgs=p41212.sym
+<P>   
+# current NCS operator(s) in &quot;O&quot; datablock files
+set opers='rt_unit.o rt_m10a_to_b.o'
+<P>   
+# FFT symmetry
+set fftsym='1'
+<P>   
+# the following is needed if you don't do your FFT in P1
+set extend='/bin/false'
+set asu_ext='0 98 0 152 0 190'
+<P>   
+# delete intermediate maps ?
+set delmap='/bin/false'
+<P>   
+# end of user input ############################################
+<P>   
+# say hello
+echo &quot;&quot;
+banner &quot; R A V E&quot;
+echo &quot;&quot;
+echo ... SINGLE-CRYSTAL AVERAGING RUN ...
+echo &quot;&quot;
+echo ... Version $version
+echo &quot;&quot;
+echo ... Started at $starttime ...
+echo &quot;&quot;
+<P>   
+@ prev = $cycle - 1
+<P>   
+# save some stuff
+set first_cycle=$cycle
+set last_cycle=$end
+<P>   
+#
+# derive other file names automagically
+#
+<P>   
+# various scratch files
+set scr1=$scrat/scr_{$myid}.R
+set scr2=$scrat/scr_scaled_{$myid}.R
+set scr3=$scrat/scr_{$myid}.E
+set scr4=$scrat/temp_{$myid}.E
+<P>   
+# temporary input files
+set qqq={$myid}.tmp
+<P>   
+# statistics file
+set stats=averaging_{$myid}_{$first_cycle}_to_{$last_cycle}.log
+cat &gt; $stats &lt;&lt; EOF
+<P>   
+RAVE SINGLE-CRYSTAL AVERAGING RUN
+ID $myid
+CYCLES $first_cycle TO $last_cycle
+VERSION $version
+STARTED $starttime
+<P>   
+EOF
+<P>   
+echo &quot;Cycle	SFALL	RSTATS		FFT	AVE&quot; &gt;&gt; $stats
+echo &quot; Nr	RelInd	Rover	CCover	Sigma	CCs and Rs for operators&quot; &gt;&gt; $stats
+echo &quot;=====	======	======	======	======	========================&quot; &gt;&gt; $stats
+<P>   
+# catch interrupts
+onintr erreur
+<P>   
+# echo input
+echo &quot;... Overview of your input ................ &quot;
+echo &quot;&quot;
+echo &quot;... Id .................................... &quot; $myid
+echo &quot;... First cycle will be number ............ &quot; $cycle
+echo &quot;... Final cycle will be number ............ &quot; $end
+echo &quot;... Scratch directory ..................... &quot; $scrat
+echo &quot;... Input MTZ file ........................ &quot; $hklin
+echo &quot;... Labels for Fobs and Sigma(Fobs) ....... &quot; $lab_fp $lab_sf
+echo &quot;... Resolution limits (A) ................. &quot; $lores $hires
+echo &quot;... Grid to use for SF and MAP calcns ..... &quot; $grid
+echo &quot;... Extent of output MAPs ................. &quot; $ext
+echo &quot;... FFT spacegroup ........................ &quot; $fftsym
+echo &quot;... Current mask file ..................... &quot; $mask
+echo &quot;... Spacegroup operator file (O-style) .... &quot; $sgs
+foreach x ($opers)
+  echo &quot;... NCS operator file (O-style) ........... &quot; $x
+end
+<P>   
+if ($extend == &quot;/bin/true&quot;) then
+  echo &quot;... You want to extend the maps&quot;
+  echo &quot;... Extend of ASU plus a few points ....... &quot; $asu_ext
+else
+  echo &quot;... You do not want to extend the maps&quot;
+endif
+<P>   
+if ($delmap == &quot;/bin/true&quot;) then
+  echo &quot;... You want to delete intermediate maps&quot;
+else
+  echo &quot;... You do not want to delete intermediate maps&quot;
+endif
+echo &quot;&quot;
+<P>   
+set exit_status='0'
+<P>   
+# major loop starts here
+looper:
+<P>   
+echo &quot;&quot;
+banner &quot; Cycle $cycle&quot;
+echo &quot;&quot;
+echo ... starting cycle $myid $cycle ...
+echo &quot;&quot;
+<P>   
+# input map from previous cycle
+set inmap=$scrat/{$myid}_{$prev}.E
+<P>   
+# remove scratch files from previous cycle
+if (-e $scr1) \rm $scr1
+if (-e $scr2) \rm $scr2
+if (-e $scr3) \rm $scr3
+if (-e $scr4) \rm $scr4
+<P>   
+# log files
+set logfi=$scrat/rstats_{$myid}_{$cycle}.log
+set logav=$scrat/ave_{$myid}_{$cycle}.log
+set logsf=$scrat/sfall_{$myid}_{$cycle}.log
+set logft=$scrat/fft_{$myid}_{$cycle}.log
+set logex=$scrat/extend_{$myid}_{$cycle}.log
+<P>   
+# output map from this cycle
+set outmap=$scrat/{$myid}_{$cycle}.E
+<P>   
+# check if files (still) exist
+<P>   
+if (! (-e $hklin) ) then
+  echo ... ERROR ...
+  echo ... reflection file $hklin does not exist
+  echo ... ERROR ...
+  goto tyvaer
+endif
+<P>   
+if (! (-e $inmap) ) then
+  echo ... ERROR ...
+  echo ... previous map $inmap does not exist
+  echo ... ERROR ...
+  goto tyvaer
+endif
+<P>   
+if (! (-e $mask) ) then
+  echo ... ERROR ...
+  echo ... mask file $mask does not exist
+  echo ... ERROR ...
+  goto tyvaer
+endif
+<P>   
+if (! (-e $sgs) ) then
+  echo ... ERROR ...
+  echo ... spacegroup symmetry operator file $sgs does not exist
+  echo ... ERROR ...
+  goto tyvaer
+endif
+<P>   
+foreach fil ($opers)
+  if (! (-e $fil) ) then
+    echo ... ERROR ...
+    echo ... NCS symmetry operator file $fil does not exist
+    echo ... ERROR ...
+  goto tyvaer
+  endif
+end
+<P>   
+# calculate structure factors
+<P>   
+echo '... starting SFALL - structure factor calculation'
+<P>   
+cat &gt; $qqq &lt;&lt; EOF
+TITLE This is to produce calculated F, PHI
+MODE SFCALC MAPIN HKLIN
+RESOLUTION $lores $hires
+SFSGRP $fftsym
+BINS 40
+RSCB $lores $hires
+GRID $grid
+BADD 0
+NGAU 2
+FORM C H N O S P
+LABIN FP=$lab_fp SIGFP=$lab_sf
+LABOUT FC=FCALC PHIC=PHICALC
+END
+EOF
+<P>   
+sfall HKLIN $hklin MAPIN $inmap HKLOUT $scr1 &gt; $logsf &lt; $qqq
+<P>   
+set x=`grep &quot;Overall Reliability index is&quot; $logsf`
+echo $x
+grep -i error $logsf
+set relind=`echo $x | cut -d&quot; &quot; -f5`
+<P>   
+# delete map UNLESS first or last cycle
+if ($delmap == &quot;/bin/true&quot;) then
+  if ($cycle != $first_cycle &amp;&amp; $cycle != $last_cycle) then
+    if (-e $inmap) /bin/rm $inmap
+  endif
+endif
+<P>   
+# Scale the F's together
+<P>   
+echo '... starting RSTATS - scaling Fobs and Fcalc'
+<P>   
+if (! (-e $scr1) ) then
+  echo ... ERROR ...
+  echo ... new reflection file $scr1 with Fcalc does not exist
+  echo ... ERROR ...
+  goto tyvaer
+endif
+<P>   
+cat &gt; $qqq &lt;&lt; EOF
+TITLE scale Fobs and Fcalc together and get statistics
+PROCESS FCAL
+SCALE 1.0
+OUTPUT ASIN
+LABIN FP=$lab_fp SIGFP=$lab_sf FC=FCALC PHIC=PHICALC
+RESOLUTION $lores $hires
+WIDTH_OF_BINS RTHETA=0.01 FBINR=500
+PRINT ALL
+CYCLES 5
+LIST 1000000
+WEIGHTING_SCHEME NONE
+EOF
+<P>   
+rstats HKLIN  $scr1  HKLOUT $scr2 &gt; $logfi &lt; $qqq
+<P>   
+cp $scr2 $scrat/last_phases_{$myid}.R
+<P>   
+set x=`grep &quot;Overall Totals:&quot; $logfi | tail -1`
+echo $x
+grep -i error $logfi
+set rover=`echo $x | cut -d&quot; &quot; -f4`
+set ccover=`echo $x | cut -d&quot; &quot; -f11`
+<P>   
+# Calculate a new 2Fo-Fc map
+<P>   
+echo '... starting FFT - calculating a new map'
+<P>   
+if (! (-e $scr2) ) then
+  echo ... ERROR ...
+  echo ... scaled reflection file $scr2 does not exist
+  echo ... ERROR ...
+  goto tyvaer
+endif
+<P>   
+cat &gt; $qqq &lt;&lt; EOF
+TITLE new 2Fo-Fc map
+RESOLUTION $lores $hires
+SCALE F1 2.0 0.0
+SCALE F2 1.0 0.0
+FFTSYMMETRY $fftsym
+GRID $grid
+XYZLIMIT $ext
+LABIN F1=$lab_fp SIG1=$lab_sf F2=FCALC SIG2=$lab_sf PHI=PHICALC
+RHOLIM 100.0
+EOF
+<P>   
+fft HKLIN $scr2 MAPOUT $scr3 &gt; $logft &lt; $qqq
+<P>   
+set x=`grep &quot;Rms deviation from mean density .................&quot; $logft`
+echo $x
+grep -i error $logft
+set sigma=`echo $x | cut -d&quot; &quot; -f7 | cut -c1-7`
+<P>   
+# extend map if required
+<P>   
+if ($extend == &quot;/bin/true&quot;) then
+<P>   
+  echo '... starting EXTEND - extending the new map'
+<P>   
+  if (! (-e $scr3) ) then
+    echo ... ERROR ...
+    echo ... new map file $scr3 does not exist
+    echo ... ERROR ...
+    goto tyvaer
+  endif
+<P>   
+  cat &gt; $qqq &lt;&lt; EOF
+XYZLIM $asu_ext
+EOF
+<P>   
+  extend MAPIN $scr3 MAPOUT $scr4 &lt; $qqq &gt; $logex
+<P>   
+  set x=`grep &quot;Rms deviation from mean density .................&quot; $logex | tail -1`
+  echo $x
+  grep -i error $logex
+<P>   
+  if (-e $scr4) then
+    mv $scr4 $scr3
+  else
+    echo ... ERROR ...
+    echo ... extended map $scr4 not created
+    echo ... ERROR ...
+    goto tyvaer
+  endif
+<P>   
+endif
+<P>   
+# average the new map
+<P>   
+echo '... starting AVE - averaging the density'
+<P>   
+if (! (-e $scr3) ) then
+  echo ... ERROR ...
+  echo ... new map file $scr3 does not exist
+  echo ... ERROR ...
+  goto tyvaer
+endif
+<P>   
+echo Both average and expand &gt;  $qqq
+echo $scr3              &gt;&gt; $qqq
+echo $mask              &gt;&gt; $qqq
+echo $outmap            &gt;&gt; $qqq
+echo $sgs               &gt;&gt; $qqq
+foreach fil ($opers)
+  echo $fil &gt;&gt; $qqq
+end
+echo &quot; &quot;                &gt;&gt; $qqq
+<P>   
+# /nfs/public/ALPHA/bin/VIRUS_AVE -b &lt; $qqq &gt;&amp; $logav
+run ave -b &lt; $qqq &gt;&amp; $logav
+<P>   
+grep &quot;Corr. coeff. for operator&quot; $logav
+grep &quot;R-factor for operator&quot; $logav
+grep &quot;Rms deviation from mean =&quot; $logav
+grep -i error $logav
+grep -i warning $logav
+<P>   
+@ cnt = 0
+set ccopers=&quot;	&quot;
+set rfopers=&quot;	&quot;
+foreach x ($opers)
+  @ cnt ++
+  set x=`grep &quot;Corr. coeff. for operator&quot; $logav | head -{$cnt} | tail -1`
+  set y=`echo $x | cut -d&quot; &quot; -f7 | cut -c1-5`
+  set ccopers=`echo -n $ccopers $y 	`
+  set x=`grep &quot;R-factor for operator&quot; $logav | head -{$cnt} | tail -1`
+  set y=`echo $x | cut -d&quot; &quot; -f9 | cut -c1-5`
+  set rfopers=`echo -n $rfopers $y 	`
+end
+<P>   
+if (! (-e $outmap) ) then
+  echo ... ERROR ...
+  echo ... averaged map file $outmap not created
+  echo ... ERROR ...
+  goto tyvaer
+endif
+<P>   
+ls -FartCos $outmap
+<P>   
+# add to statistics file
+echo &quot;$cycle	$relind	$rover	$ccover	$sigma $ccopers	$rfopers&quot; &gt;&gt; $stats
+<P>   
+# DO ANOTHER CYCLE ?
+<P>   
+@ cycle ++
+<P>   
+if ($cycle &gt; $end) goto finalbits
+<P>   
+@ prev = $cycle - 1
+<P>   
+goto looper
+<P>   
+finalbits:
+<P>   
+# 950211 - final bits added
+<P>   
+@ cycle --
+<P>   
+# log files
+set logav=$scrat/ave_extract_{$myid}_{$cycle}.log
+set logm1=$scrat/2fofc_mappage_{$myid}_{$cycle}.log
+set logft=$scrat/fofc_{$myid}_{$cycle}.log
+set loga2=$scrat/fofc_extract_{$myid}_{$cycle}.log
+set logm2=$scrat/fofc_mappage_{$myid}_{$cycle}.log
+<P>   
+# output maps from this step
+set finmap=$scrat/{$myid}_{$cycle}.xE
+set diffmap=$scrat/fofc_{$myid}_{$cycle}.E
+set difamap=$scrat/fofc_{$myid}_{$cycle}.xE
+set finomap=$scrat/{$myid}_{$cycle}.map
+set finamap=$scrat/fofc_{$myid}_{$cycle}.map
+<P>   
+# get final map inside the mask
+<P>   
+echo &quot;&quot;
+echo '... starting AVE - extracting final 2Fo-Fc map inside mask'
+<P>   
+if (! (-e $outmap) ) then
+  echo ... ERROR ...
+  echo ... new map file $outmap does not exist
+  echo ... ERROR ...
+  goto tyvaer
+endif
+<P>   
+set unit=`echo $opers | cut -d' ' -f1`
+echo Average only       &gt;  $qqq
+echo $outmap            &gt;&gt; $qqq
+echo $mask              &gt;&gt; $qqq
+echo $finmap            &gt;&gt; $qqq
+echo $sgs               &gt;&gt; $qqq
+echo $unit              &gt;&gt; $qqq
+echo &quot; &quot;                &gt;&gt; $qqq
+<P>   
+# /nfs/public/ALPHA/bin/VIRUS_AVE -b &lt; $qqq &gt;&amp; $logav
+run ave -b &lt; $qqq &gt;&amp; $logav
+<P>   
+grep &quot;Corr. coeff. for operator&quot; $logav
+grep &quot;R-factor for operator&quot; $logav
+grep &quot;Rms deviation from mean =&quot; $logav
+grep -i error $logav
+grep -i warning $logav
+<P>   
+# mappage final map inside the mask
+<P>   
+echo &quot;&quot;
+echo '... starting MAPMAN - mappaging the final extracted 2Fo-Fc map'
+<P>   
+if (! (-e $finmap) ) then
+  echo ... ERROR ...
+  echo ... new map file $finmap does not exist
+  echo ... ERROR ...
+  goto tyvaer
+endif
+<P>   
+echo read m1 $finmap ccp4 &gt;  $qqq
+echo mappage m1 $finomap  &gt;&gt; $qqq
+echo quit                 &gt;&gt; $qqq
+<P>   
+# /nfs/public/ALPHA/bin/VIRUS_MAPMAN -b &lt; $qqq &gt;&amp; $logm1
+run mapman -b &lt; $qqq &gt;&amp; $logm1
+<P>   
+# calculate difference map with the final averaged phases
+<P>   
+echo &quot;&quot;
+echo '... starting FFT - calculating an Fo-Fc map with the final phases'
+<P>   
+if (! (-e $scr2) ) then
+  echo ... ERROR ...
+  echo ... scaled reflection file $scr2 does not exist
+  echo ... ERROR ...
+  goto tyvaer
+endif
+<P>   
+cat &gt; $qqq &lt;&lt; EOF
+TITLE Fo-Fc map with averaged, solvent-flattened phases
+RESOLUTION $lores $hires
+SCALE F1 1.0 0.0
+SCALE F2 1.0 0.0
+FFTSYMMETRY $fftsym
+GRID $grid
+XYZLIMIT $ext
+LABIN F1=$lab_fp SIG1=$lab_sf F2=FCALC SIG2=$lab_sf PHI=PHICALC
+RHOLIM 100.0
+EOF
+<P>   
+fft HKLIN $scr2 MAPOUT $diffmap &gt; $logft &lt; $qqq
+<P>   
+set x=`grep &quot;Rms deviation from mean density .................&quot; $logft`
+echo $x
+grep -i error $logft
+<P>   
+# extract the new map
+<P>   
+echo &quot;&quot;
+echo '... starting AVE - extracting the Fo-Fc map'
+<P>   
+if (! (-e $diffmap) ) then
+  echo ... ERROR ...
+  echo ... new map file $diffmap does not exist
+  echo ... ERROR ...
+  goto tyvaer
+endif
+<P>   
+set unit=`echo $opers | cut -d' ' -f1`
+echo Average only       &gt;  $qqq
+echo $diffmap           &gt;&gt; $qqq
+echo $mask              &gt;&gt; $qqq
+echo $difamap           &gt;&gt; $qqq
+echo $sgs               &gt;&gt; $qqq
+echo $unit              &gt;&gt; $qqq
+echo &quot; &quot;                &gt;&gt; $qqq
+<P>   
+# /nfs/public/ALPHA/bin/VIRUS_AVE -b &lt; $qqq &gt;&amp; $loga2
+run ave -b &lt; $qqq &gt;&amp; $loga2
+<P>   
+grep &quot;Corr. coeff. for operator&quot; $loga2
+grep &quot;R-factor for operator&quot; $loga2
+grep &quot;Rms deviation from mean =&quot; $loga2
+grep -i error $loga2
+grep -i warning $loga2
+<P>   
+# mappage final difference map inside the mask
+<P>   
+echo &quot;&quot;
+echo '... starting MAPMAN - mappaging the final extracted Fo-Fc map'
+<P>   
+if (! (-e $difamap) ) then
+  echo ... ERROR ...
+  echo ... new map file $difamap does not exist
+  echo ... ERROR ...
+  goto tyvaer
+endif
+<P>   
+echo read m1 $difamap ccp4 &gt;  $qqq
+echo mappage m1 $finamap   &gt;&gt; $qqq
+echo quit                  &gt;&gt; $qqq
+<P>   
+# /nfs/public/ALPHA/bin/VIRUS_MAPMAN -b &lt; $qqq &gt;&amp; $logm2
+run mapman -b &lt; $qqq &gt;&amp; $logm2
+<P>   
+# all done; just clean up
+<P>   
+done:
+<P>   
+echo &quot;&quot;
+<P>   
+# remove scratch files from last cycle
+if (-e $scr1) \rm $scr1
+if (-e $scr2) \rm $scr2
+if (-e $scr3) \rm $scr3
+if (-e $scr4) \rm $scr4
+<P>   
+set stoptime=`date`
+<P>   
+echo &quot;&quot;
+echo ... Started at $starttime ...
+echo ... Finished at $stoptime ...
+echo &quot;&quot;
+ls -FartCos $scrat
+echo &quot;&quot;
+<P>   
+echo &quot;&quot; &gt;&gt; $stats
+echo &quot;FINISHED $stoptime&quot; &gt;&gt; $stats
+echo &quot;&quot; &gt;&gt; $stats
+<P>   
+echo &quot;&quot;
+banner &quot;STATISTICS&quot;
+echo &quot;&quot;
+cat $stats
+echo &quot;&quot;
+<P>   
+set x=`hostname`
+set y=`grep $x /etc/hosts`
+set x=`whoami`
+<P>   
+# mail user when done
+cat &gt; $qqq &lt;&lt; EOF
+Rave Single-Crystal Averaging Run Finished
+Version $version
+Run by $x
+On machine $y
+From  $starttime
+Until $stoptime
+First cycle $first_cycle
+Last  cycle $last_cycle
+Exit status (0=OKAY) $exit_status
+<P>   
+EOF
+<P>   
+cat $stats &gt;&gt; $qqq
+mail $x &lt; $qqq
+/bin/rm $qqq
+<P>   
+exit $exit_status
+<P>   
+# interrupt trap
+erreur:
+  echo &quot;&quot;
+  echo &quot;... ERROR - process interrupted&quot;
+  echo &quot;&quot;
+  set exit_status='-9'
+  goto done
+<P>   
+# error trap
+tyvaer:
+  echo &quot;&quot;
+  echo &quot;... Alas, a FATAL error ...&quot;
+  echo &quot;&quot;
+  set exit_status='-1'
+  goto done
+<P>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H8">8 </A>EXAMPLE MCA SCRIPTS</H2> </CENTER>
+<P>   
+IMPORTANT: use CRAVE to auto-generate a C-shell script if you want
+to do multiple crystal averaging (single-domain only) !!! See
+the CRAVE manual for details.
+<P>   
+The following scripts were written for lipase; reference crystal is P21;
+additional crystal is P212121. First, two &quot;master scripts&quot; are given, then
+the individual scripts executed by the master scripts.
+<P>   
+Note that in between two cycles only TWO lines have to be edited in
+p21_cycle.com and p212121_cycle.com, and five lines in comex.com !!
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S10">8.1 </A>initial steps</H3> 
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+#!/bin/csh -f
+cd /nfs/user1/gerard/lipase
+<P>   
+source p21_av0.com
+source p212121_av0.com
+source comap0.com
+source p21_ex0.com
+source p212121_ex0.com
+exit 0
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S11">8.2 </A>one cycle</H3> 
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+#!/bin/csh -f
+cd /nfs/user1/gerard/lipase
+<P>   
+source p21_cycle.com
+source p212121_cycle.com
+source comex.com
+exit 0
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S12">8.3 </A>p21_av0.com</H3> 
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+MAVE -b &lt;&lt; EOF &gt; p21_av0.log
+average
+p21_start.E
+p21_start.mask
+rt_unit.o
+p21.sym
+rt_unit.o
+p21_a_to_b.o
+<P>   
+p21_start.E
+/nfs/scratch/gerard/p21_0x.E
+EOF
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S13">8.4 </A>p212121_av0.com</H3> 
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+MAVE -b &lt;&lt; EOF &gt; p212121_av0.log
+average
+p212121_start.E
+p21_start.mask
+p21_to_p212121.o
+p212121.sym
+rt_unit.o
+<P>   
+/nfs/scratch/gerard/p21_0x.E
+/nfs/scratch/gerard/p212121_0x.E
+EOF
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S14">8.5 </A>comap0.com</H3> 
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+COMAP -b &lt;&lt; EOF &gt; comap0.log
+/nfs/scratch/gerard/p21_0x.E
+2.0      2 * NCS for P21
+/nfs/scratch/gerard/p212121_0x.E
+1.0      no NCS for P212121
+<P>   
+/nfs/scratch/gerard/comap_0x.E
+EOF
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S15">8.6 </A>p21_ex0.com</H3> 
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+MAVE -b &lt;&lt; EOF &gt; p21_ex0.log
+expand
+/nfs/scratch/gerard/comap_0x.E
+p21_start.mask
+rt_unit.o
+p21.sym
+p21.sym
+rt_unit.o
+p21_a_to_b.o
+<P>   
+p21_start.E
+/nfs/scratch/gerard/p21_1.E
+EOF
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S16">8.7 </A>p212121_ex0.com</H3> 
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+MAVE -b &lt;&lt; EOF &gt; p212121_ex0.log
+expand
+/nfs/scratch/gerard/comap_0x.E
+p21_start.mask
+p21_to_p212121.o
+p21.sym
+p212121.sym
+rt_unit.o
+<P>   
+p212121_start.E
+/nfs/scratch/gerard/p212121_1.E
+EOF
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S17">8.8 </A>p21_cycle.com</H3> 
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+#!/bin/csh -f
+#
+# This script carries out one cycle of averaging.
+# It requires an averaged map as input and a suitable reflection file.
+# The output is a new averaged map.
+<P>   
+# modified by GJK @ 920903, 930127, 930308, 930329
+<P>   
+# set echo
+<P>   
+# change the following symbols as appropriate
+<P>   
+# set up for CCP4 on SGIs
+source /nfs/public/IRIX/ccp4/include/ccp4.setup
+<P>   
+# go to YOUR work directory
+cd /nfs/user1/gerard/lipase
+<P>   
+# new cycle id
+set cycle=p21_1c
+<P>   
+# previous cycle id
+set  prev=p21_1
+<P>   
+# current mask file
+set mask=p21_start.mask
+<P>   
+# current symmetry &amp; NCS operator(s)
+set symop=p21.sym
+set oper1=rt_unit.o
+set oper2=p21_a_to_b.o
+<P>   
+# scratch directory
+set scrat=/nfs/scratch/gerard
+<P>   
+# reflection file (MTZ)
+set hklin=p21.mtz
+<P>   
+# average executable
+set avexe=/home/gerard/progs/average/MAVE
+<P>   
+#
+# derive other file names automagically
+#
+<P>   
+set inmap=$scrat/$prev.E
+set scr1=$scrat/scr.R
+set scr2=$scrat/scr_scaled.R
+set scr3=$scrat/scr.E
+set logfi=rstats_$cycle.log
+set logav=mave_$cycle.log
+set outmap=$scrat/$cycle.E
+<P>   
+# check if files exist
+<P>   
+if (! (-e $hklin) ) then
+  echo ... ERROR ...
+  echo ... reflection file $hklin does not exist
+  echo ... ERROR ...
+  exit -1
+endif
+<P>   
+if (! (-e $inmap) ) then
+  echo ... ERROR ...
+  echo ... previous map $inmap does not exist
+  echo ... ERROR ...
+  exit -1
+endif
+<P>   
+if (! (-e $mask) ) then
+  echo ... ERROR ...
+  echo ... mask file $mask does not exist
+  echo ... ERROR ...
+  exit -1
+endif
+<P>   
+if (! (-e $oper1) ) then
+  echo ... ERROR ...
+  echo ... symmetry operator file $oper1 does not exist
+  echo ... ERROR ...
+  exit -1
+endif
+<P>   
+if (! (-e $oper2) ) then
+  echo ... ERROR ...
+  echo ... symmetry operator file $oper2 does not exist
+  echo ... ERROR ...
+  exit -1
+endif
+<P>   
+# calculate structure factors
+<P>   
+echo '... starting averaging cycle ' $cycle ' ...'
+echo '... starting SFALL - structure factor calculation'
+<P>   
+sfall HKLIN  $hklin MAPIN  $inmap \
+      HKLOUT $scr1 &gt; sfall_$cycle.log &lt;&lt;'SFALL EOF'
+!
+TITLE This is to produce calculated F, PHI
+MODE SFCALC MAPIN HKLIN
+RESOLUTION 3.0 8.0                      ! (RMIN,RMAX)
+SFSGRP     1                            ! (FFT space group)
+BINS       40                           ! (number of resol bins)
+RSCB       3.0 8.0                      ! (resol. range for scaling)
+GRID       70 48 88                     ! (NX NY NZ)
+LABIN FP=F SIGFP=SIGF
+LABOUT FC=FCALC PHIC=PHICALC
+END
+'SFALL EOF'
+<P>   
+# Scale the F's together
+<P>   
+echo '... starting RSTATS - scaling Fobs and Fcalc'
+<P>   
+if (! (-e $scr1) ) then
+  echo ... ERROR ...
+  echo ... new reflection file $scr1 with Fcalc does not exist
+  echo ... ERROR ...
+  exit -1
+endif
+<P>   
+rstats HKLIN  $scr1  HKLOUT $scr2 \
+       &lt;&lt; 'EOF-rstats' &gt; $logfi
+!
+TITLE Rstats of lipase P21, averaging
+PROCESS    FCAL
+SCALE      1.0
+OUTPUT     ASIN
+LABIN  FP=F SIGFP=SIGF FC=FCALC PHIC=PHICALC
+RESOLUTION 8.0 3.0
+WIDTH_OF_BINS RTHETA=0.01 FBINR=500
+CYCLES     5
+LIST       1000000
+WEIGHTING_SCHEME   NONE
+'EOF-rstats'
+<P>   
+#       Calculate a 2Fo-Fc map
+<P>   
+fft:
+<P>   
+echo '... starting FFT - calculating a new map'
+<P>   
+if (! (-e $scr1) ) then
+  echo ... ERROR ...
+  echo ... scaled reflection file $scr2 does not exist
+  echo ... ERROR ...
+  exit -1
+endif
+<P>   
+fft  HKLIN  $scr2 \
+     MAPOUT $scr3 &gt; fft_$cycle.log &lt;&lt;'FFT EOF'
+!
+TITLE Map -2fo-fc - averaging
+RESOLUTION  3.0 8.0                     ! (RMIN,RMAX)
+SCALE F1    2.0 0.0                     ! (SCALE1,TF1)
+SCALE F2    1.0 0.0                     ! (SCALE2,TF2)
+FFTSYMMETRY 1                           ! (FFT space group)
+SYMMETRY   4                            ! (real space group)
+GRID 70 48 88                           ! (NX NY NZ)
+XYZLIMIT 0 70 0 48 0 88                 ! (x,y,z limits)
+LABIN F1=F SIG1=SIGF F2=FCALC SIG2=FCALC PHI=PHICALC
+RHOLIM      100.0                       ! limit density values
+'FFT EOF'
+<P>   
+# create the input file for MAVE
+<P>   
+echo average            &gt;  ave.inp
+echo $scr3              &gt;&gt; ave.inp
+echo $mask              &gt;&gt; ave.inp
+echo rt_unit.o          &gt;&gt; ave.inp
+echo $symop             &gt;&gt; ave.inp
+echo $oper1             &gt;&gt; ave.inp
+echo $oper2             &gt;&gt; ave.inp
+echo &quot; &quot;                &gt;&gt; ave.inp
+echo $scrat/p21_0x.E    &gt;&gt; ave.inp
+echo $outmap            &gt;&gt; ave.inp
+<P>   
+# Average the density
+<P>   
+echo '... starting AVERAGE - averaging the density'
+<P>   
+if (! (-e $scr3) ) then
+  echo ... ERROR ...
+  echo ... new map file $scr3 does not exist
+  echo ... ERROR ...
+  exit -1
+endif
+<P>   
+$avexe &lt; ave.inp &gt; $logav
+<P>   
+if (! (-e $outmap) ) then
+  echo ... ERROR ...
+  echo ... averaged map file $outmap not created
+  echo ... ERROR ...
+  exit -1
+endif
+<P>   
+ls -FartCos $outmap
+<P>   
+exit 0
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S18">8.9 </A>p212121_cycle.com</H3> 
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+#!/bin/csh -f
+#
+# This script carries out one cycle of averaging.
+# It requires an averaged map as input and a suitable reflection file.
+# The output is a new averaged map.
+<P>   
+# modified by GJK @ 920903, 930127, 930308, 930329
+<P>   
+# set echo
+<P>   
+# change the following symbols as appropriate
+<P>   
+# set up for CCP4 on SGIs
+source /nfs/public/IRIX/ccp4/include/ccp4.setup
+<P>   
+# go to YOUR work directory
+cd /nfs/user1/gerard/lipase
+<P>   
+# new cycle id
+set cycle=p212121_1c
+<P>   
+# previous cycle id
+set  prev=p212121_1
+<P>   
+# current mask file
+set mask=p21_start.mask
+<P>   
+# current symmetry &amp; NCS operator(s) &amp; ORTHO-to-ORTHO operator
+set symop=p212121.sym
+set oper1=rt_unit.o
+set or2or=p21_to_p212121.o
+<P>   
+# scratch directory
+set scrat=/nfs/scratch/gerard
+<P>   
+# reflection file (MTZ)
+set hklin=p212121.mtz
+<P>   
+# average executable
+set avexe=/home/gerard/progs/average/MAVE
+<P>   
+#
+# derive other file names automagically
+#
+<P>   
+set inmap=$scrat/$prev.E
+set scr1=$scrat/scr.R
+set scr2=$scrat/scr_scaled.R
+set scr3=$scrat/scr.E
+set logfi=rstats_$cycle.log
+set logav=mave_$cycle.log
+set outmap=$scrat/$cycle.E
+<P>   
+# check if files exist
+<P>   
+if (! (-e $hklin) ) then
+  echo ... ERROR ...
+  echo ... reflection file $hklin does not exist
+  echo ... ERROR ...
+  exit -1
+endif
+<P>   
+if (! (-e $inmap) ) then
+  echo ... ERROR ...
+  echo ... previous map $inmap does not exist
+  echo ... ERROR ...
+  exit -1
+endif
+<P>   
+if (! (-e $mask) ) then
+  echo ... ERROR ...
+  echo ... mask file $mask does not exist
+  echo ... ERROR ...
+  exit -1
+endif
+<P>   
+if (! (-e $oper1) ) then
+  echo ... ERROR ...
+  echo ... symmetry operator file $oper1 does not exist
+  echo ... ERROR ...
+  exit -1
+endif
+<P>   
+# calculate structure factors
+<P>   
+echo '... starting averaging cycle ' $cycle ' ...'
+echo '... starting SFALL - structure factor calculation'
+<P>   
+sfall HKLIN  $hklin MAPIN  $inmap \
+      HKLOUT $scr1 &gt; sfall_$cycle.log &lt;&lt;'SFALL EOF'
+!
+TITLE This is to produce calculated F, PHI
+MODE SFCALC MAPIN HKLIN
+RESOLUTION 3.0 8.0                      ! (RMIN,RMAX)
+SFSGRP     1                            ! (FFT space group)
+BINS       40                           ! (number of resol bins)
+RSCB       3.0 8.0                      ! (resol. range for scaling)
+GRID       60   48   90                 ! (NX NY NZ)
+LABIN FP=F SIGFP=SIGF
+LABOUT FC=FCALC PHIC=PHICALC
+END
+'SFALL EOF'
+<P>   
+# Scale the F's together
+<P>   
+echo '... starting RSTATS - scaling Fobs and Fcalc'
+<P>   
+if (! (-e $scr1) ) then
+  echo ... ERROR ...
+  echo ... new reflection file $scr1 with Fcalc does not exist
+  echo ... ERROR ...
+  exit -1
+endif
+<P>   
+rstats HKLIN  $scr1  HKLOUT $scr2 \
+       &lt;&lt; 'EOF-rstats' &gt; $logfi
+!
+TITLE Rstats of lipase P212121, averaging
+PROCESS    FCAL
+SCALE      1.0
+OUTPUT     ASIN
+LABIN  FP=F SIGFP=SIGF FC=FCALC PHIC=PHICALC
+RESOLUTION 8.0 3.0
+WIDTH_OF_BINS RTHETA=0.01 FBINR=500
+CYCLES     5
+LIST       1000000
+WEIGHTING_SCHEME   NONE
+'EOF-rstats'
+<P>   
+#       Calculate a 2Fo-Fc map
+<P>   
+fft:
+<P>   
+echo '... starting FFT - calculating a new map'
+<P>   
+if (! (-e $scr1) ) then
+  echo ... ERROR ...
+  echo ... scaled reflection file $scr2 does not exist
+  echo ... ERROR ...
+  exit -1
+endif
+<P>   
+fft  HKLIN  $scr2 \
+     MAPOUT $scr3 &gt; fft_$cycle.log &lt;&lt;'FFT EOF'
+!
+TITLE Map -2fo-fc - averaging
+RESOLUTION  3.0 8.0                     ! (RMIN,RMAX)
+SCALE F1    2.0 0.0                     ! (SCALE1,TF1)
+SCALE F2    1.0 0.0                     ! (SCALE2,TF2)
+FFTSYMMETRY 1                           ! (FFT space group)
+SYMMETRY   19                           ! (real space group)
+GRID 60   48   90                       ! (NX NY NZ)
+XYZLIMIT 0 60 0 48 0 90                 ! (x,y,z limits)
+LABIN F1=F SIG1=SIGF F2=FCALC SIG2=FCALC PHI=PHICALC
+RHOLIM      100.0                       ! limit density values
+'FFT EOF'
+<P>   
+# create the input file for MAVE
+<P>   
+echo average            &gt;  ave.inp
+echo $scr3              &gt;&gt; ave.inp
+echo $mask              &gt;&gt; ave.inp
+echo $or2or             &gt;&gt; ave.inp
+echo $symop             &gt;&gt; ave.inp
+echo $oper1             &gt;&gt; ave.inp
+echo &quot; &quot;                &gt;&gt; ave.inp
+echo $scrat/p21_0x.E    &gt;&gt; ave.inp
+echo $outmap            &gt;&gt; ave.inp
+<P>   
+# Average the density
+<P>   
+echo '... starting AVERAGE - averaging the density'
+<P>   
+if (! (-e $scr3) ) then
+  echo ... ERROR ...
+  echo ... new map file $scr3 does not exist
+  echo ... ERROR ...
+  exit -1
+endif
+<P>   
+$avexe &lt; ave.inp &gt; $logav
+<P>   
+if (! (-e $outmap) ) then
+  echo ... ERROR ...
+  echo ... averaged map file $outmap not created
+  echo ... ERROR ...
+  exit -1
+endif
+<P>   
+ls -FartCos $outmap
+<P>   
+exit 0
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S19">8.10 </A>comex.com</H3> 
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+#!/bin/csh -f
+#
+<P>   
+# go to YOUR work directory
+cd /nfs/user1/gerard/lipase
+<P>   
+# scratch directory
+set scrat=/nfs/scratch/gerard
+<P>   
+set mask=p21_start.mask
+set unit=rt_unit.o
+<P>   
+set c1old=p21_5c.E
+set c1new=p21_6.E
+set c2old=p212121_5c.E
+set c2new=p212121_6.E
+set combi=5x
+<P>   
+# the following symbols shouldn't change
+set sym1=p21.sym
+set ncs1=2
+set rt11=rt_unit.o
+set rt12=p21_a_to_b.o
+set c1ex=p21_1.E
+<P>   
+set or2or=p21_to_p212121.o
+<P>   
+set sym2=p212121.sym
+set ncs2=1
+set rt21=rt_unit.o
+set c2ex=p212121_1.E
+<P>   
+# derive other file names
+<P>   
+set newmap=comap_$combi.E
+<P>   
+# create input file for COMAP
+<P>   
+echo $scrat/$c1old  &gt;  comap.inp
+echo $ncs1   &gt;&gt; comap.inp
+echo $scrat/$c2old  &gt;&gt; comap.inp
+echo $ncs2   &gt;&gt; comap.inp
+echo &quot; &quot;     &gt;&gt; comap.inp
+echo $scrat/$newmap &gt;&gt; comap.inp
+<P>   
+# run COMAP
+<P>   
+COMAP -b &lt; comap.inp &gt; comap.log
+<P>   
+# expand reference crystal form
+<P>   
+echo expand      &gt;  mave1.inp
+echo $scrat/$newmap     &gt;&gt; mave1.inp
+echo $mask       &gt;&gt; mave1.inp
+echo $unit       &gt;&gt; mave1.inp
+echo $sym1       &gt;&gt; mave1.inp
+echo $sym1       &gt;&gt; mave1.inp
+echo $rt11       &gt;&gt; mave1.inp
+echo $rt12       &gt;&gt; mave1.inp
+echo &quot; &quot;         &gt;&gt; mave1.inp
+echo $scrat/$c1ex       &gt;&gt; mave1.inp
+echo $scrat/$c1new      &gt;&gt; mave1.inp
+<P>   
+MAVE -b &lt; mave1.inp &gt; mave1.log
+<P>   
+# expand additional crystal form
+<P>   
+echo expand      &gt;  mave2.inp
+echo $scrat/$newmap     &gt;&gt; mave2.inp
+echo $mask       &gt;&gt; mave2.inp
+echo $or2or      &gt;&gt; mave2.inp
+echo $sym1       &gt;&gt; mave2.inp
+echo $sym2       &gt;&gt; mave2.inp
+echo $rt21       &gt;&gt; mave2.inp
+echo &quot; &quot;         &gt;&gt; mave2.inp
+echo $scrat/$c2ex       &gt;&gt; mave2.inp
+echo $scrat/$c2new      &gt;&gt; mave2.inp
+<P>   
+MAVE -b &lt; mave2.inp &gt; mave2.log
+<P>   
+exit 0
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H9">9 </A>ITERATIVE SKELETONISATION</H2> </CENTER>
+<P>   
+The following C-shell script can be used for iterative skeletonisation
+with RAVE and CCP4 programs. We haven't obtained any spectacular
+results with it, but you're welcome to give it a try. Please report
+your experiences to &quot;gerard@xray.bmc.uu.se&quot;.
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+#!/bin/csh -f
+<P>   
+alias run '/home/gerard/bin/run'
+<P>   
+# do N cycles of iterative skeletonisation with RAVE/CCP4
+# includes error checks to test if the appropriate files
+# exist or have been generated
+<P>   
+# Gerard J. Kleywegt @ 931001,04,05,06,07
+# E-mail: &quot;gerard@xray.bmc.uu.se&quot;
+<P>   
+# edit this file, then execute with:
+#    script_name | tee rave.log
+# or
+#    nohup script_name &gt;&amp; rave.log &amp;
+<P>   
+# MIR version (includes phase-combination step and
+#              optional solvent flattening)
+# can also be used for Molecular Replacement
+<P>   
+set version='mir_molrep_iterskel_flatten @ 931007 / gj kleywegt'
+set starttime=`date`
+<P>   
+# set echo
+<P>   
+# IMPORTANT: when you start RAVE-ing, a map file called
+#            &quot;$scrat/{$myid}_{$prev}.E&quot; MUST exist !
+# EXAMPLE: if your scratch directory is $SCR,
+#          your id is &quot;model1&quot; and the previous
+#          cycle number is &quot;0&quot;, then the map file
+#          $SCR/model1_0.E must exist
+<P>   
+# change the following symbols as appropriate
+<P>   
+# re-assign CCP4 scratch areas (not necessary)
+setenv CCP4_SCR /nfs/alien/gerard/scratch/lipase
+setenv BINSORT_SCR /nfs/alien/gerard/scratch/binsort
+<P>   
+# go to YOUR work directory
+cd /nfs/alien/gerard/dirs/lipase
+<P>   
+# set id (e.g., the ID of this macro-cycle)
+set myid=ortho
+<P>   
+# NEXT cycle NUMBER
+@ cycle = 1
+# note that a map with ($cycle - 1) in the name MUST exist
+# see &quot;IMPORTANT&quot; note above
+<P>   
+# final cycle nr (I.E.: NOT THE NUMBER OF CYCLES !!!)
+@ end = 1
+<P>   
+# scratch directory (where map, scratch and log files go to)
+set scrat=/nfs/alien/gerard/scratch/lipase
+<P>   
+# set to '/bin/true' for MIR, '/bin/false' for Mol Rep
+set mir='/bin/true'
+<P>   
+# input reflection file (MTZ)
+# use full path name if not in your work directory
+set hklin=ortho.mtz
+<P>   
+# grid &amp; map extent
+# 1 A set grid=&quot;60 48 90&quot;
+set grid=&quot;84 64 120&quot;
+set ext=&quot;0 83 0 63 0 119&quot;
+<P>   
+# define labels in your input MTZ file
+# observed structure factor amplitude and its sigma
+set lab_fp='FP'
+set lab_sf='SIGFP'
+# your squash or mir or whatever phase and its figure-of-merit
+# not needed for Mol Repl
+set lab_ph='PHI'
+set lab_fm='FOM'
+<P>   
+# resolution limits
+set lores=10.0
+set hires=3.0
+<P>   
+# skeletonisation parameters
+# sigma of INPUT map (add zeroes for increased precision)
+set sigma='0.20823'
+# base level for skeletonisation IN SIGMAS (add zeroes)
+set base='1.2000'
+# step level for skeletonisation IN SIGMAS (add zeroes)
+set step='0.500'
+# minimum length for main-chain fragments
+set mclength='8'
+# uniform temperature factor for all BONES atoms
+set bfac='5.0'
+<P>   
+# the following is for solvent flattening
+set flatten='/bin/false'
+# if flatten is NOT equal to &quot;/bin/true&quot; the following lines
+# don't matter
+set mama_cell='62.1 46.7 92.1 90.0 90.0 90.0'
+set mama_rad='3.5'
+# note: make the extent 4 points smaller than your unit cell
+set mama_ext='56 44 86'
+# note: since we only do solvent flattening in the whole
+#       unit cell, we need only the unit operator, both
+#       for the spacegroup symmetry &amp; for the NCS symmetry
+# use full path names if not in your work directory
+set spcgrp='rt_unit.o'
+set rtunit='rt_unit.o'
+<P>   
+# end of user input
+<P>   
+# say hello
+echo &quot;&quot;
+banner &quot; R A V E&quot;
+echo &quot;&quot;
+echo ... ITERATIVE SKELETONISATION RUN ...
+echo &quot;&quot;
+echo ... Version $version
+echo &quot;&quot;
+echo ... Started at $starttime ...
+echo &quot;&quot;
+<P>   
+@ prev = $cycle - 1
+<P>   
+# save some stuff
+set first_cycle=$cycle
+set last_cycle=$end
+<P>   
+# NOTE: if you change the FFT symmetry, you probably
+#       have to make more changes in this script
+set fftsym='1'
+<P>   
+#
+# derive other file names automagically
+#
+<P>   
+# BONES PDB &amp; mask file
+set bones=$scrat/{$myid}_bones.pdb
+set bones_mask=$scrat/{$myid}_bones.mask
+<P>   
+# various scratch files
+set scr1=$scrat/scr1_{$myid}.R
+set scr2=$scrat/scr2_{$myid}.R
+set scr3=$scrat/scr3_{$myid}.R
+set scr4=$scrat/scr4_{$myid}.R
+<P>   
+# temporary input files
+set qqq={$myid}.tmp
+<P>   
+# scratch map for solvent flattening
+set scrmap=$scrat/scr_{$myid}.E
+<P>   
+# catch interrupts
+onintr erreur
+<P>   
+# echo input
+echo &quot;... Overview of your input ................ &quot;
+echo &quot;&quot;
+echo &quot;... Id .................................... &quot; $myid
+echo &quot;... First cycle will be number ............ &quot; $cycle
+echo &quot;... Final cycle will be number ............ &quot; $end
+echo &quot;... Scratch directory ..................... &quot; $scrat
+echo &quot;... Input MTZ file ........................ &quot; $hklin
+echo &quot;... Labels for Fobs and Sigma(Fobs) ....... &quot; $lab_fp $lab_sf
+echo &quot;... Resolution limits (A) ................. &quot; $lores $hires
+echo &quot;... Grid to use for SF and MAP calcns ..... &quot; $grid
+echo &quot;... Extent of output MAPs ................. &quot; $ext
+echo &quot;... Skeletonisation base and step (SIGMA) . &quot; $base $step
+echo &quot;... Min main-chain length for BONES ....... &quot; $mclength
+echo &quot;... Temperature factor for BONES atoms .... &quot; $bfac
+echo &quot;... Latest BONES PDB file will always be .. &quot; $bones
+echo &quot;&quot;
+<P>   
+if ($mir == &quot;/bin/true&quot;) then
+  echo &quot;... You want to combine calculated and MIR phases&quot;
+  echo &quot;... Labels for MIR Phi and FOM(Phi) ....... &quot; $lab_ph $lab_fm
+else
+  echo &quot;... You are doing a Molecular Replacement run&quot;
+endif
+echo &quot;&quot;
+<P>   
+if ($flatten == &quot;/bin/true&quot;) then
+  echo &quot;... You want to include solvent flattening&quot;
+  echo &quot;... Masks are generated by MAMA with cell . &quot; $mama_cell
+  echo &quot;... Radius around BONES atoms to mask (A) . &quot; $mama_rad
+  echo &quot;... Extent of the intermediate mask ....... &quot; $mama_ext
+  echo &quot;... Spacegroup operators (O style) ........ &quot; $spcgrp
+  echo &quot;... Dummy (unit) NCS operator (O style) ... &quot; $rtunit
+  echo &quot;... Name of BONES mask file will be ....... &quot; $bones_mask
+  echo &quot;... Intermediate scratch map .............. &quot; $scrmap
+else
+  echo &quot;... You do not want to include solvent flattening&quot;
+endif
+echo &quot;&quot;
+<P>   
+set exit_status='0'
+<P>   
+# major loop starts here
+looper:
+<P>   
+echo &quot;&quot;
+banner &quot;   $cycle&quot;
+echo &quot;&quot;
+echo ... starting cycle $myid $cycle ...
+echo &quot;&quot;
+<P>   
+# input map from previous cycle
+set inmap=$scrat/{$myid}_{$prev}.E
+<P>   
+# remove scratch files from previous cycle
+if (-e $scr1) \rm $scr1
+if (-e $scr2) \rm $scr2
+if (-e $scr3) \rm $scr3
+if (-e $scr4) \rm $scr4
+<P>   
+# log files
+set logfi=$scrat/rstats_{$myid}_{$cycle}.log
+set logmp=$scrat/mapman_{$myid}_{$cycle}.log
+set logsf=$scrat/sfall_{$myid}_{$cycle}.log
+set logmu=$scrat/mtzutils_{$myid}_{$cycle}.log
+set logsa=$scrat/sigmaa_{$myid}_{$cycle}.log
+set logft=$scrat/fft_{$myid}_{$cycle}.log
+set logma=$scrat/mama_{$myid}_{$cycle}.log
+set logav=$scrat/ave_{$myid}_{$cycle}.log
+<P>   
+# output map from this cycle
+set outmap=$scrat/{$myid}_{$cycle}.E
+<P>   
+# check if files exist
+<P>   
+if (! (-e $hklin) ) then
+  echo ... ERROR ...
+  echo ... reflection file $hklin does not exist
+  echo ... ERROR ...
+  exit -1
+endif
+<P>   
+if (! (-e $inmap) ) then
+  echo ... ERROR ...
+  echo ... previous map $inmap does not exist
+  echo ... ERROR ...
+  exit -1
+endif
+<P>   
+# skeletonise your map
+# (note: at present you have to skeletonise the entire map,
+#        i.e., you can't &quot;mask out&quot; your known partial structure)
+<P>   
+echo '... starting MAPMAN - map skeletonisation'
+<P>   
+# calculate new base level ($base * $sigma)
+# uses 'dc', a Unix desk calculator
+echo $sigma &gt; $qqq
+echo $base &gt;&gt; $qqq
+echo '*' &gt;&gt; $qqq
+echo p &gt;&gt; $qqq
+set nbase=`dc &lt; $qqq`
+<P>   
+# calculate new step level ($step * $sigma)
+# uses 'dc', a Unix desk calculator
+echo $sigma &gt; $qqq
+echo $step &gt;&gt; $qqq
+echo '*' &gt;&gt; $qqq
+echo p &gt;&gt; $qqq
+set nstep=`dc &lt; $qqq`
+<P>   
+cat &gt; $qqq &lt;&lt; EOF
+read m1 $inmap ccp4
+bon skele m1 $nbase $nstep 0
+bon prune $bones $mclength $bfac
+bon conne $scrat/bones.odb itskl $mclength
+bon ?
+quit
+EOF
+<P>   
+echo ... sigma = $sigma
+echo ... base = $nbase
+echo ... step = $nstep
+<P>   
+run mapman -b &lt; $qqq &gt; $logmp
+<P>   
+grep 'Nr :' $logmp | head -1
+<P>   
+# delete map UNLESS first or last cycle
+if ($cycle != $first_cycle &amp;&amp; $cycle != $last_cycle) then
+  if (-e $inmap) /bin/rm $inmap
+endif
+<P>   
+# calculate structure factors
+<P>   
+echo '... starting SFALL - structure factor calculation'
+<P>   
+# NOTE: change SFSGRP as required
+<P>   
+cat &gt; $qqq &lt;&lt; EOF
+TITLE This is to produce calculated F, PHI
+MODE SFCALC XYZIN HKLIN
+RESOLUTION $lores $hires
+SFSGRP $fftsym
+BINS 40
+RSCB $lores $hires
+GRID $grid
+BADD 0
+NGAU 2
+FORM C H N O S P
+LABIN FP=$lab_fp SIGFP=$lab_sf
+LABOUT FC=FC PHIC=PHIC
+END
+EOF
+<P>   
+sfall HKLIN $hklin XYZIN $bones HKLOUT $scr1 &gt; $logsf &lt; $qqq
+<P>   
+grep &quot;Overall Reliability index is&quot; $logsf
+grep -i error $logsf
+<P>   
+# Scale the F's together
+<P>   
+echo '... starting RSTATS - scaling Fobs and Fcalc'
+<P>   
+if (! (-e $scr1) ) then
+  echo ... ERROR ...
+  echo ... new reflection file $scr1 with Fcalc does not exist
+  echo ... ERROR ...
+  exit -1
+endif
+<P>   
+cat &gt; $qqq &lt;&lt; EOF
+TITLE scale Fobs and Fcalc together and get statistics
+PROCESS FCAL
+SCALE 1.0
+OUTPUT ASIN
+LABIN FP=$lab_fp SIGFP=$lab_sf FC=FC PHIC=PHIC
+RESOLUTION $lores $hires
+WIDTH_OF_BINS RTHETA=0.01 FBINR=500
+PRINT ALL
+CYCLES 5
+LIST 1000000
+WEIGHTING_SCHEME NONE
+EOF
+<P>   
+rstats HKLIN  $scr1  HKLOUT $scr2 &gt; $logfi &lt; $qqq
+<P>   
+grep &quot;Overall Totals:&quot; $logfi | tail -1
+grep -i error $logfi
+<P>   
+# do MTZ combination
+<P>   
+if ($mir != &quot;/bin/true&quot;) goto molrep
+<P>   
+echo '... starting MTZUTILS - combining MTZ files'
+<P>   
+if (! (-e $scr2) ) then
+  echo ... ERROR ...
+  echo ... scaled reflection file $scr2 does not exist
+  echo ... ERROR ...
+  exit -1
+endif
+<P>   
+cat &gt; $qqq &lt;&lt; EOF
+INCLUDE 1 ALL
+INCLUDE 2 $lab_ph $lab_fm
+RUN
+EOF
+<P>   
+mtzutils HKLIN1 $scr2 HKLIN2 $hklin HKLOUT $scr3 &gt; $logmu &lt; $qqq
+<P>   
+# do phase combination
+<P>   
+echo '... starting SIGMAA - combining phases'
+<P>   
+if (! (-e $scr3) ) then
+  echo ... ERROR ...
+  echo ... combined reflection file $scr3 does not exist
+  echo ... ERROR ...
+  exit -1
+endif
+<P>   
+cat &gt; $qqq &lt;&lt; EOF
+TITLE   Phase combination of MOD and MIR phases
+RESOLUTION  $lores $hires
+COMBINE
+RANGES  20 1000
+LABI    FP=$lab_fp SIGFP=$lab_sf -
+        PHIBP=$lab_ph WP=$lab_fm -
+        FC=FC PHIC=PHIC
+LABO    PHCMB=PHCMB1 WCMB=MCMB1 -
+        FWT=FWT1 PHWT=PHWT1
+END
+EOF
+<P>   
+sigmaa HKLIN $scr3 HKLOUT $scr4 &gt; $logsa &lt; $qqq
+<P>   
+grep 'Overall Figures of Merit' $logsa
+grep 'CENTRIC  ' $logsa
+<P>   
+molrep:
+  if ($mir != &quot;/bin/true&quot;) then
+    mv $scr2 $scr4
+  endif
+<P>   
+# Calculate a new 2Fo-Fc map
+<P>   
+echo '... starting FFT - calculating a new map'
+<P>   
+if (! (-e $scr4) ) then
+  echo ... ERROR ...
+  echo ... (phase combined) reflection file $scr4 does not exist
+  echo ... ERROR ...
+  exit -1
+endif
+<P>   
+# NOTE: change FFTSYMMETRY as required
+<P>   
+if ($mir == &quot;/bin/true&quot;) then
+  set use_label=PHCMB1
+else
+  set use_label=PHIC
+endif
+<P>   
+cat &gt; $qqq &lt;&lt; EOF
+TITLE new 2Fo-Fc map
+RESOLUTION $lores $hires
+SCALE F1 2.0 0.0
+SCALE F2 1.0 0.0
+FFTSYMMETRY $fftsym
+GRID $grid
+XYZLIMIT $ext
+LABIN F1=$lab_fp SIG1=$lab_sf F2=FC SIG2=$lab_sf PHI=$use_label
+RHOLIM 100.0
+EOF
+<P>   
+fft HKLIN $scr4 MAPOUT $outmap &gt; $logft &lt; $qqq
+<P>   
+grep &quot;Rms deviation from mean density .................&quot; $logft
+grep -i error $logft
+<P>   
+#          Rms deviation from mean density .................    19.49101
+#2345678-1-2345678-2-2345678-3-2345678-4-2345678-5-2345678-6-2345678-7-2345
+set x=`grep &quot;Rms deviation from mean density .................&quot; $logft | cut -c61-75`
+if ($x != &quot;&quot;) set sigma=$x
+echo ... New SIGMA = $sigma
+<P>   
+if (! (-e $outmap) ) then
+  echo ... ERROR ...
+  echo ... new map file $outmap not created
+  echo ... ERROR ...
+  exit -1
+endif
+<P>   
+if ($flatten != &quot;/bin/true&quot;) goto noflat
+<P>   
+# generate mask from last bones PDB file
+<P>   
+echo '... starting MAMA - calculating a BONES mask'
+<P>   
+cat &gt; $qqq &lt;&lt; EOF
+new cell $mama_cell
+new grid $grid
+! avoid the borders of the grid to prevent averaging errors
+new ori 2 2 2
+new ext $mama_ext
+new make m1
+! make the mask
+new ori 0 0 0
+new ext $grid
+new pad 1 1 1
+new rad $mama_rad
+new pdb m2 $bones
+! transfer it to the smaller mask and save it
+or m1 m2
+new copy m3 m1
+list m3
+wr m3 $bones_mask com
+quit
+EOF
+<P>   
+run mama -b &lt; $qqq &gt; $logma
+<P>   
+grep 'Nr of points =' $logma
+<P>   
+if (! (-e $bones_mask) ) then
+  echo ... ERROR ...
+  echo ... mask file $bones_mask not created
+  echo ... ERROR ...
+  exit -1
+endif
+<P>   
+# flatten solvent
+# (note: you might want to do a real averaging step here !)
+<P>   
+echo '... starting AVE - flattening solvent'
+<P>   
+cat &gt; $qqq &lt;&lt; EOF
+both average and expand
+$outmap
+$bones_mask
+$scrmap
+$spcgrp
+$rtunit
+<P>   
+EOF
+<P>   
+run ave -b &lt; $qqq &gt; $logav
+<P>   
+if (! (-e $scrmap) ) then
+  echo ... ERROR ...
+  echo ... flattened map file $scrmap not created
+  echo ... ERROR ...
+  exit -1
+endif
+<P>   
+mv $scrmap $outmap
+<P>   
+# done with this cycle
+noflat:
+<P>   
+ls -FartCos $outmap
+<P>   
+# DO ANOTHER CYCLE ?
+<P>   
+@ cycle ++
+<P>   
+if ($cycle &gt; $end) goto done
+<P>   
+@ prev = $cycle - 1
+<P>   
+goto looper
+<P>   
+done:
+<P>   
+# remove scratch files from last cycle
+if (-e $scr1) \rm $scr1
+if (-e $scr2) \rm $scr2
+if (-e $scr3) \rm $scr3
+if (-e $scr4) \rm $scr4
+<P>   
+set stoptime=`date`
+<P>   
+echo &quot;&quot;
+echo ... Started at $starttime ...
+echo ... Finished at $stoptime ...
+echo &quot;&quot;
+<P>   
+ls -FartCos $scrat
+<P>   
+set x=`hostname`
+set y=`grep $x /etc/hosts`
+set x=`whoami`
+<P>   
+# mail gerard
+cat &gt; $qqq &lt;&lt; EOF
+Rave Iterative Skeletonisation Run
+Version $version
+By $x
+On $y
+From $starttime
+To $stoptime
+First $first_cycle
+Last $last_cycle
+Exit status $exit_status
+MIR $mir
+FLATTEN $flatten
+EOF
+mail gerard@xray.bmc.uu.se &lt; $qqq
+/bin/rm $qqq
+<P>   
+exit $exit_status
+<P>   
+# interrupt trap
+erreur:
+  echo &quot;&quot;
+  echo &quot;... ERROR - process interrupted&quot;
+  echo &quot;&quot;
+  set exit_status='-9'
+  goto done
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<HR NOSHADE>    <A HREF="http://xray.bmc.uu.se/usf/" target="_top">
+<IMG ALIGN="right" BORDER="0" SRC="usf_logo.gif"
+ALT="Uppsala Software Factory"></A>
+<FONT SIZE=-1>
+<B> <I> Created at Fri Jan 14 20:12:32 2005
+by MAN2HTML version 050114/2.0.6 . This manual
+describes RAVE, a program of the <A HREF="http://xray.bmc.uu.se/usf/" target="_top">Uppsala
+Software Factory</A> (USF), written and maintained by <A HREF="http://xray.bmc.uu.se/gerard"
+target="_blank">Gerard Kleywegt</A>. &copy; 1992-2005.
+</I> </B> </FONT><P>
+<IMG SRC="http://xray.bmc.uu.se/cgi-bin/nph-count?width=6&link=http://alpha2.bmc.uu.se/~gerard/www/manuals/rave_man.html">
+</body></html>

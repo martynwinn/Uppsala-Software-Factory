@@ -1,0 +1,494 @@
+<html><head><!-- This document was created for CELLO at Wed Apr 27 17:56:04 2005 from
+../cello/cello.txt by MAN2HTML version 050114/2.0.6 -->
+<title>Uppsala Software Factory - CELLO Manual</title>
+<meta name="DESCRIPTION" content="Manual for Gerard 
+Kleywegt's program CELLO">
+<meta name="KEYWORDS" content="manual software Gerard 
+Kleywegt program CELLO structural biology 
+protein X-ray crystallography macromolecular molecular
+Uppsala Software Factory bioinformatics">
+</head><body bgcolor="#fefefe" background="back.gif">
+
+<A HREF="http://xray.bmc.uu.se/usf/" target="_top">
+<IMG ALIGN="right" BORDER="0" SRC="usf_logo.gif"
+ALT="Uppsala Software Factory"></A>
+
+<H2>  Uppsala Software Factory - CELLO Manual</H2> <P>   
+<UL>  
+<LI><H3>  <A HREF="#H1">1  </A>CELLO - GENERAL INFORMATION</H3> 
+<LI><H3>  <A HREF="#H2">2  </A>REFERENCES</H3> 
+<LI><H3>  <A HREF="#H3">3  </A>VERSION HISTORY</H3> 
+<LI><H3>  <A HREF="#H4">4  </A>DESCRIPTION</H3> 
+<H5><A HREF="#S1">4.1  </A>commands</H5>
+<H5><A HREF="#S2">4.2  </A>startup</H5>
+<H5><A HREF="#S3">4.3  </A>examples</H5>
+<H5><A HREF="#S4">4.4  </A>sample output files</H5>
+<LI><H3>  <A HREF="#H5">5  </A>KNOWN BUGS</H3> 
+</UL> 
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H1">1 </A>CELLO - GENERAL INFORMATION</H2> </CENTER>
+<P>   
+Program : CELLO
+ <BR> Version : 050427
+ <BR> Author : Gerard J. Kleywegt, Dept. of Cell and Molecular Biology,
+Uppsala University, Biomedical Centre, Box 596,
+SE-751 24 Uppsala, SWEDEN
+ <BR> E-mail : gerard@xray.bmc.uu.se
+ <BR> Purpose : play with your unit cell
+ <BR> Package : X-UTIL
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H2">2 </A>REFERENCES</H2> </CENTER>
+<P>   
+Reference(s) for this program:
+<P>   
+* 1 * G.J. Kleywegt (1992-2004).
+Uppsala University, Uppsala, Sweden.
+Unpublished program.
+<P>   
+* 2 * Kleywegt, G.J., Zou, J.Y., Kjeldgaard, M. &amp; Jones, T.A. (2001).
+Around O. In: &quot;International Tables for Crystallography, Vol. F.
+Crystallography of Biological Macromolecules&quot; (Rossmann, M.G.
+&amp; Arnold, E., Editors). Chapter 17.1, pp. 353-356, 366-367.
+Dordrecht: Kluwer Academic Publishers, The Netherlands.
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H3">3 </A>VERSION HISTORY</H2> </CENTER>
+<P>   
+940308 - print rotation angles etc corresponding to NCS operators
+ <BR> 940316 - allow O NCS datablock files to have &quot;!&quot; comment lines
+ <BR> 940525 - 0.9 - use standard routines for listing and analysing
+SGS and NCS operators
+ <BR> 950201 -0.9.3- removed small bug from Export (X-PLOR) option
+ <BR> 961121 -0.9.4- minor bug fix
+ <BR> 050427 - 1.0 - various changes to the Import and Export commands
+(can now read and write more than one operator at
+a time and you don't have to provide operator
+names any longer - what can I say - it's an
+ancient program ...)
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H4">4 </A>DESCRIPTION</H2> </CENTER>
+<P>   
+A trivial little program to play with your unit cell, create
+certain data-blocks for use with &quot;O&quot;, read/write O and XPLOR
+files with non-crystallographic symmetry operators, etc.
+<P>   
+NOTE: the NCS-operators for X-PLOR can be generated with the
+program XPAND.
+<P>   
+NOTE: most options in this program are nowadays found in other
+programs (XPAND, MOLEMAN, O, MAPMAN).
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S1">4.1 </A>commands</H3> 
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ?                          - list available options
+ Quit                       - stop program
+ Cartesian_to_fractional    - convert coordinates (in your cell)
+ Fractional_to_Cartesian    - ditto
+ Apply_symmetry_operators   - to a certain point
+ Redefine_cell_constants    - restart the program
+ List_cell_constants        - guess what
+ Spacegroup_datablock_for_O - generate just that
+ Draw_cell_datablock_for_O  - ditto
+ Import_NCS_data            - import NCS operators (manual, XPLOR, O)
+ Export_NCS_data            - export NCS operators (screen, XPLOR, O)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S2">4.2 </A>startup</H3> 
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+<P>   
+ *** CELLO *** CELLO *** CELLO *** CELLO *** CELLO *** CELLO *** CELLO ***
+<P>   
+ Version  - 920911/0.4
+ By       - Gerard J. Kleywegt, Dept. Mol. Biology, BMC, Uppsala (S)
+ User I/O - routines courtesy of Rolf Boelens, Univ. of Utrecht (NL)
+<P>   
+ Started  - Fri Sep 11 20:56:53 1992
+ User     - gerard
+ Tty      - /dev/ttyq4
+<P>   
+ *** CELLO *** CELLO *** CELLO *** CELLO *** CELLO *** CELLO *** CELLO ***
+<P>   
+ ... Initialising ...
+<P>   
+ ***** CELLO ***** CELLO ***** CELLO ***** CELLO *****
+<P>   
+                Current version : 920911/0.4
+   Max nr of symmetry operators :       32
+        Max nr of NCS operators :       32
+<P>   
+ ***** CELLO ***** CELLO ***** CELLO ***** CELLO *****
+<P>   
+ Cell axes    (A) : ( 100.000  100.000  100.000)
+ Angles (degrees) : (  90.000   90.000   90.000)
+ Nr SYM operators : (          1)
+ Nr NCS operators : (          1)
+ SYM #  1 :         1.000        0.000        0.000                  0.000
+                    0.000        1.000        0.000                  0.000
+                    0.000        0.000        1.000                  0.000
+ Determinant of rotation matrix =   1.000000
+ NCS #  1 :     1.0000000    0.0000000    0.0000000                 0.0000
+                0.0000000    1.0000000    0.0000000                 0.0000
+                0.0000000    0.0000000    1.0000000                 0.0000
+ Determinant of rotation matrix =   1.000000
+<P>   
+ Select an option :
+ ==================
+<P>   
+ ?                           Quit
+ Cartesian_to_fractional     Fractional_to_Cartesian
+ List_cell_constants         Redefine_cell_constants
+ Spacegroup_datablock_for_O  Draw_cell_datablock_for_O
+ Import_NCS_data             Export_NCS_data
+ Apply_symmetry_operators
+<P>   
+ Option ? (L)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S3">4.3 </A>examples</H3> 
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (L)
+r
+ Axes (A) ? ( 100.000  100.000  100.000)
+100.8 95.4 105.2
+                   a,b,c :       100.80     95.40    105.20
+ Angles (deg) ? (  90.000   90.000   90.000)
+90. 92.4 90.0
+        alpha,beta,gamma :        90.00     92.40     90.00
+ Symmetry operators: Manual or O-file (M/O) ? (O)
+<P>   
+ O file name ? (c2.o)
+<P>   
+ Data block name : (.SPACE_GROUP_OPERATORS)
+ Nr symmops      : (          4)
+ Format          : ((3F10.2))
+    1.00    0.00    0.00              0.00
+    1.00    0.00    0.00              0.00
+    1.00    0.00    0.00              0.00
+   -1.00    0.00    0.00              0.00
+    1.00    0.00    0.00              0.00
+   -1.00    0.00    0.00              0.00
+    1.00    0.00    0.00              0.00
+    1.00    0.00    0.00              0.00
+    1.00    0.50    0.50              0.00
+   -1.00    0.00    0.00              0.00
+    1.00    0.00    0.00              0.00
+   -1.00    0.50    0.50              0.00
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (R)
+im
+ Xplor-file, O-file or Manual input (X/O/M) ? (M)
+x
+ XPLOR filename ? ()
+ncs.inp
+ NCS operator : (          1)
+    1.0000000    0.0000000    0.0000000                 0.0000
+    0.0000000    1.0000000    0.0000000                 0.0000
+    0.0000000    0.0000000    1.0000000                 0.0000
+ Operator name ? (unit_operator)
+<P>   
+ NCS operator : (          2)
+   -0.6093410   -0.0021840    0.7929050               110.5281
+    0.0265770   -0.9994910    0.0176720                37.4937
+    0.7924630    0.0318420    0.6090880               -54.4041
+ Operator name ? (ncs_operator_2)
+<P>   
+ NCS operator : (          3)
+   -0.6239080    0.1083360    0.7739520               107.1462
+    0.0411870   -0.9844100    0.1709970                35.2870
+    0.7804120    0.1385630    0.6097190                -3.3917
+ Operator name ? (ncs_operator_3)
+<P>   
+ NCS operator : (          4)
+    0.9951400   -0.0980170   -0.0094390                 0.2364
+    0.0984530    0.9921840    0.0766640                -7.3961
+    0.0018510   -0.0772210    0.9970120                53.9465
+ Operator name ? (ncs_operator_4)
+<P>   
+ Nr of NCS operators read : (          4)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (IM)
+l
+ Cell axes    (A) : ( 100.800   95.400  105.200)
+ Angles (degrees) : (  90.000   92.400   90.000)
+ Nr SYM operators : (          4)
+ Nr NCS operators : (          4)
+ SYM #  1 :         1.000        0.000        0.000                  0.000
+                    0.000        1.000        0.000                  0.000
+                    0.000        0.000        1.000                  0.000
+ Determinant of rotation matrix =   1.000000
+ SYM #  2 :        -1.000        0.000        0.000                  0.000
+                    0.000        1.000        0.000                  0.000
+                    0.000        0.000       -1.000                  0.000
+ Determinant of rotation matrix =   1.000000
+ SYM #  3 :         1.000        0.000        0.000                  0.500
+                    0.000        1.000        0.000                  0.500
+                    0.000        0.000        1.000                  0.000
+ Determinant of rotation matrix =   1.000000
+ SYM #  4 :        -1.000        0.000        0.000                  0.500
+                    0.000        1.000        0.000                  0.500
+                    0.000        0.000       -1.000                  0.000
+ Determinant of rotation matrix =   1.000000
+ NCS #  1 :     1.0000000    0.0000000    0.0000000                 0.0000
+                0.0000000    1.0000000    0.0000000                 0.0000
+                0.0000000    0.0000000    1.0000000                 0.0000
+ Determinant of rotation matrix =   1.000000
+ NCS #  2 :    -0.6093410   -0.0021840    0.7929050               110.5281
+                0.0265770   -0.9994910    0.0176720                37.4937
+                0.7924630    0.0318420    0.6090880               -54.4041
+ Determinant of rotation matrix =   1.000000
+ NCS #  3 :    -0.6239080    0.1083360    0.7739520               107.1462
+                0.0411870   -0.9844100    0.1709970                35.2870
+                0.7804120    0.1385630    0.6097190                -3.3917
+ Determinant of rotation matrix =   0.999999
+ NCS #  4 :     0.9951400   -0.0980170   -0.0094390                 0.2364
+                0.0984530    0.9921840    0.0766640                -7.3961
+                0.0018510   -0.0772210    0.9970120                53.9465
+ Determinant of rotation matrix =   0.999999
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (L)
+car
+ Cartesian coordinates  ? (   0.000    0.000    0.000)
+<P>   
+ Fractional coordinates : (   0.000    0.000    0.000)
+<P>   
+ Option ? (CAR)
+<P>   
+ Cartesian coordinates  ? (   0.000    0.000    0.000)
+50 83 23
+ Fractional coordinates : (   0.506    0.870    0.219)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (CAR)
+fr
+ Fractional coordinates ? (   0.506    0.870    0.219)
+.3 .5 .92
+ Cartesian coordinates  : (  26.187   47.700   96.699)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (FR)
+spa
+ Filename ? (spgrp.o)
+<P>   
+ ERROR --- XOPXNA - error # 126 while opening NEW file : spgrp.o
+ Open file as OLD (Y/N) ? (N)
+y
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (SPA)
+dr
+ Filename ? (cell.o)
+<P>   
+ ERROR --- XOPXNA - error # 126 while opening NEW file : cell.o
+ Open file as OLD (Y/N) ? (N)
+y
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (DR)
+ex
+ Xplor-file, O-file or Merely to the screen (X/O/M) ? (X)
+o
+ Operator   : (unit_operator)
+ O filename ? ()
+a_to_a.o
+ Format ? ((3f15.7))
+<P>   
+ Operator   : (ncs_operator_2)
+ O filename ? ()
+a_to_b.o
+ ERROR --- XOPXNA - error # 126 while opening NEW file : a_to_b.o
+ Open file as OLD (Y/N) ? (N)
+y
+ Format ? ((3f15.7))
+<P>   
+ Operator   : (ncs_operator_3)
+ O filename ? ()
+a_to_c.o
+ ERROR --- XOPXNA - error # 126 while opening NEW file : a_to_c.o
+ Open file as OLD (Y/N) ? (N)
+y
+ Format ? ((3f15.7))
+<P>   
+ Operator   : (ncs_operator_4)
+ O filename ? ()
+a_to_d.o
+ ERROR --- XOPXNA - error # 126 while opening NEW file : a_to_d.o
+ Open file as OLD (Y/N) ? (N)
+y
+ Format ? ((3f15.7))
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (EX)
+appl
+ Fractional coordinates ? (   0.300    0.500    0.920)
+.123 .456 .789
+ Fract coords SYM #  1 &amp; NCS #  1 :      0.123     0.456     0.789
+ Cart  coords SYM #  1 &amp; NCS #  1 :      8.923    43.502    82.930
+ Fract coords SYM #  1 &amp; NCS #  2 :      1.696    -0.045     0.043
+ Cart  coords SYM #  1 &amp; NCS #  2 :    170.752    -4.284     4.564
+ Fract coords SYM #  1 &amp; NCS #  3 :      1.716     0.073     0.572
+ Cart  coords SYM #  1 &amp; NCS #  3 :    170.476     7.011    60.163
+ Fract coords SYM #  1 &amp; NCS #  4 :      0.096     0.451     1.268
+ Cart  coords SYM #  1 &amp; NCS #  4 :      4.069    43.002   133.286
+ Fract coords SYM #  2 &amp; NCS #  1 :     -0.123     0.456    -0.789
+ Cart  coords SYM #  2 &amp; NCS #  1 :     -8.923    43.502   -82.930
+ Fract coords SYM #  2 &amp; NCS #  2 :      0.451    -0.081    -1.052
+ Cart  coords SYM #  2 &amp; NCS #  2 :     50.114    -7.689  -110.601
+ Fract coords SYM #  2 &amp; NCS #  3 :      0.505    -0.232    -0.522
+ Cart  coords SYM #  2 &amp; NCS #  3 :     53.242   -22.085   -54.891
+ Fract coords SYM #  2 &amp; NCS #  4 :     -0.134     0.299    -0.306
+ Cart  coords SYM #  2 &amp; NCS #  4 :    -12.124    28.530   -32.112
+ Fract coords SYM #  3 &amp; NCS #  1 :      0.623     0.956     0.789
+ Cart  coords SYM #  3 &amp; NCS #  1 :     59.323    91.202    82.930
+ Fract coords SYM #  3 &amp; NCS #  2 :      1.407    -0.531     0.438
+ Cart  coords SYM #  3 &amp; NCS #  2 :    139.937   -50.620    46.023
+ Fract coords SYM #  3 &amp; NCS #  3 :      1.475    -0.397     1.009
+ Cart  coords SYM #  3 &amp; NCS #  3 :    144.199   -37.869   106.106
+ Fract coords SYM #  3 &amp; NCS #  4 :      0.545     0.999     1.234
+ Cart  coords SYM #  3 &amp; NCS #  4 :     49.549    95.292   129.696
+ Fract coords SYM #  4 &amp; NCS #  1 :      0.377     0.956    -0.789
+ Cart  coords SYM #  4 &amp; NCS #  1 :     41.477    91.202   -82.930
+ Fract coords SYM #  4 &amp; NCS #  2 :      0.163    -0.566    -0.658
+ Cart  coords SYM #  4 &amp; NCS #  2 :     19.299   -54.025   -69.142
+ Fract coords SYM #  4 &amp; NCS #  3 :      0.264    -0.702    -0.085
+ Cart  coords SYM #  4 &amp; NCS #  3 :     26.965   -66.966    -8.949
+ Fract coords SYM #  4 &amp; NCS #  4 :      0.316     0.847    -0.340
+ Cart  coords SYM #  4 &amp; NCS #  4 :     33.356    80.819   -35.702
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (APPL)
+quit
+<P>   
+ *** CELLO *** CELLO *** CELLO *** CELLO *** CELLO *** CELLO *** CELLO ***
+<P>   
+ Version - 920911/0.4
+ Started - Fri Sep 11 20:56:53 1992
+ Stopped - Fri Sep 11 21:00:02 1992
+<P>   
+ CPU-time taken :
+ User    -      0.4 Sys    -      0.3 Total   -      0.7
+<P>   
+ *** CELLO *** CELLO *** CELLO *** CELLO *** CELLO *** CELLO *** CELLO ***
+<P>   
+STOP ... All done ... statement executed
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S4">4.4 </A>sample output files</H3> 
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+&lt; % 321 gerard sirius 20:44:51 progs/cello&gt; cat spgrp.o
+.space_group_operators  R   48  (3f10.2)
+      1.00      0.00      0.00
+      0.00      1.00      0.00
+      0.00      0.00      1.00
+      0.00      0.00      0.00
+     -1.00      0.00      0.00
+      0.00      1.00      0.00
+      0.00      0.00     -1.00
+      0.00      0.00      0.00
+      1.00      0.00      0.00
+      0.00      1.00      0.00
+      0.00      0.00      1.00
+      0.50      0.50      0.00
+     -1.00      0.00      0.00
+      0.00      1.00      0.00
+      0.00      0.00     -1.00
+      0.50      0.50      0.00
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+&lt; % 322 gerard sirius 20:44:51 progs/cello&gt; cat a_to_c.o
+ncs_operator_3 R 12 (3f15.7)
+     -0.6239080      0.0411870      0.7804120
+      0.1083360     -0.9844100      0.1385630
+      0.7739520      0.1709970      0.6097190
+    107.1462021     35.2869987     -3.3917000
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+&lt; % 325 gerard sirius 20:44:51 progs/cello&gt; cat cell.o
+CELL  T  24  40
+ begin cell
+ colour 16799999
+ t     10.080     0.000     0.000 X
+ t      0.000     9.540     0.000 Y
+ t     -0.441     0.000    10.511 Z
+ m      0.000     0.000     0.000
+ l    100.800     0.000     0.000
+ l    100.800    95.400     0.000
+ l      0.000    95.400     0.000
+ l      0.000     0.000     0.000
+ m     -4.405     0.000   105.108
+ l     96.395     0.000   105.108
+ l     96.395    95.400   105.108
+ l     -4.405    95.400   105.108
+ l     -4.405     0.000   105.108
+ m      0.000     0.000     0.000
+ l     -4.405     0.000   105.108
+ m    100.800     0.000     0.000
+ l     96.395     0.000   105.108
+ m    100.800    95.400     0.000
+ l     96.395    95.400   105.108
+ m      0.000    95.400     0.000
+ l     -4.405    95.400   105.108
+ end_object
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H5">5 </A>KNOWN BUGS</H2> </CENTER>
+<P>   
+None, at present.
+<HR NOSHADE>    <A HREF="http://xray.bmc.uu.se/usf/" target="_top">
+<IMG ALIGN="right" BORDER="0" SRC="usf_logo.gif"
+ALT="Uppsala Software Factory"></A>
+<FONT SIZE=-1>
+<B> <I> Created at Wed Apr 27 17:56:04 2005
+by MAN2HTML version 050114/2.0.6 . This manual
+describes CELLO, a program of the <A HREF="http://xray.bmc.uu.se/usf/" target="_top">Uppsala
+Software Factory</A> (USF), written and maintained by <A HREF="http://xray.bmc.uu.se/gerard"
+target="_blank">Gerard Kleywegt</A>. &copy; 1992-2005.
+</I> </B> </FONT><P>
+<IMG SRC="http://xray.bmc.uu.se/cgi-bin/nph-count?width=6&link=http://alpha2.bmc.uu.se/~gerard/www/manuals/cello_man.html">
+</body></html>

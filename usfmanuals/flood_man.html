@@ -1,0 +1,768 @@
+<html><head><!-- This document was created for FLOOD at Fri Jan 14 20:12:10 2005 from
+../cavity/flood.txt by MAN2HTML version 050114/2.0.6 -->
+<title>Uppsala Software Factory - FLOOD Manual</title>
+<meta name="DESCRIPTION" content="Manual for Gerard 
+Kleywegt's program FLOOD">
+<meta name="KEYWORDS" content="manual software Gerard 
+Kleywegt program FLOOD structural biology 
+protein X-ray crystallography macromolecular molecular
+Uppsala Software Factory bioinformatics">
+</head><body bgcolor="#fefefe" background="back.gif">
+
+<A HREF="http://xray.bmc.uu.se/usf/" target="_top">
+<IMG ALIGN="right" BORDER="0" SRC="usf_logo.gif"
+ALT="Uppsala Software Factory"></A>
+
+<H2>  Uppsala Software Factory - FLOOD Manual</H2> <P>   
+<UL>  
+<LI><H3>  <A HREF="#H1">1  </A>FLOOD - GENERAL INFORMATION</H3> 
+<LI><H3>  <A HREF="#H2">2  </A>REFERENCES</H3> 
+<LI><H3>  <A HREF="#H3">3  </A>VERSION HISTORY</H3> 
+<LI><H3>  <A HREF="#H4">4  </A>INTRODUCTION</H3> 
+<LI><H3>  <A HREF="#H5">5  </A>EXAMPLE</H3> 
+<H5><A HREF="#S1">5.1  </A>running VOIDOO</H5>
+<H5><A HREF="#S2">5.2  </A>startup</H5>
+<H5><A HREF="#S3">5.3  </A>VOIDOO file</H5>
+<H5><A HREF="#S4">5.4  </A>parameters</H5>
+<H5><A HREF="#S5">5.5  </A>algorithm</H5>
+<H5><A HREF="#S6">5.6  </A>output</H5>
+<H5><A HREF="#S7">5.7  </A>results</H5>
+<H5><A HREF="#S8">5.8  </A>output PDB file</H5>
+<H5><A HREF="#S9">5.9  </A>O macro</H5>
+<H5><A HREF="#S10">5.10  </A>MAPPAGE</H5>
+<H5><A HREF="#S11">5.11  </A>run O</H5>
+<LI><H3>  <A HREF="#H6">6  </A>FILLING A MASK WITH ATOMS</H3> 
+<LI><H3>  <A HREF="#H7">7  </A>KNOWN BUGS</H3> 
+</UL> 
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H1">1 </A>FLOOD - GENERAL INFORMATION</H2> </CENTER>
+<P>   
+Program : FLOOD
+ <BR> Version : 981109
+ <BR> Author : Gerard J. Kleywegt, Dept. of Cell and Molecular Biology,
+Uppsala University, Biomedical Centre, Box 596,
+SE-751 24 Uppsala, SWEDEN
+ <BR> E-mail : gerard@xray.bmc.uu.se
+ <BR> Purpose : fill a cavity with solvent molecules
+ <BR> Package : VOIDOO
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H2">2 </A>REFERENCES</H2> </CENTER>
+<P>   
+Reference(s) for this program:
+<P>   
+* 1 * G.J. Kleywegt &amp; T.A. Jones (1993). Biomacromolecular
+Speleology. CCP4/ESF-EACBM Newsletter on Protein
+Crystallography 29, November 1993, pp. 26-28.
+[http://xray.bmc.uu.se/usf/factory_2.html]
+<P>   
+* 2 * G.J. Kleywegt &amp; T.A. Jones (1994). Detection, delineation,
+measurement and display of cavities in macromolecular
+structures. Acta Cryst D50, 178-185.
+[http://scripts.iucr.org/cgi-bin/paper?gr0263]
+<P>   
+* 3 * Kleywegt, G.J., Zou, J.Y., Kjeldgaard, M. &amp; Jones, T.A. (2001).
+Around O. In: &quot;International Tables for Crystallography, Vol. F.
+Crystallography of Biological Macromolecules&quot; (Rossmann, M.G.
+&amp; Arnold, E., Editors). Chapter 17.1, pp. 353-356, 366-367.
+Dordrecht: Kluwer Academic Publishers, The Netherlands.
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H3">3 </A>VERSION HISTORY</H2> </CENTER>
+<P>   
+Version 0.1 @ 930930 - first version &amp; documentation
+ <BR> Version 0.2 @ 931007 - fixed bug in mask reading
+ <BR> Version 1.0 @ 931117 - add END record to output PDB files
+ <BR> 960415 - 1.0.2 - minor bug fixes
+ <BR> 981030 - 1.1 - changed such that grid and cell axes no longer
+have to be identical for X, Y, and Z; cell
+angles must still all be 90 degrees, though;
+changed default for HOH oxygen name from &quot; O1 &quot;
+to &quot; O &quot;; added instructions on how to fill
+a molecular envelope (mask) with water molecules
+ <BR> 981109 - 1.1.1 - changed maximum mask size to 6 MWord
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H4">4 </A>INTRODUCTION</H2> </CENTER>
+<P>   
+FLOOD is VOIDOO's little sister. With FLOOD you can take
+a cavity (in the form of an EZD file, for example) and find
+out how many solvent molecule probes you can put inside
+the cavity.
+ <BR> An UPPER estimate of this number is obtained by dividing
+the volume of the Vanderwaals or the probe-occupied cavity
+by the volume of one probe sphere.
+ <BR> A LOWER estimate is obtained by running FLOOD using your
+probe-ACCESSIBLE cavity.
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H5">5 </A>EXAMPLE</H2> </CENTER>
+<P>   
+Before using FLOOD, you must run VOIDOO in order to obtain
+an EZD file (for example) containing a mould of your cavity.
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S1">5.1 </A>running VOIDOO</H3> 
+ <BR> The following rules MUST be observed for proper results:
+ <BR> (1) in VOIDOO, use ~the same probe radius that you will
+use in FLOOD
+ <BR> (2) you must calculate the PROBE-ACCESSIBLE cavity with
+VOIDOO, i.e. the cavity which contains all points where
+the CENTRE of a probe sphere can be
+ <BR> (3) you must create a MASK, EZD or NEW-EZD file with VOIDOO
+ <BR> (4) the grid spacing for this file must be ~1/3 to 1/5 of the
+probe radius
+<P>   
+Example of a VOIDOO run prior to running FLOOD:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+...
+ Type of calculation (C/V/R)           ? (C)
+ Do you want extensive output          ? (N)
+...
+ Library file ? (cavity.lib) ../cavity.lib
+...
+ PDB file name ? (in.pdb) m26.pdb
+...
+ Primary grid spacing (A) ? (   1.000)
+ Probe radius (1.4 A for water) ? (   1.400)
+...
+ Nr of detection cycles                ? (         10)
+ Growth factor for Vanderwaals radii   ? (   1.100)
+ Min size of &quot;real&quot; cavities (voxels)  ? (          1) 5
+ Are you looking for a specific cavity ? (N) y
+ Enter coordinates of a cavity point   : (   0.000    0.000    0.000)  17.069     4.685    -1.182
+ Do you want a MASK file               ? (N)
+ LOG file name                         ? (cavity.log)
+ Do you want to refine the cavities    ? (Y)
+ Nr of volume-refinement cycles        ? (         10)
+ You may calculate one of these type of cavity volumes:
+ (V) Vanderwaals: not occupied by the molecule
+ (A) Probe-accessible: available to the probe centre
+ (O) Probe-occupied: occupied by rolling probe
+ Type of cavity volume (V/A/O)         ? (A)
+ Grid-shrink factor                    ? (   0.900)
+ Min size of secondary grid            ? (         10)
+ Convergence criterion (A3)            ? (   0.100)
+ Convergence criterion (%)             ? (   0.100)
+ Create protein-surface plot file      ? (N)
+ Do you want plot files                ? (Y)
+ First part of plot file names         ? (cavity)
+ Grid for plot files                   ? (   0.700) 0.35
+ You may choose from the following types of
+ graphical representations for your cavities:
+  E * generate EZD files
+  N * generate New-EZD files
+  D * draw dots for all cavity points
+  3 * 3-sweep contour (fairly quick)
+  1 * 1-sweep contour (quick and dirty)
+  C * connect all surface points (fast/big objects)
+  T * tiles (ie, poly-triangles; not implemented yet)
+ Graphical representation (C/1/3/D/T/E/N)? (E)
+...
+ NEW CAVITY ! Nr of points : (        171)
+ Zero-order volume : (  1.710E+02)
+...
+ &gt;&gt;&gt; CONVERGENCE &lt;&lt;&lt;
+<P>   
+ Last change (A3/%) : (  1.159E-01   6.626E-02)
+ Centre of cavity gravity     17.069     4.685    -1.182
+ Nr of volume calculations : (          3)
+ Average volume       (A3) : (  1.736E+02)
+ Volume corresponds to a sphere of radius (A) : (  3.461E+00)
+ Standard deviation   (A3) : (  1.839E+00)
+<P>   
+ Looking for atoms inside this cavity ...
+ Inside &gt;  C2  RTL   200  @     16.591     8.960     1.071
+...
+ Inside &gt;  C20 RTL   200  @     16.235    -0.847    -4.081
+ Inside &gt;  O1  HOH   230  @     19.829     0.266    -4.738
+ Nr found : (         18)
+<P>   
+ Looking for atoms lining this cavity ...
+ Nr of candidates : (        346)
+ Lining &gt;  CE  MET    10  @     10.344     2.937     3.204
+ Lining &gt;  ND2 ASN    13  @     12.907     2.627     6.205
+...
+ Lining &gt;  NE2 GLN   128  @     13.639     0.922     2.746
+ Lining &gt;  CZ  PHE   130  @      9.311     1.843    -0.235
+ Nr found : (        110)
+<P>   
+ Nr of plot grid points : (         42          53          47)
+ Setting up grid ...
+ Nr of points in grid : (     104622)
+ Not the protein      : (       5794)
+ The protein itself   : (      98828)
+ 23 CPU total/user/sys :      11.9      11.6       0.3
+ Nr of points &quot;zapped&quot; : (       4049)
+ Nr of points &quot;zapped&quot; for plot   : (       4049)
+ Volume per voxel (A3)            : (  4.287E-02)
+ Cavity volume on plot grid (A3)  : (  1.736E+02)
+ Volume corresponds to a sphere of radius (A) : (  3.461E+00)
+ 33 CPU total/user/sys :       4.9       4.8       0.1
+<P>   
+ Summary :
+ Nr of cavities found : (          1)
+ Nr of original grid points in cavities : (        171)
+ Total cavity volume                    : (  1.748E+02)
+...
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+Note that we have calculated the probe-accessible cavity, creating
+an EZD file on a grid of 0.35 A, which is 1/4 of the probe radius
+(1.4 A for a water molecule) ! If you ensure that :
+ <BR> { probe_radius / plot_file_grid_spacing }
+ <BR> is an integer number, then this will improve FLOOD's ability
+to pack your solvent molecules as tightly as possible.
+<P>   
+VOIDOO has created the following files for us:
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+   2 -rw-r--r--   1 gerard       601 Sep 30  1993 cavity_1.omac
+ 211 -rw-r--r--   1 gerard    107592 Sep 30  1993 cavity_1.ezd
+  21 -rw-r--r--   1 gerard     10646 Sep 30  1993 cavity.log
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S2">5.2 </A>startup</H3> 
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+<P>   
+ *** FLOOD *** FLOOD *** FLOOD *** FLOOD *** FLOOD *** FLOOD *** FLOOD ***
+<P>   
+ Version  - 930930/0.1
+ (C) 1993 - Gerard J. Kleywegt, Dept. Mol. Biology, BMC, Uppsala (S)
+ User I/O - routines courtesy of Rolf Boelens, Univ. of Utrecht (NL)
+ Others   - T.A. Jones, G. Bricogne, Rams &amp; W.A. Hendrickson
+ Others   - W. Kabsch, CCP4, PROTEIN, etc. etc.
+<P>   
+ Started  - Thu Sep 30 22:22:32 1993
+ User     - gerard
+ Mode     - interactive
+ Host     - rigel
+ ProcID   - 2747
+ Tty      - /dev/ttyq0
+<P>   
+ *** FLOOD *** FLOOD *** FLOOD *** FLOOD *** FLOOD *** FLOOD *** FLOOD ***
+<P>   
+ Max size of cavity map      : (    4194304)
+ Max nr of solvent molecules : (      50000)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S3">5.3 </A>VOIDOO file</H3> 
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Read E(zd), N(ew-ezd) or M(ask) ? (E)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+Enter the type of file produced by VOIDOO
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ File type : (E)
+<P>   
+ Name of cavity file             ? (cavity.ezd) cavity_1.ezd
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+Enter the name of the cavity file you're interested in
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Name of cavity file             : (cavity_1.ezd)
+ Read map header
+ Input map : (cavity_1.ezd)
+ Scale constant : (  1.000E+00)
+ Size     104622
+ ED min, max, total   0.0000E+00  1.0000E+00  4.0490E+03
+ ED ave, var, stdev   3.8701E-02  3.7203E-02  1.9288E-01
+<P>   
+ Parameters as read from the map file
+ Origin ......................         29       -13       -27
+ Extent ......................         42        53        47
+ Grid ........................        100       100       100
+ Cell axes ...................      35.00     35.00     35.00
+ Cell angles .................      90.00     90.00     90.00
+ UVW (fast, medium, slow) ....          Y         X         Z
+<P>   
+ Map read okay
+ Nr of points in map : (     104622)
+ Nr of grid points in cavity : (       4049)
+ Cell volume  : (  4.288E+04)
+ Voxel volume : (  4.287E-02)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+After reading the map, the following is checked:
+ <BR> * was the map read okay ?
+ <BR> * is the number of grid points identical in all three
+directions ?
+ <BR> * are the cell axes identical in all three directions ?
+ <BR> * are all three cell angles equal to 90 degrees ?
+ <BR> * are all points set to either ZERO or ONE
+ <BR> These checks are done to make sure that you are really feeding
+FLOOD a cavity map created by VOIDOO; if so, there shouldn't
+be any problems.
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S4">5.4 </A>parameters</H3> 
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Radius for solvent molecule ? (   1.400) 1.39
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+Enter a number which is equal to OR slightly smaller than the
+probe radius you used in VOIDOO
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Radius for solvent molecule : (   1.390)
+ Volume of one solvent mol   : (  11.249)
+<P>   
+ Output solvent PDB file     ? (sol.pdb)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+The optimal set of solvent molecules will be written to a PDB file;
+enter the name for this file
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Output solvent PDB file     : (sol.pdb)
+<P>   
+ Solvent molecule name in O  ? (SOLV)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+FLOOD will create an O macro; enter a name for the solvent molecule
+inside O
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Solvent molecule name in O  : (SOLV)
+<P>   
+ Solvent residue name        ? (HOH)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+Enter the residue name for your solvent molecules (e.g, HOH, WAT,
+SOL, SUL, ..)
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Solvent residue name        : (HOH)
+<P>   
+ Solvent atom name           ? ( O1)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+Enter the name of the central atom in your solvent molecules;
+note that the first TWO characters must be the name of the
+chemical element (e.g., ' C', ' S', ' O')
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Solvent atom name           : ( O1)
+<P>   
+ Nr of first solvent residue ? (        500)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+This determines the numbering of the solvent molecules (in this
+case, one would get HOH 500, HOH 501, HOH 502, ...)
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Nr of first solvent residue : (        500)
+<P>   
+ Output O macro file         ? (sol.omac)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+Enter the name of the O macro file that FLOOD will create for you
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S5">5.5 </A>algorithm</H3> 
+<P>   
+Now, FLOOD will make SIX attempts at packing as many as possible
+solvent molecules as tightly as possible.
+ <BR> The major simplifying limitation in FLOOD is that solvent
+molecule centres may only lie on cavity grid points (this
+explains why it is beneficial to have a probe radius which
+is an integer multiple of the grid spacing !).
+ <BR> FLOOD will try all six combinations of varying X, Y and Z
+fastest, intermediate and slowest. Since the grid is discrete,
+this may (and usually will) give different results. The one
+that yields the highest number of placed solvent molecules
+wins.
+ <BR> For each order, it loops over all grid points inside the cavity.
+ <BR> If it finds one which is labelled '1', it checks if there is no
+previously placed solvent molecule within 2*radius of that point.
+ <BR> If this is successful, a solvent molecule is added, and all grid
+points with 'radius' are 'zapped' (set to '-1'). Then it will
+continue its search for grid points labelled '1', etc.
+ <BR> Afterwards, it makes one more round through the grid points, just
+in case ...
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S6">5.6 </A>output</H3> 
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Output O macro file         : (sol.omac)
+<P>   
+ Trying order XYZ
+ Nr of solvent molecules : (         23)
+ Total volume of solvent molecules : ( 258.738)
+ Cavity points available           : (       4049)
+ Volume (A3)   : ( 173.601)
+ Cavity points occupied by solvent : (       2087)
+ Volume (A3)   : (  89.480)
+ Utilisation % : (  51.544)
+<P>   
+ Trying order XZY
+ Nr of solvent molecules : (         24)
+ Total volume of solvent molecules : ( 269.988)
+ Cavity points available           : (       4049)
+ Volume (A3)   : ( 173.601)
+ Cavity points occupied by solvent : (       2121)
+ Volume (A3)   : (  90.938)
+ Utilisation % : (  52.383)
+<P>   
+ Trying order YZX
+ Nr of solvent molecules : (         24)
+ Trying order YXZ
+ Nr of solvent molecules : (         24)
+ Trying order ZXY
+ Nr of solvent molecules : (         23)
+ Trying order ZYX
+ Nr of solvent molecules : (         26)
+ Total volume of solvent molecules : ( 292.487)
+ Cavity points available           : (       4049)
+ Volume (A3)   : ( 173.601)
+ Cavity points occupied by solvent : (       2304)
+ Volume (A3)   : (  98.784)
+ Utilisation % : (  56.903)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S7">5.7 </A>results</H3> 
+<P>   
+Order XYZ gave 23 solvent molecules initially. Order XZY gave
+24 and the initial PDB file was overwritten. Details regarding
+the utilisation of the cavity volume are printed.
+ <BR> Orders YZX, YXZ and ZXY gave no improvement in the number of
+placeable solvent molecules, but the last order, ZYX, gave 26
+possible solvent molecules. Again, the PDB file is overwritten
+and details are printed.
+<P>   
+Now, FLOOD writes the O macro and voila.
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+<P>   
+ Max nr of solvent molecules : (         26)
+<P>   
+ *** FLOOD *** FLOOD *** FLOOD *** FLOOD *** FLOOD *** FLOOD *** FLOOD ***
+<P>   
+ Version - 930930/0.1
+ Started - Thu Sep 30 22:22:32 1993
+ Stopped - Thu Sep 30 22:23:16 1993
+<P>   
+ CPU-time taken :
+ User    -     12.8 Sys    -      0.3 Total   -     13.1
+<P>   
+ *** FLOOD *** FLOOD *** FLOOD *** FLOOD *** FLOOD *** FLOOD *** FLOOD ***
+<P>   
+ &gt;&gt;&gt; This program is (C) 1993, GJ Kleywegt &amp; TA Jones &lt;&lt;&lt;
+ E-mail: &quot;gerard@xray.bmc.uu.se&quot; or &quot;alwyn@xray.bmc.uu.se&quot;
+<P>   
+ *** FLOOD *** FLOOD *** FLOOD *** FLOOD *** FLOOD *** FLOOD *** FLOOD ***
+<P>   
+STOP ... Toodle pip ... statement executed
+12.777u 0.379s 0:44.04 29.8% 0+0k 2+4io 9pf+0w
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+FLOOD gave us the following files:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ % 194 gerard rigel 23:06:19 cavity/crbpm26 &gt; ls sol*
+   1 -rw-r--r--   1 gerard       209 Sep 30  1993 sol.omac
+   4 -rw-r--r--   1 gerard      1824 Sep 30  1993 sol.pdb
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S8">5.8 </A>output PDB file</H3> 
+ <BR> The PDB file looks as follows:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ % 195 gerard rigel 23:06:19 cavity/crbpm26 &gt; cat sol.pdb
+REMARK Created by FLOOD V. 930930/0.1 at Thu Sep 30 22:23:15 1993 for user gerard
+ATOM      1  O1  HOH   500      14.700   2.800  -7.350  1.00 20.00
+ATOM      2  O1  HOH   501      14.000  -0.350  -7.000  1.00 20.00
+ATOM      3  O1  HOH   502      18.550   0.000  -6.300  1.00 20.00
+ATOM      4  O1  HOH   503      15.750   1.050  -5.250  1.00 20.00
+ATOM      5  O1  HOH   504      15.400  -1.750  -4.200  1.00 20.00
+ATOM      6  O1  HOH   505      19.600  -1.050  -3.850  1.00 20.00
+ATOM      7  O1  HOH   506      18.200   1.400  -3.850  1.00 20.00
+ATOM      8  O1  HOH   507      16.100   3.500  -3.500  1.00 20.00
+ATOM      9  O1  HOH   508      19.600   8.400  -3.500  1.00 20.00
+ATOM     10  O1  HOH   509      15.050   1.050  -2.450  1.00 20.00
+ATOM     11  O1  HOH   510      15.400   7.700  -2.450  1.00 20.00
+ATOM     12  O1  HOH   511      17.500   5.600  -2.100  1.00 20.00
+ATOM     13  O1  HOH   512      19.600   1.750  -1.400  1.00 20.00
+ATOM     14  O1  HOH   513      17.850   8.400  -1.050  1.00 20.00
+ATOM     15  O1  HOH   514      16.800   2.450  -0.700  1.00 20.00
+ATOM     16  O1  HOH   515      13.300   2.800  -0.350  1.00 20.00
+ATOM     17  O1  HOH   516      15.400   4.900  -0.350  1.00 20.00
+ATOM     18  O1  HOH   517      18.900   4.200   0.000  1.00 20.00
+ATOM     19  O1  HOH   518      14.000   8.050   0.000  1.00 20.00
+ATOM     20  O1  HOH   519      20.300   6.650   0.350  1.00 20.00
+ATOM     21  O1  HOH   520      19.950   9.450   0.700  1.00 20.00
+ATOM     22  O1  HOH   521      16.100   9.800   0.700  1.00 20.00
+ATOM     23  O1  HOH   522      17.150   6.650   1.050  1.00 20.00
+ATOM     24  O1  HOH   523      14.000   4.200   2.100  1.00 20.00
+ATOM     25  O1  HOH   524      14.350   7.000   2.800  1.00 20.00
+ATOM     26  O1  HOH   525      20.650   7.700   3.150  1.00 20.00
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S9">5.9 </A>O macro</H3> 
+ <BR> The O macro may look as follows:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ % 196 gerard rigel 23:06:19 cavity/crbpm26 &gt; cat sol.omac
+! Created by FLOOD V. 930930/0.1 at Thu Sep 30 22:23:15 1993 for user gerard
+s_a_i sol.pdb SOLV
+mol SOLV zo ; end
+centre_zone SOLV 500 525
+db_set_data .cpk_radii 8 8 1.390000
+sketch_cpk SOLV bell message Done
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+This macro will:
+ <BR> * read the solvent PDB file
+ <BR> * draw the solvent molecule
+ <BR> * centre at its centre-of-gravity
+ <BR> * set the appropriate CPK radius, PROVIDED the central chemical
+element was one of ' C', ' N', ' O' or ' S' (if not, ALL CPK
+radii are set to your probe radius !!)
+ <BR> * make a CPK model of your solvent molecule
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S10">5.10 </A>MAPPAGE</H3> 
+ <BR> Let's quickly MAPPAGE the cavity EZD file and demonstrate all
+the nice things that VOIDOO and FLOOD have done for us in terms
+of automatically generated macros:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+...
+ MAPMAN &gt; read m1 cavity_1.ezd ezd
+ Read header
+ Input map : (cavity_1.ezd)
+ Scale constant : (  1.000E+00)
+ Size     104622
+ ED min, max, total   0.0000E+00  1.0000E+00  4.0490E+03
+ ED ave, var, stdev   3.8701E-02  3.7203E-02  1.9288E-01
+<P>   
+ Parameters as read from the map file
+ Origin ......................         29       -13       -27
+ Extent ......................         42        53        47
+ Grid ........................        100       100       100
+ Cell axes ...................      35.00     35.00     35.00
+ Cell angles .................      90.00     90.00     90.00
+ UVW (fast, medium, slow) ....          Y         X         Z
+<P>   
+ Header done
+ Sum of density in map : (  4.049E+03)
+ Map read into memory
+ CPU total/user/sys :       1.9       1.8       0.2
+ MAPMAN &gt; mappage m1 cav.map
+ Opening DSN6 file : (cav.map)
+ Big-endian machine; will NOT swap bytes
+ Scale constant for cell : (      80)
+ Pages along X, Y and Z  : (       6        7        6)
+ Nr of records written : (        253)
+ CPU total/user/sys :       1.3       1.2       0.0
+ MAPMAN &gt; quit
+...
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S11">5.11 </A>run O</H3> 
+ <BR> Now run O and follow this simple recipe:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+...
+  O &gt; @cavity_1.omac
+  O &gt; Macro in computer file-system.
+  O &gt; Cavity-molecule name ? m26
+  O &gt;   O &gt;   O &gt;
+  O &gt; @sol.omac
+  O &gt; Macro in computer file-system.
+ Sam&gt; File type is PDB
+ Sam&gt;  Database compressed.
+ Sam&gt; Space for     61312 atoms
+ Sam&gt; Space for     10000 residues
+ Sam&gt; Molecule SOLV contained 26 residues and 26 atoms
+  O &gt;   O &gt;  As4&gt; SOLV  500   525   SOLV
+ As4&gt; Centering on zone from 500 to 525
+  O &gt;   O &gt;  Sketch&gt; SOLV
+ Sketch&gt;  ....making the object
+  O &gt;   O &gt; map_fil cav.map map_obj cav
+  O &gt; map_par 30 30 30
+ Map&gt; Define contour level [ 0.100]: 0.01
+ Map&gt; Colour? [blue]:
+ Map&gt; Define map intensity, fore &amp; aft [ 0.50 0.00]:
+ Map&gt; Define line type [5]:
+  O &gt; ma_ac ma_dr
+  setransp  called
+ max 255.000000 min 0.000000
+ contour value is :  2.550000
+ number of points    : 3680
+ number of triangles : 7348
+...
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+Hence, with a minimum of effort you now have the following on the screen:
+ <BR> (1) INS_1 - an object containing residues which lie (partly) inside
+your cavity
+ <BR> (2) LIN_1 - an object containing all residues which have at least one
+atom lining the cavity
+ <BR> (3) SOLV - the solvent molecules placed by FLOOD
+ <BR> (4) CPK_SOLV - a CPK model of these solvent molecules
+ <BR> (5) CAV - a semi-transparent (SGI only) map of your cavity
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H6">6 </A>FILLING A MASK WITH ATOMS</H2> </CENTER>
+<P>   
+The procedure to fill a molecular envelope (mask) with atoms is
+very similar to the normal use of FLOOD:
+<P>   
+- generate a mask
+<P>   
+- make absolutely sure that the cell on which you generate the mask
+has only 90 degree angles. If this is not the case, transfer
+the mask to an orthogonal dummy grid in MAMA using the NEw
+commands; e.g., use a cell of 100 100 100, 90 90 90, select
+an appropriate grid (e.g., 100 100 100 would give a 1 &Aring; grid
+spacing), and then use NEw UNit_cell to do the transfer.
+<P>   
+- since FLOOD assumes that the &quot;cavity&quot; is probe-accessible, you
+may want to use the CUt command in MAMA to peel off the outer
+layer of the mask
+<P>   
+- save the mask
+<P>   
+- run FLOOD as usual (see example below)
+<P>   
+- start up O; read and draw the mask; execute the O macro created
+by FLOOD
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Read E(zd), N(ew-ezd) or M(ask) ? (E) M
+ File type : (M)
+<P>   
+ Name of cavity file             ? (cavity.mask) p2.mask
+ Name of cavity file             : (p2.mask)
+ Read map header
+ Input map : (p2.mask)
+ Reading mask (O format)
+ Format : compressed
+ Grid points : (     360594)
+ Stretches   : (       1458)
+ Mask points : (      30854)
+ Number of points in mask : (      30854)
+<P>   
+ Parameters as read from the map file
+ Origin ......................         21        34        -1
+ Extent ......................         67        69        78
+ Grid ........................        100       110        64
+ Cell axes ...................      91.80     99.50     56.50
+ Cell angles .................      90.00     90.00     90.00
+ UVW (fast, medium, slow) ....          Y         X         Z
+<P>   
+ Map read okay
+ Closing MASK on unit : (      11)
+ ERROR --- Grid not the same for x,y,z
+ ERROR --- Cell axes not the same for x,y,z
+ Nr of points in map : (     360594)
+ Nr of grid points in cavity : (      30854)
+ Cell volume  : (  5.161E+05)
+ Voxel volume : (  7.331E-01)
+<P>   
+ Radius for solvent molecule ? (   1.400)
+ Radius for solvent molecule : (   1.400)
+ Volume of one solvent mol   : (  11.494)
+<P>   
+ Output solvent PDB file     ? (sol.pdb)
+ Output solvent PDB file     : (sol.pdb)
+<P>   
+ Solvent molecule name in O  ? (SOLV)
+ Solvent molecule name in O  : (SOLV)
+<P>   
+ Solvent residue name        ? (HOH)
+ Solvent residue name        : (HOH)
+<P>   
+ Solvent atom name           ? ( O)
+ Solvent atom name           : ( O)
+<P>   
+ Nr of first solvent residue ? (        500) 1
+ Nr of first solvent residue : (          1)
+<P>   
+ Output O macro file         ? (sol.omac)
+ Output O macro file         : (sol.omac)
+<P>   
+ Trying order XYZ
+ Nr of solvent molecules : (        982)
+ Total volume of solvent molecules : (  11287.147)
+ Cavity points available           : (      30854)
+ Volume (A3)   : (  22617.941)
+ Cavity points occupied by solvent : (      16420)
+ Volume (A3)   : (  12036.903)
+ Utilisation % : (  53.218)
+<P>   
+ Trying order XZY
+ Nr of solvent molecules : (        966)
+ Trying order YZX
+ Nr of solvent molecules : (        993)
+ Total volume of solvent molecules : (  11413.582)
+ Cavity points available           : (      30854)
+ Volume (A3)   : (  22617.941)
+ Cavity points occupied by solvent : (      16626)
+ Volume (A3)   : (  12187.914)
+ Utilisation % : (  53.886)
+<P>   
+ Trying order YXZ
+ Nr of solvent molecules : (        972)
+ Trying order ZXY
+ Nr of solvent molecules : (        991)
+ Trying order ZYX
+ Nr of solvent molecules : (        975)
+<P>   
+ Max nr of solvent molecules : (        993)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H7">7 </A>KNOWN BUGS</H2> </CENTER>
+<P>   
+None, at present.
+<HR NOSHADE>    <A HREF="http://xray.bmc.uu.se/usf/" target="_top">
+<IMG ALIGN="right" BORDER="0" SRC="usf_logo.gif"
+ALT="Uppsala Software Factory"></A>
+<FONT SIZE=-1>
+<B> <I> Created at Fri Jan 14 20:12:10 2005
+by MAN2HTML version 050114/2.0.6 . This manual
+describes FLOOD, a program of the <A HREF="http://xray.bmc.uu.se/usf/" target="_top">Uppsala
+Software Factory</A> (USF), written and maintained by <A HREF="http://xray.bmc.uu.se/gerard"
+target="_blank">Gerard Kleywegt</A>. &copy; 1992-2005.
+</I> </B> </FONT><P>
+<IMG SRC="http://xray.bmc.uu.se/cgi-bin/nph-count?width=6&link=http://alpha2.bmc.uu.se/~gerard/www/manuals/flood_man.html">
+</body></html>

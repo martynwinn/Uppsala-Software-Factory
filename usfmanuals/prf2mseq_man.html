@@ -1,0 +1,149 @@
+<html><head><!-- This document was created for PRF2MSEQ at Fri Jan 14 20:12:40 2005 from
+../prosite/prf2mseq.txt by MAN2HTML version 050114/2.0.6 -->
+<title>Uppsala Software Factory - PRF2MSEQ Manual</title>
+<meta name="DESCRIPTION" content="Manual for Gerard 
+Kleywegt's program PRF2MSEQ">
+<meta name="KEYWORDS" content="manual software Gerard 
+Kleywegt program PRF2MSEQ structural biology 
+protein X-ray crystallography macromolecular molecular
+Uppsala Software Factory bioinformatics">
+</head><body bgcolor="#fefefe" background="back.gif">
+
+<A HREF="http://xray.bmc.uu.se/usf/" target="_top">
+<IMG ALIGN="right" BORDER="0" SRC="usf_logo.gif"
+ALT="Uppsala Software Factory"></A>
+
+<H2>  Uppsala Software Factory - PRF2MSEQ Manual</H2> <P>   
+<UL>  
+<LI><H3>  <A HREF="#H1">1  </A>PRF2MSEQ - GENERAL INFORMATION</H3> 
+<LI><H3>  <A HREF="#H2">2  </A>REFERENCES</H3> 
+<LI><H3>  <A HREF="#H3">3  </A>VERSION HISTORY</H3> 
+<LI><H3>  <A HREF="#H4">4  </A>DESCRIPTION</H3> 
+<LI><H3>  <A HREF="#H5">5  </A>KNOWN BUGS</H3> 
+<LI><H3>  <A HREF="#H6">6  </A>UNKNOWN BUGS</H3> 
+</UL> 
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H1">1 </A>PRF2MSEQ - GENERAL INFORMATION</H2> </CENTER>
+<P>   
+Program : PRF2MSEQ
+ <BR> Version : 971111
+ <BR> Author : Gerard J. Kleywegt, Dept. of Cell and Molecular Biology,
+Uppsala University, Biomedical Centre, Box 596,
+SE-751 24 Uppsala, SWEDEN
+ <BR> E-mail : gerard@xray.bmc.uu.se
+ <BR> Purpose : convert profile scan results into multiple sequence alignment
+ <BR> Package : SBIN
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H2">2 </A>REFERENCES</H2> </CENTER>
+<P>   
+Reference(s) for this program:
+<P>   
+* 1 * G.J. Kleywegt &amp; T.A. Jones (1998). Databases in protein
+crystallography. Acta Cryst D54, 1119-1131.
+[http://xray.bmc.uu.se/gerard/papers/databases.html]
+[http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=PubMed&amp;cmd=Retrieve&amp;list_uids=10089488&amp;dopt=Citation]
+[http://scripts.iucr.org/cgi-bin/paper?ba0001]
+<P>   
+* 2 * Kleywegt, G.J., Zou, J.Y., Kjeldgaard, M. &amp; Jones, T.A. (2001).
+Around O. In: &quot;International Tables for Crystallography, Vol. F.
+Crystallography of Biological Macromolecules&quot; (Rossmann, M.G.
+&amp; Arnold, E., Editors). Chapter 17.1, pp. 353-356, 366-367.
+Dordrecht: Kluwer Academic Publishers, The Netherlands.
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H3">3 </A>VERSION HISTORY</H2> </CENTER>
+<P>   
+971023 - 0.1 - first version
+ <BR> 971111 - 1.0 - cleaned up code and manual
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H4">4 </A>DESCRIPTION</H2> </CENTER>
+<P>   
+PRF2MSEQ is a simple non-interactive program which reads a list
+of profile/sequence matches (calculated with the pftools-program
+&quot;pfsearch&quot;, with the &quot;-y&quot; command-line option) and converts
+this into a partial multiple sequence alignment of the matching
+sequences in a format suitable for MSEQPRO (which can be used
+to generate a new profile based on these aligned sequences).
+<P>   
+Usage: PRF2MSEQ &lt; scan_results.file &gt; multi_sequence.file
+<P>   
+Typical example:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+pfsearch -ry pfx.prf /home/gerard/lib/sprot.dat &gt; pfx.hits
+PRF2MSEQ &lt; pfx.hits &gt; pfx.mseq
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+Example of a part of an input file:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+  1131 pos.     28 -   250 P35694|BRU1_SOYBN BRASSINOSTEROID-REGULATED PROTEIN BRU1.
+#
+# P       4 CSXDNWTVADXNGVTTS----------------XSLQLGQITQ-XNVCARYYYMNXYKMF    -164
+# S      28 CA--GSFYQD-----FDltwggdrakifnggqlLSLSLDKVSGsGFKSKKEYLFG-----    -209
+#
+# P      47 HLWXGLYSFDVDPAEQP------XGLNGSFFMGPM-XCCDEMDIEFDNXPHIALNPHXCD    -111
+# S      76 RID----------MQLKlvagnsAGTVTAYYLSSQgPTHDEIDFEFLG----NLSGD---    -166
+#
+# P     100 SGGCEWNPY--XTGPFS-------------XLDTSKFHTVVFQWDPSXKITRYYQ----X     -70
+# S     119 -------PYilHTNIFTqgkgnreqqfylwFDPTRNFHTYSIIWKPQ-HIIFLVDntpiR    -113
+#
+# P     141 TFPQAXNTLTAXGLANMPKAPXSWMDIMMSLWNGTXFSNPWLD-----------------     -27
+# S     171 VFKNA-EPLGV----PFPKNQ--PMRIYSSLWNAD----DWATrgglvktdwskapftay     -65
+#
+# P     183 -----------------XGAPNDAEXNDAPNTHVVYS      -7
+# S     220 yrnfkaiefsskssisnSGAEYEAN------ELDAYS     -34
+#
+  1231 pos.     64 -   268 P33693|EXOK_RHIME SUCCINOGLYCAN BIOSYNTHESIS PROTEIN EXOK.
+#
+# P       4 CSXDNWTVADXNGVTTS-XSLQLGQITQ-----XNVCARYYYMNXYKMFHLWXGLYSFDV    -153
+# S      64 CT---WSKKQ---VKTVdGILELTFEEKkvkerNFACGEIQTRK---RFGYG--TYEARI    -158
+#
+# P      58 DPAEQPXGLNGSFFMGPM----XCCDEMDIEFDN--XPHIALNPHXCDSGGCEWNPYXTG     -99
+# S     113 KAADGS-GLNSAFFTYIGpadkKPHDEIDFEVLGknTAKVQINQYVSAKGGNEFLAD--V    -101
+#
+# P     112 PFSXLDTSKFHTVVFQWDPSXKITRYYQXTFPQA--XNTLTAXGLANMPKAPXSWMDIMM     -41
+# S     170 PGG--ANQGFNDYAFVWEKN-RIRYYVN-----GelVHEVTD--PAKIPVNA---QKIFF     -54
+#
+# P     170 SLWNGTXFSNPWLD-------------------XGAPNDAE--------XNDA     -15
+# S     217 SLWGTD-TLTDWMGtfsykeptklqvdrvaftaAGDECQFAesvacqleRAQS      -2
+#
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+Example of a part of an output file:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+!   1131 pos.     28 -   250 P35694|BRU1_SOYBN BRASSINOSTEROID-REGULATED PROTEIN BRU1.
+   CA  GSFYQD     FD SLSLDKVSG FKSKKEYLFG     RID          MQLK GTVTAYYLSSQ THDEIDFEFLG    NLSGD          PY TNIFT DPTRNFHTYSIIWKPQ HIIFLVD VFKNA EPLGV    PFPKNQ  PMRIYSSLWNAD    DWAT GAEYEAN      ELDAYS
+!   1231 pos.     64 -   268 P33693|EXOK_RHIME SUCCINOGLYCAN BIOSYNTHESIS PROTEIN EXOK.
+   CT   WSKKQ   VKTV ILELTFEEK FACGEIQTRK   RFGYG  TYEARIKAADGS GLNSAFFTYIG PHDEIDFEVLG AKVQINQY SAKGGNEFLAD  VPGG  ANQGFNDYAFVWEKN RIRYYVN     G HEVTD  PAKIPVNA   QKIFFSLWGTD TLTDWMG GDECQFA AQS
+!   2317 pos.     40 -   236 P07980|GUB_BACAM BETA-GLUCANASE PRECURSOR (EC 3.2.1.73) (ENDO-BETA-1,3-1,4 GLUCANASE) (1,3-1,4-BETA-D-GLU
+    S DGYSNGD NNVSMT EMRLALTSP FDCGENRSVQ   TYGYG  LYEVRMKPAKNT GIVSSFFTYTG PWDEIDIEFLG TKVQFNYY NGAGNHEKFAD    LG DAANAYHTYAFDWQPN SIKWYVD     G HTATT    QIPAAP   GKIMMNLWNGT GVDDWLG  SYNGVN     PIYAHYDWMRY
+!   1971 pos.     41 -   251 P37073|GUB_BACBR BETA-GLUCANASE PRECURSOR (EC 3.2.1.73) (ENDO-BETA-1,3-1,4 GLUCANASE) (1,3-1,4-BETA-D-GLU
+ FYES      FD AGVWTN RLTIAKKTT   SARNYKAG NDFYHYG  LFEVSMKPAKVE GTVSSFFTYTG PWDEIDIEFLG TRIQFNYF NGVGGNEFYYD    LG DASESFNTYAFEWRED SITWYVN   GEA HTATE    NIPQTP   QKIMMNLWPGV GVDGWTG      VF GDNTPVYSYYDWVRYTP
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H5">5 </A>KNOWN BUGS</H2> </CENTER>
+<P>   
+None, at present (&quot;peppar, peppar&quot;).
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H6">6 </A>UNKNOWN BUGS</H2> </CENTER>
+<P>   
+Does not compute.
+<HR NOSHADE>    <A HREF="http://xray.bmc.uu.se/usf/" target="_top">
+<IMG ALIGN="right" BORDER="0" SRC="usf_logo.gif"
+ALT="Uppsala Software Factory"></A>
+<FONT SIZE=-1>
+<B> <I> Created at Fri Jan 14 20:12:40 2005
+by MAN2HTML version 050114/2.0.6 . This manual
+describes PRF2MSEQ, a program of the <A HREF="http://xray.bmc.uu.se/usf/" target="_top">Uppsala
+Software Factory</A> (USF), written and maintained by <A HREF="http://xray.bmc.uu.se/gerard"
+target="_blank">Gerard Kleywegt</A>. &copy; 1992-2005.
+</I> </B> </FONT><P>
+<IMG SRC="http://xray.bmc.uu.se/cgi-bin/nph-count?width=6&link=http://alpha2.bmc.uu.se/~gerard/www/manuals/prf2mseq_man.html">
+</body></html>

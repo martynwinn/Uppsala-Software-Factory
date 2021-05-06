@@ -1,0 +1,533 @@
+<html><head><!-- This document was created for ODBM at Fri Jan 14 20:12:27 2005 from
+../odbm/odbm.txt by MAN2HTML version 050114/2.0.6 -->
+<title>Uppsala Software Factory - ODBM Manual</title>
+<meta name="DESCRIPTION" content="Manual for Gerard 
+Kleywegt's program ODBM">
+<meta name="KEYWORDS" content="manual software Gerard 
+Kleywegt program ODBM structural biology 
+protein X-ray crystallography macromolecular molecular
+Uppsala Software Factory bioinformatics">
+</head><body bgcolor="#fefefe" background="back.gif">
+
+<A HREF="http://xray.bmc.uu.se/usf/" target="_top">
+<IMG ALIGN="right" BORDER="0" SRC="usf_logo.gif"
+ALT="Uppsala Software Factory"></A>
+
+<H2>  Uppsala Software Factory - ODBM Manual</H2> <P>   
+<UL>  
+<LI><H3>  <A HREF="#H1">1  </A>ODBM - GENERAL INFORMATION</H3> 
+<LI><H3>  <A HREF="#H2">2  </A>REFERENCES</H3> 
+<LI><H3>  <A HREF="#H3">3  </A>VERSION HISTORY</H3> 
+<LI><H3>  <A HREF="#H4">4  </A>NOTES</H3> 
+<LI><H3>  <A HREF="#H5">5  </A>CONVERT FREE FORMAT FILES INTO O DATABLOCK FILES</H3> 
+<LI><H3>  <A HREF="#H6">6  </A>QUICK ANALYSIS OF O DATABLOCK FILES</H3> 
+<LI><H3>  <A HREF="#H7">7  </A>QUICK COMPARISON OF O TWO DATABLOCK FILES</H3> 
+<LI><H3>  <A HREF="#H8">8  </A>QUICK GENERATION OF O2D PLOT FILE FROM A DATABLOCK FILE</H3> 
+<LI><H3>  <A HREF="#H9">9  </A>EXTRACT O DATABLOCKS FROM A PROCHECK OUTPUT FILE</H3> 
+<H5><A HREF="#S1">9.1  </A>example</H5>
+<H5><A HREF="#S2">9.2  </A>output files</H5>
+<H5><A HREF="#S3">9.3  </A>use inside O</H5>
+<LI><H3>  <A HREF="#H10">10  </A>KNOWN BUGS</H3> 
+</UL> 
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H1">1 </A>ODBM - GENERAL INFORMATION</H2> </CENTER>
+<P>   
+Program : ODBM
+ <BR> Version : 990923
+ <BR> Author : Gerard J. Kleywegt, Dept. of Cell and Molecular Biology,
+Uppsala University, Biomedical Centre, Box 596,
+SE-751 24 Uppsala, SWEDEN
+ <BR> E-mail : gerard@xray.bmc.uu.se
+ <BR> Purpose : manipulate O datablocks
+ <BR> Package : X-UTIL
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H2">2 </A>REFERENCES</H2> </CENTER>
+<P>   
+Reference(s) for this program:
+<P>   
+* 1 * G.J. Kleywegt (1992-2004).
+Uppsala University, Uppsala, Sweden.
+Unpublished program.
+<P>   
+* 2 * Kleywegt, G.J., Zou, J.Y., Kjeldgaard, M. &amp; Jones, T.A. (2001).
+Around O. In: &quot;International Tables for Crystallography, Vol. F.
+Crystallography of Biological Macromolecules&quot; (Rossmann, M.G.
+&amp; Arnold, E., Editors). Chapter 17.1, pp. 353-356, 366-367.
+Dordrecht: Kluwer Academic Publishers, The Netherlands.
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H3">3 </A>VERSION HISTORY</H2> </CENTER>
+<P>   
+940415 - 1.3 - improved O2D plot files
+ <BR> 990923 -1.3.1- minor changes
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H4">4 </A>NOTES</H2> </CENTER>
+<P>   
+(1) CONVERT FREE FORMAT FILES INTO O DATABLOCK FILES
+ <BR> (2) QUICK ANALYSIS OF O DATABLOCK FILES
+ <BR> (3) QUICK COMPARISON OF O TWO DATABLOCK FILES
+ <BR> (4) QUICK GENERATION OF O2D PLOT FILE FROM A DATABLOCK FILE
+ <BR> (5) EXTRACT O DATABLOCKS FROM A PROCHECK OUTPUT FILE
+<P>   
+==&gt; NOTE : THIS PROGRAM HAS BEEN SUPERCEDED BY ODBMAN !!!
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H5">5 </A>CONVERT FREE FORMAT FILES INTO O DATABLOCK FILES</H2> </CENTER>
+<P>   
+Use this little patch program to convert free-format data into
+&quot;O&quot;-style data-block files. You could use this, for example, to
+convert XPLOR/brefine output into a data block that &quot;O&quot; can use
+immediately for colouring your molecule.
+<P>   
+The following is an example, followed by the files produced:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+&lt; % 148 gerard rigel 21:59:41 gerard/rax1&gt; ODBM
+<P>   
+ *** ODBM *** ODBM *** ODBM *** ODBM *** ODBM *** ODBM *** ODBM *** ODBM ***
+<P>   
+ Version  - 930502/0.9
+ By       - Gerard J. Kleywegt, Dept. Mol. Biology, BMC, Uppsala (S)
+ User I/O - routines courtesy of Rolf Boelens, Univ. of Utrecht (NL)
+ Others   - T.A. Jones, G. Bricogne, Rams &amp; W.A. Hendrickson
+<P>   
+ Started  - Mon May  3 22:59:38 1993
+ User     - gerard
+ Mode     - interactive
+ Host     - rigel
+ ProcID   - 3211
+ Tty      - /dev/ttyq6
+<P>   
+ *** ODBM *** ODBM *** ODBM *** ODBM *** ODBM *** ODBM *** ODBM *** ODBM ***
+<P>   
+ Max length of an input line      : (        256)
+ Max nr of items on an input line : (         50)
+ Max nr of items in store         : (     100000)
+<P>   
+ Valid options are:
+ ?
+ !
+ convert_free_format_file
+ analyse_O_db_file
+ investigate_two_O_db_files
+ o2d_plot_file_from_datablock
+ quit
+<P>   
+ Option ? () c
+ Free-format input file   ? (junk.asc) unitcell.denzo
+ &quot;O&quot; data-block file      ? (junk.odb)
+ Data-block name          ? (junk_stuff)
+ Data type (Real/Integer) ? (R)
+ Format for data block    ? ((7(1x,f10.3)))
+<P>   
+ Enter the following information to control which lines
+ and which item from each line are read :
+ 1 - You may require that a number of lines be skipped
+     from the top of the file
+ 2 - Number of lines to skip after reading a line
+ 3 - Item number to read from a line
+ For example: to skip the first 5 lines and then to read
+ the third item from every other line, use the values
+ 5 1 3, respectively
+<P>   
+ For XPLOR xxx.rf files, use: 1 0 5
+ For XPLOR filter.list , use: 0 0 11
+ For XPLOR search.dat  , use: 0 0 4
+<P>   
+ First/Skip/Item          ? (          0           0           1) 0 0 3
+ Number of lines read  : (         30)
+ Number of values read : (         30)
+ Minimum : (  4.139E+01)
+ Maximum : (  4.157E+01)
+ Sum of values : (  1.245E+03)
+ Average       : (  4.150E+01)
+ St deviation  : (  5.182E-02)
+ Variance      : (  2.686E-03)
+<P>   
+ Valid options are:
+ ?
+ !
+ convert_free_format_file
+ analyse_O_db_file
+ investigate_two_O_db_files
+ o2d_plot_file_from_datablock
+ quit
+<P>   
+ Option ? (C) q
+<P>   
+ *** ODBM *** ODBM *** ODBM *** ODBM *** ODBM *** ODBM *** ODBM *** ODBM ***
+<P>   
+ Version - 930502/0.9
+ Started - Mon May  3 22:59:38 1993
+ Stopped - Mon May  3 23:02:29 1993
+<P>   
+ CPU-time taken :
+ User    -      0.1 Sys    -      0.2 Total   -      0.4
+<P>   
+ *** ODBM *** ODBM *** ODBM *** ODBM *** ODBM *** ODBM *** ODBM *** ODBM ***
+<P>   
+STOP ... All done ... statement executed
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ sinning @ sirius in /home/sinning/gst/xplor &gt; head geomplot.list m10a_res_energy.o
+==&gt; geomplot.list &lt;==
+  1  1.38073
+  2  1.41411
+  3  3.22725
+  4  2.24163
+  5  1.50906
+  6  1.86624
+  7  1.1742
+  8  2.18473
+  9  0.981215
+  10  0.690585
+<P>   
+==&gt; m10a_res_energy.o &lt;==
+M10A_RESIDUE_ENERGY  R       252  (5(1X,F15.3))
+           1.381           1.414           3.227           2.242           1.509
+           1.866           1.174           2.185           0.981           0.691
+           4.228           0.650           1.162           3.518           1.859
+           1.022           0.746           2.057           3.048           2.314
+           0.908           0.697           0.538           0.601           0.690
+           0.668           1.890           1.253           1.913           1.422
+           2.661           0.808           1.287           0.800           0.866
+           0.722           1.983           0.748           0.692           0.509
+           1.474           1.482           1.169           0.879           0.913
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H6">6 </A>QUICK ANALYSIS OF O DATABLOCK FILES</H2> </CENTER>
+<P>   
+From version 0.5 onwards, there is an analysis option. This will
+read an INTEGER OR REAL &quot;O&quot; datablock and print the minimum,
+maximum, average, standard deviation and variance of the values
+encountered.
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Valid options are:
+ ?
+ !
+ convert_free_format_file
+ analyse_O_db_file
+ quit
+<P>   
+ Option ? () a
+ &quot;O&quot; datablock file   ? (junk.asc) junk.odb
+ Opening O datablock : (junk.odb)
+ Datablock : (JUNK_STUFF)
+ Data type : (R)
+ Number    : (74)
+ Format    : ((7(1X,F10.3)))
+<P>   
+ Nr of values  : (         74)
+ Minimum value : (  1.987E+01)
+ Maximum value : (  1.562E+02)
+ Sum of values : (  7.199E+03)
+ Average       : (  9.729E+01)
+ St deviation  : (  3.210E+01)
+ Variance      : (  1.031E+03)
+<P>   
+ Option ? (A)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H7">7 </A>QUICK COMPARISON OF O TWO DATABLOCK FILES</H2> </CENTER>
+<P>   
+From version 0.6 onwards, there is an option to compare two
+different datablocks (e.g., RS-fit before and after refinement).
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+...
+ Max length of an input line      : (        256)
+ Max nr of items on an input line : (         50)
+ Max nr of items in store         : (     100000)
+<P>   
+ Valid options are:
+ ?
+ !
+ convert_free_format_file
+ analyse_O_db_file
+ investigate_two_O_db_files
+ quit
+...
+ Option ? (I)
+ &quot;O&quot; datablock file 1 ? (rsfit_p21_5.o) rsfit_p21_0.o
+ Opening O datablock : (rsfit_p21_0.o)
+ Datablock : (NEW_RESIDUE_RSFIT)
+ Data type : (R)
+ Number    : (314)
+ Format    : ((5f13.5))
+<P>   
+ Nr of values  : (        314)
+ Minimum value : (  0.000E+00)
+ Maximum value : (  7.389E-01)
+ Sum of values : (  1.552E+02)
+ Average       : (  4.944E-01)
+ St deviation  : (  1.182E-01)
+ Variance      : (  1.397E-02)
+<P>   
+ &quot;O&quot; datablock file 2 ? (rsfit_p21_0.o) rsfit_p212121_5.o
+ Opening O datablock : (rsfit_p212121_5.o)
+ Datablock : (NEW_RESIDUE_RSFIT)
+ Data type : (R)
+ Number    : (314)
+ Format    : ((5f13.5))
+<P>   
+ Nr of values  : (        314)
+ Minimum value : (  0.000E+00)
+ Maximum value : (  7.219E-01)
+ Sum of values : (  1.712E+02)
+ Average       : (  5.453E-01)
+ St deviation  : (  1.087E-01)
+ Variance      : (  1.181E-02)
+<P>   
+ RMSD datablocks : (  1.058E-01)
+ Shape similarity : (   0.984)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H8">8 </A>QUICK GENERATION OF O2D PLOT FILE FROM A DATABLOCK FILE</H2> </CENTER>
+<P>   
+From version 0.7 onwards, there is an option to quickly generate
+an O2D plotfile from an &quot;O&quot; datablock file. Use this option,
+edit the plot file to suit your preferences (e.g., set the
+viewport - XYVIEW - to nice values; change the colour of the
+graph etc.).
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+...
+ Valid options are:
+ ?
+ !
+ convert_free_format_file
+ analyse_O_db_file
+ investigate_two_O_db_files
+ o2d_plot_file_from_datablock
+ quit
+<P>   
+ Option ? () o
+ &quot;O&quot; datablock file   ? (junk.odb)
+ Opening O datablock : (junk.odb)
+ Datablock : (JUNK_STUFF)
+ Data type : (R)
+ Number    : (74)
+ Format    : ((7(1X,F10.3)))
+<P>   
+ Nr of values  : (         74)
+ Minimum value : (  1.987E+01)
+ Maximum value : (  1.562E+02)
+ Sum of values : (  7.199E+03)
+ Average       : (  9.729E+01)
+ St deviation  : (  3.210E+01)
+ Variance      : (  1.031E+03)
+<P>   
+ O2D plot file   ? (junk.odb) junk.plt
+ O2D file written
+ Edit it to suit your preferences
+...
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+&lt; % 170 gerard rigel 01:38:43 progs/odbm&gt; cat junk.plt
+! Created by ODBM
+NPOINT      74
+XLIMIT   1.000   1.000
+COLOUR       2
+XYVIEW   1.000  74.000  19.871 156.210
+YVALUE *
+    1.08970E+02    8.59070E+01    1.09800E+02    1.07730E+02    9.97770E+01
+    1.16310E+02    1.37030E+02    8.34600E+01    9.63820E+01    8.41130E+01
+    9.11690E+01    1.17200E+02    1.05030E+02    8.76950E+01    1.08950E+02
+    1.09300E+02    1.08690E+02    1.49250E+02    7.51390E+01    7.36850E+01
+    1.21890E+02    1.02600E+02    1.20970E+02    2.65320E+01    8.44150E+01
+    1.13240E+02    9.37640E+01    1.11740E+02    9.19960E+01    1.12360E+02
+    1.09620E+02    8.42250E+01    1.13150E+02    1.14070E+02    9.40660E+01
+    1.22030E+02    8.33360E+01    2.38120E+01    1.47420E+02    8.35700E+01
+    7.88040E+01    1.09250E+02    1.12390E+02    8.78300E+01    2.15150E+01
+    8.17850E+01    1.49360E+02    1.16460E+02    3.17550E+01    7.89300E+01
+    9.92560E+01    2.30630E+01    8.59360E+01    1.08560E+02    1.52340E+02
+    1.38470E+02    3.17040E+01    1.13810E+02    1.14160E+02    1.48570E+02
+    8.63090E+01    1.37800E+02    8.96190E+01    1.11530E+02    2.49810E+01
+    1.01890E+02    8.82930E+01    9.76420E+01    8.06610E+01    8.35740E+01
+    8.56770E+01    1.56210E+02    1.40920E+02    1.98710E+01
+END
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H9">9 </A>EXTRACT O DATABLOCKS FROM A PROCHECK OUTPUT FILE</H2> </CENTER>
+<P>   
+You may extract O datablocks from a PROCHECK &quot;XXX.out&quot; file.
+The following example shows how it works and what you may
+extract at present:
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S1">9.1 </A>example</H3> 
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+...
+ Option ? () e
+<P>   
+ Extract O datablocks from PROCHECK output
+<P>   
+ Max nr of residues : (      10000)
+<P>   
+ Name of your molecule in O ? (M1A) m8a
+<P>   
+ Name of PROCHECK &quot;XXX.out&quot; file ? (m8a.out) m7a.out
+      1 PRO    A1            -        1   0.0
+      2 SER    A2            XX       0  -2.0
+      3 VAL    A3            XX       0   0.0
+      4 PHE    A4     E      B        0  -1.9
+...
+    260 VAL    A453   E      B        0  -2.3
+    261 THR    A454   E      B        1  -1.3
+    262 GLU    A455   e      -        0  -1.7
+<P>   
+ End of residue listing; skip rest of file
+ Nr of lines read : (        561)
+ Name of residue TYPE file ? (m8a_restyp.o)
+ Name of residue NAME file ? (m8a_resnam.o)
+ Name of residue DSSP file ? (m8a_dssp.o)
+ Name of residue Ramachandran file ? (m8a_ramach.o)
+ Name of residue bad contacts file ? (m8a_badcon.o)
+ Name of residue H-bond energy file ? (m8a_hbond.o)
+ All done !
+...
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S2">9.2 </A>output files</H3> 
+<P>   
+The above gave the following files:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ % 136 gerard rigel 23:05:46 progs/odbm &gt; ls m8a*
+   4 -rw-r--r--   1 gerard      1709 Nov  5 23:56 m8a_restyp.o
+   4 -rw-r--r--   1 gerard      1709 Nov  5 23:56 m8a_resnam.o
+   4 -rw-r--r--   1 gerard      1709 Nov  5 23:56 m8a_dssp.o
+   4 -rw-r--r--   1 gerard      1709 Nov  5 23:56 m8a_ramach.o
+   2 -rw-r--r--   1 gerard       843 Nov  5 23:56 m8a_badcon.o
+   3 -rw-r--r--   1 gerard      1382 Nov  5 23:57 m8a_hbond.o
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+The &quot;head&quot; of each of these files looks as follows:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ % 138 gerard rigel 23:05:46 progs/odbm &gt; head -5 m8a*.o
+==&gt; m8a_badcon.o &lt;==
+m8a_residue_badcon i 262 (1x,25i3)
+   1  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+   0  0  0  1  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  1  0  0  0
+   1  0  0  0  0  0  1  0  0  0  0  0  0  0  0  0  0  0  0  0  0  1  0  0  0
+   0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+<P>   
+==&gt; m8a_dssp.o &lt;==
+m8a_residue_dssp c 262 (1x,5a)
+                   E     E
+ E                 H     H
+ H     H     H     H     h
+ T     T     T
+<P>   
+==&gt; m8a_hbond.o &lt;==
+m8a_residue_hbond r 262 (1x,15f5.1)
+   0.0 -2.0  0.0 -1.9  0.0 -2.2  0.0  0.0  0.0  0.0  0.0 -1.0 -1.4 -1.1 -2.5
+  -0.8  0.0 -2.2  0.0  0.0  0.0 -2.2 -2.3 -2.6 -2.8 -3.2 -0.6  0.0 -1.2 -1.6
+   0.0  0.0 -0.6  0.0 -0.7  0.0 -1.7  0.0 -2.0  0.0 -2.0 -1.9 -2.7 -0.8 -1.2
+   0.0 -0.8 -1.7  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0 -2.5  0.0
+<P>   
+==&gt; m8a_ramach.o &lt;==
+m8a_residue_rama c 262 (1x,5a)
+ -     XX    XX    B     B
+ B     -     -     B     -
+ A     A     A     A     B
+ A     A     B     B     -
+<P>   
+==&gt; m8a_resnam.o &lt;==
+m8a_residue_name c 262 (1x,5a)
+ A1    A2    A3    A4    A5
+ A6    A7    A8    A9    A10
+ A11   A12   A13   A14   A15
+ A16   A17   A18   A19   A20
+<P>   
+==&gt; m8a_restyp.o &lt;==
+m8a_residue_type c 262 (1x,5a)
+ PRO   SER   VAL   PHE   LEU
+ PHE   PRO   PRO   LYS   PRO
+ LYS   ASP   THR   LEU   MET
+ ILE   SER   ARG   THR   PRO
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+NOTE that all character properties have been converted to UPPERCASE !!
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S3">9.3 </A>use inside O</H3> 
+<P>   
+Use these properties in O to colour your molecule:
+<P>   
+* colour molecule according to secondary structure (DSSP-like):
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+  O &gt; read m8a_dssp.o
+  O &gt; mol m8a pai_zo m8a a1 a455 yellow
+  O &gt; pai_case residue_dssp 5 e h t s g green red blue magenta cyan
+  O &gt; obj dssp ca ; end
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+* colour residues with bad phi/psi angles:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ O &gt; read m8a_ramach.o pai_zo m8a a1 a455 blue
+ O &gt; pai_case residue_rama 5 ~a ~b ~l ~p xx yellow yellow yellow yellow red
+ O &gt; obj rama ca ; end
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+* colour residues according to the number of bad contacts:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+  O &gt; read m8a_badcon.o
+  O &gt; mol m8a pai_ramp residue_badcon ; blue red
+  O &gt; obj badcon ca ; end
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+* colour residues using their H-bond energy:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+  O &gt; mol m8a pa_zo m8a a1 a455 blue
+  O &gt; pai_prop residue_hbond &lt; -4 red
+  O &gt; pai_prop residue_hbond &gt; 0 yellow
+  O &gt; obj hbond ca ; end
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H10">10 </A>KNOWN BUGS</H2> </CENTER>
+<P>   
+None, at present.
+<HR NOSHADE>    <A HREF="http://xray.bmc.uu.se/usf/" target="_top">
+<IMG ALIGN="right" BORDER="0" SRC="usf_logo.gif"
+ALT="Uppsala Software Factory"></A>
+<FONT SIZE=-1>
+<B> <I> Created at Fri Jan 14 20:12:27 2005
+by MAN2HTML version 050114/2.0.6 . This manual
+describes ODBM, a program of the <A HREF="http://xray.bmc.uu.se/usf/" target="_top">Uppsala
+Software Factory</A> (USF), written and maintained by <A HREF="http://xray.bmc.uu.se/gerard"
+target="_blank">Gerard Kleywegt</A>. &copy; 1992-2005.
+</I> </B> </FONT><P>
+<IMG SRC="http://xray.bmc.uu.se/cgi-bin/nph-count?width=6&link=http://alpha2.bmc.uu.se/~gerard/www/manuals/odbm_man.html">
+</body></html>

@@ -1,0 +1,2926 @@
+<html><head><!-- This document was created for DEJAVU at Thu Jul 3 21:07:26 2008 from
+../secs/dejavu.txt by MAN2HTML version 070111/2.0.8 -->
+<title>Uppsala Software Factory - DEJAVU Manual</title>
+<meta name="DESCRIPTION" content="Manual for Gerard 
+Kleywegt's program DEJAVU">
+<meta name="KEYWORDS" content="manual software Gerard 
+Kleywegt program DEJAVU structural biology 
+protein X-ray crystallography macromolecular molecular
+Uppsala Software Factory bioinformatics">
+</head><body bgcolor="#fefefe" background="back.gif">
+
+<A HREF="http://xray.bmc.uu.se/usf/" target="_top">
+<IMG ALIGN="right" BORDER="0" SRC="usf_logo.gif"
+ALT="Uppsala Software Factory"></A>
+
+<H2>  Uppsala Software Factory - DEJAVU Manual</H2> <P>   
+<UL>  
+<LI><H3>  <A HREF="#H1">1  </A>DEJAVU - GENERAL INFORMATION</H3> 
+<LI><H3>  <A HREF="#H2">2  </A>REFERENCES</H3> 
+<LI><H3>  <A HREF="#H3">3  </A>VERSION HISTORY</H3> 
+<LI><H3>  <A HREF="#H4">4  </A>INTRODUCTION</H3> 
+<LI><H3>  <A HREF="#H5">5  </A>QUICK START GUIDE</H3> 
+<H5><A HREF="#S1">5.1  </A>with (CA) coordinates</H5>
+<H5><A HREF="#S2">5.2  </A>without coordinates</H5>
+<LI><H3>  <A HREF="#H6">6  </A>SSE FILES</H3> 
+<H5><A HREF="#S3">6.1  </A>description</H5>
+<H5><A HREF="#S4">6.2  </A>keywords</H5>
+<H5><A HREF="#S5">6.3  </A>example</H5>
+<LI><H3>  <A HREF="#H7">7  </A>DATABASE</H3> 
+<LI><H3>  <A HREF="#H8">8  </A>RUNNING THE PROGRAM</H3> 
+<H5><A HREF="#S6">8.1  </A>startup</H5>
+<H5><A HREF="#S7">8.2  </A>options</H5>
+<H5><A HREF="#S8">8.3  </A>LIst</H5>
+<H5><A HREF="#S9">8.4  </A>EXtract</H5>
+<H5><A HREF="#S10">8.5  </A>REad</H5>
+<LI><H3>  <A HREF="#H9">9  </A>FINDING A MOTIF</H3> 
+<H5><A HREF="#S11">9.1  </A>input</H5>
+<H5><A HREF="#S12">9.2  </A>SSEs</H5>
+<H5><A HREF="#S13">9.3  </A>search criteria</H5>
+<H5><A HREF="#S14">9.4  </A>search constraints and O macro</H5>
+<H5><A HREF="#S15">9.5  </A>output</H5>
+<H5><A HREF="#S16">9.6  </A>algorithm</H5>
+<H5><A HREF="#S17">9.7  </A>more hits</H5>
+<LI><H3>  <A HREF="#H10">10  </A>DEJANA</H3> 
+<LI><H3>  <A HREF="#H11">11  </A>ANALYSING THE RESULTS</H3> 
+<H5><A HREF="#S18">11.1  </A>O macro</H5>
+<H5><A HREF="#S19">11.2  </A>running O</H5>
+<H5><A HREF="#S20">11.3  </A>analysis on the display</H5>
+<LI><H3>  <A HREF="#H12">12  </A>A REALISTIC EXAMPLE</H3> 
+<H5><A HREF="#S21">12.1  </A>SSE file</H5>
+<H5><A HREF="#S22">12.2  </A>search parameters</H5>
+<H5><A HREF="#S23">12.3  </A>output</H5>
+<H5><A HREF="#S24">12.4  </A>O macro</H5>
+<H5><A HREF="#S25">12.5  </A>running O</H5>
+<LI><H3>  <A HREF="#H13">13  </A>DETAILED ANALYSIS OF RESULTS ON CRO</H3> 
+<H5><A HREF="#S26">13.1  </A>results</H5>
+<LI><H3>  <A HREF="#H14">14  </A>MISCELLANEOUS</H3> 
+<H5><A HREF="#S27">14.1  </A>HOW TO CREATE AND USE YOUR OWN DATABASE</H5>
+<H5><A HREF="#S28">14.2  </A>HOW TO SELECT SEARCH PARAMETERS</H5>
+<H5><A HREF="#S29">14.3  </A>OTHER HINTS</H5>
+<H5><A HREF="#S30">14.4  </A>PROBLEMS</H5>
+<LI><H3>  <A HREF="#H15">15  </A>SELECT OPTION</H3> 
+<LI><H3>  <A HREF="#H16">16  </A>INCREMENTAL SEARCH EXAMPLE</H3> 
+<LI><H3>  <A HREF="#H17">17  </A>TOPOLOGY OPTION</H3> 
+<LI><H3>  <A HREF="#H18">18  </A>INSTALLING THE SOFTWARE</H3> 
+<LI><H3>  <A HREF="#H19">19  </A>SYMBOLIC MATCHING</H3> 
+<LI><H3>  <A HREF="#H20">20  </A>RELEASE NOTES</H3> 
+<LI><H3>  <A HREF="#H21">21  </A>KNOWN BUGS</H3> 
+</UL> 
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H1">1 </A>DEJAVU - GENERAL INFORMATION</H2> </CENTER>
+<P>   
+Program : DEJAVU
+ <BR> Version : 080703
+ <BR> Author : Gerard J. Kleywegt, Dept. of Cell and Molecular Biology,
+Uppsala University, Biomedical Centre, Box 596,
+SE-751 24 Uppsala, SWEDEN
+ <BR> E-mail : gerard@xray.bmc.uu.se
+ <BR> Purpose : detecting similarities/motifs in protein structures
+using a large database
+ <BR> Package : DEJAVU
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H2">2 </A>REFERENCES</H2> </CENTER>
+<P>   
+Reference(s) for this program:
+<P>   
+* 1 * G.J. Kleywegt &amp; T.A. Jones (1994). Halloween ... Masks and
+Bones. In &quot;From First Map to Final Model&quot;, edited by
+S. Bailey, R. Hubbard and D. Waller. SERC Daresbury
+Laboratory, Warrington, pp. 59-66.
+[http://xray.bmc.uu.se/gerard/papers/halloween.html]
+<P>   
+* 2 * G.J. Kleywegt &amp; T.A. Jones (1997). Taking the fun out of map
+interpretation. CCP4/ESF-EACBM Newsletter on Protein
+Crystallography 33, January 1997, pp. 19-21.
+[http://xray.bmc.uu.se/usf/factory_7.html]
+<P>   
+* 3 * G.J. Kleywegt &amp; T.A. Jones (1997). Detecting folding motifs
+and similarities in protein structures. Methods in
+Enzymology 277, 525-545.
+<P>   
+* 4 * D. Madsen &amp; G.J. Kleywegt (2002). Interactive motif and
+fold recognition in protein structures. J. Appl. Cryst.
+35, 137-139.
+[http://scripts.iucr.org/cgi-bin/paper?wt0007]
+<P>   
+* 5 * M. Novotny, D. Madsen &amp; G.J. Kleywegt (2004). An evaluation
+of protein-fold-comparison servers. Proteins, 54, 260-270
+(2004).
+[http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=PubMed&amp;cmd=Retrieve&amp;list_uids=14696188&amp;dopt=Citation]
+<P>   
+* 6 * Kleywegt, G.J., Zou, J.Y., Kjeldgaard, M. &amp; Jones, T.A. (2001).
+Around O. In: &quot;International Tables for Crystallography, Vol. F.
+Crystallography of Biological Macromolecules&quot; (Rossmann, M.G.
+&amp; Arnold, E., Editors). Chapter 17.1, pp. 353-356, 366-367.
+Dordrecht: Kluwer Academic Publishers, The Netherlands.
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H3">3 </A>VERSION HISTORY</H2> </CENTER>
+<P>   
+921022 - 0.1 - Started programming; called program &quot;AnalSecS&quot;
+for &quot;ANALyse SECondary Structure&quot; ...
+ <BR> 921029 - 1.0 - First working version released in-house;
+first version of the manual
+ <BR> 921030 - 1.1 - Minor changes; continued manual; cro analysis
+ <BR> 921031 - 1.2 - Minor changes to lsq-macro and output;
+corrected non-conservation of directionality;
+introduced weights in the score calculation
+ <BR> 921103 - 1.3 - Changed LIst option; add STatistics option
+ <BR> 930105 - 1.4 - Changed name to DEJAVU (at last); updated manual
+ <BR> 930125 - 1.5 - Implemented distance options I and A; implemented
+incremental search for maximum common motif;
+option to try to avoid multiple chain hits
+ <BR> 930126 - 1.6 - Removed some minor bugs
+ <BR> 930222 - 1.7 - new SELECT option; avoid hits with multiple copies
+of the &quot;same&quot; protein
+ <BR> 930302 - 1.8 - TOPOLOGY option (crummy !!!)
+ <BR> 930713 - 2.0 - cleaned up for export; added notes on installing
+and running the software to this manual file
+ <BR> 930826 - 2.1 - more info when errors occur during database read;
+increased array dimensions for new databases
+ <BR> 930921 - 2.1.1 minor bug fix in SElect (needed for DEC Alphas)
+ <BR> 930923 - - added jiffy program POST to analyse O log file
+ <BR> 930924 - 3.0 - altered SElect command to continue cycling until
+you actually choose option 0 (=back to main menu);
+BONES search option (part of INcr); works for P2 !
+ <BR> 930927 - 3.1 - if BONES search, check that there are &gt; 2 SSEs;
+if NO directionality, use |cos| for the score;
+option to skip all proteins whose PDB file does
+not exist (actually: can not be read by the user);
+only include factors in score whose weight &gt; 0.01;
+include centroid-LSQ-RMSD as a factor contributing
+to the score; new option to do either an lsq_explicit
+inside O, or an lsq_centroid inside DEJAVU; make
+lsq_improve with both complete molecules the default
+for the FInd option as well
+ <BR> 931206 - 4.0 - interface with LSQMAN (through input file)
+ <BR> 941101 - 4.1 - increased dimensioning to 2500 structures
+ <BR> 950118 - 4.2 - sensitive to environment variable GKLIB
+ <BR> 950718 - 4.3 - replaced &quot;mismatch nr of residues&quot; by two separate
+cut-offs for &quot;too short&quot; and &quot;too long&quot; SSEs
+ <BR> 970102 - 5.0 - better suggested defaults for BONES searches; sort
+the hits (by nr of SSEs -&gt; RMSD -&gt; Score); reduced
+the amount of output generated by the program; add
+PDB identifier to PRINT statements in O macros to
+facilitate grep-ing results for a particular entry
+(e.g.: &quot;grep ^print lsq.omac | grep 1ack&quot;)
+ <BR> 970115 - - added DEJANA to sort O macros produced by DEJAVU or
+LSQMAN; added quick starter guide to manual and a
+brief description of DEJANA
+ <BR> 970131 - 5.1 - moved a few search parameters which are rarely used
+to a separate PArameter command
+ <BR> 970729 - 5.2 - LSQMAN will now also write the aligned hits to
+PDB files (can be switched off) - this is useful
+for non-O users
+ <BR> 981020 -5.2.1- minor bug fix (RMSD not always printed in list of hits)
+ <BR> 981127 - 5.3 - new SElect options to (de)select multiple entries;
+list total number of mismatched residues for every
+hit; list total number of gap-length differences
+(between neighbouring SSEs) for every hit; implemented
+symbolic searching where spatial arrangements of
+SSEs are not used, only their type and length (in
+terms of residues) - can be used if you get no
+hits at all, or if you have a very reliable secondary
+structure prediction
+ <BR> 990401 -5.3.1- increased maximum number of proteins to 2700
+ <BR> 990901 - X - new version of PRO2 (990901/1.1) that skips SSEs
+that contain fewer than 3 residues
+ <BR> 990902 - X - DEJANA now also works with output from SAVANT
+ <BR> 991109 - 5.4 - the initial two lines in a database file, declaring
+the existence of helices and strands, are now no
+longer needed (they will be ignored if they are
+present)
+ <BR> 991203 -5.4.1- minor bug fix
+ <BR> 991220 - 5.5 - increased dimensioning for new database; rewrote
+part of the code to cope with larger databases;
+PRO1, PRO2 and POST are now obsolete
+ <BR> 010207 - 5.6 - increased dimensioning
+ <BR> 010208 - 5.7 - implemented use of MAXHITS (to limit number of
+hits generated in case of &quot;unfortunate&quot; parameter
+settings); expanded output from STats command
+ <BR> 010608 -5.7.1- increased maximum number of structures to 20000
+ <BR> 010910 -5.7.2- increased dimensioning to handle new databases
+ <BR> 011120 - 5.8 - changes to the LSQMAN input files created by DEJAVU
+(echo commands; only keep first NMR model; generate
+a global structure-based sequence alignment);
+MAXHITS now applies to the number of database
+entries rather than the total number of hits
+ <BR> 011122 - X - DEJANA version 1.6 (minor changes)
+ <BR> 011122 -5.8.1- changes to the LSQMAN input files created by DEJAVU
+ <BR> 011123 -5.8.2- more changes to the LSQMAN input files created by
+DEJAVU; various other minor changes
+ <BR> 011205 -5.8.3- minor changes
+ <BR> 020222 -5.8.4- minor changes (for server version)
+ <BR> 020225 -5.8.5- minor changes (for server version)
+ <BR> 020227 -5.8.6- minor changes (for server version)
+ <BR> 020712 -5.8.7- minor changes
+ <BR> 030304 -5.8.8- minor changes
+ <BR> 041001 - 5.9 - replaced Kabsch' routine U3BEST by quaternion-based
+routine (U3QION) to do least-squares superpositioning
+ <BR> 050113 -5.9.1- increased dimensioning to handle new databases
+ <BR> 060824 -5.9.2- minor changes
+ <BR> 080703 -5.9.3- increased dimensioning
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H4">4 </A>INTRODUCTION</H2> </CENTER>
+<P>   
+In the &quot;good old days&quot; protein scientists made it a sport to
+become walking databanks of secondary structure motifs; upon
+seeing a particular fold, for example during a seminar, they
+would say: &quot;Oh, but that fold also occurs in XXX&quot;, and, boy,
+did you feel stupid for having failed to notice this. Well,
+your worries might be coming to an end soon, thanks to DEJAVU.
+<P>   
+DEJAVU will take a description of the secondary structure elements
+that occur in your particular protein and compare it to a huge
+database of secondary structure elements that occur in protein
+structures that have been published as PDB files.
+<P>   
+What's the basic idea ? A MOTIF of secondary structure elements
+(henceforth abbreviated &quot;SSEs&quot;) consists of N SSEs, each of
+which comprises M(i) residues and has a length of L(i) Angstrom
+(measured from the first residue's Calpha to that of the last
+residue), and which is characterised by a matrix D(i,j) which
+contains the centre-to-centre distances (for example) and by
+another matrix C(i,j) which contains the cosines of the angles
+made by the direction vectors of the individual elements (the
+direction vector goes FROM the N-terminal Calpha TO the C-terminal
+one). Finding a motif in the database that is SIMILAR to that
+which occurs in your protein then comes down to finding suitable
+collections of N SSEs in the structures of other proteins which
+have approximately the same numbers of residues, the same lengths
+and comparable mutual distances and direction-vector cosines.
+ <BR> And that is ALL there is to it !
+<P>   
+NOTE: unless you have compelling reasons to do otherwise, you are
+strongly suggested to use the INcremental search option, rather
+than the FInd option, since the former is much less sensitive
+to small differences between similar structures.
+<P>   
+NOTE: you can also use this program with &quot;SSEs&quot; based on a skeleton
+(Bones). Simply create an SSE file with dummy residue names,
+find the terminal CA positions by clicking on the appropriate
+Bones atoms &amp; guess the number of residues as:
+ <BR> - N-&gt;C distance (A) divided by 1.6 A/residue for a helix
+ <BR> - N-&gt;C distance (A) divided by 3.4 A/residue for a strand
+ <BR> For more details, see: G.J. Kleywegt &amp; T.A. Jones,
+&quot;Halloween ... Masks and Bones&quot;, in &quot;From First Map to Final Model&quot;
+(S. Bailey, R. Hubbard &amp; D. Waller, Eds.), SERC Daresbury Laboratory,
+Warrington (1994), pp. 59-66.
+<P>   
+NOTE: This program is sensitive to the environment variable
+GKLIB. If set, the name of this directory will be prepended
+to the default name for the library file needed by this
+program. For example, in Uppsala, put the following line
+in your .login or .cshrc file: setenv GKLIB /nfs/public/lib
+<P>   
+NOTE: in particular when this program is used unsupervised
+(e.g., in a script on a web-server), you may want to limit
+the total number of hits that will be generated in case of
+&quot;unfortunate&quot; parameters settings. This can be done with
+the environment variable MAXHITS (e.g., setenv MAXHITS 10000),
+or with the command-line argument MAXHITS
+(e.g., run dejavu maxhits 500). The default value is 1000.
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H5">5 </A>QUICK START GUIDE</H2> </CENTER>
+<P>   
+This section briefly goes through the necessary steps of running
+DEJAVU - it is NOT a substitute for reading the manual.
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S1">5.1 </A>with (CA) coordinates</H3> 
+<P>   
+* set up the programs and database as described elsewhere in this
+document
+<P>   
+* run the accompanying program GETSSE to generate an SSE file
+<P>   
+* start DEJAVU
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ % 265 gerard sarek 17:07:00 gerard/junk &gt; run dejavu
+<P>   
+ [...]
+<P>   
+ DEJAVU SSE library file ? (/nfs/public/lib/dejavu.lib)
+<P>   
+ List contents of SSE library (Y/N) ? (N)
+<P>   
+ Skip non-existent PDB files  (Y/N) ? (N)
+<P>   
+ [...]
+<P>   
+ ===&gt; Option ? (READ)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+* read your new SSE file
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ===&gt; Option ? (READ) read
+ User DEJAVU file ? (user.sse) crab.sse
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+* start an INcremental search; tweak the input parameters until you
+get more hits than you would hope to find (we'll get rid of the
+poor ones later; better to find a few poor hits now, than to miss
+correct ones)
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ===&gt; Option ? (READ) in
+<P>   
+ ********** NEW QUERY **********
+<P>   
+ Elements : ( B1 B2 A1 A2 B3 B4 B5 B6 B7 B8 B9 B10 B11)
+ Nr of SSEs : (      13)
+ Min nr of residues for SSEs             ? (       4)
+ Nr of SSEs : (      10)
+ Remaining SSEs : ( A1 A2 B3 B4 B5 B7 B8 B9 B10 B11)
+ Min nr of elements to match (0 = abort) ? (       4) 6
+<P>   
+ Is this a BONES search ? (N)
+<P>   
+ Do lsq_explicit inside O ? (N)
+<P>   
+ Define how much the nr of residues in SSEs may differ
+ by defining how many residues shorter or longer SSEs in
+ the database may be compared to those in your protein.
+ Max nr of residues &quot;too short&quot; ? (          2)
+ Max nr of residues &quot;too long&quot;  ? (          4)
+<P>   
+ Mismatch element length        ? (  10.000)
+ Mismatch distances             ? (   8.000)
+ Mismatch cosines               ? (   0.400)
+<P>   
+ Weights for nr res, length, dist, cos, rmsd
+ Weights for scoring     ? (   0.001    0.001    0.100    0.100    0.500)
+ Normalised weights      : (   0.014    0.014    0.139    0.139    0.694)
+<P>   
+ Possible distance criteria:
+  C  =&gt; centre-to-centre
+  H  =&gt; MIN head-tail and tail-head (anti-parallel)
+  T  =&gt; MIN head-head and tail-tail (parallel)
+  I  =&gt; MIN of all these distances
+  A  =&gt; MAX of all these distances
+ Which distances (C/H/T/I/A) ? (C)
+<P>   
+ Extensive output        ? (N)
+<P>   
+ Conserve directionality ? (Y)
+<P>   
+ Conserve absolute motif ? (Y)
+<P>   
+ Conserve neighbours     ? (N)
+<P>   
+ Attempt to avoid multi-chain hits ? (N)
+ Attempt to avoid identical proteins ? (N)
+<P>   
+ Create O macro file      ? (Y)
+ O macro file             ? (lsq.omac)
+ Create LSQMAN input file ? (Y)
+ LSQMAN input file        ? (lsqman.inp)
+<P>   
+ [...]
+<P>   
+ Sorting hits ...
+<P>   
+   Nr Entry  PDB  SSE  RMSD SCORE Compound
+ ==== ===== ==== ==== ===== ===== ========
+    1   152 1cbs   10  0.00  0.00 cellular retinoic-acid-binding protein type ii co - human (homo sapie
+    2   149 1cbi   10  1.73  1.50 mol_id: 1; - mol_id: 1;
+    3   490 1hmt    9  1.31  1.15 fatty acid binding protein (human muscle, m-fabp) - organism: homo sa
+    4   619 1lid    9  1.45  1.27 adipocyte lipid-binding protein complexed with ol - mouse (mus muscul
+    5   759 1opb    9  1.94  1.66 cellular retinol binding protein ii (holo form) - rat (rattus rattus
+    6   219 1crb    9  2.64  2.31 cellular retinol binding protein (crbp) complexed - rat (rattus rattu
+    7   825 1pmp    8  1.13  1.03 p2 myelin protein (p2) - bovine (bos taurus
+    8   380 1ftp    8  1.73  1.50 fatty-acid-binding protein - desert locust (sch
+    9   663 1mdc    8  2.43  2.08 fatty acid binding protein (manduca sexta) (mfb2) - tobacco hornworm
+   10   197 1cly    7  3.94  3.64 mol_id: 1; -
+   11   715 1ncb    7  6.02  5.43 n9 neuraminidase-nc41 (e.c.3.2.1.18) mutant with - influenza virus a/
+<P>   
+ [...]
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+* when you're happy, quit the program
+<P>   
+* it is strongly recommended to now run LSQMAN to separate the men from
+the boys
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ % 266 gerard sarek 17:07:00 gerard/junk &gt; run lsqman &lt; lsqman.inp &gt; lsqman.out
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+* now run DEJANA to sort out the hits you're really interested in,
+let it write them to a new O macro, and execute this macro from
+within O. The use of DEJANA is described elsewhere in this
+manual
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S2">5.2 </A>without coordinates</H3> 
+<P>   
+* set up the programs and database as described elsewhere in this
+document
+<P>   
+* you will have to create an SSE file. Usually, this means you have
+at least a set of Bones in which you can identify SSEs. Perhaps
+you have used ESSENS and SOLEX to get an SSE file (see the SOLEX
+manual for more details), for example:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+! Created by SOLEX V. 961228/1.0 at Sat Dec 28 23:36:51 1996 for user gerard
+!
+MOL   bone
+NOTE  auto-generated by SOLEX
+PDB   btrace.pdb
+!
+BETA  'B1' ' 1' ' 12' 12 61.43 60.73 47.76 33.97 55.75 27.06
+BETA  'B2' ' 13' ' 21' 9 44.24 63.08 16.44 37.40 64.56 41.58
+BETA  'B3' ' 22' ' 29' 8 56.31 63.65 17.51 44.11 72.87 32.13
+BETA  'B4' ' 30' ' 37' 8 49.36 51.47 27.01 61.21 66.47 37.90
+BETA  'B5' ' 38' ' 45' 8 57.25 53.27 22.42 59.65 74.87 31.87
+BETA  'B6' ' 46' ' 52' 7 45.76 52.50 31.42 59.24 63.58 40.97
+BETA  'B7' ' 53' ' 59' 7 62.51 73.28 34.79 52.24 58.42 26.17
+BETA  'B8' ' 60' ' 65' 6 47.19 65.18 19.62 39.41 67.92 33.35
+ENDMOL
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+* start DEJAVU and read in your SSE file
+<P>   
+* start an INcremental search, and answer Yes to the question if
+this is a Bones search. Tweak the input parameters until you
+get more hits than you would ever want (we'll sort out the
+good and the bad later)
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ===&gt; Option ? (READ) in
+<P>   
+ ********** NEW QUERY **********
+<P>   
+ Elements : ( B1 B2 B3 B4 B5 B6 B7 B8)
+ Nr of SSEs : (       8)
+ Min nr of residues for SSEs             ? (       4)
+ Nr of SSEs : (       8)
+ Remaining SSEs : ( B1 B2 B3 B4 B5 B6 B7 B8)
+ Min nr of elements to match (0 = abort) ? (       4) 6
+<P>   
+ Is this a BONES search ? (N) yes
+ BONES search mode
+<P>   
+ BONES search; will do lsq_centroid
+<P>   
+ Define how much the nr of residues in SSEs may differ
+ by defining how many residues shorter or longer SSEs in
+ the database may be compared to those in your protein.
+ BONES suggested value: 1 or 2
+ Max nr of residues &quot;too short&quot; ? (          2)
+ BONES suggested value: 4 to 6
+ Max nr of residues &quot;too long&quot;  ? (          4)
+<P>   
+ BONES suggested value: ~10
+ Mismatch element length        ? (  10.000)
+ BONES suggested value: ~6
+ Mismatch distances             ? (   8.000) 6
+ BONES suggested value: 0.2 to 0.4
+ Mismatch cosines               ? (   0.400) 0.2
+<P>   
+ Weights for nr res, length, dist, cos, rmsd
+ BONES suggested values: 0 0 1 1 5
+ Weights for scoring     ? (   0.001    0.001    0.100    0.100    0.500) 0 0 1 1 5
+ Normalised weights      : (   0.001    0.001    0.142    0.142    0.712)
+<P>   
+ Possible distance criteria:
+  C  =&gt; centre-to-centre
+  H  =&gt; MIN head-tail and tail-head (anti-parallel)
+  T  =&gt; MIN head-head and tail-tail (parallel)
+  I  =&gt; MIN of all these distances
+  A  =&gt; MAX of all these distances
+ BONES suggested value: C !!!
+ Which distances (C/H/T/I/A) ? (C)
+<P>   
+ Extensive output        ? (N)
+<P>   
+ BONES suggested value: NO !!!
+ Conserve directionality ? (Y) no
+<P>   
+ BONES suggested value: Y
+ Conserve absolute motif ? (Y)
+<P>   
+ BONES suggested value: NO !!!
+ Conserve neighbours     ? (N) no
+<P>   
+ Attempt to avoid multi-chain hits ? (N)
+ Attempt to avoid identical proteins ? (N)
+<P>   
+ Create O macro file      ? (Y)
+ O macro file             ? (lsq.omac)
+<P>   
+ [...]
+<P>   
+ Nr of database entries : (       1381)
+ Nr of selected entries : (       1381)
+ Nr of matching entries : (         54)
+ Nr of hits (total)     : (        376)
+<P>   
+ Sorting hits ...
+<P>   
+   Nr Entry  PDB  SSE  RMSD SCORE Compound
+ ==== ===== ==== ==== ===== ===== ========
+    1   380 1ftp    7  2.71  2.26 fatty-acid-binding protein - desert locust (sch
+    2   825 1pmp    6  2.20  1.92 p2 myelin protein (p2) - bovine (bos taurus
+    3   152 1cbs    6  2.53  2.05 cellular retinoic-acid-binding protein type ii co - human (homo sapie
+    4   547 1igc    6  2.74  2.42 igg1 fab fragment complexed with protein g (domai - molecule: igg1 fa
+    5   338 1fbi    6  2.86  2.52 fab fragment of the monoclonal antibody f9.13.7 ( - immunoglobulin f9
+    6   619 1lid    6  2.88  2.39 adipocyte lipid-binding protein complexed with ol - mouse (mus muscul
+    7   663 1mdc    6  2.93  2.57 fatty acid binding protein (manduca sexta) (mfb2) - tobacco hornworm
+    8   490 1hmt    6  2.94  2.41 fatty acid binding protein (human muscle, m-fabp) - organism: homo sa
+    9  1150 2cgr    6  3.01  2.61 igg2b (kappa) fab fragment complexed with antigen - mouse (mus muscul
+   10   219 1crb    6  3.01  2.62 cellular retinol binding protein (crbp) complexed - rat (rattus rattu
+<P>   
+ [...]
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+* when you're happy, quit the program
+<P>   
+* now run DEJANA to sort out the hits you're really interested in,
+let it write them to a new O macro, and execute this macro from
+within O. The use of DEJANA is described elsewhere in this
+manual
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H6">6 </A>SSE FILES</H2> </CENTER>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S3">6.1 </A>description</H3> 
+<P>   
+In order to run DEJAVU you need a database file (which we provide)
+and a file which describes the SSEs of your protein. Here, we
+describe how you can make such a file yourself; later, we show
+how this process can be carried out completely automatically.
+<P>   
+An (ASCII) input file consists of records which are all read in
+the format (A6,A) and which are supposed to contain (keyword,
+value) combinations. The only exception is the comment card,
+which has an exclamation mark (&quot;!&quot;) in column 1 and may contain
+any text you like in the other columns. Comment cards are ignored
+when DEJAVU reads your file.
+<P>   
+Keywords consist of 6 characters, but only the first THREE are
+really needed.
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S4">6.2 </A>keywords</H3> 
+<P>   
+The important keywords are:
+<P>   
+REMark - followed by any text; the text is printed when DEJAVU reads
+the file; may occur anywhere; note the difference with &quot;!&quot;
+cards
+<P>   
+MOLecl - an identifier for the molecule, typically the PDB name
+which consists of four characters (we suggest you use
+four characters for your own proteins as well, although
+the name may be up to ten characters long); this record
+MUST preceed all of the following records !!
+<P>   
+NOTe - a description of your protein, its source, possibly model
+number etc.; this record is optional
+<P>   
+PDBfil - the name of the PDB file (please use COMPLETE path names);
+optional
+<P>   
+ENDmol - another optional card to flag the end of the description
+of your molecule; it will force DEJAVU to print a brief
+summary of what is has just read from your file; if you
+omit this record, no such information is printed
+<P>   
+In between the PDBfil and the ENDmol cards come the records which
+describe your protein's SSEs, one card per SSE. Such a card must
+contain the TYPE of secondary structure as the keyword. Valid
+type names are defined at the start of the database. Now (and in
+the foreseeable future), the only allowed types are 'ALPHA ' and
+'BETA ' (note the trailing spaces !). The rest of the line must
+contain (in FREE format) in the following order:
+<P>   
+- the NAME of the SSE (e.g., 'A3' for the third alpha helix)
+ <BR> - the NAME of the first residue (e.g., 'B234' for residue nr 234
+in chain B of your protein); these must be O-names if you want
+to use O for the least-squares analysis and the graphics
+ <BR> - the NAME of the last residue
+ <BR> - the NUMBER of residues
+ <BR> - the X,Y,Z coordinates of the Calpha atom of the first residue
+ <BR> - the X,Y,Z coordinates of the Calpha atom of the last residue
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S5">6.3 </A>example</H3> 
+<P>   
+The following example input file demonstrates the rules described
+above:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+! Fil cro1.secs
+! Dat Tue Oct 27 16:10:38 1992
+! Mol 1cro
+!
+MOL   1cro
+NOTE  cro repressor - bacteriophage (lamb
+PDB   /nfs/public/pdb/cro1.pdb
+!
+BETA  'B1 ' 'O2' 'O5' 4 -14.281 -31.313 -18.167 -23.175 -35.450 -16.637
+ALPHA 'A1 ' 'O7' 'O13' 7 -29.257 -34.194 -18.097 -28.845 -32.180 -7.967
+ALPHA 'A2 ' 'O16' 'O23' 8 -34.771 -27.785 -12.919 -28.824 -24.039 -20.669
+ALPHA 'A3 ' 'O27' 'O36' 10 -37.998 -24.961 -17.921 -38.897 -38.362 -23.129
+BETA  'B2 ' 'O39' 'O45' 7 -29.786 -38.963 -24.270 -15.878 -26.755 -18.342
+BETA  'B3 ' 'O49' 'O56' 8 -19.552 -22.759 -18.208 -26.812 -40.941 -30.956
+BETA  'B4 ' 'A2' 'A5' 4 -13.971 -31.869 -27.393 -5.357 -36.922 -28.490
+ALPHA 'A4 ' 'A7' 'A13' 7 0.890 -35.709 -26.997 0.486 -34.944 -37.172
+ALPHA 'A5 ' 'A16' 'A23' 8 7.112 -30.676 -32.685 0.941 -25.214 -25.866
+ALPHA 'A6 ' 'A27' 'A36' 10 10.231 -27.335 -28.000 10.343 -40.059 -21.413
+BETA  'B5 ' 'A39' 'A45' 7 1.183 -39.887 -20.169 -11.744 -27.270 -27.497
+BETA  'B6 ' 'A49' 'A56' 8 -7.815 -23.996 -28.506 -2.038 -40.811 -13.598
+BETA  'B7 ' 'A61' 'A64' 4 -0.515 -49.077 -6.661 7.429 -51.625 -0.395
+BETA  'B8 ' 'B2' 'B5' 4 -9.695 -42.362 -23.899 -11.331 -37.554 -32.556
+ALPHA 'A7 ' 'B7' 'B13' 7 -14.598 -38.849 -38.128 -5.003 -39.984 -40.092
+ALPHA 'A8 ' 'B16' 'B23' 8 -11.330 -44.668 -45.288 -16.314 -48.999 -37.181
+ALPHA 'A9 ' 'B27' 'B36' 10 -16.401 -47.176 -46.990 -22.870 -34.583 -45.529
+BETA  'B9 ' 'B39' 'B45' 7 -20.900 -34.390 -36.358 -10.488 -46.927 -25.771
+BETA  'B10 ' 'B49' 'B56' 8 -11.541 -50.660 -29.488 -25.975 -32.563 -31.906
+BETA  'B11 ' 'C2' 'C5' 4 -19.072 -41.841 -20.389 -17.236 -36.377 -12.462
+ALPHA 'A10 ' 'C7' 'C13' 7 -14.059 -37.036 -6.711 -23.682 -37.697 -4.432
+ALPHA 'A11 ' 'C16' 'C23' 8 -17.641 -41.442 1.004 -12.536 -47.247 -6.179
+ALPHA 'A12 ' 'C27' 'C36' 10 -12.708 -44.384 3.140 -5.894 -32.347 0.006
+BETA  'B12 ' 'C39' 'C45' 7 -7.596 -33.295 -8.952 -18.764 -46.131 -18.226
+BETA  'B13 ' 'C49' 'C56' 8 -18.195 -49.385 -14.312 -2.019 -32.415 -13.482
+ENDMOL
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+The assignment of the SSEs, i.e., determining where helices and
+strands begin and end, can either be done by you, or within O
+(with the YASSPA option).
+<P>   
+The above file, by the way, was extracted from the database by
+DEJAVU. It is used in some of the examples that are shown
+below, so if you want to rework the examples, you may want to
+extract this file as well (use the EXtract option in DEJAVU, then
+ask for molecule 1cro).
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H7">7 </A>DATABASE</H2> </CENTER>
+<P>   
+The database file (for those interested) consists of a number of 'TYPE '
+cards, which define the secondary structure types that are defined,
+a number of entries a la the user DEJAVU file and (optionally) a 'CHAIN '
+card whic points to another database file (in this way you may chain
+your private database to your local database and from there on to the
+general PDB-derived database). Note that all records FOLLOWING a
+CHAIN card are IGNORED (i.e., it is NOT an INCLUDE statement !!!).
+<P>   
+NOTE: as of version 5.4, any TYPE cards read are ignored. The types
+ALPHA and BETA have now been hard-coded.
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+REMARK
+REMARK Secondary structure database
+REMARK
+(...)
+REMARK Version 0.7 - Gerard Kleywegt @ 921103 - first Uppsala structures included
+REMARK
+REMARK === list of secondary structure types that are used in this database
+REMARK
+TYPE   'ALPHA'  'alpha helix'
+TYPE   'BETA'   'beta strand'
+REMARK
+REMARK === PRIVATE STRUCTURES
+(...)
+REMARK
+REMARK === GSTA; sec structure according to ALWYN !!! NOT YASSPA !!!
+REMARK
+MOL    GSTA
+NOTE   human class alpha glutathione S-transferase model M10A
+REMARK
+BETA   'B1' 'A4' 'A7'   4   83.556  32.658  -4.327   85.981  34.524   4.814
+ALPHA  'A1' 'A16' 'A25'  10   88.040  22.978   5.128   83.811  20.525  -8.112
+(...)
+BETA   'B5' 'A203' 'A205'   3   94.355  22.919   1.194   97.646  21.706   7.281
+ALPHA  'A9' 'A209' 'A218'  10  100.424  25.314  18.933   90.509  36.091  17.098
+ENDMOL
+(...)
+REMARK
+REMARK === CHAIN TO NEXT FILE
+REMARK
+CHAIN /home/gerard/progs/secs/libs/uppsala.secs
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H8">8 </A>RUNNING THE PROGRAM</H2> </CENTER>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S6">8.1 </A>startup</H3> 
+<P>   
+When you start the program, you will see something like this:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+&lt; % 151 gerard rigel 21:42:26 progs/secs&gt; DEJAVU
+<P>   
+ *** DEJAVU *** DEJAVU *** DEJAVU *** DEJAVU *** DEJAVU *** DEJAVU *** DEJAVU ***
+<P>   
+ Version  - 921029/0.06
+ By       - Gerard J. Kleywegt, Dept. Mol. Biology, BMC, Uppsala (S)
+ User I/O - routines courtesy of Rolf Boelens, Univ. of Utrecht (NL)
+<P>   
+ Started  - Thu Oct 29 21:57:05 1992
+ User     - gerard
+ Mode     - interactive
+ Tty      - /dev/ttyq3
+<P>   
+ *** DEJAVU *** DEJAVU *** DEJAVU *** DEJAVU *** DEJAVU *** DEJAVU *** DEJAVU ***
+<P>   
+ Max nr of database entries             : (       1000)
+ Max nr of sec-struc elements per entry : (        150)
+ Max nr of sec-struc types              : (         10)
+<P>   
+ DEJAVU database file ? (secs.lib)
+<P>   
+ List contents of database (Y/N) ? (N)
+<P>   
+ TYPE   &gt; ALPHA  alpha helix
+ TYPE   &gt; BETA   beta strand
+ Nr of lines read  : (         94)
+ Nr of entries now : (          3)
+ CHAIN  &gt; /home/gerard/progs/secs/libs/pdb.secs
+<P>   
+ Nr of lines read : (      20356)
+ Nr of entries    : (        605)
+<P>   
+ +----------------------------------------------------------+
+ | OPTIONS:                                                 |
+ |                                                          |
+ | REad user DEJAVU file       FInd user motif in database  |
+ | LIst a database entry       EXtract a database entry     |
+ | CHeck database integrity    STatistics                   |
+ | QUit from DEJAVU            INcremental comparison       |
+ | SElect certain entries      TOpological analysis         |
+ | ! (comment; no action)      ? (list options)             |
+ +----------------------------------------------------------+
+<P>   
+ ===&gt; Option ? (READ)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+You are asked to supply the name of the database file and whether
+or not you want a listing of the contents of the database (reply
+&quot;NO&quot; to this unless you want to see 20 kilolines of output running
+over your screen ...). The database(s) are then loaded and the
+number of entries (in this case, 605) is printed. You are then
+presented with a menu of options:
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S7">8.2 </A>options</H3> 
+<P>   
+! = any input beginning with &quot;!&quot; is ignored (this allows you to
+include comments in input files or scripts)
+ <BR> ? = will result in a renewed listing of the available options
+ <BR> QU = will stop the program
+ <BR> CH = not usually needed by end-users; it checks all entries to
+see if there are duplicate molecule identifiers or PDB
+file names (this takes some time !)
+ <BR> LI = lists all entries which contain a certain string in their
+molecule identifier, note or PDB file name; you may enter
+the string
+ <BR> EX = extracts an entry from the database in a suitable format
+so that this file can be used as a user input file to DEJAVU
+ <BR> RE = read a user DEJAVU file (must be done before one uses FI)
+ <BR> FI = searches for secondary structure motifs; this option is
+discussed in detail in the following section
+ <BR> IN = incremental search (&quot;find as many common SSEs as possible&quot;);
+experience has shown that this is the method of choice !!!
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S8">8.3 </A>LIst</H3> 
+<P>   
+An example of the use and output of the LIst option in which all
+entries which have the word &quot;dna&quot; in their note are listed:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ===&gt; Option ? (READ)
+li
+ Search on Name, Comment or Filename ? (N)
+com
+ Search string ? (p2)
+dna
+<P>   
+ MOL    &gt; 1dpi
+ NOTE   &gt; /dna$ polymerase i (klenow fragment) (e.c.2.7.7.7 - (escherichia $col
+ PDB    &gt; /nfs/public/pdb/dpi1.pdb
+ Nr of elements : (         37)
+ ====== &gt;  Nr Type   Name   From   To     Nres
+ ====== &gt;   1 ALPHA  A1     336    348      13
+ ====== &gt;   2 BETA   B1     351    358       8
+ ====== &gt;   3 BETA   B2     370    375       6
+ ====== &gt;   4 BETA   B3     380    385       6
+[...]
+ ====== &gt;  35 ALPHA  A20    890    905      16
+ ====== &gt;  36 BETA   B16    913    921       9
+ ====== &gt;  37 ALPHA  A21    924    927       4
+<P>   
+ MOL    &gt; 2gn5
+ NOTE   &gt; gene 5 /dna$ binding protein - filamentous bacteri
+ PDB    &gt; /nfs/public/pdb/gn52.pdb
+ Nr of elements : (          7)
+ ====== &gt;  Nr Type   Name   From   To     Nres
+ ====== &gt;   1 ALPHA  A1     11     13        3
+ ====== &gt;   2 BETA   B1     15     19        5
+ ====== &gt;   3 BETA   B2     22     24        3
+ ====== &gt;   4 BETA   B3     26     38       13
+ ====== &gt;   5 BETA   B4     42     48        7
+ ====== &gt;   6 BETA   B5     60     62        3
+ ====== &gt;   7 BETA   B6     81     84        4
+<P>   
+ ===&gt; Option ? (LI)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+Note that the &quot;notes&quot; for the PDB-derived entries were extracted
+by a dumb csh-script from the COMPND and SOURCE records of the
+corrsponding PDB files; they have not been checked by hand and
+may therefore be rather incomplete !
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S9">8.4 </A>EXtract</H3> 
+<P>   
+An example of the use of the EXtract option:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ===&gt; Option ? (LI)
+extr
+ Molecule name ? (dna)
+2gn5
+<P>   
+ MOL    &gt; 2gn5
+ NOTE   &gt; gene 5 /dna$ binding protein - filamentous bacteri
+ PDB    &gt; /nfs/public/pdb/gn52.pdb
+ Nr of elements : (          7)
+ Filename ? (out.secs)
+2gn5.secs
+<P>   
+ ===&gt; Option ? (EXTR)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+Note that ALL entries which contain the string that you enter in
+their molecule identifier are written to files !
+ <BR> To show that this option really works, we show the resulting file:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+&lt; % 182 gerard rigel 19:04:41 progs/secs&gt; cat 2gn5.secs
+! Fil 2gn5.secs
+! Dat Thu Oct 29 22:10:29 1992
+! Mol 2gn5
+!
+MOL   2gn5
+NOTE  gene 5 /dna$ binding protein - filamentous bacteri
+PDB   /nfs/public/pdb/gn52.pdb
+!
+ALPHA 'A1 ' '11' '13' 3 9.884 15.253 22.042 8.967 11.131 19.406
+BETA  'B1 ' '15' '19' 5 13.747 7.764 18.560 14.306 -3.922 13.856
+BETA  'B2 ' '22' '24' 3 23.228 -7.564 9.436 22.766 -10.808 3.610
+BETA  'B3 ' '26' '38' 13 18.044 -11.177 3.277 -3.221 15.221 11.399
+BETA  'B4 ' '42' '48' 7 -3.554 14.308 15.412 10.385 3.316 9.016
+BETA  'B5 ' '60' '62' 3 6.488 19.768 11.732 5.599 17.379 5.353
+BETA  'B6 ' '81' '84' 4 7.108 8.400 4.546 10.457 17.825 5.205
+ENDMOL
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S10">8.5 </A>REad</H3> 
+<P>   
+An example of the use of the REad option:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ===&gt; Option ? (LIST)
+read
+ User DEJAVU file ? (user.secs)
+cro1.secs
+<P>   
+ MOL    &gt; 1cro
+ NOTE   &gt; cro repressor - bacteriophage (lamb
+ PDB    &gt; /nfs/public/pdb/cro1.pdb
+ ENDMOL &gt; 1cro
+ Nr of elements : (         25)
+ ====== &gt;   1 BETA   B1     O2     O5        4
+ ====== &gt;   2 ALPHA  A1     O7     O13       7
+ ====== &gt;   3 ALPHA  A2     O16    O23       8
+ ====== &gt;   4 ALPHA  A3     O27    O36      10
+ ====== &gt;   5 BETA   B2     O39    O45       7
+ ====== &gt;   6 BETA   B3     O49    O56       8
+ ====== &gt;   7 BETA   B4     A2     A5        4
+ ====== &gt;   8 ALPHA  A4     A7     A13       7
+ ====== &gt;   9 ALPHA  A5     A16    A23       8
+ ====== &gt;  10 ALPHA  A6     A27    A36      10
+ ====== &gt;  11 BETA   B5     A39    A45       7
+ ====== &gt;  12 BETA   B6     A49    A56       8
+ ====== &gt;  13 BETA   B7     A61    A64       4
+ ====== &gt;  14 BETA   B8     B2     B5        4
+ ====== &gt;  15 ALPHA  A7     B7     B13       7
+ ====== &gt;  16 ALPHA  A8     B16    B23       8
+ ====== &gt;  17 ALPHA  A9     B27    B36      10
+ ====== &gt;  18 BETA   B9     B39    B45       7
+ ====== &gt;  19 BETA   B10    B49    B56       8
+ ====== &gt;  20 BETA   B11    C2     C5        4
+ ====== &gt;  21 ALPHA  A10    C7     C13       7
+ ====== &gt;  22 ALPHA  A11    C16    C23       8
+ ====== &gt;  23 ALPHA  A12    C27    C36      10
+ ====== &gt;  24 BETA   B12    C39    C45       7
+ ====== &gt;  25 BETA   B13    C49    C56       8
+<P>   
+ Nr of lines read : (         34)
+ Nr of elements   : (         25)
+<P>   
+ ===&gt; Option ? (READ)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H9">9 </A>FINDING A MOTIF</H2> </CENTER>
+<P>   
+Looking for a secondary structure motif is easy. Let's take the
+example we used above pertaining to lambda cro repressor. We
+will look for a very simple &quot;motif&quot; consisting only of the
+helix-(turn)-helix of the DNA-binding domain. Actually, since
+we can only look for alpha helices (and beta strands, of course)
+we will ignore the turn, but we will impose that any &quot;hit&quot; in
+the database must consist of two helices which are quite close
+together (i.e., the C-terminus of helix A2 must be close to the
+N-terminus of helix A3).
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S11">9.1 </A>input</H3> 
+<P>   
+The output looks something like this (broken into small pieces
+and annotated):
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ===&gt; Option ? (LI)
+fi
+<P>   
+ ********** NEW QUERY **********
+<P>   
+ Elements : ( B1 A1 A2 A3 B2 B3 B4 A4 A5 A6 B5 B6 B7 B8 A7 A8 A9 B9 B10
+ B11 A10 A11 A12 B12 B13)
+ Nr of elements to match (0 = abort) ? (       2)
+2
+ Query element   1 ? ( A4)
+A2
+ Query element   2 ? ( A5)
+A3
+ ................... ( A2 A3)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S12">9.2 </A>SSEs</H3> 
+<P>   
+DEJAVU prints a list of the SSEs in your protein and wants to know
+how many SSEs make up your query motif. Next, you enter their
+names one by one (names are case-sensitive; spaces are removed by
+the program).
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S13">9.3 </A>search criteria</H3> 
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Mismatch nr of residues ? (          3)
+2
+ Mismatch element length ? (  10.000)
+6
+ Mismatch distances      ? (   5.000)
+3
+ Mismatch cosines        ? (   0.150)
+.1
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+Subsequently, the mismatch criteria must be entered. The first two
+are used for finding possible matching SSEs in database structures,
+the latter two for finding motifs of SSEs that have similar mutual
+distances and direction-vector cosines.
+<P>   
+NOTE: from version 4.3 onward, the &quot;mismatch nr of residues&quot; has been
+replaced by *two* separate criteria, one which tells how many
+residues SSEs in the database proteins may be too short, and
+another which tells how many residues SSEs in the database proteins
+may be too long. This is especially useful when you use SSEs
+based on Bones; e.g., you found 6 residues in a helix but cannot
+exclude that the helix might be longer. In that case, use a
+&quot;too short&quot; cut-off of 1 or 2 residues, but a &quot;too long&quot; cut-off
+of 4 or even more residues.
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Possible distance criteria:
+  C  =&gt; centre-to-centre
+  H  =&gt; MIN head-tail and tail-head (anti-parallel)
+  T  =&gt; MIN head-head and tail-tail (parallel)
+ Which distances (C/H/T) ? (H)
+<P>   
+ Extensive output        ? (N)
+no
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+You must decide what type of distance criterium to use. If you
+have a purely anti-parallel motif, you may use option &quot;H&quot; which
+compares C-term-to-N-term distances; if you have a purely parallel
+motif, you are better off if you use option &quot;T&quot; (the shortest of
+the N-term-to-N-term and the C-term-to-C-term distances are used).
+ <BR> If you have a mixed motif or all SSEs are criss-cross, then it's
+safest to use option &quot;C&quot; (centre-to-centre).
+ <BR> In addition, you may request extensive output, but you must be
+suicidal if you reply &quot;YES&quot; to this question !!
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S14">9.4 </A>search constraints and O macro</H3> 
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Conserve directionality ? (Y)
+<P>   
+ Conserve absolute motif ? (Y)
+<P>   
+ Conserve neighbours     ? (Y)
+<P>   
+ Create &quot;O&quot; macro file   ? (Y)
+<P>   
+ &quot;O&quot; macro file          ? (lsq.omac)
+cro_lsq.omac
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+The last four input items pertain to:
+<P>   
+(1) conservation of directionality: what this boils down to is that
+if you say &quot;YES&quot; you make sure that all elements are similarly
+oriented. What the program does is to sort the query elements
+from N-term to C-term and to make sure that the matching elements
+of a &quot;hit&quot; are also ordered from N-term to C-term. In addition,
+the actual cosines -rather than their absolute values- are checked.
+If you don't use this option, you might, for example, also find
+that helices A3 and A2 (in THAT order) of 1cro match your query,
+which is fine except that they run in the wrong direction (namely,
+from C-term to N-term)
+<P>   
+(2) conservation of absolute motif or merely relatively: if you say
+&quot;YES&quot;, then ALL the inter-SSE distances and cosines must satisfy
+the corresponding mismatch criteria; if you say &quot;NO&quot;, then they
+must only hold for SUBSEQUENT SSEs (i.e., the distance from SSE
+nr 3 to nr 2 must be okay, but that from 3 to 1 doesn't matter, etc.).
+For example, if you are looking for a large beta-sheet, but you
+are interested in beta-barrels made up of similar strands as
+those in your protein as well, then don't impose the absolute
+motif
+<P>   
+(3) conservation of neighbours: if you say &quot;YES&quot; here, it merely
+means that if two elements are neighbours in your structure,
+then they must also be neighbours in the database structures.
+This is a rather strict criterion, and it's probably the first
+you want to relax if you don't find any (or enough) hits
+<P>   
+(4) if you want, you can get an O macro file which will do some
+amazing tricks for you (see later) !!
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S15">9.5 </A>output</H3> 
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Nr of elements recognised in query : (       2)
+ Indices : (       3        4)
+ Nr of elements of each type : (       2        0)
+<P>   
+ ********** 1cro       **********
+ [cro repressor - bacteriophage (lamb                                   ]
+ [/nfs/public/pdb/cro1.pdb                                              ]
+ QUERY    : (       3        4)
+ Elements :    A2       A3
+ Lengths  : (  10.462   14.405)
+ Residues : (       8       10)
+<P>   
+ MATCH    : (       3        4)
+ Elements :    A2       A3
+ Lengths  : (  10.462   14.405)
+ Residues : (       8       10)
+ Length   ... rmsd =      0.000 ... match =      1.000
+ Residues ... rmsd =      0.000 ... match =      1.000
+ Distance ... rmsd =      0.000 ... match =      1.000
+ Cosines  ... rmsd =      0.000 ... match =      1.000
+ SCORE : (   0.000)
+<P>   
+ MATCH    : (       9       10)
+ Elements :    A5       A6
+ Lengths  : (  10.696   14.328)
+ Residues : (       8       10)
+ Length   ... rmsd =      0.174 ... match =      1.000
+ Residues ... rmsd =      0.000 ... match =      1.000
+ Distance ... rmsd =      0.144 ... match =      1.000
+ Cosines  ... rmsd =      0.064 ... match =      1.000
+ SCORE : (   0.383)
+<P>   
+ MATCH    : (      16       17)
+ Elements :    A8       A9
+ Lengths  : (  10.456   14.233)
+ Residues : (       8       10)
+ Length   ... rmsd =      0.122 ... match =      1.000
+ Residues ... rmsd =      0.000 ... match =      1.000
+ Distance ... rmsd =      0.356 ... match =      1.000
+ Cosines  ... rmsd =      0.030 ... match =      1.000
+ SCORE : (   0.509)
+<P>   
+ MATCH    : (      22       23)
+ Elements :    A11      A12
+ Lengths  : (  10.552   14.182)
+ Residues : (       8       10)
+ Length   ... rmsd =      0.170 ... match =      1.000
+ Residues ... rmsd =      0.000 ... match =      1.000
+ Distance ... rmsd =      0.129 ... match =      1.000
+ Cosines  ... rmsd =      0.017 ... match =      1.000
+ SCORE : (   0.316)
+ Nr of best match : (       1)
+ Best score       : (   0.000)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S16">9.6 </A>algorithm</H3> 
+<P>   
+The program prints the SSEs it's going to look for and starts
+scanning the database. For each entry in the database, DEJAVU
+does the following:
+<P>   
+(1) are there enough SSEs ?
+<P>   
+(2) are there enough SSEs of each type (alpha, beta) ?
+<P>   
+(3) find all possibly matching SSEs in the database structure
+for ALL of the elements in the query; if there aren't any
+for even one of the query elements, the database structure
+is skipped. Matching occurs by comparing type, number of
+residues and length of the SSEs
+<P>   
+(4) ALL possible combinations of matching SSEs in the query and
+the database entry are generated which completely satisfy
+ALL criteria outlined earlier (distances, cosines, absolute
+or relative motif, directionality and neighbours)
+<P>   
+(5) all the hits are printed and compared with the query; the
+matching SSEs are listed and some RMS-deviations are
+computed (don't worry about the match factors in the output);
+these are all combined into a final score; the score is 0.0
+for a perfect match (see A2-A3 above which is identical to
+the query); the higher the score, the poorer the match
+<P>   
+(6) for each protein which produced hits, the one with the
+lowest score is used to create some O instructions in the
+O macro file; in the example above, 1cro itself produced 4
+very good hits because there are four monomers in the PDB file;
+note that the motif we are looking for scores 0.00
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S17">9.7 </A>more hits</H3> 
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ********** 1lap       **********
+ [leucine aminopeptidase (e.c.3.4.11.1) - bovine (bos $taurus           ]
+ [/nfs/public/pdb/lap1.pdb                                              ]
+ QUERY    : (       3        4)
+ Elements :    A2       A3
+ Lengths  : (  10.462   14.405)
+ Residues : (       8       10)
+<P>   
+ MATCH    : (      31       32)
+ Elements :    A16      A17
+ Lengths  : (   9.916   17.758)
+ Residues : (       7       12)
+ Length   ... rmsd =      2.402 ... match =      0.993
+ Residues ... rmsd =      1.581 ... match =      0.989
+ Distance ... rmsd =      0.797 ... match =      1.000
+ Cosines  ... rmsd =      0.033 ... match =      1.000
+ SCORE : (   4.864)
+ Nr of best match : (       1)
+ Best score       : (   4.864)
+<P>   
+ ********** 1trc       **********
+ [calmodulin (/tr=2=c$ fragment comprising residues - bull (bos $taurus]
+ [/nfs/public/pdb/trc1.pdb                                              ]
+ QUERY    : (       3        4)
+ Elements :    A2       A3
+ Lengths  : (  10.462   14.405)
+ Residues : (       8       10)
+<P>   
+ MATCH    : (       4        5)
+ Elements :    A3       A4
+ Lengths  : (   9.351   14.741)
+ Residues : (       8       10)
+ Length   ... rmsd =      0.821 ... match =      0.998
+ Residues ... rmsd =      0.000 ... match =      1.000
+ Distance ... rmsd =      0.187 ... match =      1.000
+ Cosines  ... rmsd =      0.005 ... match =      1.000
+ SCORE : (   1.016)
+ Nr of best match : (       1)
+ Best score       : (   1.016)
+<P>   
+ ===&gt; Option ? (FI)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+So, we found &quot;hits&quot; with three different proteins. In this case,
+we used rather strict criteria in order to restrict the output
+a bit; if you relax the criteria somewhat, you get many more hits.
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H10">10 </A>DEJANA</H2> </CENTER>
+<P>   
+If you have coordinates for your search model (at least CA atoms),
+and if you have the PDB files of the hits on a local disk, you
+are strongly advised to run LSQMAN first, and to use DEJANA to
+screen the O macro produced by LSQMAN.
+<P>   
+Otherwise, you can use DEJANA directly on the O macro produced by
+DEJAVU. DEJANA reads an DEJAVU or LSQMAN O macro, and allows
+you to apply cut-offs to get rid of unwanted (poor) hits.
+<P>   
+For example, in case of a Bones search, the program can be used
+directly on the O macro produced by DEJAVU:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ % 274 gerard sarek 18:14:59 gerard/junk &gt; run dejana
+<P>   
+ [...]
+<P>   
+ Name of O macro (from DEJAVU or LSQMAN) ? (lsqman.omac) lsq.omac
+<P>   
+ Reading hits ...
+ #     1 ID 1acy Nres     6 RMSD   4.08 A
+ #     2 ID 1baf Nres     6 RMSD   4.10 A
+<P>   
+ [...]
+<P>   
+ #    54 ID 7tim Nres     6 RMSD   3.67 A
+<P>   
+ Nr of hits (&gt; 0 residues/SSEs) : (         54)
+<P>   
+ ------------------------------------------
+<P>   
+ Min nr of matched residues/SSEs   ? (          1)
+ Max RMSD of matched residues/SSEs ? ( 999.990)
+<P>   
+ Sorting hits ...
+<P>   
+ Nr of hits left : (         54)
+<P>   
+ #     1 ID 1ftp Nres     7 RMSD   2.71 A
+ #     2 ID 1pmp Nres     6 RMSD   2.20 A
+ #     3 ID 1cbs Nres     6 RMSD   2.53 A
+ #     4 ID 1igc Nres     6 RMSD   2.74 A
+ #     5 ID 1fbi Nres     6 RMSD   2.86 A
+<P>   
+ [...]
+<P>   
+ #    54 ID 1for Nres     6 RMSD   5.90 A
+<P>   
+ Select one of the following options:
+ 0 = re-enter criteria and re-sort
+ 1 = write new O macro with current hits
+ 2 = quit program without writing new O macro
+ Option (0, 1, 2) ? (          0)
+<P>   
+ ------------------------------------------
+<P>   
+ Min nr of matched residues/SSEs   ? (          1) 6
+ Max RMSD of matched residues/SSEs ? ( 999.990) 3.5
+<P>   
+ Sorting hits ...
+<P>   
+ Nr of hits left : (         19)
+<P>   
+ #     1 ID 1ftp Nres     7 RMSD   2.71 A
+ #     2 ID 1pmp Nres     6 RMSD   2.20 A
+ #     3 ID 1cbs Nres     6 RMSD   2.53 A
+ #     4 ID 1igc Nres     6 RMSD   2.74 A
+ #     5 ID 1fbi Nres     6 RMSD   2.86 A
+ #     6 ID 1lid Nres     6 RMSD   2.88 A
+ #     7 ID 1mdc Nres     6 RMSD   2.93 A
+ #     8 ID 1hmt Nres     6 RMSD   2.94 A
+ #     9 ID 2cgr Nres     6 RMSD   3.01 A
+ #    10 ID 1crb Nres     6 RMSD   3.01 A
+ #    11 ID 1iai Nres     6 RMSD   3.03 A
+ #    12 ID 1rmf Nres     6 RMSD   3.03 A
+ #    13 ID 1svb Nres     6 RMSD   3.05 A
+ #    14 ID 1bbj Nres     6 RMSD   3.11 A
+ #    15 ID 1opb Nres     6 RMSD   3.14 A
+ #    16 ID 1eap Nres     6 RMSD   3.21 A
+ #    17 ID 1mcp Nres     6 RMSD   3.23 A
+ #    18 ID 1tet Nres     6 RMSD   3.31 A
+ #    19 ID 1dbb Nres     6 RMSD   3.45 A
+<P>   
+ Select one of the following options:
+ 0 = re-enter criteria and re-sort
+ 1 = write new O macro with current hits
+ 2 = quit program without writing new O macro
+ Option (0, 1, 2) ? (          0) 1
+ New O macro file ? (dejana.omac) dejana_bones.omac
+<P>   
+ Writing hits ...
+<P>   
+ Processing PDB code : (1ftp)
+ Processing PDB code : (1pmp)
+<P>   
+ [...]
+<P>   
+ New O macro written ...
+<P>   
+ [...]
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+Example of a case where coordinates were used:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ % 274 gerard sarek 18:14:59 gerard/junk &gt; run dejana
+<P>   
+ [...]
+<P>   
+ Maximum number of hits : (       2500)
+<P>   
+ Name of O macro (from DEJAVU or LSQMAN) ? (lsqman.omac) lsq_crab.omac
+<P>   
+ Reading hits ...
+ #     1 ID 1ACY Nres    26 RMSD   1.99 A
+ #     2 ID 1AMP Nres    16 RMSD   3.45 A
+<P>   
+ [...]
+<P>   
+ #    52 ID 8FAB Nres    16 RMSD   2.14 A
+<P>   
+ Nr of hits (&gt; 0 residues/SSEs) : (         52)
+<P>   
+ ------------------------------------------
+<P>   
+ Min nr of matched residues/SSEs   ? (          1)
+ Max RMSD of matched residues/SSEs ? ( 999.990)
+<P>   
+ Sorting hits ...
+<P>   
+ Nr of hits left : (         52)
+<P>   
+ #     1 ID 1CBS Nres   137 RMSD   0.00 A
+ #     2 ID 1CBI Nres   130 RMSD   0.86 A
+ #     3 ID 1OPB Nres   123 RMSD   1.35 A
+ #     4 ID 1CRB Nres   123 RMSD   1.36 A
+ #     5 ID 1HMT Nres   121 RMSD   1.36 A
+ #     6 ID 1LID Nres   120 RMSD   1.44 A
+ #     7 ID 1FTP Nres   120 RMSD   1.69 A
+ #     8 ID 1PMP Nres   119 RMSD   1.37 A
+ #     9 ID 1MDC Nres   105 RMSD   2.06 A
+ #    10 ID 1EPA Nres    66 RMSD   1.97 A
+ #    11 ID 1NSN Nres    43 RMSD   2.64 A
+<P>   
+ [...]
+<P>   
+ #    51 ID 1NMB Nres     8 RMSD   1.79 A
+ #    52 ID 7FAB Nres     5 RMSD   0.44 A
+<P>   
+ Select one of the following options:
+ 0 = re-enter criteria and re-sort
+ 1 = write new O macro with current hits
+ 2 = quit program without writing new O macro
+ Option (0, 1, 2) ? (          0) 0
+<P>   
+ ------------------------------------------
+<P>   
+ Min nr of matched residues/SSEs   ? (          1) 100
+ Max RMSD of matched residues/SSEs ? ( 999.990) 3
+<P>   
+ Sorting hits ...
+<P>   
+ Nr of hits left : (          9)
+<P>   
+ #     1 ID 1CBS Nres   137 RMSD   0.00 A
+ #     2 ID 1CBI Nres   130 RMSD   0.86 A
+ #     3 ID 1OPB Nres   123 RMSD   1.35 A
+ #     4 ID 1CRB Nres   123 RMSD   1.36 A
+ #     5 ID 1HMT Nres   121 RMSD   1.36 A
+ #     6 ID 1LID Nres   120 RMSD   1.44 A
+ #     7 ID 1FTP Nres   120 RMSD   1.69 A
+ #     8 ID 1PMP Nres   119 RMSD   1.37 A
+ #     9 ID 1MDC Nres   105 RMSD   2.06 A
+<P>   
+ Select one of the following options:
+ 0 = re-enter criteria and re-sort
+ 1 = write new O macro with current hits
+ 2 = quit program without writing new O macro
+ Option (0, 1, 2) ? (          0) 1
+ New O macro file ? (dejana.omac) dejana_crab.omac
+<P>   
+ Writing hits ...
+<P>   
+ Processing PDB code : (1CBS)
+ Processing PDB code : (1CBI)
+ Processing PDB code : (1OPB)
+ Processing PDB code : (1CRB)
+ Processing PDB code : (1HMT)
+ Processing PDB code : (1LID)
+ Processing PDB code : (1FTP)
+ Processing PDB code : (1PMP)
+ Processing PDB code : (1MDC)
+<P>   
+ New O macro written ...
+<P>   
+ [...]
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H11">11 </A>ANALYSING THE RESULTS</H2> </CENTER>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S18">11.1 </A>O macro</H3> 
+<P>   
+NOTE: from version 5.0 onwards, one would use the accompanying
+program DEJANA to sort out the hits, and save only the
+most promising ones to a new O macro.
+<P>   
+Analysing and evaluating the &quot;hits&quot; is best done in O. The
+previous example resulted in the following O macro:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+&lt; % 187 gerard rigel 19:04:41 progs/secs&gt; cat cro_lsq.omac
+! &quot;O&quot; macro cro_lsq.omac
+! created by DEJAVU                 at Thu Oct 29 22:27:18 1992
+!
+print ... analysing 1cro
+print cro repressor - bacteriophage (lamb
+print ... query  A2     A3
+print ... allowed mismatches 2 6.000 3.000 0.100
+print ... distance type H
+print ... directionality Y
+print ... absolute motif Y
+print ... neighbours Y
+!
+s_a_i /nfs/public/pdb/cro1.pdb 1cro
+mol 1cro obj c1cro
+pai_zo 1cro ; yellow
+pai_zo 1cro O16    O23    green
+pai_zo 1cro O27    O36    green
+ca ; end
+cent_id term_id 1cro O16    CA ;
+!
+db_set_dat .lsq_integer 1 1 50
+db_set_dat .lsq_integer 2 4 4
+db_set_dat .lsq_integer 3 3 16999999
+!
+o_setup off off on
+!
+!
+print ... comparing 1cro
+print cro repressor - bacteriophage (lamb
+print ... score = 0.0000000E+00
+!
+s_a_i /nfs/public/pdb/cro1.pdb 1cro pdb
+!
+lsq_expl 1cro 1cro
+O16    O23    CA
+O16
+O27    O36    CA
+O27
+; 1cro_to_1cro
+!
+lsq_impr 1cro_to_1cro 1cro ; 1cro ; CA 1cro_to_1cro
+!
+lsq_mol 1cro_to_1cro 1cro ;
+!
+mol 1cro obj c1cro
+pai_zo 1cro ; blue
+pai_zo 1cro O16    O23    red
+pai_zo 1cro O27    O36    red
+ca ; end
+!
+!
+print ... comparing 1lap
+print leucine aminopeptidase (e.c.3.4.11.1) - bovine (bos $taurus
+print ... score = 4.864332
+!
+s_a_i /nfs/public/pdb/lap1.pdb 1lap pdb
+!
+lsq_expl 1cro 1lap
+O16    O23    CA
+404
+O27    O36    CA
+428
+; 1lap_to_1cro
+!
+lsq_impr 1lap_to_1cro 1cro ; 1lap ; CA 1lap_to_1cro
+!
+lsq_mol 1lap_to_1cro 1lap ;
+!
+mol 1lap obj c1lap
+pai_zo 1lap ; blue
+pai_zo 1lap 404    410    red
+pai_zo 1lap 428    439    red
+ca ; end
+!
+!
+print ... comparing 1trc
+print calmodulin (/tr=2=c$ fragment comprising residues - bull (bos $taurus
+print ... score = 1.016416
+!
+s_a_i /nfs/public/pdb/trc1.pdb 1trc pdb
+!
+lsq_expl 1cro 1trc
+O16    O23    CA
+A103
+O27    O36    CA
+A118
+; 1trc_to_1cro
+!
+lsq_impr 1trc_to_1cro 1cro ; 1trc ; CA 1trc_to_1cro
+!
+lsq_mol 1trc_to_1cro 1trc ;
+!
+mol 1trc obj c1trc
+pai_zo 1trc ; blue
+pai_zo 1trc A103   A110   red
+pai_zo 1trc A118   A127   red
+ca ; end
+!
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S19">11.2 </A>running O</H3> 
+<P>   
+Let's run O and execute this macro (the output of the fitting
+of 1cro onto itself has been omitted):
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+&lt; % 190 gerard rigel 23:08:50 secs/database&gt; 4d_ono general.o
+  O &gt; Use of this program implies acceptance of conditions
+  O &gt; described in Appendix 10 of the O manual
+  O &gt; O version 5.8, Sat Sep 26 13:59:06 MET 1992
+  O &gt; Loading general.o
+  O &gt; Maximum inter-residue link distance = 6.00
+  O &gt;  There were   23 residues.
+  O &gt;              113 atoms.
+  O &gt; Do you want to use the display? [Yes]:
+  O &gt; Graphics board GL4DXG-4.0
+  O &gt;   O &gt;  trackball on (F7KEY)
+  O &gt;  trackball off (F7KEY)
+@cro_lsq.omac
+  O &gt; Macro in computer file-system.
+ As4&gt; ... analysing 1cro
+  O &gt;  As4&gt; cro repressor - bacteriophage (lamb
+  O &gt;  As4&gt; ... query  A2     A3
+  O &gt;  As4&gt; ... allowed mismatches 2 6.000 3.000 0.100
+  O &gt;  As4&gt; ... distance type H
+  O &gt;  As4&gt; ... directionality Y
+  O &gt;  As4&gt; ... absolute motif Y
+  O &gt;  As4&gt; ... neighbours Y
+  O &gt;   O &gt;  Sam&gt; File type is PDB
+ Sam&gt;  Database compressed.
+ Sam&gt; Molecule 1CRO contained 264 residues and 264 atoms
+  O &gt;   O &gt;   O &gt;   O &gt;   O &gt;   O &gt;   O &gt;   O &gt;   O &gt;   O &gt;   O &gt;   O &gt;
+  O &gt;   O &gt;  As4&gt; ... comparing 1cro
+[...]
+  O &gt;   O &gt;   O &gt;   O &gt;   O &gt;   O &gt;   O &gt;   O &gt;   O &gt;   O &gt;   O &gt;
+ As4&gt; ... comparing 1lap
+  O &gt;  As4&gt; leucine aminopeptidase (e.c.3.4.11.1) - bovine (bos $taurus
+  O &gt;  As4&gt; ... score = 4.864332
+  O &gt;   O &gt;  Sam&gt; File type is PDB
+ Sam&gt;  Database compressed.
+ Sam&gt; Molecule 1LAP contained 483 residues and 4491 atoms
+  O &gt;  PDB          is not a visible command.
+  O &gt;   O &gt;  Lsq &gt; Now define what atoms in A [=1CRO] are to be matched to B [=1LAP]
+ Lsq &gt; Defining 3 names in 1CRO implies a zone and an atom name.
+ Lsq &gt; Defining 2 names in 1CRO implies a zone and CA atoms.
+ Lsq &gt; Defining 1 name in 1CRO implies the CA of that residue.
+ Lsq &gt; Molecule 1LAP just requires the start residue and atom name.
+ Lsq &gt; A blank line terminates input.
+ Lsq &gt; Define atoms from 1CRO (the not rotated molecule):  Lsq &gt; Define atoms
+ from 1LAP (the rotated molecule):  Lsq &gt; Define atoms from 1CRO (the not rotated
+ molecule):  Lsq &gt; Define atoms from 1LAP (the rotated molecule):  Lsq &gt; Define
+ atoms from 1CRO (the not rotated molecule):  Lsq &gt; The 18 atoms have an r.m.s.
+ fit of 5.768
+ Lsq &gt;  xyz(1) =     0.9571*x+    0.1367*y+   -0.2555*z+ -112.0573
+ Lsq &gt;  xyz(2) =     0.2552*x+    0.0197*y+    0.9667*z+  -70.0792
+ Lsq &gt;  xyz(3) =     0.1371*x+   -0.9904*y+   -0.0160*z+   33.9509
+ Lsq &gt; The transformation can be stored in O.
+ Lsq &gt; A blank is taken to mean do not store anything
+ Lsq &gt; The transformation will be stored in .LSQ_RT_  O &gt;   O &gt;  Lsq &gt; Least
+ squares match by Semi Automatic Alignment.
+ Lsq &gt; What is the name of molecule B [1LAP  ]?  Lsq &gt; Number of atoms in A/B
+ to look for alignment   264  481
+ Lsq &gt; 0Search for connected fragments.
+ Lsq &gt; A fragment of     8 residues located.
+ Lsq &gt;  Loop =    1 ,r.m.s. fit =     0.346 with     8 atoms
+ Lsq &gt;  x(1) =     0.9335*x+   -0.2296*y+    0.2756*z+  -97.8013
+ Lsq &gt;  x(2) =    -0.3366*x+   -0.2957*y+    0.8940*z+   -6.6633
+ Lsq &gt;  x(3) =    -0.1238*x+   -0.9273*y+   -0.3533*z+   54.2608
+ Lsq &gt; 0Search for connected fragments.
+ Lsq &gt; A fragment of    14 residues located.
+ Lsq &gt;  Loop =    2 ,r.m.s. fit =     2.143 with    14 atoms
+ Lsq &gt;  x(1) =     0.1328*x+   -0.9509*y+   -0.2794*z+   18.4068
+ Lsq &gt;  x(2) =    -0.2737*x+   -0.3061*y+    0.9118*z+   -9.3083
+ Lsq &gt;  x(3) =    -0.9526*x+   -0.0446*y+   -0.3009*z+   58.7248
+ Lsq &gt; 0Search for connected fragments.
+ Lsq &gt; A fragment of    15 residues located.
+ Lsq &gt; A fragment of     6 residues located.
+ Lsq &gt;  Loop =    3 ,r.m.s. fit =     2.612 with    21 atoms
+ Lsq &gt;  x(1) =     0.0871*x+   -0.9605*y+   -0.2645*z+   22.0105
+ Lsq &gt;  x(2) =    -0.2722*x+   -0.2783*y+    0.9211*z+  -11.2710
+ Lsq &gt;  x(3) =    -0.9583*x+   -0.0082*y+   -0.2857*z+   56.8081
+ Lsq &gt; 0Search for connected fragments.
+ Lsq &gt; A fragment of    15 residues located.
+ Lsq &gt; A fragment of     6 residues located.
+ Lsq &gt;  Loop =    4 ,r.m.s. fit =     2.612 with    21 atoms
+ Lsq &gt;  x(1) =     0.0871*x+   -0.9605*y+   -0.2645*z+   22.0105
+ Lsq &gt;  x(2) =    -0.2722*x+   -0.2783*y+    0.9211*z+  -11.2710
+ Lsq &gt;  x(3) =    -0.9583*x+   -0.0082*y+   -0.2857*z+   56.8081
+ Lsq &gt; The transformation can be stored in O.
+ Lsq &gt; A blank is taken to mean do not store anything
+ Lsq &gt; The transformation will be stored in .LSQ_RT_ Lsq &gt; Here are the fragments
+ used in the alignment
+ Lsq &gt; 0   O23 LGVYQSAINKAIHAG    O37
+ Lsq &gt;     425 RSAGACTAAAFLKEF    439
+ Lsq &gt; 0   O39 KIFLTI    O44
+ Lsq &gt;     326 IQVDNT    331
+  O &gt;   O &gt;   O &gt;   O &gt;   O &gt;   O &gt;   O &gt;   O &gt;   O &gt;   O &gt;   O &gt;  As4&gt; ... comparing
+ 1trc
+  O &gt;  As4&gt; calmodulin (/tr=2=c$ fragment comprising residues - bull (bos $tau
+  O &gt;  As4&gt; ... score = 1.016416
+  O &gt;   O &gt;  Sam&gt; File type is PDB
+ Sam&gt;  Database compressed.
+ Sam&gt; Molecule 1TRC contained 140 residues and 1089 atoms
+  O &gt;  PDB          is not a visible command.
+  O &gt;   O &gt;  Lsq &gt; Now define what atoms in A [=1CRO] are to be matched to B [=1TRC]
+ Lsq &gt; Defining 3 names in 1CRO implies a zone and an atom name.
+ Lsq &gt; Defining 2 names in 1CRO implies a zone and CA atoms.
+ Lsq &gt; Defining 1 name in 1CRO implies the CA of that residue.
+ Lsq &gt; Molecule 1TRC just requires the start residue and atom name.
+ Lsq &gt; A blank line terminates input.
+ Lsq &gt; Define atoms from 1CRO (the not rotated molecule):  Lsq &gt; Define atoms from
+ 1TRC (the rotated molecule):  Lsq &gt; Define atoms from 1CRO (the not rotated molecule):
+  Lsq &gt; Define atoms from 1TRC (the rotated molecule):  Lsq &gt; Define atoms from 1CRO
+ (the not rotated molecule):  Lsq &gt; The 18 atoms have an r.m.s. fit of 2.956
+ Lsq &gt;  xyz(1) =     0.0832*x+   -0.6134*y+   -0.7854*z+   62.0348
+ Lsq &gt;  xyz(2) =     0.5658*x+    0.6778*y+   -0.4695*z+  -22.2287
+ Lsq &gt;  xyz(3) =     0.8204*x+   -0.4053*y+    0.4034*z+  -91.4498
+ Lsq &gt; The transformation can be stored in O.
+ Lsq &gt; A blank is taken to mean do not store anything
+ Lsq &gt; The transformation will be stored in .LSQ_RT_  O &gt;   O &gt;  Lsq &gt; Least squares
+ match by Semi Automatic Alignment.
+ Lsq &gt; What is the name of molecule B [1TRC  ]?  Lsq &gt; Number of atoms in A/B to look
+ for alignment   264  140
+ Lsq &gt; 0Search for connected fragments.
+ Lsq &gt; A fragment of    15 residues located.
+ Lsq &gt; A fragment of    10 residues located.
+ Lsq &gt;  Loop =    1 ,r.m.s. fit =     2.363 with    25 atoms
+ Lsq &gt;  x(1) =     0.1272*x+   -0.5979*y+   -0.7914*z+   60.8691
+ Lsq &gt;  x(2) =     0.6057*x+    0.6787*y+   -0.4153*z+  -29.7156
+ Lsq &gt;  x(3) =     0.7854*x+   -0.4266*y+    0.4485*z+  -93.8586
+ Lsq &gt; 0Search for connected fragments.
+ Lsq &gt; A fragment of    15 residues located.
+ Lsq &gt; A fragment of    10 residues located.
+ Lsq &gt;  Loop =    2 ,r.m.s. fit =     2.363 with    25 atoms
+ Lsq &gt;  x(1) =     0.1272*x+   -0.5979*y+   -0.7914*z+   60.8691
+ Lsq &gt;  x(2) =     0.6057*x+    0.6787*y+   -0.4153*z+  -29.7156
+ Lsq &gt;  x(3) =     0.7854*x+   -0.4266*y+    0.4485*z+  -93.8586
+ Lsq &gt; The transformation can be stored in O.
+ Lsq &gt; A blank is taken to mean do not store anything
+ Lsq &gt; The transformation will be stored in .LSQ_RT_ Lsq &gt; Here are the fragments
+ used in the alignment
+ Lsq &gt; 0   O13 RFGQTKTAKD    O22
+ Lsq &gt;     A99 YISAAELRHV   A108
+ Lsq &gt; 0   O23 LGVYQSAINKAIHAG    O37
+ Lsq &gt;    A114 EKLTDEEVDEMIREA   A128
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S20">11.3 </A>analysis on the display</H3> 
+<P>   
+If we now check the displayed objects, we notice that the fit with calmodulin
+is quite reasonable (rms = 2.4 A for 25 atoms; helix E of the calcium-
+binding EF-hand has been matched with helix A3 of lambda cro repressor).
+<P>   
+However, for leucine aminopeptidase the fit is not so good. In this case, only
+one helix overlaps with one of cro. This is an example where the lsq_improve
+option in O actually makes things worse (for our purposes, at least). If we
+re-do the lsq_explicit from the macro and redraw the chain, the visual fit is
+improved. The fit is still relatively poor, but the MOTIF is really there: a
+helix, a long loop and another helix with roughly the same orientation as
+that of the helices in cro. And this is of course the crux of DEJAVU: even though
+the sequence homology may be zero and the rms-fit of the Calpha-atoms may be
+high, you still get to see motifs which are &quot;spatially similar&quot; !!! So, the
+extremely simplistic description of SSEs (basically, through six coordinates)
+works to the advantage of the performance of the program !
+<P>   
+Again, we used very strict criteria in this example and therefore we only got
+two hits. If you relax them a bit you get dozens of potential (DNA-binding ???)
+helix-whatever-helix motifs. If you do this and you plot all of the &quot;hits&quot;
+you typically get a nice clustering of red SSEs on your screen (the colour of
+the matched SSEs) from a collection of widely different proteins.
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H12">12 </A>A REALISTIC EXAMPLE</H2> </CENTER>
+<P>   
+Let's do some more serious work. We have reasons to believe that the B1-A1-B2
+plus the B3-B4-A3 motifs of human class alpha glutathione S-transferase might
+constitute a glutathione-binding domain. Are there similar motifs in the
+database, preferably of proteins that bind glutathione ? Well, let's find out:
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S21">12.1 </A>SSE file</H3> 
+<P>   
+First, we create and read our DEJAVU file for GSTA:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ===&gt; Option ? (READ)
+<P>   
+ User DEJAVU file ? (user.secs)
+gsta.secs
+<P>   
+ REMARK &gt;  === GSTA; sec structure according to ALWYN !!! NOT YASSPA !!!
+ MOL    &gt; gsta
+ NOTE   &gt; human class alpha glutathione s-transferase model m10a
+ ENDMOL &gt; gsta
+ Nr of elements : (         14)
+ ====== &gt;   1 BETA   B1     A4     A7        4
+ ====== &gt;   2 ALPHA  A1     A16    A25      10
+ ====== &gt;   3 BETA   B2     A27    A35       9
+ ====== &gt;   4 ALPHA  A2     A37    A46      10
+ ====== &gt;   5 BETA   B3     A56    A58       3
+ ====== &gt;   6 BETA   B4     A62    A65       4
+ ====== &gt;   7 ALPHA  A3     A67    A78      12
+ ====== &gt;   8 ALPHA  A4     A85    A110     26
+ ====== &gt;   9 ALPHA  A5     A113   A141     29
+ ====== &gt;  10 ALPHA  A6     A154   A169     16
+ ====== &gt;  11 ALPHA  A7     A178   A189     12
+ ====== &gt;  12 ALPHA  A8     A191   A197      7
+ ====== &gt;  13 BETA   B5     A203   A205      3
+ ====== &gt;  14 ALPHA  A9     A209   A218     10
+<P>   
+ Nr of lines read : (         21)
+ Nr of elements   : (         14)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S22">12.2 </A>search parameters</H3> 
+<P>   
+Then we enter the search parameters:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ********** NEW QUERY **********
+<P>   
+ Elements : ( B1 A1 B2 A2 B3 B4 A3 A4 A5 A6 A7 A8 B5 A9)
+ Nr of elements to match (0 = abort) ? (       0)
+6
+ Query element   1 ? ()
+B1
+ Query element   2 ? ()
+A1
+ Query element   3 ? ()
+B2
+ Query element   4 ? ()
+B3
+ Query element   5 ? ()
+B4
+ Query element   6 ? ()
+A3
+ ................... ( B1 A1 B2 B3 B4 A3)
+ Mismatch nr of residues ? (          3)
+4
+ Mismatch element length ? (  10.000)
+13
+ Mismatch distances      ? (   5.000)
+10
+ Mismatch cosines        ? (   0.150)
+0.4
+<P>   
+ Possible distance criteria:
+  C  =&gt; centre-to-centre
+  H  =&gt; MIN head-tail and tail-head (anti-parallel)
+  T  =&gt; MIN head-head and tail-tail (parallel)
+ Which distances (C/H/T) ? (C)
+c
+ Extensive output        ? (N)
+<P>   
+ Conserve directionality ? (Y)
+<P>   
+ Conserve absolute motif ? (Y)
+<P>   
+ Conserve neighbours     ? (Y)
+n
+ Create &quot;O&quot; macro file   ? (Y)
+<P>   
+ &quot;O&quot; macro file          ? (lsq.omac)
+gsta_lsq.omac
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S23">12.3 </A>output</H3> 
+<P>   
+And then we watch the results (the &quot;trivial hit&quot;, namely GSTA itself)
+has been omitted from the output:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Nr of elements recognised in query : (       6)
+ Indices : (       1        2        3        5        6        7)
+ Nr of elements of each type : (       2        4)
+<P>   
+ ********** 1gp1       **********
+ [glutathione peroxidase (e.c.1.11.1.9) - bovine (bos $taurus           ]
+ [/nfs/public/pdb/gp11.pdb                                              ]
+ QUERY    : (       1        2        3        5        6        7)
+ Elements :    B1       A1       B2       B3       B4       A3
+ Lengths  : (   9.640   14.114   24.862    6.844    9.271   16.715)
+ Residues : (       4       10        9        3        4       12)
+<P>   
+ MATCH    : (       4        5        7       14       15       17)
+ Elements :    B3       A2       B4       B9       B10      A7
+ Lengths  : (  22.528   20.107   22.531   19.264   18.742   10.189)
+ Residues : (       8       14        8        7        7        8)
+ Length   ... rmsd =      9.074 ... match =      0.892
+ Residues ... rmsd =      3.512 ... match =      0.922
+ Distance ... rmsd =      2.407 ... match =      0.978
+ Cosines  ... rmsd =      0.148 ... match =      0.985
+ SCORE : (  16.672)
+<P>   
+ MATCH    : (      20       21       23       29       30       32)
+ Elements :    B13      A8       B14      B18      B19      A13
+ Lengths  : (  22.630   19.887   22.532   16.943   10.320   10.139)
+ Residues : (       8       14        8        6        4        8)
+ Length   ... rmsd =      7.680 ... match =      0.906
+ Residues ... rmsd =      3.109 ... match =      0.932
+ Distance ... rmsd =      2.432 ... match =      0.980
+ Cosines  ... rmsd =      0.155 ... match =      0.984
+ SCORE : (  14.560)
+ Nr of best match : (       2)
+ Best score       : (  14.560)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+And, voila, the only hit (other than GSTA itself) is glutathione
+peroxidase !!! In fact, there are two possible matches ! Since
+the O macro only contains instructions for the one with the
+lowest score, but we want to look at both, we LIst this entry
+in order to edit the macro a bit and produce both matches on
+the screen:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ===&gt; Option ? (FI)
+li
+ Search on Name, Comment or Filename ? (N)
+n
+ Search string ? (p2)
+1gp1
+<P>   
+ MOL    &gt; 1gp1
+ NOTE   &gt; glutathione peroxidase (e.c.1.11.1.9) - bovine (bos $taurus
+ PDB    &gt; /nfs/public/pdb/gp11.pdb
+ Nr of elements : (         32)
+ ====== &gt;  Nr Type   Name   From   To     Nres
+ ====== &gt;   1 BETA   B1     A15    A17       3
+ ====== &gt;   2 BETA   B2     A25    A27       3
+ ====== &gt;   3 ALPHA  A1     A29    A31       3
+ ====== &gt;   4 BETA   B3     A35    A42       8
+ ====== &gt;   5 ALPHA  A2     A48    A61      14
+ ====== &gt;   6 ALPHA  A3     A63    A65       3
+ ====== &gt;   7 BETA   B4     A67    A74       8
+ ====== &gt;   8 ALPHA  A4     A85    A93       9
+ ====== &gt;   9 BETA   B5     A100   A102      3
+ ====== &gt;  10 BETA   B6     A106   A108      3
+ ====== &gt;  11 BETA   B7     A111   A113      3
+ ====== &gt;  12 ALPHA  A5     A120   A128      9
+ ====== &gt;  13 BETA   B8     A150   A152      3
+ ====== &gt;  14 BETA   B9     A160   A166      7
+ ====== &gt;  15 BETA   B10    A170   A176      7
+ ====== &gt;  16 ALPHA  A6     A181   A183      3
+ ====== &gt;  17 ALPHA  A7     A185   A192      8
+ ====== &gt;  18 BETA   B11    B15    B18       4
+ ====== &gt;  19 BETA   B12    B25    B27       3
+ ====== &gt;  20 BETA   B13    B35    B42       8
+ ====== &gt;  21 ALPHA  A8     B48    B61      14
+ ====== &gt;  22 ALPHA  A9     B63    B65       3
+ ====== &gt;  23 BETA   B14    B67    B74       8
+ ====== &gt;  24 ALPHA  A10    B85    B93       9
+ ====== &gt;  25 BETA   B15    B100   B104      5
+ ====== &gt;  26 BETA   B16    B106   B108      3
+ ====== &gt;  27 ALPHA  A11    B120   B128      9
+ ====== &gt;  28 BETA   B17    B150   B152      3
+ ====== &gt;  29 BETA   B18    B161   B166      6
+ ====== &gt;  30 BETA   B19    B173   B176      4
+ ====== &gt;  31 ALPHA  A12    B181   B183      3
+ ====== &gt;  32 ALPHA  A13    B185   B192      8
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+Of course, the two matches occur with each of the two monomers in
+the dimer, but since the assignments of the SSEs are slightly
+different, we still produce both matches.
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S24">12.4 </A>O macro</H3> 
+<P>   
+The resulting O macro looks like this:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+&lt; % 194 gerard rigel 23:08:50 secs/database&gt; cat gsta_lsq.omac
+! &quot;O&quot; macro gsta_lsq.omac
+! created by DEJAVU                 at Thu Oct 29 23:46:17 1992
+!
+print ... analysing gsta
+print human class alpha glutathione s-transferase model m10a
+print ... query  B1     A1     B2     B3     B4     A3
+print ... allowed mismatches 4 13.000 10.000 0.400
+print ... distance type C
+print ... directionality Y
+print ... absolute motif Y
+print ... neighbours N
+!
+mol gsta obj xgsta
+pai_zo gsta ; yellow
+pai_zo gsta A4     A7     green
+pai_zo gsta A16    A25    green
+pai_zo gsta A27    A35    green
+pai_zo gsta A56    A58    green
+pai_zo gsta A62    A65    green
+pai_zo gsta A67    A78    green
+ca ; end
+cent_id term_id gsta A4     CA ;
+!
+db_set_dat .lsq_integer 1 1 50
+db_set_dat .lsq_integer 2 4 4
+db_set_dat .lsq_integer 3 3 16999999
+!
+o_setup off off on
+!
+!
+print ... comparing 1gp1
+print glutathione peroxidase (e.c.1.11.1.9) - bovine (bos $taurus
+print ... score = 14.55962
+!
+s_a_i /nfs/public/pdb/gp11.pdb 1gp1 pdb
+!
+lsq_expl gsta 1gp1
+A4     A7     CA
+B35
+A16    A25    CA
+B48
+A27    A35    CA
+B67
+A56    A58    CA
+B161
+A62    A65    CA
+B173
+A67    A78    CA
+B185
+; 1gp1_to_gsta
+!
+lsq_impr 1gp1_to_gsta gsta ; 1gp1 ; CA 1gp1_to_gsta
+!
+lsq_mol 1gp1_to_gsta 1gp1 ;
+!
+mol 1gp1 obj c1gp1
+pai_zo 1gp1 ; blue
+pai_zo 1gp1 B35    B42    red
+pai_zo 1gp1 B48    B61    red
+pai_zo 1gp1 B67    B74    red
+pai_zo 1gp1 B161   B166   red
+pai_zo 1gp1 B173   B176   red
+pai_zo 1gp1 B185   B192   red
+ca ; end
+!
+!
+s_a_i /nfs/public/pdb/gp11.pdb xgp1 pdb
+!
+lsq_expl gsta xgp1
+A4     A7     CA
+A35
+A16    A25    CA
+A48
+A27    A35    CA
+A67
+A56    A58    CA
+A160
+A62    A65    CA
+A170
+A67    A78    CA
+A185
+; xgp1_to_gsta
+!
+lsq_impr xgp1_to_gsta gsta ; xgp1 ; CA xgp1_to_gsta
+!
+lsq_mol xgp1_to_gsta xgp1 ;
+!
+mol 1gp1 obj cxgp1
+pai_zo xgp1 ; blue
+pai_zo xgp1 A35    A42    red
+pai_zo xgp1 A48    A61    red
+pai_zo xgp1 A67    A74    red
+pai_zo xgp1 A160   A166   red
+pai_zo xgp1 A170   A176   red
+pai_zo xgp1 A185   A192   red
+ca ; end
+!
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S25">12.5 </A>running O</H3> 
+<P>   
+Executing this macro gives the following output (edited):
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+&lt; % 196 gerard rigel 23:08:50 secs/database&gt; 4d_ono general.o
+  O &gt; Use of this program implies acceptance of conditions
+  O &gt; described in Appendix 10 of the O manual
+  O &gt; O version 5.8, Sat Sep 26 13:59:06 MET 1992
+[...]
+@gsta_lsq.omac
+  O &gt; Macro in computer file-system.
+ As4&gt; ... analysing gsta
+  O &gt;  As4&gt; human class alpha glutathione s-transferase model m10a
+  O &gt;  As4&gt; ... query  B1     A1     B2     B3     B4     A3
+  O &gt;  As4&gt; ... allowed mismatches 4 13.000 10.000 0.400
+  O &gt;  As4&gt; ... distance type C
+  O &gt;  As4&gt; ... directionality Y
+  O &gt;  As4&gt; ... absolute motif Y
+  O &gt;  As4&gt; ... neighbours N
+  O &gt;   O &gt;   O &gt;   O &gt;   O &gt;   O &gt;   O &gt;   O &gt;   O &gt;   O &gt;   O &gt;   O &gt;
+  O &gt;   O &gt;   O &gt;   O &gt;   O &gt;   O &gt;   O &gt;  As4&gt; ... comparing 1gp1
+  O &gt;  As4&gt; glutathione peroxidase (e.c.1.11.1.9) - bovine (bos $taurus
+  O &gt;  As4&gt; ... score = 14.55962
+[...]
+ Lsq &gt; The 30 atoms have an r.m.s. fit of 3.645
+ Lsq &gt;  xyz(1) =    -0.7311*x+    0.6446*y+    0.2236*z+   83.3897
+ Lsq &gt;  xyz(2) =     0.1075*x+   -0.2147*y+    0.9707*z+   -7.7601
+ Lsq &gt;  xyz(3) =     0.6737*x+    0.7338*y+    0.0877*z+  -33.9970
+[...]
+ Lsq &gt; 0Search for connected fragments.
+ Lsq &gt; A fragment of    26 residues located.
+ Lsq &gt; A fragment of    14 residues located.
+ Lsq &gt; A fragment of     9 residues located.
+ Lsq &gt; A fragment of     9 residues located.
+ Lsq &gt;  Loop =   10 ,r.m.s. fit =     2.529 with    58 atoms
+ Lsq &gt;  x(1) =    -0.7038*x+    0.7023*y+    0.1070*z+   85.7188
+ Lsq &gt;  x(2) =     0.0950*x+   -0.0562*y+    0.9939*z+  -10.9052
+ Lsq &gt;  x(3) =     0.7040*x+    0.7097*y+   -0.0272*z+  -29.9750
+ Lsq &gt; 0Search for connected fragments.
+ Lsq &gt; A fragment of    24 residues located.
+ Lsq &gt; A fragment of    16 residues located.
+ Lsq &gt; A fragment of     9 residues located.
+ Lsq &gt; A fragment of     9 residues located.
+ Lsq &gt;  Loop =   11 ,r.m.s. fit =     3.361 with    58 atoms
+ Lsq &gt;  x(1) =    -0.6967*x+    0.7093*y+    0.1072*z+   85.3970
+ Lsq &gt;  x(2) =     0.0397*x+   -0.1111*y+    0.9930*z+   -8.9049
+ Lsq &gt;  x(3) =     0.7162*x+    0.6961*y+    0.0493*z+  -33.0698
+ Lsq &gt; The transformation can be stored in O.
+ Lsq &gt; A blank is taken to mean do not store anything
+ Lsq &gt; The transformation will be stored in .LSQ_RT_ Lsq &gt; Here are the
+ fragments used in the alignment
+ Lsq &gt; 0    A4 PKLHYFNARGRMESTRWLLAAAGV    A27
+ Lsq &gt;     B36 LLIENVASL GTTVRDYTQMNDLQ    B59
+ Lsq &gt; 0   A28 EFEEKFIKS    A36
+ Lsq &gt;     B68 VVLGFPCNQ    B76
+ Lsq &gt; 0   A52 QQVPMVEID    A60
+ Lsq &gt;    B157 SWNFEKFLV   B165
+ Lsq &gt; 0   A61 GMKLVQTRAILNYIAS    A76
+ Lsq &gt;    B171 PVRRYSRRFLTIDIEP   B186
+[...]
+ Sam&gt; Molecule XGP1 contained 555 residues and 3111 atoms
+[...]
+ Lsq &gt; The 30 atoms have an r.m.s. fit of 4.841
+ Lsq &gt;  xyz(1) =    -0.1827*x+   -0.7881*y+   -0.5879*z+  157.7386
+ Lsq &gt;  xyz(2) =     0.8678*x+    0.1518*y+   -0.4732*z+   15.9964
+ Lsq &gt;  xyz(3) =     0.4621*x+   -0.5966*y+    0.6561*z+   -2.8169
+ Lsq &gt; The transformation can be stored in O.
+[...]
+ Lsq &gt; 0Search for connected fragments.
+ Lsq &gt; A fragment of    24 residues located.
+ Lsq &gt; A fragment of    14 residues located.
+ Lsq &gt; A fragment of     9 residues located.
+ Lsq &gt; A fragment of     9 residues located.
+ Lsq &gt; A fragment of     5 residues located.
+ Lsq &gt;  Loop =    9 ,r.m.s. fit =     3.248 with    61 atoms
+ Lsq &gt;  x(1) =    -0.1430*x+   -0.6702*y+   -0.7282*z+  154.9774
+ Lsq &gt;  x(2) =     0.9470*x+    0.1212*y+   -0.2975*z+    9.6677
+ Lsq &gt;  x(3) =     0.2877*x+   -0.7322*y+    0.6174*z+    9.8883
+ Lsq &gt; The transformation can be stored in O.
+ Lsq &gt; A blank is taken to mean do not store anything
+ Lsq &gt; The transformation will be stored in .LSQ_RT_ Lsq &gt; Here are the
+ fragments used in the alignment
+ Lsq &gt; 0    A4 PKLHYFNARGRMESTRWLLAAAGV    A27
+ Lsq &gt;     A36 LLIENVASL GTTVRDYTQMNDLQ    A59
+ Lsq &gt; 0   A28 EFEEKFIKS    A36
+ Lsq &gt;     A68 VVLGFPCNQ    A76
+ Lsq &gt; 0   A45 NDGYL    A49
+ Lsq &gt;    A153 RNDVS   A157
+ Lsq &gt; 0   A52 QQVPMVEID    A60
+ Lsq &gt;    A157 SWNFEKFLV   A165
+ Lsq &gt; 0   A61 GMKLVQTRAILNYI    A74
+ Lsq &gt;    A172 VRRYSRRFLTIDIE   A185
+[...]
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+Again, the sequence similarity is negligible, the rms-value of the fit
+is not too impressive, but if you look on the screen you see a very
+reasonable fit (except for the last helix) !!!
+ <BR> One also notes that the two monomers overlap exactly, which implies that
+the differences in SSE-assignments must be due to round-off errors in
+YASSPA.
+ <BR> By the way, the &quot;o_setup&quot; instruction in the macro ensures that you get
+a log file from O; this will be called o_log.lst. Print it and stick
+it right into your laboratory notebook !!!
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H13">13 </A>DETAILED ANALYSIS OF RESULTS ON CRO</H2> </CENTER>
+<P>   
+We mentioned before that relaxing the criteria in the search for
+the DNA-binding helix-(turn)-helix motif of lambda cro repressor
+would yield many more hits than the two we obtained in the
+example.
+ <BR> If we actually do this, we may get the following hits:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+&lt; % 110 gerard rose 15:24:13 progs/secs&gt; grep s_a_i cro_relax.omac
+s_a_i /nfs/public/pdb/cro1.pdb 1cro
+s_a_i /nfs/public/pdb/acn5.pdb 5acn pdb
+s_a_i /nfs/public/pdb/acn6.pdb 6acn pdb
+s_a_i /nfs/public/pdb/api7.pdb 7api pdb
+s_a_i /nfs/public/pdb/api8.pdb 8api pdb
+s_a_i /nfs/public/pdb/api9.pdb 9api pdb
+s_a_i /nfs/public/pdb/cat7.pdb 7cat pdb
+s_a_i /nfs/public/pdb/cat8.pdb 8cat pdb
+s_a_i nfs/public/pdb/ccp1.pdb 1ccp pdb
+s_a_i /nfs/public/pdb/ccp2.pdb 2ccp pdb
+s_a_i /nfs/public/pdb/ccp3.pdb 3ccp pdb
+s_a_i /nfs/public/pdb/ccp4.pdb 4ccp pdb
+s_a_i /nfs/public/pdb/cro1.pdb 1cro pdb
+s_a_i /nfs/public/pdb/csc1.pdb 1csc pdb
+s_a_i /nfs/public/pdb/csc2.pdb 2csc pdb
+s_a_i /nfs/public/pdb/csc3.pdb 3csc pdb
+s_a_i /nfs/public/pdb/csc4.pdb 4csc pdb
+s_a_i /nfs/public/pdb/csc5.pdb 5csc pdb
+s_a_i /nfs/public/pdb/cts1.pdb 1cts pdb
+s_a_i /nfs/public/pdb/cts2.pdb 2cts pdb
+s_a_i nfs/public/pdb/cts3.pdb 3cts pdb
+s_a_i /nfs/public/pdb/cts5.pdb 5cts pdb
+s_a_i nfs/public/pdb/cts6.pdb 6cts pdb
+s_a_i /nfs/public/pdb/cyp2.pdb 2cyp pdb
+s_a_i /nfs/public/pdb/cro3.pdb 3cro pdb
+s_a_i /nfs/public/pdb/hco1.pdb 1hco pdb
+s_a_i /nfs/public/pdb/icd3.pdb 3icd pdb
+s_a_i /nfs/public/pdb/icd4.pdb 4icd pdb
+s_a_i /nfs/public/pdb/icd5.pdb 5icd pdb
+s_a_i /nfs/public/pdb/icd6.pdb 6icd pdb
+s_a_i /nfs/public/pdb/icd7.pdb 7icd pdb
+s_a_i /nfs/public/pdb/icd8.pdb 8icd pdb
+s_a_i /nfs/public/pdb/icd9.pdb 9icd pdb
+s_a_i /nfs/public/pdb/lap1.pdb 1lap pdb
+s_a_i /nfs/public/pdb/lrd1.pdb 1lrd pdb
+s_a_i /nfs/public/pdb/lzm2.pdb 2lzm pdb
+s_a_i /nfs/public/pdb/lzm3.pdb 3lzm pdb
+s_a_i /nfs/public/pdb/or12.pdb 2or1 pdb
+s_a_i /nfs/public/pdb/phs1.pdb 1phs pdb
+s_a_i /nfs/public/pdb/sic1.pdb 1sic pdb
+s_a_i /nfs/public/pdb/trc1.pdb 1trc pdb
+s_a_i /nfs/public/pdb/ts13.pdb 3ts1 pdb
+s_a_i /nfs/public/pdb/ts14.pdb 4ts1 pdb
+s_a_i /nfs/public/pdb/xia1.pdb 1xia pdb
+s_a_i /nfs/public/pdb/xia4.pdb 4xia pdb
+s_a_i /nfs/public/pdb/xia5.pdb 5xia pdb
+s_a_i /nfs/public/pdb/xia6.pdb 6xia pdb
+s_a_i /nfs/public/pdb/xia7.pdb 7xia pdb
+s_a_i /nfs/public/pdb/xia8.pdb 8xia pdb
+s_a_i /nfs/public/pdb/xia9.pdb 9xia pdb
+s_a_i /nfs/public/pdb/55c1.pdb 155c pdb
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+In fact, we used the following parameters:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+&lt; % 107 gerard sirius 15:24:58 secs/database&gt; more cro_relax.omac
+! &quot;O&quot; macro cro_relax.omac
+! created by DEJAVU                 at Fri Oct 30 15:26:41 1992
+!
+o_setup off off on
+!
+print ... analysing 1cro
+print cro repressor - bacteriophage (lamb
+print ... query  A2     A3
+print ... allowed mismatches 2 6.000 5.000 0.250
+print ... distance type H
+print ... directionality Y
+print ... absolute motif Y
+print ... neighbours Y
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S26">13.1 </A>results</H3> 
+<P>   
+We have processed a representative selection of these hits with
+O (i.e., using only the best scoring protein of a set of
+related ones, such as the seven xia, d-xylose isomerase). The
+results are summarised in the following table.
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ =========================================================================================
+                                        15   20   25   30   35
+                                        |    |    |    |    |
+ 1cro score  rmsX  NI  rmsI    O11  AMRFGQTKTAKDLGVYQSAINKAIHAGR   O38  lambda cro repressor
+                                         XXXXXXXX   XXXXXXXXXX          (the two helices)
+ =========================================================================================
+ 5acn  9.36  2.67  22  3.40    733      ETQIEWFRAGSALNRMKELQQK     754  aconitase
+ 8api  5.01  4.77  21  3.11   A264              ENELTHDIITKFLEN   A278  alpha-1-antitrypsin
+ 8cat  6.63  4.63  18  2.78   B252           LAHEDPDYGLRDLFNAIA   B269  catalase
+ 2ccp  6.09  5.45  14  1.79    240                QDPKYLSIVKEYAN   253  cytochrome-c peroxidase
+ 2cts  7.11  3.04  27  2.92     66  FRGFSIPECQKLLPK                 80  citrate synthase
+                                87                 PLPEGLFWLLVT     98
+ 2cyp  6.39  5.47  32  2.93    202..NE                             209  cytochrome-c peroxidase
+                               241                  DPKYLSIVKEY    251
+                                91..KE                              98  (with cro A-chain)
+                                15      SYEDF                       19  (with cro B-chain)
+ 3cro  9.83  5.53  31  2.90    R56..QYG                            R62  434 cro repressor
+                               R40        KRPRFLF                  R46
+                               L41                RPRFLFEIAMALNC.. L57
+ 1hco  6.41  4.84  17  3.09    B42   FESFGD                        B47  haemoglobin
+                               B57                  NPKVKAHGKKV    B67
+ 5icd  6.85  5.33  29  3.20     85                 PAETLDLIREYR     96  isocitrate dehydrogenase
+                               353..GSII                           357  (with cro C-chain)
+                               386                 AKTVTY          391  (with cro C-chain)
+ 1lap  4.86  5.77  21  2.61    425              RSAGACTAAAFLKEF    439  leucine aminopeptidase
+ 1lrd  2.84  0.60  25  3.70 !  329    LGLSQESVADKMGMGQSGVGALFNG    353  lambda repressor
+ 3lzm  7.68  3.95  29  2.87     95..ALIN                           101  lysozyme
+                               113                 GFTNSLRMLQQKR.. 127
+ 2or1  3.12  0.67  32  3.40 !   L5..RI                             L11  434 repressor
+                               L13    LGLNQAELAQKVGTTQQSIEQLENG    L37
+ 1phs  3.69  2.09  52  3.06    340..RALDGKDVLGLTFSGSGDEVMKLINKQ    372  phaseolin
+                                39..QQSK                            44  (with cro A-chain)
+                                13..YFNSD                           19  (with cro B-chain)
+ 1sic  6.47  3.55  24  2.59   E229     GAAALILS                   E236  subtilisin
+                              E238             HPNWTNTQVRSSLQNT   E253
+ 1trc  1.02  2.96  25  2.36    A99    YISAAELRHV                  A108  calmodulin
+                              A114              EKLTDEEVDEMIREA   A128
+ 4ts1  6.28  4.72  24  3.24   A144     SVNYM                      A148  Tyr-tr-RNA synthase
+                              A152                    ESVQSRIETG..A165
+                               B35               CGFDP             B39  (with cro C-chain)
+ 6xia  5.98  2.98  29  2.49    215      PEVGHEQMAGLNFPHGIAQALWA    237  d-xylose isomerase
+ 155c  6.00  4.15  18  2.86     73      ANLIEY                      78  cytochrome-c550
+                                80                 TDPKPLVKKMTD     91
+ =========================================================================================
+                                         XXXXXXXX   XXXXXXXXXX          (the two helices)
+ 1cro score  rmsX  NI  rmsI    O11  AMRFGQTKTAKDLGVYQSAINKAIHAGR   O38  lambda cro repressor
+                                        |    |    |    |    |
+                                        15   20   25   30   35
+ =========================================================================================
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+Legend: the first column contains the PDB identifier which is followed
+by the score according to DEJAVU, the rms fit of the Calpha atoms
+using the lsq_explicit option in O, the number of matched residues as
+determined by the lsq_improve option in O and the rms fit of the Calpha
+atoms of these residues. The right-hand part of the table shows (some of)
+the structural alignments found by lsq_improve in sofar as they pertain
+to residues in and around the helix-turn-helix motif of 1cro.
+<P>   
+NOTE: since lsq_improve does a global optimisation for the alignment of
+two proteins, the resulting picture simetimes is worse than after
+a simple lsq_explicit (e.g., for 1lrd and 2or1). Also, this option
+is sometimes unstable, alternating between two solutions and not
+always ending up with the best one.
+<P>   
+NOTE: there doesn't seem to be a simple correlation between the DEJAVU
+scores and the rms-fit values, so be careful when throwing away
+hits with a high DEJAVU score (e.g., 5acn and 2cts) !
+<P>   
+NOTE: how widely different amino-acid sequences may yield similar
+spatial motifs !!!
+<P>   
+NOTE: the best hits are those for which both helices are part of a
+long matching sequence of residues (i.e., 5acn, 2cts, 1lrd, 2or1,
+1phs, 1sic, 1trc, 6xia and 155c).
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H14">14 </A>MISCELLANEOUS</H2> </CENTER>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S27">14.1 </A>HOW TO CREATE AND USE YOUR OWN DATABASE</H3> 
+ <BR> - use the script makedb to create your DEJAVU database(s)
+ <BR> - copy the public file &quot;secs.lib&quot; (this is only a few lines)
+to your own directory
+ <BR> - add a &quot;CHAIN&quot; statement that points to your own database
+ <BR> - add a &quot;CHAIN&quot; statement to your own database which points
+back to the local database (e.g., &quot;uppsala.secs&quot;; this
+file in turn should be chained to the PDB-derived database,
+e.g., &quot;pdb.secs&quot;)
+ <BR> - enter the file name of your private library when DEJAVU asks
+you for the name of the database file; all chained databases
+will then also be read
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S28">14.2 </A>HOW TO SELECT SEARCH PARAMETERS</H3> 
+ <BR> - usually it's a good idea to start with rather strict parameters
+ <BR> - if a lot of hits come up, you can either repeat the search with
+even stricter parameters or check all hits in O
+ <BR> - if not many hits show up, relax your parameters a bit (mismatches
+of 5 residues, 17 A, 10 A and 0.4 in the cosines) and repeat
+ <BR> - if this doesn't help, relax the &quot;binary&quot; search criteria, first
+the conservation of neighbours, then that of absolute motif. Also
+try the three different distance measures (C, H and T). Only as a
+last resort should you release the directionality !
+ <BR> - if you still don't get any reasonable hits, you could try looking
+at a partial motif containing fewer SSEs (or you may conclude that
+you have a unique fold ...)
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S29">14.3 </A>OTHER HINTS</H3> 
+ <BR> - note that the various &quot;print&quot; statements in the lsq-macro for O
+make that your O log file automatically serves as an electronic
+notebook ! A quick way to get an overview of your hits:
+csh-prompt&gt; grep -i print lsq.omac
+ <BR> - if lsq_improve in O goes &quot;haywire&quot;, e.g. matches only one helix
+perfectly but leaves the others sticking in the wrong directions,
+then re-do the lsq_explicit, lsq_mol, paint_zone and ca_zone
+instructions (e.g., by cutting and pasting on SGIs)
+ <BR> - always compare the folds of the interesting hits; sometimes, the
+spatial arrangements may be similar, whereas the folds are quite
+different !
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S30">14.4 </A>PROBLEMS</H3> 
+ <BR> - DEJAVU does not know that SSEs may be in different chains, so you
+may get hits consisting of a few SSEs from one monomer and a few
+from another monomer which together form a motif similar to yours
+ <BR> - YASSPA is not perfect and usually gives slightly different
+SSE-assignments than a protein scientist would make
+ <BR> - O residue names sometimes present a problem; they consist of
+a &quot;$&quot; (if the atom is a HETERO atom) + the chain id. + the residue
+number + the insert id. (the biggest trouble arises if people use
+numbers for the chain id. and/or the insert id.)
+ <BR> - if you encounter enormous problems, you may contact me. It is best
+to send me a mail which includes your protein's PDB and DEJAVU files
+and the names of the SSEs you wish to find. My E-mail address is:
+&quot;gerard@xray.bmc.uu.se&quot;
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H15">15 </A>SELECT OPTION</H2> </CENTER>
+<P>   
+If you want to compare your structure with a subset of the PDB
+structures, you can use the select option:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ===&gt; Option ? (READ)
+sele
+<P>   
+ Options :
+ (1) Select ALL entries
+ (2) Select NONE of the entries
+ (3) Select ON for one or more entries
+ (4) Select OFF for one or more entries
+ (5) Read a select macro file
+ Option (1-5) ? (       1)
+1
+ Selected ALL entries
+<P>   
+ Nr of selected entries now : (     607)
+<P>   
+  2 CPU total/user/sys :       0.0       0.0       0.0
+<P>   
+ ===&gt; Option ? (SELE)
+<P>   
+ Options :
+ (1) Select ALL entries
+ (2) Select NONE of the entries
+ (3) Select ON for one or more entries
+ (4) Select OFF for one or more entries
+ (5) Read a select macro file
+ Option (1-5) ? (       1)
+5
+ Select macro file ? (user.sel)
+cici.select
+<P>   
+ Selected NONE of the entries
+ Select ON 1alc
+ Select ON 2apr
+ Select ON 5apr
+ Select ON 1bp2
+ Select ON 3bp2
+ Select ON 4bp2
+ ERROR --- Invalid entry code: 2c4s
+ Select ON 1cdp
+ Select ON 3cln
+ Select ON 2cna
+ Select ON 3cna
+ Select ON 4cpv
+ Select ON 5cpv
+...
+ Select ON 1trc
+ Select ON 1trm
+ Select ON 2trm
+<P>   
+ Nr of selected entries now : (      87)
+<P>   
+  2 CPU total/user/sys :       0.3       0.3       0.1
+<P>   
+ ===&gt; Option ? (SELE)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+A select file may contain comments (any line beginning with &quot;!&quot;) and
+select records; possible types:
+ <BR> - select all
+ <BR> - select none
+ <BR> - select on pdb_code
+ <BR> - select off pdb_code
+<P>   
+A select file may look as follows:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+&lt; % 147 gerard sirius 23:09:47 secs/cbh1&gt; cat cici.select
+! Select file for DEJAVU
+! Created by select.csh
+! At Thu Feb 18 22:45:45 MET 1993
+! Keywords calcium
+!
+Select none
+Select on 1ALC
+Select on 2APR
+Select on 5APR
+...
+Select on 1TRC
+Select on 1TRM
+Select on 2TRM
+!
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+Use the following C-shell script (or an adaptation) to generate
+select files automatically by scanning for one or more keywords
+in all PDB files:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+#!/bin/csh -f
+# select.csh - Gerard Kleywegt 1993
+if ($#argv &lt; 1) then
+  echo
+  echo &quot;usage: $0 keyword1 [keyword2 ...]&quot;
+  echo
+  exit 1
+endif
+#
+set pdbdir=/nfs/public/pdb
+#
+set alfabet='a b c d e f g h i j k l m n o p q r s t u v w x y z'
+set out=$argv[1].select
+#
+echo Looking for $argv[1-$#argv]
+echo Select file $out
+#
+echo &quot;! Select file for DEJAVU &quot;  &gt; $out
+echo &quot;! Created by $0&quot;            &gt;&gt; $out
+echo &quot;! At `date`&quot;                &gt;&gt; $out
+echo &quot;! Keywords $argv[1-$#argv]&quot; &gt;&gt; $out
+#
+echo &quot;! &quot; &gt;&gt; $out
+echo &quot;Select none&quot; &gt;&gt; $out
+# loop over all letters in the alphabet
+foreach letter ($alfabet)
+  set files=`echo $pdbdir/$letter&quot;*.pdb&quot;`
+  echo
+  echo There are $#files PDB files beginning with the letter $letter
+# loop over all files beginning with this letter
+  foreach pdb ($files)
+#   loop over all keywords
+    foreach key ($argv)
+#     count the nr of times this keyword occurs in the file
+      set hits=`grep -c -i $key $pdb`
+      if ($hits == 0) then
+        goto failure
+      endif
+    end
+#   if here, the file contains all keywords
+    set molnam=&quot;`head -10 $pdb | grep -i 'header    ' | cut -c63-66`&quot;
+    set compnd=&quot;`head -10 $pdb | grep -i 'compnd    ' | cut -c11-59`&quot;
+    echo Protein $molnam in file $pdb
+    echo Possible name &quot;$compnd&quot;
+    echo &quot;Select on $molnam&quot; &gt;&gt; $out
+#   in case of failure, you come here immediately
+    failure:
+  end
+end
+#
+echo &quot;! &quot; &gt;&gt; $out
+echo Done ...
+exit 0
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H16">16 </A>INCREMENTAL SEARCH EXAMPLE</H2> </CENTER>
+<P>   
+The following is an example of an incremental search:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ===&gt; Option ? (READ)
+in
+<P>   
+ ********** NEW QUERY **********
+<P>   
+ Elements : ( B1 B2 B3 B4 A1 B5 A2 A3 B6 B7 B8 B9 B10 B11 B12
+ B13 A4 A5 B14 B15 B16 B17 B18 B19 A6 B20 B21 B22 B23 B24 A7
+ A8 A9 B25 A10 A11 B26)
+ Min nr of residues for SSEs             ? (       5)
+6
+ ................... ( B3 B4 A3 B8 B9 B11 B16 B17 B21 B22 A7
+ A9 B25 A11 B26)
+ Min nr of elements to match (0 = abort) ? (       4)
+5
+<P>   
+ Mismatch nr of residues ? (          3)
+<P>   
+ Mismatch element length ? (  10.000)
+<P>   
+ Mismatch distances      ? (   8.000)
+<P>   
+ Mismatch cosines        ? (   0.400)
+<P>   
+ Weights for scoring     ? (   0.250    0.250    0.250    0.250)
+1 1 10 5
+ Normalised weights      : (   0.059    0.059    0.588    0.294)
+<P>   
+ Possible distance criteria:
+  C  =&gt; centre-to-centre
+  H  =&gt; MIN head-tail and tail-head (anti-parallel)
+  T  =&gt; MIN head-head and tail-tail (parallel)
+  I  =&gt; MIN of all these distances
+  A  =&gt; MAX of all these distances
+ Which distances (C/H/T/I/A) ? (C)
+<P>   
+ Extensive output        ? (N)
+<P>   
+ Conserve directionality ? (Y)
+<P>   
+ Conserve absolute motif ? (Y)
+<P>   
+ Conserve neighbours     ? (N)
+<P>   
+ Attempt to avoid multi-chain hits ? (Y)
+<P>   
+ Attempt to avoid identical proteins ? (Y)
+<P>   
+ Create &quot;O&quot; macro file   ? (Y)
+<P>   
+ &quot;O&quot; macro file          ? (lsq.omac)
+<P>   
+ Nr of elements recognised in query : (      15)
+ Indices : (       3        4        8       11       12
+       14       21       22       27       28       31
+       33       34       36       37)
+ Nr of elements of each type : (       4       11)
+<P>   
+ ********** 2cna       **********    108 **********
+ [concanavalin a - jack bean (canavali                                  ]
+ [/nfs/public/pdb/cna2.pdb                                              ]
+ QUERY    : (       3        4        8       11       12
+       14       21       22       27       28       31       33
+       34       36       37)
+ Elements :    B3       B4       A3       B8       B9
+       B11      B16      B17      B21      B22
+<P>   
+ A7       A9       B25      A11      B26
+ Lengths  : (  26.477   31.328   10.053   22.441   24.508
+   23.564   23.091   25.716   26.247   23.934   13.939   11.969
+   19.554    9.769   27.656)
+ Residues : (       9       11        7        9        9
+        8        9        9        9        8       10        9
+        7        7       10)
+ Nr of common SSEs : (       5)
+<P>   
+ MATCH    : (       0        7        0        9       10
+       12        0        0       20        0        0        0
+        0        0        0)
+ Elements :    -X-      B6       -X-      B8       B9       B10
+      -X-      -X-      B18      -X-     -X-      -X-      -X-
+      -X-      -X-
+ Lengths  : (  23.720   23.278   23.972   31.742   17.850)
+ Residues : (       9        8        8       11        6)
+ Length   ... rmsd =      6.265 ... match =      0.970
+ Residues ... rmsd =      2.191 ... match =      0.973
+ Distance ... rmsd =      4.260 ... match =      0.970
+ Cosines  ... rmsd =      0.146 ... match =      0.981
+ SCORE : (   3.163)
+<P>   
+ Nr of hits        : (       1)
+ Nr of common SSEs : (       5)
+ Nr of best match  : (       1)
+ Best score        : (   3.163)
+<P>   
+ Nr of matching entries : (          1)
+ Nr of hits (total)     : (          1)
+<P>   
+ Entry    108 = 2cna = concanavalin a - jack bean (canavali
+<P>   
+  2 CPU total/user/sys :       3.2       3.0       0.3
+<P>   
+ ===&gt; Option ? (IN)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H17">17 </A>TOPOLOGY OPTION</H2> </CENTER>
+<P>   
+This, rather crummy, option may help you in fathoming the topology
+of your protein. You enter a cosine and a distance cutoff which
+determine whether or not two SSEs are parallel (cosine &gt;= cutoff)
+or anti-parallel (cosine &lt;= -cutoff) and whether they are spatial
+neighbours (distance &lt;= cutoff). A matrix is printed which
+contains +2 for parallel neighbours, +1 for parallel, -1 for
+anti-parallel and -2 for anti-parallel neighbours.
+<P>   
+The first number is the sum of the absolute values of the
+matrix entries for an SSE (if high, then central in a motif),
+the second is the number of spatial neighbours. You should
+choose your cut-off such that no SSE has more than 2 spatial
+neighbours.
+<P>   
+DEJAVU produces a file which can be plotted (and converted into
+PostScript) with O2D (use &quot;open 2 topo 0 1&quot; to open a 2D window,
+then type &quot;topo mytopo.file mytopo.ps&quot; and voila).
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ COSine   cut-off  ? (   0.800)
+ DIStance cut-off  ? (   8.000)
+ O2D topology file ? (cbh6a.topo)
+ A1       5   1    11 -1  0  0  0  0  0  0  0  1 -1  2  0
+ A2       6   0    -1 11  0 -1  0  0  0  0  0 -1  1 -1  1
+ B1       3   1     0  0 11  0 -2  1  0  0  0  0  0  0  0
+ B2       4   1     0 -1  0 11  0  0  0  0  0  0  0  1 -2
+ B3       6   2     0  0 -2  0 11 -2  1 -1  0  0  0  0  0
+ B4       6   2     0  0  1  0 -2 11 -2  1  0  0  0  0  0
+ B5       5   2     0  0  0  0  1 -2 11 -2  0  0  0  0  0
+ B6       4   1     0  0  0  0 -1  1 -2 11  0  0  0  0  0
+ B7       2   1     0  0  0  0  0  0  0  0 11 -2  0  0  0
+ B8       7   2     1 -1  0  0  0  0  0  0 -2 11 -2  1  0
+ B9       7   2    -1  1  0  0  0  0  0  0  0 -2 11 -2  1
+ B10      9   3     2 -1  0  1  0  0  0  0  0  1 -2 11 -2
+ B11      6   2     0  1  0 -2  0  0  0  0  0  0  1 -2 11
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H18">18 </A>INSTALLING THE SOFTWARE</H2> </CENTER>
+<P>   
+The system manager will have to do the following:
+<P>   
+* put the appropriate executables in directories which are
+accessible by local DEJAVU users
+<P>   
+* change the &quot;make_sse&quot; script (site-specific executables)
+<P>   
+* copy the big PDB-derived libraries to an accessible directory
+<P>   
+* change the file names of ALL PDB files mentioned in the
+big PDB-derived libraries so that they point to the disk
+etc. where you keep your local copies of the uncompressed
+PDB files. In Uppsala, all PDB files are in a directory
+called /nfs/pdb/full. If you keep your
+PDB files in a directory called /usr/mnt/people/pdb, change
+the big library file accordingly, e.g., using a (stream) editor,
+OR make a soft link in &quot;/&quot;, as follows:
+ln -s /usr/mnt/people/pdb /nfs/pdb/full
+ <BR> If you create a soft link, you do NOT have to edit the big
+library file !
+ <BR> Example of changing the libraries with &quot;sed&quot;:
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ echo &quot;s%/nfs/pdb/full%/y/database/brookhaven/pdb%g&quot; &gt; q.sed
+ sed -f q.sed full_pdb.lib &gt; q ; mv q full_pdb.lib
+ echo &quot;s%/nfs/pdb/pre%/y/database/brookhaven/pdb%g&quot; &gt; q.sed
+ sed -f q.sed pre_pdb.lib &gt; q ; mv q pre_pdb.lib
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+ <BR> Change the CHAIN card at the bottom of all lib files !
+<P>   
+* provide users with a minimalist DEJAVU library file which
+should AT LEAST contain the following lines:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+TYPE   'ALPHA'  'alpha helix'
+TYPE   'BETA'   'beta strand'
+<P>   
+CHAIN your_local_big_pdb-derived_dejavu_library_file
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+In between the TYPE and the CHAIN commands, the user may
+insert SSE records of his/her own structures (see the
+example dejavu_user.lib file). NOTE that keywords should
+be left-justified, uppercase strings of SIX characters
+(i.e., add trailing spaces if necessary).
+ <BR> NOTE that you may &quot;chain&quot; an unlimited number of SSE files;
+I like to have my personal file first, then a file with
+structures solved in Uppsala but not yet in the PDB and
+finally the big PDB-derived library.
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H19">19 </A>SYMBOLIC MATCHING</H2> </CENTER>
+<P>   
+As of version 5.3, DEJAVU is capable of &quot;symbolic matching&quot;. In
+this case, the spatial information regarding the SSEs is
+completely ignored, and only their type and length (nr of
+residues) are used (as well as the number of residues in
+gaps between neighbouring SSEs).
+ <BR> This option can be useful if you get no hits at all; for example,
+a domain rearrangement may screw up coordinate-based searches,
+but symbolic matching may still work.
+ <BR> Another application is when you have a very reliable secondary
+structure prediction, but no structure (yet). Make an SSE file
+and use dummy coordinates, e.g.:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+MOL    P2
+NOTE   P2 myelin protein for testing symbolic matching
+BETA   'B1'  'A7'   'A9'    3  0.0 0.0 0.0 1.0 1.0 1.0
+BETA   'B2'  'A12'  'A14'   3  0.0 0.0 0.0 1.0 1.0 1.0
+ALPHA  'A1'  'A16'  'A23'   8  0.0 0.0 0.0 1.0 1.0 1.0
+ALPHA  'A2'  'A27'  'A35'   9  0.0 0.0 0.0 1.0 1.0 1.0
+BETA   'B3'  'A37'  'A45'   9  0.0 0.0 0.0 1.0 1.0 1.0
+BETA   'B4'  'A48'  'A55'   8  0.0 0.0 0.0 1.0 1.0 1.0
+BETA   'B5'  'A58'  'A64'   7  0.0 0.0 0.0 1.0 1.0 1.0
+BETA   'B6'  'A68'  'A74'   7  0.0 0.0 0.0 1.0 1.0 1.0
+BETA   'B7'  'A78'  'A87'  10  0.0 0.0 0.0 1.0 1.0 1.0
+BETA   'B8'  'A90'  'A97'   8  0.0 0.0 0.0 1.0 1.0 1.0
+BETA   'B9'  'A100' 'A109' 10  0.0 0.0 0.0 1.0 1.0 1.0
+BETA   'B10' 'A112' 'A119'  8  0.0 0.0 0.0 1.0 1.0 1.0
+BETA   'B11' 'A122' 'A129'  8  0.0 0.0 0.0 1.0 1.0 1.0
+ENDMOL
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+Now run DEJAVU (see below). Note that 11 of the first 12 hits are
+proteins that belong to the same family (and have the same fold)
+as P2 myelin protein.
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ********** NEW QUERY **********
+<P>   
+ Elements : ( B1 B2 A1 A2 B3 B4 B5 B6 B7 B8 B9 B10 B11)
+ Nr of SSEs : (      13)
+ Min nr of residues for SSEs             ? (       4)
+ Nr of SSEs : (      11)
+ Remaining SSEs : ( A1 A2 B3 B4 B5 B6 B7 B8 B9 B10 B11)
+ Min nr of elements to match (0 = abort) ? (       9)
+<P>   
+ Is this a BONES search ? (N)
+<P>   
+ Is this a SYMBOLIC search ? (Y)
+<P>   
+ SYMBOLIC search; no LSQ done
+<P>   
+ Define how much the nr of residues in SSEs may differ
+ by defining how many residues shorter or longer SSEs in
+ the database may be compared to those in your protein.
+ Max nr of residues &quot;too short&quot; ? (          3)
+ Max nr of residues &quot;too long&quot;  ? (          3)
+<P>   
+ [...]
+<P>   
+ ********** 1opb       **********   1243 **********
+ [cellular retinol binding protein ii (holo form) (holo-crbpii - rat (r ]
+ [/nfs/pdb/full/1opb.pdb                                                ]
+ Elements :    A1     A2     B3     B4     B5     B6     B7     B8     B9     B10
+ B11
+ Nr of common SSEs : (      10)
+ Elements :    A1     A2     B3     B4     B5     B6     -X-    B7     B8     B9
+ B10
+ Total mismatched residues : (       9)
+ Total gaps mismatch       : (       7)
+ Elements :    A1     A2     B3     B4     B5     B6     -X-    B8     B9     B10
+ B11
+ Total mismatched residues : (       6)
+ Total gaps mismatch       : (       5)
+ Elements :    A1     A2     B3     B4     B5     -X-    B6     B7     B8     B9
+ B10
+ Total mismatched residues : (      10)
+ Total gaps mismatch       : (      12)
+ Elements :    A1     A2     B3     B4     -X-    B5     B6     B7     B8     B9
+ B10
+ Total mismatched residues : (      10)
+ Total gaps mismatch       : (      12)
+ Elements :    A1     A2     B3     -X-    B4     B5     B6     B7     B8     B9
+ B10
+ Total mismatched residues : (      11)
+ Total gaps mismatch       : (      13)
+ Elements :    A1     A2     -X-    B3     B4     B5     B6     B7     B8     B9
+ B10
+ Total mismatched residues : (      12)
+ Total gaps mismatch       : (      12)
+<P>   
+ Nr of hits        : (       6)
+ Nr of common SSEs : (      10)
+ Nr of best match  : (       2)
+ Best score        : (   6.000)
+ Best gap mismatch : (   5.000)
+<P>   
+ [...]
+<P>   
+ Nr of database entries : (       2182)
+ Nr of selected entries : (       2182)
+ Nr of matching entries : (         39)
+ Nr of hits (total)     : (        639)
+<P>   
+ Sorting hits ...
+<P>   
+   Nr Entry  PDB  SSE  GAPS SCORE Compound
+ ==== ===== ==== ==== ===== ===== ========
+    1  1327 1pmp   11     0     0 p2 myelin protein (p2) - bovine (bos taurus) caudal spinal root myeli
+    2   675 1ftp   11     3     2 fatty-acid-binding protein - desert locust (schistocerca gregaria)
+    3   545 1eal   11     5    10 nmr study of ileal lipid binding protein - organism_scientific: sus s
+    4   440 1crb   11    11     9 cellular retinol binding protein (crbp) complexed with all-t - rat (r
+    5   823 1hmt   10     1     1 fatty acid binding protein (human muscle, m-fabp) complexed - organis
+    6  1036 1lid   10     1     1 adipocyte lipid-binding protein complexed with oleic acid - mouse (mu
+    7  1029 1lfo   10     1     4 liver fatty acid binding protein - oleate complex - organism_scientif
+    8  1243 1opb   10     5     6 cellular retinol binding protein ii (holo form) (holo-crbpii - rat (r
+    9   635 1fie   10    23    12 recombinant human coagulation factor xiii - organism_scientific: homo
+   10   353 1cbi    9     4     5 apo-cellular retinoic acid binding protein i - organism_scientific: m
+   11   355 1cbs    9     5     5 cellular retinoic-acid-binding protein type ii complexed wit - human
+   12  1105 1mdc    9     5     7 fatty acid binding protein (manduca sexta) (mfb2) - tobacco hornworm
+   13  1193 1nir    9     7     7 oxydized nitrite reductase from pseudomonas aeruginosa - organism_sci
+   14  2018 2tbv    9     7    13 tomato bushy stunt virus - tomato bushy stunt virus
+<P>   
+ [...]
+<P>   
+   37   592 1esf    9    28    17 staphylococcal enterotoxin a - organism_scientific: staphylococcus au
+   38   934 1ivd    9    45    12 influenza a subtype n2 neuraminidase (sialidase) (e.c.3.2.1. - influe
+   39  1831 2bpa    9  1823    14 bacteriophage phix174 capsid proteins gpf, gpg, gpj and four - bacter
+<P>   
+  2 CPU total/user/sys :       6.9       6.7       0.2
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H20">20 </A>RELEASE NOTES</H2> </CENTER>
+<P>   
+* 930125 - new distance options I (= min of all other types of
+distances) and A (= max of ditto)
+<P>   
+* 930125 - names of SSEs are now all converted to upper case,
+i.e., no longer case-sensitive
+<P>   
+* 930125 - implemented incremental search, i.e. a search for the
+maximum common motif of your protein and all of the
+database proteins; the input is the same as for the
+FIND option, except that you don't provide a set of
+SSEs but only the minimum number of SSEs that must
+be matched. This type of search may take a while if
+your protein contains many SSEs ! Note that you may
+also specify a minimum length (in residues) which
+will affect the choice of the query elements and of
+those from the database structures. Set the minimum
+length to 5 residues, for example, in order to ignore
+about hits involving tiny SSEs
+<P>   
+* 930125 - implemented option to tell DEJAVU to try and avoid
+multiple chain hits by using only SSEs which have
+the same chain identifier for their first residue
+(in the range 'a' - 'z' or 'A' to 'Z') as the first
+SSE of each database protein
+<P>   
+* 930222 - SELECT option (see above);
+option to try and avoid hits with multiple copies
+of the same protein (i.e., if you found a hit with
+1LYZ, DEJAVU will skip 2LYZ etc.). It compares the
+last three characters of the PDB code with those
+of all proteins that already yielded hits; if they
+are identical, the protein is skipped (this is not
+100 % fail-proof and you might miss interesting
+hits !!!)
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H21">21 </A>KNOWN BUGS</H2> </CENTER>
+<P>   
+None, at present.
+<HR NOSHADE>    <A HREF="http://xray.bmc.uu.se/usf/" target="_top">
+<IMG ALIGN="right" BORDER="0" SRC="usf_logo.gif"
+ALT="Uppsala Software Factory"></A>
+<FONT SIZE=-1>
+<B> <I> Created at Thu Jul 3 21:07:26 2008
+by MAN2HTML version 070111/2.0.8 . This manual
+describes DEJAVU, a program of the <A HREF="http://xray.bmc.uu.se/usf/" target="_top">Uppsala
+Software Factory</A> (USF), written and maintained by <A HREF="http://xray.bmc.uu.se/gerard"
+target="_blank">Gerard Kleywegt</A>. &copy; 1992-2007.
+</I> </B> </FONT><P>
+<IMG SRC="http://xray.bmc.uu.se/cgi-bin/nph-count?width=6&link=http://alpha2.bmc.uu.se/~gerard/www/manuals/dejavu_man.html">
+</body></html>

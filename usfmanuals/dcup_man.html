@@ -1,0 +1,360 @@
+<html><head><!-- This document was created for DCUP at Fri Jan 14 20:12:07 2005 from
+../dcup/dcup.txt by MAN2HTML version 050114/2.0.6 -->
+<title>Uppsala Software Factory - DCUP Manual</title>
+<meta name="DESCRIPTION" content="Manual for Gerard 
+Kleywegt's program DCUP">
+<meta name="KEYWORDS" content="manual software Gerard 
+Kleywegt program DCUP structural biology 
+protein X-ray crystallography macromolecular molecular
+Uppsala Software Factory bioinformatics">
+</head><body bgcolor="#fefefe" background="back.gif">
+
+<A HREF="http://xray.bmc.uu.se/usf/" target="_top">
+<IMG ALIGN="right" BORDER="0" SRC="usf_logo.gif"
+ALT="Uppsala Software Factory"></A>
+
+<H2>  Uppsala Software Factory - DCUP Manual</H2> <P>   
+<UL>  
+<LI><H3>  <A HREF="#H1">1  </A>DCUP - GENERAL INFORMATION</H3> 
+<LI><H3>  <A HREF="#H2">2  </A>REFERENCES</H3> 
+<LI><H3>  <A HREF="#H3">3  </A>INTRODUCTION</H3> 
+<LI><H3>  <A HREF="#H4">4  </A>STARTUP</H3> 
+<LI><H3>  <A HREF="#H5">5  </A>COMMANDS</H3> 
+<H5><A HREF="#S1">5.1  </A>SET</H5>
+<H5><A HREF="#S2">5.2  </A>SHOW</H5>
+<H5><A HREF="#S3">5.3  </A>CALCULATE</H5>
+<H5><A HREF="#S4">5.4  </A>EVALUATE</H5>
+<H5><A HREF="#S5">5.5  </A>LIST_PARAMETERS</H5>
+<H5><A HREF="#S6">5.6  </A>ECHO</H5>
+<H5><A HREF="#S7">5.7  </A>AFFECT</H5>
+<H5><A HREF="#S8">5.8  </A>SAVE</H5>
+<H5><A HREF="#S9">5.9  </A>RESTORE</H5>
+<H5><A HREF="#S10">5.10  </A>QUIT</H5>
+<H5><A HREF="#S11">5.11  </A>?</H5>
+<H5><A HREF="#S12">5.12  </A>!</H5>
+<LI><H3>  <A HREF="#H6">6  </A>FORMULAS</H3> 
+<LI><H3>  <A HREF="#H7">7  </A>KNOWN BUGS</H3> 
+</UL> 
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H1">1 </A>DCUP - GENERAL INFORMATION</H2> </CENTER>
+<P>   
+Program : DCUP
+ <BR> Version : 991230
+ <BR> Author : Gerard J. Kleywegt, Dept. of Cell and Molecular Biology,
+Uppsala University, Biomedical Centre, Box 596,
+SE-751 24 Uppsala, SWEDEN
+ <BR> E-mail : gerard@xray.bmc.uu.se
+ <BR> Purpose : data-collection utility program
+ <BR> Package : X-UTIL
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H2">2 </A>REFERENCES</H2> </CENTER>
+<P>   
+Reference(s) for this program:
+<P>   
+* 1 * G.J. Kleywegt (1992-2004).
+Uppsala University, Uppsala, Sweden.
+Unpublished program.
+<P>   
+* 2 * Kleywegt, G.J., Zou, J.Y., Kjeldgaard, M. &amp; Jones, T.A. (2001).
+Around O. In: &quot;International Tables for Crystallography, Vol. F.
+Crystallography of Biological Macromolecules&quot; (Rossmann, M.G.
+&amp; Arnold, E., Editors). Chapter 17.1, pp. 353-356, 366-367.
+Dordrecht: Kluwer Academic Publishers, The Netherlands.
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H3">3 </A>INTRODUCTION</H2> </CENTER>
+<P>   
+This program was written mostly during one long night at the
+X31 beamline at EMBL/Hamburg while I was watching paint dry, err,
+my crystal being irradiated, for hours and hours. The idea
+came from the collection of ten-line Fortran programs at the
+EMBL/HH for calculating all sorts of handy things while you're
+setting up or doing data-collection.
+<P>   
+DCUP knows of a number of relevant parameters and of some
+formulas to derive one parameter from a set of others.
+Parameters can be of four types: some you can only set, some
+you can only calculate, with some you can do both and with
+others you can't do either (doctors call these &quot;constants&quot;).
+In addition, a parameter may be integer or real.
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H4">4 </A>STARTUP</H2> </CENTER>
+<P>   
+Let's have a look at the output when you start the program.
+<P>   
+All parameters get default values assigned to them and a number of
+calculable ones are actually calculated. DCUP then shows the default
+values of all parameters as well as a list of available commands.
+The capitalised letters are sufficiently unique and you don't have
+to type more.
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+&lt; % 207 gerard rigel 18:41:43 progs/dcup&gt; DCUP
+<P>   
+ D-CUP - Data-Collection Utility Program - G.J. Kleywegt - V 0.4 @ 921217
+<P>   
+ &gt; VOLUME (R|B) = Unit cell volume (Angstrom**3)           =   1000000.00000
+ &gt; A*     (R|B) = Reciprocal A-axis (Angstrom**-1)         =         0.01000
+ &gt; B*     (R|B) = Reciprocal B-axis (Angstrom**-1)         =         0.01000
+ &gt; C*     (R|B) = Reciprocal C-axis (Angstrom**-1)         =         0.01000
+ &gt; VM     (R|B) = Reciprocal density (Angstrom**3/Dalton)  =        12.50000
+ &gt; DPHI   (R|B) = Oscillation angle (degrees)              =         1.43239
+ &gt; MISANG (R|B) = Misset angle for zone centre (degrees)   =        -5.71059
+<P>   
+ D-CUP defaults :
+<P>   
+ &gt; RESOLN (R|B) = Resolution (Angstrom)                    =         2.50000
+ &gt; LAMBDA (R|S) = Wavelength (Angstrom)                    =         1.54180
+ &gt; XDDIST (R|B) = Crystal-to-detector distance (mm)        =       100.00000
+ &gt; AAXIS  (R|S) = A-axis of unit cell (Angstrom)           =       100.00000
+ &gt; BAXIS  (R|S) = B-axis of unit cell (Angstrom)           =       100.00000
+ &gt; CAXIS  (R|S) = C-axis of unit cell (Angstrom)           =       100.00000
+ &gt; ALPHA  (R|S) = Alpha angle of unit cell (degrees)       =        90.00000
+ &gt; BETA   (R|S) = Beta angle of unit cell (degrees)        =        90.00000
+ &gt; GAMMA  (R|S) = Gamma angle of unit cell (degrees)       =        90.00000
+ &gt; MW     (R|S) = Molecular weight (Dalton)                =     20000.00000
+ &gt; NMOL   (I|S) = Number of molecules per unit cell        =               4
+ &gt; SLEEP  (R|B) = Total data-collection time (minutes)     =       600.00000
+ &gt; FRTIME (R|B) = Collection time per frame (minutes)      =        10.00000
+ &gt; PHIRAN (R|B) = PHI range (degrees)                      =        90.00000
+ &gt; MISDIS (R|S) = Misset distance for zone centre (mm)     =       -10.00000
+ &gt; XYDIST (R|S) = Distance to detector centre (mm)         =        95.00000
+ &gt; VOLUME (R|C) = Unit cell volume (Angstrom**3)           =   1000000.00000
+ &gt; A*     (R|C) = Reciprocal A-axis (Angstrom**-1)         =         0.01000
+ &gt; B*     (R|C) = Reciprocal B-axis (Angstrom**-1)         =         0.01000
+ &gt; C*     (R|C) = Reciprocal C-axis (Angstrom**-1)         =         0.01000
+ &gt; VM     (R|C) = Reciprocal density (Angstrom**3/Dalton)  =        12.50000
+ &gt; DPHI   (R|B) = Oscillation angle (degrees)              =         1.43239
+ &gt; MISANG (R|B) = Misset angle for zone centre (degrees)   =        -5.71059
+ &gt; PI     (R|N) = Pi (radians/180 degrees)                 =         3.14159
+ &gt; RTODEG (R|N) = Radians to degrees (degree/radian)       =        57.29578
+ &gt; DEGTOR (R|N) = Degrees to radians (radian/degree)       =         0.01745
+<P>   
+ D-CUP commands :
+ SEt parameter value      Calculate parameter      SHow parameter
+ List_parameters          SAve filename            Restore filename
+ EValuate expression      ECho on_off              Affect on_off
+ ?                        !                        Quit
+<P>   
+ Command ?
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H5">5 </A>COMMANDS</H2> </CENTER>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S1">5.1 </A>SET</H3> 
+ <BR> allows you to set the value (if permitted) of a parameter. You need only
+supply a unique part of the parameter name and its new value
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Command ? set aax 41.36
+ &gt; AAXIS  (R|S) = A-axis of unit cell (Angstrom)           =        41.36000
+ Command ? set b 41.36
+<P>   
+ ERROR - parameter name not unique
+<P>   
+ Command ? set ba 41.36
+ &gt; BAXIS  (R|S) = B-axis of unit cell (Angstrom)           =        41.36000
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S2">5.2 </A>SHOW</H3> 
+ <BR> lists the current value of one parameter
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Command ? sh bax
+ &gt; BAXIS  (R|S) = B-axis of unit cell (Angstrom)           =        41.36000
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S3">5.3 </A>CALCULATE</H3> 
+ <BR> calculate the value of a parameter given the current values
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Command ? set cax 202.71
+ &gt; CAXIS  (R|S) = C-axis of unit cell (Angstrom)           =       202.71001
+ Command ? cal vol
+ &gt; VOLUME (R|C) = Unit cell volume (Angstrom**3)           =    346765.81250
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S4">5.4 </A>EVALUATE</H3> 
+ <BR> evaluate an expression which looks like: parval [operator parval]
+where &quot;parval&quot; is either the name of a parameter or a numeric value and
+&quot;option&quot; is one of +, -, * or /. All items must be separated by one or
+more spaces; an expression is evaluated from left to right and you may
+not use parentheses
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Command ? eval vol * pi * 2 / 360
+  &gt; RESULT =    6052.206
+ Command ? eval 1 / aax * 3
+  &gt; RESULT =   7.2533846E-02
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S5">5.5 </A>LIST_PARAMETERS</H3> 
+ <BR> list the current values of all parameters
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S6">5.6 </A>ECHO</H3> 
+ <BR> followed by either &quot;on&quot; or &quot;off&quot; toggles the formula echo; when on, DCUP
+will print the formulas it uses for calculating parameters
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Command ? echo on
+ ECHO ON
+ Command ? set mw 15000
+ &gt; MW     (R|S) = Molecular weight (Dalton)                =     15000.00000
+ Command ? set nmol 8
+ &gt; NMOL   (I|S) = Number of molecules per unit cell        =               8
+ Command ? cal vm
+<P>   
+ VM     = VOLUME / (NMOL   * MW    )
+ &gt; VOLUME (R|C) = Unit cell volume (Angstrom**3)           =    346765.81250
+ &gt; NMOL   (I|S) = Number of molecules per unit cell        =               8
+ &gt; MW     (R|S) = Molecular weight (Dalton)                =     15000.00000
+ &gt; VM     (R|C) = Reciprocal density (Angstrom**3/Dalton)  =         2.88972
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S7">5.7 </A>AFFECT</H3> 
+ <BR> followed by either &quot;on&quot; or &quot;off&quot; toggles the dependency echo; when on, DCUP
+will generate a list of all parameters which are influenced if you set or
+calculate a certain parameter, plus for each of them a similar list. Note
+that some parameters may &quot;influence themselves&quot; through successive application
+of different formulas
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Command ? affect on
+ AFFECT ON
+ Command ? set resol 2.3
+ &gt; RESOLN (R|B) = Resolution (Angstrom)                    =         2.30000
+ ... changes will affect :
+     DPHI
+      ... which will affect :
+          SLEEP
+          FRTIME
+          PHIRAN
+     XDDIST
+      ... which will affect :
+          MISANG
+          RESOLN
+ Command ? cal vol
+<P>   
+ VOLUME = a complicated function of the cell parameters
+ &gt; AAXIS  (R|S) = A-axis of unit cell (Angstrom)           =        41.36000
+ &gt; BAXIS  (R|S) = B-axis of unit cell (Angstrom)           =        41.36000
+ &gt; CAXIS  (R|S) = C-axis of unit cell (Angstrom)           =       202.71001
+ &gt; ALPHA  (R|S) = Alpha angle of unit cell (degrees)       =        90.00000
+ &gt; BETA   (R|S) = Beta angle of unit cell (degrees)        =        90.00000
+ &gt; GAMMA  (R|S) = Gamma angle of unit cell (degrees)       =        90.00000
+ &gt; VOLUME (R|C) = Unit cell volume (Angstrom**3)           =    346765.81250
+ ... changes will affect :
+     A*
+     B*
+     C*
+     VM
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S8">5.8 </A>SAVE</H3> 
+ <BR> save your current settings to a file for use in a later DCUP session
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Command ? save dcup.dat
+ SAVE FILE WRITTEN
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S9">5.9 </A>RESTORE</H3> 
+ <BR> read a DCUP macro (usually created with the SAVE command)
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Command ? res dcup.dat
+ READING SAVE FILE
+ Command ?  !
+ Command ?  ! D-CUP SAVE FILE
+ Command ?  !
+ Command ?  &gt; RESOLN (R|B) = Resolution (Angstrom)                    =         2.30000
+ ... changes will affect :
+     DPHI
+      ... which will affect :
+          SLEEP
+          FRTIME
+          PHIRAN
+     XDDIST
+      ... which will affect :
+          MISANG
+          RESOLN
+ Command ?  &gt; LAMBDA (R|S) = Wavelength (Angstrom)                    =         1.54180
+ ... changes will affect :
+     RESOLN
+      ... which will affect :
+          DPHI
+          XDDIST
+     XDDIST
+      ... which will affect :
+          MISANG
+          RESOLN
+ (...)
+ &gt; MISANG (R|B) = Misset angle for zone centre (degrees)   =        -5.71059
+ &gt; PI     (R|N) = Pi (radians/180 degrees)                 =         3.14159
+ &gt; RTODEG (R|N) = Radians to degrees (degree/radian)       =        57.29578
+ &gt; DEGTOR (R|N) = Degrees to radians (radian/degree)       =         0.01745
+ Command ?
+ END OF SAVE FILE
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S10">5.10 </A>QUIT</H3> 
+ <BR> stop working with DCUP
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S11">5.11 </A>?</H3> 
+ <BR> list available commands
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S12">5.12 </A>!</H3> 
+ <BR> ignore the rest of this line (can be used to make comments in a macro file)
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H6">6 </A>FORMULAS</H2> </CENTER>
+ <BR> At present, the following formulas have been implemented:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MISANG = ATAN (XDDIST / MISDIS) * (180.0/PI)
+ DPHI   = (RESOLN / MAX (AAXIS ,BAXIS ,CAXIS )) * (180.0/PI)
+ VM     = VOLUME / (NMOL   * MW    )
+ C*     = AAXIS  * BAXIS  * SIN (GAMMA  * (180.0/PI)) / VOLUME
+ B*     = AAXIS  * CAXIS  * SIN (BETA   * (180.0/PI)) / VOLUME
+ A*     = BAXIS  * CAXIS  * SIN (ALPHA  * (180.0/PI)) / VOLUME
+ VOLUME = a complicated function of the cell parameters
+ PHIRAN = SLEEP  * DPHI   / FRTIME
+ FRTIME = SLEEP  * DPHI   / PHIRAN
+ SLEEP  = FRTIME * PHIRAN / DPHI
+ XDDIST = XYDIST / TAN (2 * ASIN (0.5 * LAMBDA / RESOLN))
+ RESOLN = 0.5 * LAMBDA / SIN (0.5 * ATAN (XYDIST / XDDIST))
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H7">7 </A>KNOWN BUGS</H2> </CENTER>
+<P>   
+None, at present.
+<HR NOSHADE>    <A HREF="http://xray.bmc.uu.se/usf/" target="_top">
+<IMG ALIGN="right" BORDER="0" SRC="usf_logo.gif"
+ALT="Uppsala Software Factory"></A>
+<FONT SIZE=-1>
+<B> <I> Created at Fri Jan 14 20:12:07 2005
+by MAN2HTML version 050114/2.0.6 . This manual
+describes DCUP, a program of the <A HREF="http://xray.bmc.uu.se/usf/" target="_top">Uppsala
+Software Factory</A> (USF), written and maintained by <A HREF="http://xray.bmc.uu.se/gerard"
+target="_blank">Gerard Kleywegt</A>. &copy; 1992-2005.
+</I> </B> </FONT><P>
+<IMG SRC="http://xray.bmc.uu.se/cgi-bin/nph-count?width=6&link=http://alpha2.bmc.uu.se/~gerard/www/manuals/dcup_man.html">
+</body></html>

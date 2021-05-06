@@ -1,0 +1,277 @@
+<html><head><!-- This document was created for COMDEM at Fri Jan 14 20:12:05 2005 from
+../average/comdem.txt by MAN2HTML version 050114/2.0.6 -->
+<title>Uppsala Software Factory - COMDEM Manual</title>
+<meta name="DESCRIPTION" content="Manual for Gerard 
+Kleywegt's program COMDEM">
+<meta name="KEYWORDS" content="manual software Gerard 
+Kleywegt program COMDEM structural biology 
+protein X-ray crystallography macromolecular molecular
+Uppsala Software Factory bioinformatics">
+</head><body bgcolor="#fefefe" background="back.gif">
+
+<A HREF="http://xray.bmc.uu.se/usf/" target="_top">
+<IMG ALIGN="right" BORDER="0" SRC="usf_logo.gif"
+ALT="Uppsala Software Factory"></A>
+
+<H2>  Uppsala Software Factory - COMDEM Manual</H2> <P>   
+<UL>  
+<LI><H3>  <A HREF="#H1">1  </A>COMDEM - GENERAL INFORMATION</H3> 
+<LI><H3>  <A HREF="#H2">2  </A>REFERENCES</H3> 
+<LI><H3>  <A HREF="#H3">3  </A>VERSION HISTORY</H3> 
+<LI><H3>  <A HREF="#H4">4  </A>MAP SIZE</H3> 
+<LI><H3>  <A HREF="#H5">5  </A>NOTES</H3> 
+<LI><H3>  <A HREF="#H6">6  </A>DESCRIPTION</H3> 
+<LI><H3>  <A HREF="#H7">7  </A>KNOWN BUGS</H3> 
+</UL> 
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H1">1 </A>COMDEM - GENERAL INFORMATION</H2> </CENTER>
+<P>   
+Program : COMDEM
+ <BR> Version : 040701
+ <BR> Author : Gerard J. Kleywegt &amp; T. Alwyn Jones,
+Dept. of Cell and Molecular Biology,
+Uppsala University, Biomedical Centre, Box 596,
+SE-751 24 Uppsala, SWEDEN
+ <BR> E-mail : gerard@xray.bmc.uu.se
+ <BR> Purpose : combine multiple-domain expanded maps
+ <BR> Package : RAVE
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H2">2 </A>REFERENCES</H2> </CENTER>
+<P>   
+Reference(s) for this program:
+<P>   
+* 1 * T.A. Jones (1992). A, yaap, asap, @#*? A set of averaging
+programs. In &quot;Molecular Replacement&quot;, edited by E.J. Dodson,
+S. Gover and W. Wolf. SERC Daresbury Laboratory, Warrington,
+pp. 91-105.
+<P>   
+* 2 * G.J. Kleywegt &amp; T.A. Jones (1994). Halloween ... Masks and
+Bones. In &quot;From First Map to Final Model&quot;, edited by
+S. Bailey, R. Hubbard and D. Waller. SERC Daresbury
+Laboratory, Warrington, pp. 59-66.
+[http://xray.bmc.uu.se/gerard/papers/halloween.html]
+<P>   
+* 3 * G.J. Kleywegt &amp; R.J. Read (1997). Not your average density.
+Structure 5, 1557-1569.
+[http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=PubMed&amp;cmd=Retrieve&amp;list_uids=9438862&amp;dopt=Citation]
+<P>   
+* 4 * R.J. Read &amp; G.J. Kleywegt (2001). Density modification:
+theory and practice. In: &quot;Methods in Macromolecular
+Crystallography&quot; (D Turk &amp; L Johnson, Eds.), IOS Press,
+Amsterdam, pp. 123-135.
+<P>   
+* 5 * Kleywegt, G.J., Zou, J.Y., Kjeldgaard, M. &amp; Jones, T.A. (2001).
+Around O. In: &quot;International Tables for Crystallography, Vol. F.
+Crystallography of Biological Macromolecules&quot; (Rossmann, M.G.
+&amp; Arnold, E., Editors). Chapter 17.1, pp. 353-356, 366-367.
+Dordrecht: Kluwer Academic Publishers, The Netherlands.
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H3">3 </A>VERSION HISTORY</H2> </CENTER>
+<P>   
+931213 - 0.1 - first version
+ <BR> 931216 - 0.2 - tested and debugged
+ <BR> 931217 - 1.0 - first production version
+ <BR> 940113 -1.0.1- check that at least two maps entered
+ <BR> 950118 - 1.1 - sensitive to environment variable CCP4_OPEN
+ <BR> 960412 - 1.2 - echo all input to help debug scripts
+ <BR> 961122 - 2.0 - dynamic memory allocation
+ <BR> 010122 - 3.0 - use C routines to do dynamic memory allocation
+and port to Linux
+ <BR> 040701 -3.0.1- changed checks of dynamic memory allocation to allow
+for pointers with negative values as returned by
+some recent Linux versions
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H4">4 </A>MAP SIZE</H2> </CENTER>
+<P>   
+From version 2.0 onward, COMDEM allocates memory for its maps
+dynamically. This means that you can increase the size
+that the program can handle on the fly:
+<P>   
+1 - through the environment variable MAPSIZE (must be in capital
+letters !), for example put the following in your .cshrc file
+or your script:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ setenv MAPSIZE 8000000
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+2 - by using command-line argument MAPSIZE (need not be in capitals),
+for example in your script:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ run comdem mapsize 10000000
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+Note that command-line argument takes precedence over the environment
+variable. So you can set the environment variable in your .cshrc
+file to a &quot;typical&quot; value, and if you have to deal with maps
+which are bigger than that, you can use the command-line argument.
+<P>   
+If sufficient memory cannot be allocated, the program will print
+a message and quit. In that case, increase the amount of virtual
+memory (this will not help, of course, if you try to allocate more
+memory than can be addressed by your machine (for 32-bit machines,
+something 2**32-1 bytes, I think), or reduce the size requirements.
+<P>   
+COMDEM needs space for 3 maps.
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H5">5 </A>NOTES</H2> </CENTER>
+<P>   
+NOTE: this program is now sensitive to the environment variable
+CCP4_OPEN. If this variable has *not* been set, you will
+not be able to create any CCP4 maps. If this happens, the
+program will abort execution on startup. To fix this,
+put the following line in your .login or .cshrc file:
+setenv CCP4_OPEN UNKNOWN
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H6">6 </A>DESCRIPTION</H2> </CENTER>
+<P>   
+If you want to use multiple-domain averaging, you should
+average and expand your map for each domain separately
+(i.e., with its own mask and set of NCS operators). Make
+sure that you keep a zero background in the expansion step.
+<P>   
+Then, use this program to combine the individual expanded
+maps and to calculate and set the background level for all
+points not covered by any mask after the maps have been
+combined.
+<P>   
+You may apply different weights to each of the maps, but
+I don't think this is normally necessary (since each map
+is derived from one and the same &quot;master map&quot;), i.e. use
+weights equal to one.
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+...
+ Max size of maps : (    4194304)
+<P>   
+ First domain map ? ( ) tempm1_zero.E
+ Read header
+...
+ Map read OK
+ Cell axes   (A) : ( 110.600  110.600  160.300)
+ Cell angles (d) : (  90.000   90.000   90.000)
+ Grid axes (pts) : (     160      160      240)
+ Origin    (pts) : (       0        0        0)
+ Extent    (pts) : (     162      162       32)
+ Map nr   1      Size     839808
+ ED min, max, total  -6.4655E+01  9.7743E+01  2.4085E+05
+ ED ave, var, stdev   2.8679E-01  6.0887E+01  7.8030E+00
+<P>   
+ Weight ? (   1.000) 1.0
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+Now give the name of the second file and its weight:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Map nr : (       2)
+ Domain map file name ? ( ) tempm2_zero.E
+ Read header
+...
+ Map read OK
+ Cell axes   (A) : ( 110.600  110.600  160.300)
+ Cell angles (d) : (  90.000   90.000   90.000)
+ Grid axes (pts) : (     160      160      240)
+ Origin    (pts) : (       0        0        0)
+ Extent    (pts) : (     162      162       32)
+ Map nr   2      Size     839808
+ ED min, max, total  -5.1632E+01  6.7189E+01  6.6272E+04
+ ED ave, var, stdev   7.8914E-02  1.2725E+01  3.5672E+00
+<P>   
+ Weight ? (   1.000)
+ RMSD map A / B   : (  8.579E+00)
+ R-factor (A)     : (  1.234E+00)
+ Ditto, B scaled  : (  1.997E+00)
+ Scale for B      : (  4.230E+00)
+ R-factor (B)     : (  5.221E+00)
+ Ditto, A scaled  : (  1.997E+00)
+ Scale for A      : (  2.364E-01)
+ Corr coeff       : (   0.001)
+ Shape similarity : (   0.002)
+ Busy ...
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+Note that several statistics are printed: minimum, maximum
+and integrated electron density, the average density, the
+variance (used for scaling) and the standard deviation (the
+square root of the variance).
+<P>   
+In addition, the RMS difference between this map and the
+first one is printed, as is the &quot;shape similarity index&quot;
+(values from -1 to +1; +1 means that the two maps have
+identical shapes, irrespective of the scales they are on).
+<P>   
+NOTE that the correlation coefficient between each of the
+maps MUST be essentially ZERO, since they are supposed
+to cover DISJOINT areas in space !!
+<P>   
+If you want to combine more masks, just keep supplying file
+names to the program. Hit [RETURN] to indicate that there
+are no more maps to be added.
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Map nr : (       3)
+ Domain map file name ? ( )
+ No more maps to add
+<P>   
+ Sum of weights / Nr of maps : (  1.000E+00)
+ Dividing by this number ...
+ Calculating background density ...
+ Nr of points set         : (     266836)
+ Nr of background points  : (     572972)
+ Sum of density set       : (  3.071E+05)
+ Average density in masks : (  1.151E+00)
+ Average background level : ( -5.360E-01)
+ Setting background density ...
+ Map nr   0      Size     839808
+ ED min, max, total  -7.8140E+01  9.7743E+01 -1.3083E+01
+ ED ave, var, stdev  -1.5578E-05  7.3830E+01  8.5924E+00
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+After all maps have been added, statistics for the combined
+map are printed and you are asked to supply the name of the
+output file:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ New summed CCP4 map ? ( ) zero.E
+...
+ Map written out
+...
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+Note that the &quot;Minimum density in map&quot; is lower than the minimum
+of the two maps. This is because their masks have a minute overlap,
+and apparently one of the overlapping points gets two negative
+contributions.
+<P>   
+If you want other ways of combining maps (e.g., MAX(map1,map2,...)),
+let me know (or use MAPMAN).
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H7">7 </A>KNOWN BUGS</H2> </CENTER>
+<P>   
+None, at present.
+<P>   
+<HR NOSHADE>    <A HREF="http://xray.bmc.uu.se/usf/" target="_top">
+<IMG ALIGN="right" BORDER="0" SRC="usf_logo.gif"
+ALT="Uppsala Software Factory"></A>
+<FONT SIZE=-1>
+<B> <I> Created at Fri Jan 14 20:12:05 2005
+by MAN2HTML version 050114/2.0.6 . This manual
+describes COMDEM, a program of the <A HREF="http://xray.bmc.uu.se/usf/" target="_top">Uppsala
+Software Factory</A> (USF), written and maintained by <A HREF="http://xray.bmc.uu.se/gerard"
+target="_blank">Gerard Kleywegt</A>. &copy; 1992-2005.
+</I> </B> </FONT><P>
+<IMG SRC="http://xray.bmc.uu.se/cgi-bin/nph-count?width=6&link=http://alpha2.bmc.uu.se/~gerard/www/manuals/comdem_man.html">
+</body></html>

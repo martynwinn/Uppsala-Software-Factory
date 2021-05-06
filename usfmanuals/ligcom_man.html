@@ -1,0 +1,322 @@
+<html><head><!-- This document was created for LIGCOM at Tue Feb 13 15:05:04 2007 from
+../utils/ligcom.txt by MAN2HTML version 070111/2.0.8 -->
+<title>Uppsala Software Factory - LIGCOM Manual</title>
+<meta name="DESCRIPTION" content="Manual for Gerard 
+Kleywegt's program LIGCOM">
+<meta name="KEYWORDS" content="manual software Gerard 
+Kleywegt program LIGCOM structural biology 
+protein X-ray crystallography macromolecular molecular
+Uppsala Software Factory bioinformatics">
+</head><body bgcolor="#fefefe" background="back.gif">
+
+<A HREF="http://xray.bmc.uu.se/usf/" target="_top">
+<IMG ALIGN="right" BORDER="0" SRC="usf_logo.gif"
+ALT="Uppsala Software Factory"></A>
+
+<H2>  Uppsala Software Factory - LIGCOM Manual</H2> <P>   
+<UL>  
+<LI><H3>  <A HREF="#H1">1  </A>LIGCOM - GENERAL INFORMATION</H3> 
+<LI><H3>  <A HREF="#H2">2  </A>REFERENCES</H3> 
+<LI><H3>  <A HREF="#H3">3  </A>VERSION HISTORY</H3> 
+<LI><H3>  <A HREF="#H4">4  </A>INTRODUCTION</H3> 
+<LI><H3>  <A HREF="#H5">5  </A>RUNNING THE PROGRAM</H3> 
+<LI><H3>  <A HREF="#H6">6  </A>EXAMPLE</H3> 
+<LI><H3>  <A HREF="#H7">7  </A>KNOWN BUGS</H3> 
+<LI><H3>  <A HREF="#H8">8  </A>UNKNOWN BUGS</H3> 
+</UL> 
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H1">1 </A>LIGCOM - GENERAL INFORMATION</H2> </CENTER>
+<P>   
+Program : LIGCOM
+ <BR> Version : 070213
+ <BR> Author : Gerard J. Kleywegt, Dept. of Cell and Molecular Biology,
+Uppsala University, Biomedical Centre, Box 596,
+SE-751 24 Uppsala, SWEDEN
+ <BR> E-mail : gerard@xray.bmc.uu.se
+ <BR> Purpose : compare geometry of hetero entities
+ <BR> Package : X-UTIL
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H2">2 </A>REFERENCES</H2> </CENTER>
+<P>   
+Reference(s) for this program:
+<P>   
+* 1 * G.J. Kleywegt (2006). CCP4 Proceedings.
+Acta Cryst.
+Submitted.
+<P>   
+* 2 * Kleywegt, G.J., Zou, J.Y., Kjeldgaard, M. &amp; Jones, T.A. (2001).
+Around O. In: &quot;International Tables for Crystallography, Vol. F.
+Crystallography of Biological Macromolecules&quot; (Rossmann, M.G.
+&amp; Arnold, E., Editors). Chapter 17.1, pp. 353-356, 366-367.
+Dordrecht: Kluwer Academic Publishers, The Netherlands.
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H3">3 </A>VERSION HISTORY</H2> </CENTER>
+<P>   
+060502 - 0.3 - first documented version
+ <BR> 061111 - 0.4 - changed a few defaults; count and calculate RMSD of
+well-superimposed atoms (e.g., within 2.0 A); list
+RMS differences of fixed, flexible and all dihedrals;
+added &quot;caveat emptor&quot; paragraph to manual
+ <BR> 070212 - 0.5 - skip all except the first MODEL (in case of NMR entries)
+in both the input PDB files;
+bail out if no atoms encountered in either PDB file;
+for atoms with alternate conformations, only keep the
+first one encountered (applied to both input PDB files);
+list distances between atoms after superpositioning;
+changed the output somewhat
+ <BR> 070213 - 0.6 - increased max nr of atoms to 500;
+more error checks to prevent crashes in ValLigURL
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H4">4 </A>INTRODUCTION</H2> </CENTER>
+<P>   
+This program can be used to assess the quality of hetero entities
+in PDB files (or to compare the geometry of two experimental
+structures).
+<P>   
+LIGCOM will read two PDB files, each containing coordinates for
+one particular type of hetero entity. The compound found in the
+first file is assumed to be 'ideal' and the one in the second
+file is compared to it (distances, bond angles, impropers and
+0/180 degree dihedrals). The second molecule can also be
+superimposed onto the first and the transformed coordinates
+saved to a new file.
+<P>   
+Normally, the program will be run without arguments, and the user
+will be prompted for file names as well as the values of the
+various cut-offs to use. If the default values are okay, then
+the file names can also be provided on the command line, and
+no further input will be required, for instance:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ LIGCOM 869_ideal.pdb 1sqi_869_1501.pdb 1sqi_869_1501_super.pdb
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+Please use this program sensibly and realise its limitations !
+In particular, it does not do any atom-typing so it doesn't know
+which bonds are single or double, or even if two atoms are of the
+same type. As a consequence, it uses a hard-wired cut-off distance
+to decide if two atoms are bonded which will only work well for
+organic molecules without esoteric elements. Also, when an
+improper is listed as deviating a lot this doesn't mean there's
+necessarily anything wrong. For instance, if you inter-change the
+labels of two phosphate oxygen atoms you will get large deviations
+in the respective impropers but since the atoms are equivalent
+this is no reason for concern. Further, the program doesn't
+know which dihedrals ought to be fixed at values close to 0 or
+180 degrees - it just sees if they happen to be close to either
+of these values. However, a value of 180 degrees may also occur
+for perfectly staggered 1-4 interactions and hence the value
+of such dihedrals in the other compound may well be close to +60
+or -60 leading to seemingly large deviations. In actual fact,
+the dihedral is conformational and not fixed.
+<P>   
+In other words: please check the output critically and apply your
+chemical knowledge !
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H5">5 </A>RUNNING THE PROGRAM</H2> </CENTER>
+<P>   
+Example of a batch run with default parameters:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ unix &gt; LIGCOM myr_msd.pdb 1hbk_myr.pdb 1hbk_myr_super.pdb
+<P>   
+ *** LIGCOM *** LIGCOM *** LIGCOM *** LIGCOM *** LIGCOM *** LIGCOM ***
+<P>   
+ Version  - 060502/0.3
+ (c) 1992-2005 Gerard J. Kleywegt, Dept. Cell Mol. Biol., Uppsala (SE)
+ User I/O - routines courtesy of Rolf Boelens, Univ. of Utrecht (NL)
+ Others   - T.A. Jones, G. Bricogne, Rams, W.A. Hendrickson
+ Others   - W. Kabsch, CCP4, PROTEIN, E. Dodson, etc. etc.
+<P>   
+ Started  - Tue May 2 20:23:09 2006
+ User     - gerard
+ Mode     - interactive
+ Host     - sarek (Irix/SGI)
+ ProcID   - 13769
+ Tty      - /dev/ttyq15
+<P>   
+ *** LIGCOM *** LIGCOM *** LIGCOM *** LIGCOM *** LIGCOM *** LIGCOM ***
+<P>   
+ Reference(s) for this program:
+<P>   
+ *  1 * G.J. Kleywegt (1992-2005).
+        Uppsala University, Uppsala, Sweden.
+        Unpublished program.
+<P>   
+ *  2 * Kleywegt, G.J., Zou, J.Y., Kjeldgaard, M. &amp; Jones, T.A. (2001).
+        Around O. In: &quot;International Tables for Crystallography, Vol. F.
+        Crystallography of Biological Macromolecules&quot; (Rossmann, M.G.
+        &amp; Arnold, E., Editors). Chapter 17.1, pp. 353-356, 366-367.
+        Dordrecht: Kluwer Academic Publishers, The Netherlands.
+<P>   
+ ==&gt; For manuals and up-to-date references, visit:
+ ==&gt;     http://xray.bmc.uu.se/usf
+ ==&gt; For reprints, visit:
+ ==&gt;     http://xray.bmc.uu.se/gerard
+ ==&gt; For downloading up-to-date versions, visit:
+ ==&gt;     ftp://xray.bmc.uu.se/pub/gerard
+<P>   
+ *** LIGCOM *** LIGCOM *** LIGCOM *** LIGCOM *** LIGCOM *** LIGCOM ***
+<P>   
+ Cut-off for bonded distances ........... : (   2.000)
+ Cut-off for printing distance deviations : (   0.100)
+ Cut-off for printing angle deviations .. : (  10.000)
+ Cut-off for printing improper deviations : (  10.000)
+ Cut-off for 0/180 degree dihedrals ..... : (  10.000)
+ Cut-off for printing dihedral deviations : (  10.000)
+<P>   
+ PDB file with idealised ligand .. : (myr_msd.pdb)
+ PDB file with experimental ligand : (1hbk_myr.pdb)
+ Output superimposed PDB file .... : (1hbk_myr_super.pdb)
+<P>   
+ Nr of atoms in PDB file 1 : (         16)
+ Residue code : (MYR)
+ Residue id   : (MYR  4309)
+ Residue id   : (MYR A1090)
+ Nr of atoms recognised : (         12)
+ File 1 atom not found : ( O1)
+ File 1 atom not found : ( O2)
+ File 1 atom not found : ( C13)
+ File 1 atom not found : ( C14)
+ RMSD common atoms (A) : (   1.987)
+ RT operator : (  -0.969   -0.240   -0.051   -0.241    0.971   -0.002
+  0.050    0.010   -0.999   -1.626  -17.810   17.472)
+<P>   
+ Atom 1   Atom 2 Dist 1 Dist 2   Diff
+ ------   ------ ------ ------   ----
+ Nr of distances checked : (         11)
+ Nr of distances listed  : (          0)
+ Nr of bonding distances : (         11)
+ RMS diff bond length (A): (   0.015)
+<P>   
+ Atom 1   Atom 2   Atom 3  Ang 1  Ang 2   Diff
+ ------   ------   ------  -----  -----   ----
+ Nr of angles checked : (         10)
+ Nr of angles listed  : (          0)
+ RMS diff bond angles : (   2.236)
+<P>   
+ Atom 1   Atom 2   Atom 3   Atom 4  Imp 1  Imp 2   Diff
+ ------   ------   ------   ------  -----  -----   ----
+ Nr of impropers checked : (          0)
+ Nr of impropers listed  : (          0)
+<P>   
+ Atom 1   Atom 2   Atom 3   Atom 4  Dih 1  Dih 2   Diff
+ ------   ------   ------   ------  -----  -----   ----
+    C1  -    C2  -    C3  -    C4   180.0  -73.4  106.6
+    C2  -    C3  -    C4  -    C5  -180.0  -74.8  105.2
+    C3  -    C4  -    C5  -    C6   180.0 -150.0   30.0
+    C5  -    C6  -    C7  -    C8   180.0   68.8 -111.2
+    C6  -    C7  -    C8  -    C9  -180.0   66.4 -113.6
+    C7  -    C8  -    C9  -    C10  180.0 -166.6   13.4
+    C8  -    C9  -    C10 -    C11 -180.0  -67.3  112.7
+ Nr of dihedrals checked : (          9)
+ Nr of dihedrals listed  : (          7)
+ RMS diff dihedrals : (  82.648)
+<P>   
+ *** LIGCOM *** LIGCOM *** LIGCOM *** LIGCOM *** LIGCOM *** LIGCOM ***
+<P>   
+ Version - 060502/0.3
+ Started - Tue May 2 20:23:09 2006
+ Stopped - Tue May 2 20:23:09 2006
+<P>   
+ CPU-time taken :
+ User    -      0.0 Sys    -      0.0 Total   -      0.1
+<P>   
+ *** LIGCOM *** LIGCOM *** LIGCOM *** LIGCOM *** LIGCOM *** LIGCOM ***
+<P>   
+ &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; USF .... Uppsala Software Factory &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+ &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; This program: (c) 1992-2005, G J Kleywegt &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+ &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; E-mail: gerard@xray.bmc.uu.se &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+ &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; http://xray.bmc.uu.se/usf &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+<P>   
+ *** LIGCOM *** LIGCOM *** LIGCOM *** LIGCOM *** LIGCOM *** LIGCOM ***
+<P>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+Example of an interactive run in which the parameters can be
+given values that differ from their defaults:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ unix &gt; LIGCOM
+<P>   
+ [...]
+<P>   
+ PDB file with idealised ligand .. ? (exper.pdb) myr_msd.pdb
+ PDB file with experimental ligand ? (ideal.pdb) 1hbk_myr.pdb
+ Output superimposed PDB file .... ? ( ) 1hbk_myr_super.pdb
+<P>   
+ Cut-off for bonded distances ........... ? (   2.000) 1.8
+ Cut-off for printing distance deviations ? (   0.100) 0.05
+ Cut-off for printing angle deviations .. ? (  10.000) 5
+ Cut-off for printing improper deviations ? (  10.000) 5
+ Cut-off for 0/180 degree dihedrals ..... ? (  10.000) 5
+ Cut-off for printing dihedral deviations ? (  10.000) 5
+<P>   
+ Cut-off for bonded distances ........... : (   1.800)
+ Cut-off for printing distance deviations : (   0.050)
+ Cut-off for printing angle deviations .. : (   5.000)
+ Cut-off for printing improper deviations : (   5.000)
+ Cut-off for 0/180 degree dihedrals ..... : (   5.000)
+ Cut-off for printing dihedral deviations : (   5.000)
+<P>   
+ [...]
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H6">6 </A>EXAMPLE</H2> </CENTER>
+<P>   
+The following example shows how you could use the program in practice.
+<P>   
+(1) Get ideal coordinates for your compound (e.g., from MSDChem,
+AFITT, PRODRG, HIC-Up, etc.)
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+curl -v http://xray.bmc.uu.se/hicup/REA/rea_msd.pdb &gt; rea_msd.pdb
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+(2) Get experimental coordinates from your (own) structure
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+grep -i rea 1cbs.pdb &gt; 1cbs_rea.pdb
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+(3) Run LIGCOM and check the printed output for missing atoms and
+unexpectedly large deviations from ideal geometry
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+LIGCOM rea_msd.pdb 1cbs_rea.pdb 1cbs_rea_super.pdb
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+(4) Load the ideal and the experimental coordinates into your
+favourite molecular graphics program to inspect them
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H7">7 </A>KNOWN BUGS</H2> </CENTER>
+<P>   
+None, at present (&quot;peppar, peppar&quot;).
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H8">8 </A>UNKNOWN BUGS</H2> </CENTER>
+<P>   
+Does not compute.
+<HR NOSHADE>    <A HREF="http://xray.bmc.uu.se/usf/" target="_top">
+<IMG ALIGN="right" BORDER="0" SRC="usf_logo.gif"
+ALT="Uppsala Software Factory"></A>
+<FONT SIZE=-1>
+<B> <I> Created at Tue Feb 13 15:05:04 2007
+by MAN2HTML version 070111/2.0.8 . This manual
+describes LIGCOM, a program of the <A HREF="http://xray.bmc.uu.se/usf/" target="_top">Uppsala
+Software Factory</A> (USF), written and maintained by <A HREF="http://xray.bmc.uu.se/gerard"
+target="_blank">Gerard Kleywegt</A>. &copy; 1992-2007.
+</I> </B> </FONT><P>
+<IMG SRC="http://xray.bmc.uu.se/cgi-bin/nph-count?width=6&link=http://alpha2.bmc.uu.se/~gerard/www/manuals/ligcom_man.html">
+</body></html>

@@ -1,0 +1,577 @@
+<html><head><!-- This document was created for SAVANT at Fri Aug 4 21:34:56 2006 from
+../spasm/savant.txt by MAN2HTML version 060130/2.0.7 -->
+<title>Uppsala Software Factory - SAVANT Manual</title>
+<meta name="DESCRIPTION" content="Manual for Gerard 
+Kleywegt's program SAVANT">
+<meta name="KEYWORDS" content="manual software Gerard 
+Kleywegt program SAVANT structural biology 
+protein X-ray crystallography macromolecular molecular
+Uppsala Software Factory bioinformatics">
+</head><body bgcolor="#fefefe" background="back.gif">
+
+<A HREF="http://xray.bmc.uu.se/usf/" target="_top">
+<IMG ALIGN="right" BORDER="0" SRC="usf_logo.gif"
+ALT="Uppsala Software Factory"></A>
+
+<H2>  Uppsala Software Factory - SAVANT Manual</H2> <P>   
+<UL>  
+<LI><H3>  <A HREF="#H1">1  </A>SAVANT - GENERAL INFORMATION</H3> 
+<LI><H3>  <A HREF="#H2">2  </A>REFERENCES</H3> 
+<LI><H3>  <A HREF="#H3">3  </A>VERSION HISTORY</H3> 
+<LI><H3>  <A HREF="#H4">4  </A>INTRODUCTION</H3> 
+<LI><H3>  <A HREF="#H5">5  </A>EXAMPLE WITH SIDE CHAINS</H3> 
+<LI><H3>  <A HREF="#H6">6  </A>EXAMPLE WITH ONLY MAIN CHAIN</H3> 
+<LI><H3>  <A HREF="#H7">7  </A>FUZZY PATTERN MATCHING</H3> 
+<LI><H3>  <A HREF="#H8">8  </A>KNOWN BUGS</H3> 
+</UL> 
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H1">1 </A>SAVANT - GENERAL INFORMATION</H2> </CENTER>
+<P>   
+Program : SAVANT
+ <BR> Version : 060804
+ <BR> Author : Gerard J. Kleywegt, Dept. of Cell and Molecular Biology,
+Uppsala University, Biomedical Centre, Box 596,
+SE-751 24 Uppsala, SWEDEN
+ <BR> E-mail : gerard@xray.bmc.uu.se
+ <BR> Purpose : post-processing of SPASM hits
+ <BR> Package : SPASM
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H2">2 </A>REFERENCES</H2> </CENTER>
+<P>   
+Reference(s) for this program:
+<P>   
+* 1 * G.J. Kleywegt (1998). Deja-vu all over again. CCP4 Newsletter
+on Protein Crystallography 35, July 1998, pp. 10-12.
+[http://xray.bmc.uu.se/usf/factory_9.html]
+<P>   
+* 2 * G.J. Kleywegt &amp; T.A. Jones (1998). Databases in protein
+crystallography. Acta Cryst D54, 1119-1131.
+[http://xray.bmc.uu.se/gerard/papers/databases.html]
+[http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=PubMed&amp;cmd=Retrieve&amp;list_uids=10089488&amp;dopt=Citation]
+[http://scripts.iucr.org/cgi-bin/paper?ba0001]
+<P>   
+* 3 * G.J. Kleywegt (1999). Recognition of spatial motifs in
+protein structures. J Mol Biol 285, 1887-1897.
+[http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=PubMed&amp;cmd=Retrieve&amp;list_uids=9917419&amp;dopt=Citation]
+<P>   
+* 4 * D. Madsen &amp; G.J. Kleywegt (2002). Interactive motif and
+fold recognition in protein structures. J. Appl. Cryst.
+35, 137-139.
+[http://scripts.iucr.org/cgi-bin/paper?wt0007]
+<P>   
+* 5 * Kleywegt, G.J., Zou, J.Y., Kjeldgaard, M. &amp; Jones, T.A. (2001).
+Around O. In: &quot;International Tables for Crystallography, Vol. F.
+Crystallography of Biological Macromolecules&quot; (Rossmann, M.G.
+&amp; Arnold, E., Editors). Chapter 17.1, pp. 353-356, 366-367.
+Dordrecht: Kluwer Academic Publishers, The Netherlands.
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H3">3 </A>VERSION HISTORY</H2> </CENTER>
+<P>   
+990902 - 0.1 - first version
+ <BR> 990903 - 0.2 - ask the user for MODE; produce an O2D scatter plot
+file of the hits (X=nr of matched atoms; Y=RMSD)
+ <BR> 990907 - 0.3 - add commented-out sketch_cpk and sketch_stick instructions
+for every hit in the output O macro file
+ <BR> 990928 - 1.0 - implemented alternative residues/atoms for fuzzy
+pattern matching (NOTE: also made a new version
+of the &quot;savant.lib&quot; library file which is necessary
+for this version of the program !)
+ <BR> 991013 -1.0.1- minor change
+ <BR> 991119 - 1.1 - SAVANT now does the least-squares superpositioning of the
+hits itself before it writes the small PDB files
+ <BR> 001112 - 1.2 - minor changes
+ <BR> 001213 - 1.3 - major bug fix; several minor changes
+ <BR> 040302 -1.3.1- made O macros produced by SAVANT compatible with
+current O (i.e., they read stereo_chem.odb and they
+use the pdb_read command instead of sam_at_in)
+ <BR> 041001 - 1.4 - replaced Kabsch' routine U3BEST by quaternion-based
+routine (U3QION) to do least-squares superpositioning
+ <BR> 050919 -1.4.1- print number of every hit
+ <BR> 060804 - 1.5 - various changes under the hood (synchronised with SAVANA)
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H4">4 </A>INTRODUCTION</H2> </CENTER>
+<P>   
+SPASM is a cute program, but sometimes the sacrifice of sensitivity
+for the sake of speed and reduced database size may be too much.
+SAVANT is a post-processor for SPASM hits that will do an all-atom
+superpositioning of the patterns found in the PDB (provided the
+hits are available locally on disk).
+<P>   
+SAVANT requires a little input file which can be created with SPASM,
+as well as a library (optional) of possible alternative identities
+of certain atom types (e.g., OD1 and OD2 in ASP). The output is
+a new O macro and an ODB file with the least-squares RT operators.
+These in turn can be run through DEJANA to sort them, and to throw
+away any poor matches.
+<P>   
+SAVANT will also write all the hits to files in a sub-directory
+called &quot;savant&quot; (this subdirectory must exist, or SAVANT will
+refuse to run). A major benefit of this is that, since only the
+residues that constitute the hits are written, you can inspect
+many more hits in O than with the regular SPASM macros (since the
+latter read in the entire PDB files, which tends to fill up
+your database rather quickly).
+<P>   
+In summary, reasons why you should use SAVANT after SPASM:
+ <BR> - better RT operators to bring the hits on top of your pattern
+ <BR> - easier to separate good hits from poor ones (with DEJANA)
+ <BR> - small PDB files are created for each of the hits, making
+the O macro to compare the hits much faster (and it won't
+fill up the O database as quickly)
+ <BR> - you can run SPASM looking for main chain plus side chain (e.g.,
+if you only have two residues in your pattern), but in
+SAVANT you can do the all-atom superpositioning using only
+side-chain atoms if you like (as long as there are at least
+three atoms to do the superpositioning)
+ <BR> - if you want, you can do the superpositioning on a small subset
+of atoms (e.g., if you have several interacting carboxylates,
+remove all side-chain atoms from the pattern PDB file, except
+the oxygens, and then only these oxygens will be used by
+SAVANT - but make sure to keep at least one atom for every
+residue that you want to have displayed (e.g., the CA) !)
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H5">5 </A>EXAMPLE WITH SIDE CHAINS</H2> </CENTER>
+<P>   
+The following input is required (note that the library file is
+optional; if it doesn't exist the program will still run):
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ SAVANT library file ? (/home/gerard/lib/savant.lib) ../savant.lib
+ Nr of AMB lines : (      11)
+ Nr of ALT lines : (      13)
+<P>   
+ SAVANT input file ? (savant.inp) cbh2.savant
+ SAVANT O macro    ? (savant.omac)
+ SAVANT ODB file   ? (savant.odb)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+The library file may look like this:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+<P>   
+! savant.lib - g j kleywegt @ 990902,28
+!
+! Ambiguous atom types:
+! AMB RES ATM1 ATM2 -&gt; list ambiguous atom types
+!                      (A3,1X,A3,1X,A4,1X,A4)
+!
+! Matching atom types in different residue types:
+! ALT RES ATM1 RE2 ATM2 -&gt; list possible substitutions
+!                          (A3,1X,A3,1X,A4,1X,A3,1X,A4)
+!                          (CB is *always* considered)
+!
+! NOTE: ALT stuff not implemented in SAVANT yet !!!
+!
+!MB RES ATM1 ATM2
+AMB PHE  CD1  CD2
+AMB PHE  CE1  CE2
+AMB TYR  CD1  CD2
+AMB TYR  CE1  CE2
+AMB HIS  ND1  CD2
+AMB HIS  CE1  NE2
+AMB ASP  OD1  OD2
+AMB ASN  OD1  ND2
+AMB GLU  OE1  OE2
+AMB GLN  OE1  NE2
+AMB ARG  NH1  NH2
+!
+! the following ones *shouldn't* be ambiguous !!!
+!
+!AMB THR  OG1  CG2
+!AMB VAL  CG1  CG2
+!AMB ILE  CG1  CG2
+!AMB LEU  CD1  CD2
+!
+!LT RES ATOM RES ATOM
+ALT PHE  CG  TYR  CG
+ALT PHE  CD1 TYR  CD1
+ALT PHE  CD1 TYR  CD2
+ALT PHE  CE1 TYR  CE1
+ALT PHE  CE1 TYR  CE2
+ALT PHE  CD2 TYR  CD2
+ALT PHE  CD2 TYR  CD1
+ALT PHE  CE2 TYR  CE1
+ALT PHE  CE2 TYR  CE2
+ALT PHE  CZ  TYR  CZ
+!
+[...]
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+First the pattern you searched for is read:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MODE : (       1)
+ MC + SC
+<P>   
+ Pattern PDB file : (cbh2.pdb)
+ Residues in pattern : (       3)
+ Atoms in residues : (      12        8        8)
+ Total : (      28)
+ Ambiguous : (       8)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+Then all the hits are scrutinised:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Hit PDB file : (/nfs/pdb/full/1b2n.pdb)
+ Residues in hit : (       3)
+ Hit will go to PDB file : (savant/cbh2_1b2n_1.pdb)
+ Atoms in residues : (      12        8        8)
+ Atoms in common : (      28)
+ RMS distance : (   2.458)
+ Nr ambiguous : (       8)
+ TYR   169   CD1 &lt;-&gt;  CD2 =&gt; RMSD (A) : (   2.380)
+ TYR   169   CE1 &lt;-&gt;  CE2 =&gt; RMSD (A) : (   2.297)
+ ASP   175   OD1 &lt;-&gt;  OD2 =&gt; RMSD (A) : (   2.330)
+ ASP   221   OD1 &lt;-&gt;  OD2 =&gt; RMSD (A) : (   2.289)
+ Lowest RMSD  : (   2.289)
+<P>   
+ [...]
+<P>   
+ Hit PDB file : (/nfs/pdb/full/1cb2.pdb)
+ Residues in hit : (       3)
+ Hit will go to PDB file : (savant/cbh2_1cb2_1.pdb)
+ Atoms in residues : (      11        8        8)
+ Atoms in common : (      20)
+ RMS distance : (   0.693)
+ Nr ambiguous : (       4)
+ ASP   175   OD1 &lt;-&gt;  OD2 =&gt; RMSD (A) : (   0.062)
+ ASP   221   OD1 &lt;-&gt;  OD2 =&gt; RMSD (A) : (   0.691)
+ Lowest RMSD  : (   0.062)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+Note that, if you have read the library file, and if you included
+side-chains in your search, any &quot;ambiguous&quot; atom types are tested
+to see if switching the atom names results in a lower RMSD. If
+this is the case, the switch is kept, and the next ambiguous
+atom type is tested.
+<P>   
+Running the resulting hits through DEJANA may yield something
+like this:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Min nr of matched atoms/residues/SSEs   ? (          1)
+ Max RMSD of matched atoms/residues/SSEs ? ( 999.990)
+<P>   
+ Sorting hits ...
+<P>   
+ Nr of hits left : (         69)
+<P>   
+ #     1 ID 1iph1  Nres    28 RMSD   1.73 A
+ #     2 ID 2fok1  Nres    28 RMSD   1.76 A
+ #     3 ID 1noy1  Nres    28 RMSD   1.79 A
+ #     4 ID 1waj1  Nres    28 RMSD   1.83 A
+ #     5 ID 1ctn1  Nres    28 RMSD   1.84 A
+ #     6 ID 1sat1  Nres    28 RMSD   1.86 A
+<P>   
+ [...]
+<P>   
+ #    36 ID 1bxo1  Nres    28 RMSD   2.39 A
+ #    37 ID 1ksi1  Nres    28 RMSD   2.42 A
+ #    38 ID 1cb21  Nres    20 RMSD   0.06 A
+ #    39 ID 1yge1  Nres    20 RMSD   1.23 A
+ #    40 ID 1ctn2  Nres    20 RMSD   1.61 A
+ #    41 ID 2hvm2  Nres    20 RMSD   1.77 A
+<P>   
+ [...]
+<P>   
+ #    68 ID 2cae1  Nres    20 RMSD   2.44 A
+ #    69 ID 1kcw1  Nres    20 RMSD   2.56 A
+<P>   
+ Select one of the following options:
+ 0 = re-enter criteria and re-sort
+ 1 = write new O macro with current hits
+ 2 = quit program without writing new O macro
+ Option (0, 1, 2) ? (          0)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H6">6 </A>EXAMPLE WITH ONLY MAIN CHAIN</H2> </CENTER>
+<P>   
+Thew output may look as follows:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ SAVANT library file ? (/home/gerard/lib/savant.lib) ../savant.lib
+ Nr of AMB lines : (      11)
+ Nr of ALT lines : (      13)
+<P>   
+ SAVANT input file ? (savant.inp) cra5.savant
+ SAVANT O macro    ? (savant.omac)
+ SAVANT ODB file   ? (savant.odb)
+<P>   
+ MODE : (       2)
+ MC only
+<P>   
+ Pattern PDB file : (cra5.pdb)
+ Residues in pattern : (       9)
+ Atoms in residues : (       9        8        8        9        4
+  9        4        7        9)
+ Total : (      67)
+ Ambiguous : (       2)
+<P>   
+ Hit PDB file : (/nfs/pdb/full/1ar1.pdb)
+ Residues in hit : (       9)
+ Hit will go to PDB file : (savant/cra5_1ar1_1.pdb)
+ Atoms in residues : (       7        5        7        8        7
+  8       10        5       14)
+ Atoms in common : (      36)
+ RMS distance : (   1.357)
+<P>   
+ Hit PDB file : (/nfs/pdb/full/1bgw.pdb)
+ Residues in hit : (       9)
+ Hit will go to PDB file : (savant/cra5_1bgw_1.pdb)
+ Atoms in residues : (      14       11       11        4       14
+  7        4        7        8)
+ Atoms in common : (      36)
+ RMS distance : (   1.313)
+<P>   
+ Hit PDB file : (/nfs/pdb/full/1cbi.pdb)
+ Residues in hit : (       9)
+ Hit will go to PDB file : (savant/cra5_1cbi_1.pdb)
+ Atoms in residues : (       7        8        8        9        4
+  8        4        7        9)
+ Atoms in common : (      36)
+ RMS distance : (   0.605)
+<P>   
+ [...]
+<P>   
+ Hit PDB file : (/nfs/pdb/full/2fhe.pdb)
+ Residues in hit : (       9)
+ Hit will go to PDB file : (savant/cra5_2fhe_1.pdb)
+ Atoms in residues : (       8       11        4        7        6
+  7        6       10        7)
+ Atoms in common : (      36)
+ RMS distance : (   1.710)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+And in DEJANA:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Min nr of matched atoms/residues/SSEs   ? (          1)
+ Max RMSD of matched atoms/residues/SSEs ? ( 999.990)
+<P>   
+ Sorting hits ...
+<P>   
+ Nr of hits left : (         19)
+<P>   
+ #     1 ID 1cbs1  Nres    36 RMSD   0.00 A
+ #     2 ID 1cbi1  Nres    36 RMSD   0.60 A
+ #     3 ID 1yfo1  Nres    36 RMSD   0.99 A
+ #     4 ID 1fdr1  Nres    36 RMSD   1.08 A
+ #     5 ID 1bgw1  Nres    36 RMSD   1.31 A
+<P>   
+ [...]
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H7">7 </A>FUZZY PATTERN MATCHING</H2> </CENTER>
+<P>   
+If you have used SPASM for fuzzy pattern matching (e.g., your
+motif contains an Arg, but you will tolerate a Lys as well),
+SAVANT can (from version 1.0) take this into account, using
+the set of alternative residues/atoms defined in the library
+file (CB atoms are always considered, so they don't have to
+be included explicitly in the library file).
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ SAVANT library file ? (/home/gerard/lib/savant.lib)
+ Nr of AMB lines : (      11)
+ Nr of ALT lines : (      37)
+<P>   
+ SAVANT input file ? (savant.inp) cra2.savant
+ SAVANT O macro    ? (savant.omac)
+ SAVANT ODB file   ? (savant.odb)
+ O2D plot file     ? (savant.plt)
+<P>   
+ Select mode: 0 = SC, 1 = MC + SC, 2 = MC
+ Mode (0/1/2) ? (       1) 0
+ MODE : (       0)
+ SC only
+<P>   
+ Pattern PDB file : (cra2.pdb)
+ Residues in pattern : (       3)
+ Atoms in residues : (      11       11       12)
+ Total : (      34)
+ Ambiguous   : (       8)
+ Alternative : (      10)
+<P>   
+ Hit PDB file : (/nfs/pdb/full/169l.pdb)
+ Residues in hit : (       3)
+ Hit will go to PDB file : (savant/cra2_169l_1.pdb)
+ Atoms in residues : (       9       11       11)
+ ==&gt; Match ARG CB  &lt;-&gt; LYS CB
+ ==&gt; Alternative ? ARG CG
+ ==&gt; Alternative ? ARG CD
+ ==&gt; Not matchable ARG NE
+ ==&gt; Not matchable ARG CZ
+ ==&gt; Not matchable ARG NH1
+ ==&gt; Not matchable ARG NH2
+ ==&gt; Match ARG CB  &lt;-&gt; ARG CB
+ ==&gt; Match ARG CG  &lt;-&gt; ARG CG
+ ==&gt; Match ARG CD  &lt;-&gt; ARG CD
+ ==&gt; Match ARG NE  &lt;-&gt; ARG NE
+ ==&gt; Match ARG CZ  &lt;-&gt; ARG CZ
+ ==&gt; Match ARG NH1 &lt;-&gt; ARG NH1
+ ==&gt; Match ARG NH2 &lt;-&gt; ARG NH2
+ ==&gt; Match TYR CB  &lt;-&gt; PHE CB
+ ==&gt; Alternative ? TYR CG
+ ==&gt; Alternative ? TYR CD1
+ ==&gt; Alternative ? TYR CE1
+ ==&gt; Alternative ? TYR CD2
+ ==&gt; Alternative ? TYR CE2
+ ==&gt; Alternative ? TYR CZ
+ ==&gt; Not matchable TYR OH
+ Atoms in common : (       9)
+ RMS distance : (   1.145)
+ Nr ambiguous : (       2)
+ ARG   132   NH1 &lt;-&gt;  NH2 =&gt; RMSD (A) : (   1.404)
+ Lowest RMSD  : (   1.145)
+ Nr alternatives : (       8)
+ ARG   111   CG  &lt;-&gt; LYS A  60   CG  =&gt; RMSD (A) : (   1.228)
+ ARG   111   CD  &lt;-&gt; LYS A  60   CD  =&gt; RMSD (A) : (   1.425)
+ TYR   134   CG  &lt;-&gt; PHE A   4   CG  =&gt; RMSD (A) : (   1.440)
+ TYR   134   CD1 &lt;-&gt; PHE A   4   CD1 =&gt; RMSD (A) : (   1.526)
+ TYR   134   CD1 &lt;-&gt; PHE A   4   CD2 =&gt; RMSD (A) : (   1.418)
+ TYR   134   CE1 &lt;-&gt; PHE A   4   CE1 =&gt; RMSD (A) : (   1.648)
+ TYR   134   CE1 &lt;-&gt; PHE A   4   CE2 =&gt; RMSD (A) : (   1.452)
+ TYR   134   CD2 &lt;-&gt; PHE A   4   CD1 =&gt; RMSD (A) : (   1.698)
+ TYR   134   CD2 &lt;-&gt; PHE A   4   CD2 =&gt; RMSD (A) : (   1.493)
+ TYR   134   CE2 &lt;-&gt; PHE A   4   CE1 =&gt; RMSD (A) : (   1.884)
+ TYR   134   CE2 &lt;-&gt; PHE A   4   CE2 =&gt; RMSD (A) : (   1.637)
+ TYR   134   CZ  &lt;-&gt; PHE A   4   CZ  =&gt; RMSD (A) : (   1.791)
+ Final RMSD   : (   1.791)
+ Nr matches   : (      17)
+<P>   
+[...]
+<P>   
+ Hit PDB file : (/nfs/pdb/full/1waj.pdb)
+ Residues in hit : (       3)
+ Hit will go to PDB file : (savant/cra2_1waj_1.pdb)
+ Atoms in residues : (       9       11       11)
+ ==&gt; Match ARG CB  &lt;-&gt; LYS CB
+ ==&gt; Alternative ? ARG CG
+ ==&gt; Alternative ? ARG CD
+ ==&gt; Not matchable ARG NE
+ ==&gt; Not matchable ARG CZ
+ ==&gt; Not matchable ARG NH1
+ ==&gt; Not matchable ARG NH2
+ ==&gt; Match ARG CB  &lt;-&gt; ARG CB
+ ==&gt; Match ARG CG  &lt;-&gt; ARG CG
+ ==&gt; Match ARG CD  &lt;-&gt; ARG CD
+ ==&gt; Match ARG NE  &lt;-&gt; ARG NE
+ ==&gt; Match ARG CZ  &lt;-&gt; ARG CZ
+ ==&gt; Match ARG NH1 &lt;-&gt; ARG NH1
+ ==&gt; Match ARG NH2 &lt;-&gt; ARG NH2
+ ==&gt; Match TYR CB  &lt;-&gt; PHE CB
+ ==&gt; Alternative ? TYR CG
+ ==&gt; Alternative ? TYR CD1
+ ==&gt; Alternative ? TYR CE1
+ ==&gt; Alternative ? TYR CD2
+ ==&gt; Alternative ? TYR CE2
+ ==&gt; Alternative ? TYR CZ
+ ==&gt; Not matchable TYR OH
+ Atoms in common : (       9)
+ RMS distance : (   0.703)
+ Nr ambiguous : (       2)
+ ARG   132   NH1 &lt;-&gt;  NH2 =&gt; RMSD (A) : (   1.239)
+ Lowest RMSD  : (   0.703)
+ Nr alternatives : (       8)
+ ARG   111   CG  &lt;-&gt; LYS   240   CG  =&gt; RMSD (A) : (   0.738)
+ ARG   111   CD  &lt;-&gt; LYS   240   CD  =&gt; RMSD (A) : (   0.774)
+ TYR   134   CG  &lt;-&gt; PHE   266   CG  =&gt; RMSD (A) : (   0.761)
+ TYR   134   CD1 &lt;-&gt; PHE   266   CD1 =&gt; RMSD (A) : (   0.907)
+ TYR   134   CD1 &lt;-&gt; PHE   266   CD2 =&gt; RMSD (A) : (   0.984)
+ TYR   134   CE1 &lt;-&gt; PHE   266   CE1 =&gt; RMSD (A) : (   1.120)
+ TYR   134   CE1 &lt;-&gt; PHE   266   CE2 =&gt; RMSD (A) : (   1.163)
+ TYR   134   CD2 &lt;-&gt; PHE   266   CD1 =&gt; RMSD (A) : (   1.173)
+ TYR   134   CD2 &lt;-&gt; PHE   266   CD2 =&gt; RMSD (A) : (   1.094)
+ TYR   134   CE2 &lt;-&gt; PHE   266   CE1 =&gt; RMSD (A) : (   1.190)
+ TYR   134   CE2 &lt;-&gt; PHE   266   CE2 =&gt; RMSD (A) : (   1.066)
+ TYR   134   CZ  &lt;-&gt; PHE   266   CZ  =&gt; RMSD (A) : (   1.128)
+ Final RMSD   : (   1.128)
+ Nr matches   : (      17)
+<P>   
+[...]
+<P>   
+ Hit PDB file : (/nfs/pdb/full/7aat.pdb)
+ Residues in hit : (       3)
+ Hit will go to PDB file : (savant/cra2_7aat_1.pdb)
+ Atoms in residues : (      11        9       12)
+ ==&gt; Match ARG CB  &lt;-&gt; ARG CB
+ ==&gt; Match ARG CG  &lt;-&gt; ARG CG
+ ==&gt; Match ARG CD  &lt;-&gt; ARG CD
+ ==&gt; Match ARG NE  &lt;-&gt; ARG NE
+ ==&gt; Match ARG CZ  &lt;-&gt; ARG CZ
+ ==&gt; Match ARG NH1 &lt;-&gt; ARG NH1
+ ==&gt; Match ARG NH2 &lt;-&gt; ARG NH2
+ ==&gt; Match ARG CB  &lt;-&gt; LYS CB
+ ==&gt; Alternative ? ARG CG
+ ==&gt; Alternative ? ARG CD
+ ==&gt; Not matchable ARG NE
+ ==&gt; Not matchable ARG CZ
+ ==&gt; Not matchable ARG NH1
+ ==&gt; Not matchable ARG NH2
+ ==&gt; Match TYR CB  &lt;-&gt; TYR CB
+ ==&gt; Match TYR CG  &lt;-&gt; TYR CG
+ ==&gt; Match TYR CD1 &lt;-&gt; TYR CD1
+ ==&gt; Match TYR CE1 &lt;-&gt; TYR CE1
+ ==&gt; Match TYR CD2 &lt;-&gt; TYR CD2
+ ==&gt; Match TYR CE2 &lt;-&gt; TYR CE2
+ ==&gt; Match TYR CZ  &lt;-&gt; TYR CZ
+ ==&gt; Match TYR OH  &lt;-&gt; TYR OH
+ Atoms in common : (      16)
+ RMS distance : (   2.209)
+ Nr ambiguous : (       6)
+ ARG   111   NH1 &lt;-&gt;  NH2 =&gt; RMSD (A) : (   2.212)
+ TYR   134   CD1 &lt;-&gt;  CD2 =&gt; RMSD (A) : (   2.123)
+ TYR   134   CE1 &lt;-&gt;  CE2 =&gt; RMSD (A) : (   2.020)
+ Lowest RMSD  : (   2.020)
+ Nr alternatives : (       2)
+ ARG   132   CG  &lt;-&gt; LYS A 258   CG  =&gt; RMSD (A) : (   2.037)
+ ARG   132   CD  &lt;-&gt; LYS A 258   CD  =&gt; RMSD (A) : (   2.036)
+ Final RMSD   : (   2.036)
+ Nr matches   : (      18)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+Note that the matching of Tyr and Phe is ambiguous for several
+atom types (e.g., Phe CD1 can be matched with Tyr CD1 and CD2).
+SAVANT will use the match that gives the lowest overall RMSD.
+However ... SAVANT does not try all possible permutations ! This
+means that the same atom can sometimes be used twice (see the
+first example in the output above for an example: Tyr CD1 and CD2 are
+both matched to Phe CD2). Also, sometimes you may get &quot;silly&quot; matches
+such as CD1-CD1/CD2-CD2 with CE1-CE2/CE2-CE1.
+However, usually things work fine, and if this is not the case it
+tends to be for the poorer hits (compare the second example in the
+output above with the first).
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H8">8 </A>KNOWN BUGS</H2> </CENTER>
+<P>   
+None (other than the features mentioned under &quot;fuzzy pattern matching&quot;).
+<P>   
+<HR NOSHADE>    <A HREF="http://xray.bmc.uu.se/usf/" target="_top">
+<IMG ALIGN="right" BORDER="0" SRC="usf_logo.gif"
+ALT="Uppsala Software Factory"></A>
+<FONT SIZE=-1>
+<B> <I> Created at Fri Aug 4 21:34:56 2006
+by MAN2HTML version 060130/2.0.7 . This manual
+describes SAVANT, a program of the <A HREF="http://xray.bmc.uu.se/usf/" target="_top">Uppsala
+Software Factory</A> (USF), written and maintained by <A HREF="http://xray.bmc.uu.se/gerard"
+target="_blank">Gerard Kleywegt</A>. &copy; 1992-2006.
+</I> </B> </FONT><P>
+<IMG SRC="http://xray.bmc.uu.se/cgi-bin/nph-count?width=6&link=http://alpha2.bmc.uu.se/~gerard/www/manuals/savant_man.html">
+</body></html>

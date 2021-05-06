@@ -1,0 +1,2383 @@
+<html><head><!-- This document was created for MAMA at Thu Jun 26 11:57:38 2008 from
+../average/mama.txt by MAN2HTML version 070111/2.0.8 -->
+<title>Uppsala Software Factory - MAMA Manual</title>
+<meta name="DESCRIPTION" content="Manual for Gerard 
+Kleywegt's program MAMA">
+<meta name="KEYWORDS" content="manual software Gerard 
+Kleywegt program MAMA structural biology 
+protein X-ray crystallography macromolecular molecular
+Uppsala Software Factory bioinformatics">
+</head><body bgcolor="#fefefe" background="back.gif">
+
+<A HREF="http://xray.bmc.uu.se/usf/" target="_top">
+<IMG ALIGN="right" BORDER="0" SRC="usf_logo.gif"
+ALT="Uppsala Software Factory"></A>
+
+<H2>  Uppsala Software Factory - MAMA Manual</H2> <P>   
+<UL>  
+<LI><H3>  <A HREF="#H1">1  </A>MAMA - GENERAL INFORMATION</H3> 
+<LI><H3>  <A HREF="#H2">2  </A>REFERENCES</H3> 
+<LI><H3>  <A HREF="#H3">3  </A>VERSION HISTORY</H3> 
+<LI><H3>  <A HREF="#H4">4  </A>START-UP MACRO</H3> 
+<LI><H3>  <A HREF="#H5">5  </A>MASK SIZE AND NUMBER OF MASKS</H3> 
+<LI><H3>  <A HREF="#H6">6  </A>INTRODUCTION</H3> 
+<LI><H3>  <A HREF="#H7">7  </A>FORMATS</H3> 
+<LI><H3>  <A HREF="#H8">8  </A>STARTUP</H3> 
+<LI><H3>  <A HREF="#H9">9  </A>GENERAL COMMANDS</H3> 
+<H5><A HREF="#S1">9.1  </A>?</H5>
+<H5><A HREF="#S2">9.2  </A>!</H5>
+<H5><A HREF="#S3">9.3  </A>@</H5>
+<H5><A HREF="#S4">9.4  </A>$</H5>
+<H5><A HREF="#S5">9.5  </A>#</H5>
+<H5><A HREF="#S6">9.6  </A>&amp;</H5>
+<H5><A HREF="#S7">9.7  </A>QUit</H5>
+<H5><A HREF="#S8">9.8  </A>ZP_restart</H5>
+<H5><A HREF="#S9">9.9  </A>ECho</H5>
+<H5><A HREF="#S10">9.10  </A>REad</H5>
+<H5><A HREF="#S11">9.11  </A>LAbel</H5>
+<H5><A HREF="#S12">9.12  </A>WRite</H5>
+<H5><A HREF="#S13">9.13  </A>DOt_odl</H5>
+<H5><A HREF="#S14">9.14  </A>DElete</H5>
+<H5><A HREF="#S15">9.15  </A>LIst</H5>
+<H5><A HREF="#S16">9.16  </A>DUplicate</H5>
+<H5><A HREF="#S17">9.17  </A>NBr_count</H5>
+<H5><A HREF="#S18">9.18  </A>UNite</H5>
+<H5><A HREF="#S19">9.19  </A>SImilarity</H5>
+<H5><A HREF="#S20">9.20  </A>ODl</H5>
+<H5><A HREF="#S21">9.21  </A>BOrder_check</H5>
+<H5><A HREF="#S22">9.22  </A>ATom_fit</H5>
+<H5><A HREF="#S23">9.23  </A>EZd</H5>
+<H5><A HREF="#S24">9.24  </A>TRanslate</H5>
+<H5><A HREF="#S25">9.25  </A>GTranslate</H5>
+<H5><A HREF="#S26">9.26  </A>INvert_ncs</H5>
+<LI><H3>  <A HREF="#H10">10  </A>MAKING NEW MASKS</H3> 
+<H5><A HREF="#S27">10.1  </A>NEw ?</H5>
+<H5><A HREF="#S28">10.2  </A>NEw ORigin</H5>
+<H5><A HREF="#S29">10.3  </A>NEw EXtent</H5>
+<H5><A HREF="#S30">10.4  </A>NEw GRid</H5>
+<H5><A HREF="#S31">10.5  </A>NEw CEll</H5>
+<H5><A HREF="#S32">10.6  </A>NEw RAdius</H5>
+<H5><A HREF="#S33">10.7  </A>NEw RT_op</H5>
+<H5><A HREF="#S34">10.8  </A>NEw SAme</H5>
+<H5><A HREF="#S35">10.9  </A>NEw ENcompass</H5>
+<H5><A HREF="#S36">10.10  </A>NEw FActor</H5>
+<H5><A HREF="#S37">10.11  </A>NEw PAd</H5>
+<H5><A HREF="#S38">10.12  </A>NEw SPacing</H5>
+<H5><A HREF="#S39">10.13  </A>NEw REset_rt_operator</H5>
+<H5><A HREF="#S40">10.14  </A>NEw MAke</H5>
+<H5><A HREF="#S41">10.15  </A>NEw PDb</H5>
+<H5><A HREF="#S42">10.16  </A>NEw BOnes/OLdbones</H5>
+<H5><A HREF="#S43">10.17  </A>NEw COpy</H5>
+<H5><A HREF="#S44">10.18  </A>NEw UNit_cell</H5>
+<H5><A HREF="#S45">10.19  </A>NEw BAll</H5>
+<H5><A HREF="#S46">10.20  </A>NEw CUbe</H5>
+<LI><H3>  <A HREF="#H11">11  </A>IMPROVING MASKS</H3> 
+<H5><A HREF="#S47">11.1  </A>FIll_voids</H5>
+<H5><A HREF="#S48">11.2  </A>ISland_erase</H5>
+<H5><A HREF="#S49">11.3  </A>BLob_erase</H5>
+<H5><A HREF="#S50">11.4  </A>SMooth</H5>
+<H5><A HREF="#S51">11.5  </A>EXpand</H5>
+<H5><A HREF="#S52">11.6  </A>CUt</H5>
+<H5><A HREF="#S53">11.7  </A>COntract</H5>
+<H5><A HREF="#S54">11.8  </A>NOt</H5>
+<LI><H3>  <A HREF="#H12">12  </A> COMBINING MASKS</H3> 
+<H5><A HREF="#S55">12.1  </A>ANd</H5>
+<H5><A HREF="#S56">12.2  </A>OR</H5>
+<H5><A HREF="#S57">12.3  </A>BUtnot</H5>
+<H5><A HREF="#S58">12.4  </A>XOr</H5>
+<LI><H3>  <A HREF="#H13">13  </A>REMOVING OVERLAP</H3> 
+<H5><A HREF="#S59">13.1  </A>OVerlap ?</H5>
+<H5><A HREF="#S60">13.2  </A>OVerlap MOde</H5>
+<H5><A HREF="#S61">13.3  </A>OVerlap ORigin</H5>
+<H5><A HREF="#S62">13.4  </A>OVerlap EXtent</H5>
+<H5><A HREF="#S63">13.5  </A>OVerlap SYmm_op</H5>
+<H5><A HREF="#S64">13.6  </A>OV REset_ncs</H5>
+<H5><A HREF="#S65">13.7  </A>OVerlap NCs_rt</H5>
+<H5><A HREF="#S66">13.8  </A>OVerlap EZd</H5>
+<H5><A HREF="#S67">13.9  </A>OVerlap ERase</H5>
+<H5><A HREF="#S68">13.10  </A>OVerlap TRim</H5>
+<H5><A HREF="#S69">13.11  </A>OVerlap ASu_mask</H5>
+<H5><A HREF="#S70">13.12  </A>OVerlap UNit_cell</H5>
+<LI><H3>  <A HREF="#H14">14  </A>VRML COMMANDS</H3> 
+<H5><A HREF="#S71">14.1  </A>VRml SEtup (define some parameters)</H5>
+<H5><A HREF="#S72">14.2  </A>VRml INit (open a new VRML file)</H5>
+<H5><A HREF="#S73">14.3  </A>VRml CLose_file (close current VRML file)</H5>
+<H5><A HREF="#S74">14.4  </A>VRml COlour_list (list predefined colour names)</H5>
+<H5><A HREF="#S75">14.5  </A>VRml DOt_surface (add a mask to the current VRML file)</H5>
+<H5><A HREF="#S76">14.6  </A>VRml TRace (add a trace of a molecule to the current VRML file)</H5>
+<H5><A HREF="#S77">14.7  </A>VRml CEll (add a unit cell to the current VRML file)</H5>
+<H5><A HREF="#S78">14.8  </A>VRml BOx (adds a mask's box to the current VRML file)</H5>
+<LI><H3>  <A HREF="#H15">15  </A>WILDCARD</H3> 
+<LI><H3>  <A HREF="#H16">16  </A>FORMATS</H3> 
+<LI><H3>  <A HREF="#H17">17  </A>SOLVENT-FLATTENING MASKS</H3> 
+<H5><A HREF="#S79">17.1  </A>MASK FIRST, EXPANSION SECOND</H5>
+<H5><A HREF="#S80">17.2  </A>EXPANSION FIRST, MASK SECOND</H5>
+<LI><H3>  <A HREF="#H18">18  </A>KNOWN BUGS</H3> 
+</UL> 
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H1">1 </A>MAMA - GENERAL INFORMATION</H2> </CENTER>
+<P>   
+Program : MAMA
+ <BR> Version : 080625
+ <BR> Author : Gerard J. Kleywegt &amp; T. Alwyn Jones,
+Dept. of Cell and Molecular Biology,
+Uppsala University, Biomedical Centre, Box 596,
+SE-751 24 Uppsala, SWEDEN
+ <BR> E-mail : gerard@xray.bmc.uu.se
+ <BR> Purpose : manipulation and improvement of O/RAVE-style masks
+(molecular envelopes)
+ <BR> Package : RAVE
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H2">2 </A>REFERENCES</H2> </CENTER>
+<P>   
+Reference(s) for this program:
+<P>   
+* 1 * T.A. Jones (1992). A, yaap, asap, @#*? A set of averaging
+programs. In &quot;Molecular Replacement&quot;, edited by E.J. Dodson,
+S. Gover and W. Wolf. SERC Daresbury Laboratory, Warrington,
+pp. 91-105.
+<P>   
+* 2 * G.J. Kleywegt &amp; T.A. Jones (1993). Masks Made Easy.
+CCP4/ESF-EACBM Newsletter on Protein Crystallography 28,
+May 1993, pp. 56-59.
+[http://xray.bmc.uu.se/usf/factory_1.html]
+<P>   
+* 3 * G.J. Kleywegt &amp; T.A. Jones (1994). Halloween ... Masks and
+Bones. In &quot;From First Map to Final Model&quot;, edited by
+S. Bailey, R. Hubbard and D. Waller. SERC Daresbury
+Laboratory, Warrington, pp. 59-66.
+[http://xray.bmc.uu.se/gerard/papers/halloween.html]
+<P>   
+* 4 * G.J. Kleywegt &amp; R.J. Read (1997). Not your average density.
+Structure 5, 1557-1569.
+[http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=PubMed&amp;cmd=Retrieve&amp;list_uids=9438862&amp;dopt=Citation]
+<P>   
+* 5 * G.J. Kleywegt &amp; T.A. Jones (1999). Software for handling
+macromolecular envelopes. Acta Cryst D55, 941-944.
+[http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=PubMed&amp;cmd=Retrieve&amp;list_uids=10089342&amp;dopt=Citation]
+[http://scripts.iucr.org/cgi-bin/paper?se0256]
+<P>   
+* 6 * G.J. Kleywegt (1999). Experimental assessment of
+differences between related protein crystal structures.
+Acta Cryst. D55, 1878-1857.
+[http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=PubMed&amp;cmd=Retrieve&amp;list_uids=10531486&amp;dopt=Citation]
+[http://scripts.iucr.org/cgi-bin/paper?se0283]
+<P>   
+* 7 * R.J. Read &amp; G.J. Kleywegt (2001). Density modification:
+theory and practice. In: &quot;Methods in Macromolecular
+Crystallography&quot; (D Turk &amp; L Johnson, Eds.), IOS Press,
+Amsterdam, pp. 123-135.
+<P>   
+* 8 * Kleywegt, G.J., Zou, J.Y., Kjeldgaard, M. &amp; Jones, T.A. (2001).
+Around O. In: &quot;International Tables for Crystallography, Vol. F.
+Crystallography of Biological Macromolecules&quot; (Rossmann, M.G.
+&amp; Arnold, E., Editors). Chapter 17.1, pp. 353-356, 366-367.
+Dordrecht: Kluwer Academic Publishers, The Netherlands.
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H3">3 </A>VERSION HISTORY</H2> </CENTER>
+<P>   
+930224 - 0.1 - initial version; max 8 masks of 1 MegaWord each;
+reasonably well debugged, but no visual tests
+done yet !!!
+ <BR> 930226 - 0.2 - doubled max size of masks to 2 MegaWord;
+implemented CPU-timing;
+new options DUPLICATE, NOT, NBR_COUNT, UNITE,
+NEW ?, NEW ORIGIN, NEW EXTENT, NEW GRID,
+NEW CELL, NEW MAKE, NEW RT_OPERATOR, NEW RADIUS,
+NEW PDB, NEW BONES (not tested), NEW COPY,
+NEW SAME, NEW FACTOR;
+did visual checks (looks good, especially when
+using semi-transparent surfaces in &quot;O&quot; !!!)
+ <BR> 930301 - 0.3 - added option NEW PAD; print delta-CPU-time only
+if it exceeds 1.0 seconds; calculate smoothness
+in NBR_COUNT; give more info in LIST; NEW_MASK
+format; error traps in mask i/o routines;
+COMPRESSED_MASK format; use argument for LIST
+ <BR> 930302 - 1.0 - first production version; manual up-to-date;
+NEW SPACING option
+ <BR> 930309 - 1.1 - increased mask size to 4 MegaWord; implemented
+OVERLAP ?, OVERLAP ORIGIN, OVERLAP EXTENT,
+OVERLAP SYMM_OP, OVERLAP NCS_RT, OVERLAP RESET_NCS;
+implemented OVERLAP TRIM; removed options
+OVERLAP ORIGIN and EXTENT again since they are
+not needed (YET !); implemented OVERLAP ERASE;
+none of these documented yet !
+ <BR> 930310 - 1.2 - tried to program general overlap case (&gt; 2 NCS);
+re-implemented OVERLAP ORIGIN and EXTENT;
+implemented SIMILARITY, ODL, BORDER_CHECK,
+ATOM_FIT, EZD, OVERLAP EZD, ISLAND_ERASE
+ <BR> 930311 - 1.3 - debugged INTRPL (also in ES_AVERAGE); removed
+some other bugs; implemented on DEC ALPHA (4 to 8
+times faster than VGX or Indigo); cleaned up the
+code a bit; worked example for the manual
+ <BR> 930312 - 1.4 - tried to program NEW UNIT_CELL (seems to work okay);
+included use of RT-operator here; implemented
+NEW RESET_RT_OPERATOR; introduced cutoff factor
+in OVERLAP TRIM and ERASE plus the option to
+produce an EZD file with these commands as well
+ <BR> 930313 - 2.0 - updated manual completely; added LABEL option
+ <BR> 930315 - 2.1 - corrected manual; include various volumes in LIST
+option; NEW UNIT_CELL now does its utmost to keep
+the VOLUME of the actual mask as constant as
+possible !
+ <BR> 930416 - 2.2 - minor bug fixes; implemented MACRO facility;
+made index for manual
+ <BR> 930507 - 2.3 - bug fixes in NEW BONES; new option NEW OLDBONES
+for BONES files without radii
+ <BR> 930510 - 2.4 - new option NEW BALL (spherical mask)
+ <BR> 930602 - 2.5 - added more hints to manual; print solvent content
+in overlap calculations; made smaller version for
+ESVs (only 4 masks in memory); print program
+dimensioning with &quot;?&quot; option; NEW CUBE option;
+OVERLAP ASU option
+ <BR> 930608 - 2.6 - added $ option to issue shell commands
+ <BR> 930614 - 2.7 - debugged handling of &quot;O&quot; datablock files
+ <BR> 930616 - 3.0 - new production version; new format types (see 2.59);
+made definition of asymm. unit for OVERLAP options
+more liberal (see 2.51)
+ <BR> 930624 - 3.1 - new overlap algorithm (set with OV MODE; see 2.49.i);
+new option TRanslate (see 2.18.i); minor bug fixes;
+increased some counter arrays (for the virus
+people)
+ <BR> 931119 - 3.2 - cleaned up (for) manual; drastically shortened
+ <BR> 941223 - 3.3 - COMpressed mark format now default for WRite
+ <BR> 950207 -3.3.1- removed minor bug in LIst command
+ <BR> 950711 - 3.4 - new BLob_erase and DOt_odl options
+ <BR> 951022 - 3.5 - made sensitive to OSYM
+ <BR> 951030 - 3.6 - enable reading of many NCS operators from one file
+for the OVerlap NCs command
+ <BR> 951106 - 3.7 - removed long-standing bug from NEw UNitcell command
+(in figuring out fractional mask bottom and top)
+ <BR> 960415 -3.7.1- minor bug fixes
+ <BR> 960425 -3.7.2- increase max number of atoms in PDB file to 100,000
+ <BR> 960517 - 3.8 - implemented simple symbol mechanism
+ <BR> 960629 -3.8.1- default mask output format changed to OMASK
+ <BR> 961126 - 4.0 - implemented dynamic memory allocation
+ <BR> 970626 - 4.1 - support initialisation macro (setenv GKMAMA macrofile)
+ <BR> 970627 - 4.2 - changed ATom_fit command to include HETATMs, and to
+optionally produce two new PDB files, one with all
+atoms inside the mask, and one with those outside;
+made the ouput of the OVerlap TRim command a bit
+clearer when it checks to see if you specified an
+asymmetric unit plus 1, 2 or 3 points on all sides
+ <BR> 970722 - 5.0 - implemented VRML commands
+ <BR> 970724 -5.0.1- added VRml CEll and VRml BOx
+ <BR> 970922 -5.0.2- fixed a little bug so that the NEw BAll command now
+actually generates a sphere rather than a cube ;-)
+ <BR> 971204 - 5.1 - debugged NEw UNit_cell command; better error checks
+for NEw COpy command
+ <BR> 970409 -5.1.1- added NEw ENcompass command
+ <BR> 970714 - 5.2 - added new OVerlap UNit_cell command
+ <BR> 980901 - 5.3 - NEw BOnes will now check if reasonable atomic radii
+are used (if not, probably the NEw OLd_bones command
+should have been used instead of the NEw BOnes command);
+new INvert_ncs command to invert O-style operators
+(Cartesian space only !)
+ <BR> 980929 - 5.4 - new ZP_restart command to re-start the program with
+different memory allocation
+ <BR> 981021 -5.4.1- new ECho command to echo command-line input (useful
+in scripts)
+ <BR> 981022 - 5.5 - implemented command history (# command)
+ <BR> 990301 - 5.6 - the SMooth, CUt, EXpand and COntract commands now have
+as an extra (optional; default = 1) parameter the number
+of times the operation should be carried out. So instead
+of issuing the &quot;expand m1&quot; command five times, you can
+use &quot;expa m1 5&quot;. Also sped up the ISland_erase command
+(typically, by a factor of 5-10).
+ <BR> 990319 -5.6.1- changed maximum number of masks allowed to 100
+ <BR> 001130 -5.6.2- minor bug fix; new VRml CLose_file command
+ <BR> 010122 - 6.0 - use C routines to do dynamic memory allocation
+and port to Linux
+ <BR> 010704 -6.0.1- SImilarity command provides a bit more information
+ <BR> 010806 - X - added some example figures to demonstrate some of
+the options that produce plots
+ <BR> 011025 -6.0.2- minor changes
+ <BR> 011130 -6.0.3- minor bug fix
+ <BR> 020513 -6.0.4- max number of (bones) atoms to generate masks around
+increased from 100000 to 500000
+ <BR> 030227 - X - added information about the various formats
+ <BR> 030915 - 6.1 - new GTranslate command
+ <BR> 040701 -6.1.1- changed checks of dynamic memory allocation to allow
+for pointers with negative values as returned by
+some recent Linux versions
+ <BR> 050331 -6.1.2- added fudge margins to the OVerlap ASu_mask command;
+added section to manual on how to generate masks for
+solvent flattening
+ <BR> 050428 - X - minor changes to the manual (description of getting
+a solvent-flattening mask)
+ <BR> 070508 -6.1.3- changed DOt_odl command so it can produce a file of
+spheres instead of dots
+ <BR> 070626 -6.1.4- the LIst command now also prints the centre-of-gravity
+of a mask (in orthogonal coordinates)
+ <BR> 071122 -6.1.5- increased maximum number of atoms to 1,500,000
+ <BR> 071123 -6.1.6- print warning if HETATM cards (skipped!) in PDB file
+ <BR> 071129 -6.1.7- BLob_erase command now has an optional parameter to
+impose an upper limit on the size of blobs you want
+to keep
+ <BR> 071130 -6.1.8- minor bug fix
+ <BR> 080625 -6.1.9- suppress error messages if more than 10 of them
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H4">4 </A>START-UP MACRO</H2> </CENTER>
+<P>   
+From version 4.1 on, MAMA can execute a macro at start-up (whether
+it is run interactively or in batch mode). This can be used to
+execute commands which you (almost) always want to have executed.
+To use this feature, set the environment variable GKMAMA to
+point to a MAMA macro file, e.g.:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ setenv GKMAMA /home/gerard/mama.init
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H5">5 </A>MASK SIZE AND NUMBER OF MASKS</H2> </CENTER>
+<P>   
+From version 4.0 onward, MAMA allocates memory for masks dynamically.
+This means that you can increase the size and number of masks that the
+program can handle on the fly:
+<P>   
+1 - through the environment variables MASKSIZE and NUMMASKS (must be
+in capital letters !), for example put the following in your
+.cshrc file:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ setenv MASKSIZE 5000000
+ setenv NUMMASKS 4
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+2 - by using command-line arguments MASKSIZE and NUMMASKS (need not
+be in capitals), for example:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ run mama masksize 20000000 nummasks 1
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+Note that command-line arguments take precedence over environment
+variables. So you can set the environment variables in your .cshrc
+file to &quot;typical&quot; values, and if you have to deal with a mask
+which is bigger than that, you can use the command-line argument(s).
+<P>   
+From version 5.4 on, you can also use ZP_restart from within the
+program itself to increase memory allocation. WARNING : all memory
+is reset, so any unsaved data will be lost !!!
+<P>   
+If sufficient memory cannot be allocated, the program will print
+a message and quit. In that case, increase the amount of virtual
+memory (this will not help, of course, if you try to allocate more
+memory than can be addressed by your machine (for 32-bit machines,
+something 2**32-1 bytes, I think), or reduce the size requirements.
+<P>   
+MAMA needs space for NUMMASKS + 2 masks.
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H6">6 </A>INTRODUCTION</H2> </CENTER>
+<P>   
+If you're tired of editing masks, don't call for your mother,
+but use MAMA ! MAMA is to masks what MOLEMAN is to PDB files.
+<P>   
+With MAMA you can fill the voids that PDB_MASK and BONES_MASK
+leave in your masks, you can slightly extend your mask when
+you are putting in side chains in your poly-Ala search model or
+when X-PLOR has moved them around for you, you can take away
+parts of the mask which overlap with a neighbour molecule, etc. etc.
+<P>   
+In addition, MAMA contains all the functionality of Alwyn's
+programs PDB_MASK, BONES_MASK, and MASK_NEW_GRID as well as
+options to remove overlap due to (NCS-) symmetry and to copy
+a mask from one space group to another.
+<P>   
+The overlap tools can also be used to investigate close
+contacts between various molecules in the asymmetric unit
+due to (non-) crystallographic symmetry.
+<P>   
+As a bonus, you are able to emulate Delaney's cavity-finding
+program (using &quot;cellular logic methods&quot;; see the example below).
+<P>   
+MAMA allows you to work with upto EIGHT masks simultaneously !
+You may either manipulate one mask or combine two of them.
+The wild-card character &quot;*&quot; can be used for most single-mask
+options if you want to carry out an operation for all masks
+in memory.
+<P>   
+When you read a mask, you give it a name by which you can
+refer to it later. All names are converted to uppercase,
+so &quot;m1&quot; and &quot;M1&quot; are the same masks ! MAMA checks that
+you don't use duplicate mask names.
+<P>   
+MAMA is command-driven; the first TWO letters of each command
+are unique (so you don't have to type the rest); the commands
+are automatically converted to uppercase, so no worries there
+either.
+<P>   
+Parameters to commands may be supplied on the same line as the
+command itself. MAMA will prompt you for the values of any
+parameters that were not supplied in this way.
+<P>   
+MAMA runs in interactive mode by default. This means that if
+ <BR> (a) an input file can not be opened, MAMA will ask you what to do
+ <BR> (b) if you delete a mask which has unsaved changes, MAMA will
+ask you if you're absolutely sure
+ <BR> (c) if you quit and there are masks with unsaved changes, MAMA
+will ask you if you really want to quit
+<P>   
+You may run MAMA in batch mode by supplying the command line
+option -b (or -batch). In that case, MAMA will crash if she
+can't open an input file and any unsaved changes (with QUIT or
+DELETE) are lost forever. You may want to use this mode if
+you run MAMA in batch (using an input script).
+<P>   
+NOTE: all output files are opened as &quot;UNKNOWN&quot;, which means that
+any existing files will be overwritten !
+<P>   
+NOTE: this program is sensitive to the environment variable OSYM.
+It should point to your local copy of $ODAT/symm, the directory
+which contains the spacegroup symmetry operators in O format.
+When asked for a file with spacegroup operators in O format,
+you may either provide a filename, or the name of a sapcegroup
+(including blanks if you like, case doesn't matter). The program
+will try to open the following files, assuming that STRING is the
+what you input:
+ <BR> (1) open a file called STRING
+ <BR> (2) if this fails, check if OSYM is defined and open $OSYM/STRING
+ <BR> (3) if this fails, open $OSYM/string.sym
+ <BR> (4) if this fails, open $OSYM/string.o
+ <BR> Hint: if you make soft links in the OSYM directory, you can also type
+spacegroup numbers (e.g.: \ln -s p212121.sym 19.sym).
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H7">7 </A>FORMATS</H2> </CENTER>
+<P>   
+MAMA supports a number of different formats for both reading and
+writing masks. Upon reading, MAMA will recognise the type of
+format automatically. Upon writing, you can supply the format
+type as a parameter.
+<P>   
+OMASK:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+.MASK_INPUT
+! Created by MAMA V. 020513/6.0.4 at Thu Feb 27 18:32:36 2003 for gerard
+ORIGIN        -10          2         35
+EXTENT         94        100        117
+GRID         80         90        144
+CELL    45.0500    51.8500    79.9600    90.0000    90.0000    90.0000
+COMPRESSED
+ 106545 106547
+ 106639 106641
+ 106733 106735
+[...]
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+COMPRESSED:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+COMPRESSED_MASK
+  -10    2   35 Created by MAMA V. 020513/6.0.4 at Thu Feb 27 18:33:16 2003 for gerard
+   94  100  117
+   80   90  144
+   45.0500   51.8500   79.9600   90.0000   90.0000   90.0000
+ 106545 106547
+ 106639 106641
+ 106733 106735
+ 115850 115854
+ 115944 115948
+[...]
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+NEW:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+NEW_MASK
+! Created by MAMA V. 020513/6.0.4 at Thu Feb 27 18:31:08 2003 for gerard
+ORIGIN        -10          2         35
+EXTENT         94        100        117
+GRID         80         90        144
+CELL    45.0500    51.8500    79.9600    90.0000    90.0000    90.0000
+MAP
+00000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000
+[...]
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+OEXPLICIT:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+.MASK_INPUT
+! Created by MAMA V. 020513/6.0.4 at Thu Feb 27 18:32:54 2003 for gerard
+ORIGIN        -10          2         35
+EXTENT         94        100        117
+GRID         80         90        144
+CELL    45.0500    51.8500    79.9600    90.0000    90.0000    90.0000
+EXPLICIT
+00000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000
+[...]
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+OLD:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+  -10    2   35 Created by MAMA V. 020513/6.0.4 at Thu Feb 27 18:33:28 2003 for gerard
+   94  100  117
+   80   90  144
+   45.0500   51.8500   79.9600   90.0000   90.0000   90.0000
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+[...]
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+The major difference between these formats is the size of the mask
+files produced and the time it takes to read or write them. For
+example, in one case:
+<P>   
+- OLD format, 2227275 bytes, 2.5 CPU seconds
+ <BR> - OEX format, 1113831 bytes, 2.3 CPU seconds
+ <BR> - NEW format, 1113823 bytes, 2.3 CPU seconds
+ <BR> - COM format, 88816 bytes, &lt; 1 CPU second
+ <BR> - OMA format, 88909 bytes, &lt; 1 CPU second
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H8">8 </A>STARTUP</H2> </CENTER>
+<P>   
+When you start MAMA, she welcomes you with a list of available
+commands and options:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ *** MAMA *** MAMA *** MAMA *** MAMA *** MAMA *** MAMA *** MAMA *** MAMA ***
+<P>   
+ Version  - 070508/6.1.3
+ (c) 1992-2006 Gerard J. Kleywegt &amp; T. Alwyn Jones, BMC, Uppsala (SE)
+ User I/O - routines courtesy of Rolf Boelens, Univ. of Utrecht (NL)
+ Others   - T.A. Jones, G. Bricogne, Rams, W.A. Hendrickson
+ Others   - W. Kabsch, CCP4, PROTEIN, E. Dodson, etc. etc.
+<P>   
+ Started  - Tue May 8 14:49:31 2007
+ User     - gerard
+ Mode     - interactive
+ Host     - sarek (Irix/SGI)
+ ProcID   - 20390
+ Tty      - /dev/ttyq17
+<P>   
+ *** MAMA *** MAMA *** MAMA *** MAMA *** MAMA *** MAMA *** MAMA *** MAMA ***
+<P>   
+ Reference(s) for this program:
+<P>   
+ *  1 * T.A. Jones (1992). A, yaap, asap, @#*?  A set of averaging
+        programs. In &quot;Molecular Replacement&quot;, edited by E.J. Dodson,
+        S. Gover and W. Wolf. SERC Daresbury Laboratory, Warrington,
+        pp. 91-105.
+<P>   
+ *  2 * G.J. Kleywegt &amp; T.A. Jones (1993).  Masks Made Easy.
+        CCP4/ESF-EACBM Newsletter on Protein Crystallography 28,
+        May 1993, pp. 56-59.
+        [http://xray.bmc.uu.se/usf/factory_1.html]
+<P>   
+ *  3 * G.J. Kleywegt &amp; T.A. Jones (1994).  Halloween ... Masks and
+        Bones. In &quot;From First Map to Final Model&quot;, edited by
+        S. Bailey, R. Hubbard and D. Waller.  SERC Daresbury
+        Laboratory, Warrington, pp. 59-66.
+        [http://xray.bmc.uu.se/gerard/papers/halloween.html]
+<P>   
+ *  4 * G.J. Kleywegt &amp; R.J. Read (1997). Not your average density.
+        Structure 5, 1557-1569.
+        [http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=PubMed&amp;cmd=Retrieve&amp;list_uids=9438862&amp;dopt=Citation]
+<P>   
+ *  5 * G.J. Kleywegt &amp; T.A. Jones (1999). Software for handling
+        macromolecular envelopes. Acta Cryst D55, 941-944.
+        [http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=PubMed&amp;cmd=Retrieve&amp;list_uids=10089342&amp;dopt=Citation]
+        [http://scripts.iucr.org/cgi-bin/paper?se0256]
+<P>   
+ *  6 * G.J. Kleywegt (1999). Experimental assessment of
+        differences between related protein crystal structures.
+        Acta Cryst. D55, 1878-1857.
+        [http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=PubMed&amp;cmd=Retrieve&amp;list_uids=10531486&amp;dopt=Citation]
+        [http://scripts.iucr.org/cgi-bin/paper?se0283]
+<P>   
+ *  7 * R.J. Read &amp; G.J. Kleywegt (2001). Density modification:
+        theory and practice. In: &quot;Methods in Macromolecular
+        Crystallography&quot; (D Turk &amp; L Johnson, Eds.), IOS Press,
+        Amsterdam, pp. 123-135.
+<P>   
+ *  8 * Kleywegt, G.J., Zou, J.Y., Kjeldgaard, M. &amp; Jones, T.A. (2001).
+        Around O. In: &quot;International Tables for Crystallography, Vol. F.
+        Crystallography of Biological Macromolecules&quot; (Rossmann, M.G.
+        &amp; Arnold, E., Editors). Chapter 17.1, pp. 353-356, 366-367.
+        Dordrecht: Kluwer Academic Publishers, The Netherlands.
+<P>   
+ ==&gt; For manuals and up-to-date references, visit:
+ ==&gt;     http://xray.bmc.uu.se/usf
+ ==&gt; For reprints, visit:
+ ==&gt;     http://xray.bmc.uu.se/gerard
+ ==&gt; For downloading up-to-date versions, visit:
+ ==&gt;     ftp://xray.bmc.uu.se/pub/gerard
+<P>   
+ *** MAMA *** MAMA *** MAMA *** MAMA *** MAMA *** MAMA *** MAMA *** MAMA ***
+<P>   
+ Allocate masks of size : (    3000000)
+ Max number of masks    : (          5)
+<P>   
+ Max nr of masks in memory    :          5
+ Max nr of points in mask     :    3000000
+ Max nr of symmetry operators :        180
+ Max nr of NCS RT operators   :        180
+<P>   
+ Initialising : (XVRML - 20051205/0.8)
+ Nr of predefined colours : (        411)
+<P>   
+ Symbol START_TIME : (Tue May  8 14:49:31 2007)
+ Symbol USERNAME : (gerard)
+<P>   
+ MAMA's options :
+<P>   
+ ? (list options)           ! (comment)
+ @ macrofile                QUit
+ &amp; symbol value             &amp; ? (list symbols)
+ $ shell_command            ZP_restart masksize nummasks
+ ECho on_off                # parameter(s) (command history)
+<P>   
+ REad maskname filename     WRite maskname filename [how]
+ DElete maskname            LIst [maskname]
+ DUplicate newmask oldmask  NBr_count maskname
+ UNite newmask mask1 mask2  SImilarity mask1 mask2
+ ODl maskname filename      BOrder_check maskname
+ DOt_odl maskname filename [radius]
+ EZd maskname ezdfile       LAbel mask text
+ TRanslate mask tx ty tz    GTranslate gx gy gz
+ ATom_fit maskname pdbfile [pdb_inside] [pdb_outside]
+ INvert_ncs infile outfile
+<P>   
+ NEw ? (list defaults)      NEw ORigin o1 o2 o3
+ NEw CEll a b c al be ga    NEw EXtent e1 e2 e3
+ NEw GRid g1 g2 g3          NEw SAme maskname
+ NEw RAdius value           NEw RT_operator filename
+ NEw FActor value           NEw PAd p1 p2 p3
+ NEw SPacing value          NEw REset_rt_operator
+ NEw ENcompass oldmask
+<P>   
+ NEw PDb maskname pdbfile   NEw BOnes maskname bonesfile
+ NEw COpy mask oldmask      NEw MAke maskname
+ NEw UNit_cell mask oldmask NEw OLdbones maskname bonesfile
+ NEw BAll mask x y z rad    NEw CUbe mask x y z extent
+<P>   
+ FIll_voids maskname        ISland_erase maskname
+ EXpand maskname [cycles]   SMooth maskname factor [cycles]
+ COntract maskname [cycles] CUt maskname factor [cycles]
+ NOt maskname               BLob_erase maskname min_size
+<P>   
+ ANd mask1 mask2            OR mask1 mask2
+ BUtnot mask1 mask2         XOr mask1 mask2
+<P>   
+ OVerlap ? (list status)    OVerlap SYmm_op filename
+ OVerlap ORigin o1 o2 o3    OVerlap EXtent e1 e2 e3
+ OVerlap NCs_rt filename    OVerlap REset_ncs
+ OVerlap MOde mode_type
+ OVerlap UNit_cell mask factor trim nextra [ezdf]
+ OVerlap TRim mask factor [ezdf]
+ OVerlap ERase mask factor [ezdf]
+ OVerlap EZd mask ezdfile
+ OVerlap ASu_mask newmask oldmask [f1 f2 f3]
+<P>   
+ VRml SEtup central_atom max_dist backgr_col default_col
+ VRml INit [filename]                 VRml COlour_list
+ VRml DOt_surface mask [colour]       VRml TRace pdb_file [colour]
+ VRml CEll mask [colour] [line_solid] [x_offset] [y_offset] [z_offset]
+ VRml BOx mask [colour] [line_solid]  VRml CLose_file
+<P>   
+ Max nr of masks in memory    :          5
+ Max nr of points in mask     :    3000000
+ Max nr of symmetry operators :        180
+ Max nr of NCS RT operators   :        180
+<P>   
+ Execute initialisation macro : (/home/gerard/mama.init)
+ ... Opened macro file : (/home/gerard/mama.init)
+ ... On unit : (      61)
+ Command &gt; (! MAMA initialisation macro)
+ Command &gt; (echo on)
+        1  @ /home/gerard/mama.init
+        2  ! MAMA initialisation macro
+        3  echo on
+ ... End of macro file
+ ... Control returned to terminal
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H9">9 </A>GENERAL COMMANDS</H2> </CENTER>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S1">9.1 </A>?</H3> 
+ <BR> gives a list of the options and the current dimensioning
+of the program
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S2">9.2 </A>!</H3> 
+ <BR> does nothing (use this for comments in input scripts)
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S3">9.3 </A>@</H3> 
+ <BR> execute a macro. A macro is a text file which contains
+MAMA commands and comments (lines beginning with !). If
+you leave out parameters, you will be prompted to supply
+them from the terminal. From within macros you may
+call other macros.
+ <BR> Macros are very handy for:
+ <BR> - writing the recipes given below in (for first-time and
+irregular MAMA users);
+ <BR> - executing long sequences of commands (such as OVERLAP NCS
+for virus-people with 60 NCS operators).
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S4">9.4 </A>$</H3> 
+ <BR> execute a shell command (does not necessarily work on all
+machines !)
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAMA &gt; $ xterm &amp;
+ MAMA &gt; $ ls -FartCos m1*E
+3435 -r--r--r--   1 gerard   1758288 Jun  2 23:54 m1_start.E
+1634 -rw-r--r--   1 gerard    836224 Jun  8 13:46 m1_startx.E
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S5">9.5 </A>#</H3> 
+ <BR> Command history. Possible uses (blank spaces are optional):
+ <BR> - # ? =&gt; list history of commands
+ <BR> - # ! =&gt; ditto, but without numbers (handy for copying into macros)
+ <BR> - # ON =&gt; switch command history on
+ <BR> - # OFf =&gt; switch command history off
+ <BR> - # # =&gt; repeat previous command
+ <BR> - # 14 =&gt; repeat command number 14 from the list
+ <BR> - # 0 =&gt; repeat previous command
+ <BR> - # -1 =&gt; repeat penultimate command, etc.
+ <BR> - # 7 more =&gt; repeat command number 7, but add &quot;more&quot; to it
+(e.g., if command 7 was &quot;$ ls&quot; you could type &quot;#7 -FartCos&quot;
+to get &quot;$ ls -FartCos&quot;)
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S6">9.6 </A>&amp;</H3> 
+<P>   
+This command can be used to manipulate symbols. These are probably
+only useful for advanced users who want to write fancier macros.
+The command can be used in three ways:
+ <BR> (1) &amp; ? -&gt; lists currently defined symbols
+ <BR> (2) &amp; symbol value -&gt; sets &quot;SYMBOL&quot; to &quot;value&quot;
+ <BR> (3) &amp; symbol -&gt; prompts the user to supply a value for &quot;SYMBOL&quot;
+(even if the program is executing a macro)
+<P>   
+A few symbols are predefined:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAMA &gt; &amp; ?
+ Nr of defined symbols : (       4)
+ Symbol PROGRAM : (MAMA)
+ Symbol VERSION : (960517/3.8)
+ Symbol START_TIME : (Fri May 17 20:21:40 1996)
+ Symbol USERNAME : (gerard)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+The symbol mechanism is fairly simplistic and has some limitations:
+ <BR> - max length of a symbol name is 20 characters
+ <BR> - max length of a symbol value is 256 characters
+ <BR> - max number of symbols is 100
+ <BR> - symbols can not be deleted, but they can be redefined
+ <BR> - symbol values are accessed by supplying $SYMBOL_NAME as an
+argument on the command line; the line that you type on the terminal
+(or in a macro) is parsed once; if there are additional parameters
+which the program prompts you for, you cannot use symbols for those
+ <BR> - only one substitution per argument (e.g., &quot;$file1 $file2&quot; will
+lead to a substituion of the entire argument by the value of
+symbol FILE1 only !)
+ <BR> - command names (first argument on any command line) cannot be
+replaced by a symbol (e.g.: &quot;$command $arg1 $arg2&quot; is not valid)
+ <BR> - symbols may be equated to each other, e.g. &quot;&amp; file2 $file1&quot; will
+give FILE2 the same value as FILE1
+ <BR> - symbol substitution is not recursive (e.g., if you set the value
+of FILE2 to be &quot;$file1&quot;, any reference to $FILE2 will be replaced
+by &quot;$file1&quot;, not by the value of FILE1
+ <BR> - symbols on comment lines (starting with &quot;!&quot;) are not expanded
+ <BR> - symbols on system command lines (starting with &quot;$&quot;) are not expanded
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S7">9.7 </A>QUit</H3> 
+ <BR> stop working with MAMA; if you run interactively, MAMA
+will check if there are any unsaved changes, and if so,
+ask you if you really want to quit
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S8">9.8 </A>ZP_restart</H3> 
+ <BR> if you have started the program with too little memory allocated,
+you can restart it with this command. Provide new values for
+MASKSIZE and NUMMASKS. (The mnemonic &quot;ZP&quot; may be counter-intuitive,
+but the Z and P keys are far apart on a QWERTY keyboard so the
+chances of accidentally typing this command are reduced.)
+ <BR> WARNING : all memory is reset, so any unsaved data will be lost !!!
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S9">9.9 </A>ECho</H3> 
+ <BR> if you run the program with scripts, it is sometimes useful to see
+input commands echoed. The parameter to the ECho command may be
+ON, OFf, or ? (to list the echo status).
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S10">9.10 </A>REad</H3> 
+ <BR> read mask file into memory; you must supply the name of
+this new mask and the file name (MAMA will figure out the
+type of format)
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S11">9.11 </A>LAbel</H3> 
+ <BR> supply any text string; this will be printed with the LIST
+option. This should help you remember what you have been
+doing to your masks, how you created them etc.
+Enclose your text in &quot;double quotes&quot; if it contains spaces.
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S12">9.12 </A>WRite</H3> 
+ <BR> write mask from memory to file; supply the maskname, the
+file name and, optionally, the format (OLD or COMpressed;
+the default used to be OLD, but since version 3.3 it is
+COMpressed, since O can now read these)
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAMA &gt; wr m1 test.mask com
+ Writing mask (compressed format)
+ Grid points : (     360594)
+ Stretches   : (       1458)
+ Mask points : (      30854)
+ Mask write OK
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S13">9.13 </A>DOt_odl</H3> 
+ <BR> write mask as an ODL file containing DOTs for *only* the mask
+points on the surface. This gives you a &quot;hollow&quot; set of dots
+which enable you to create dot-surfaces in O (display the ODL
+file with the Draw command in O). If you supply an additional
+parameter (real number greater than zero), this will be interpreted
+as a radius, and then the ODL file will contain instructions
+to draw spheres instead of dots (in that case, you may want to
+do something like &quot;sketch_setup sphere solid 2&quot; before you draw
+the ODL file in O).
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAMA &gt; re m2 cavity_2.mask
+ [...]
+ MAMA &gt; dot m2 cav2s.odl 0.1
+ Sphere radius (A): (   0.100)
+ ODL file written
+ Nr of mask points  : (        986)
+ Nr of surface dots : (        456)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+An ODL file with dots looks like this:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+begin mdot
+colour magenta
+ dot 11.900 20.300 21.700
+ dot 11.900 20.300 22.400
+[...]
+ dot 18.900 25.200 22.400
+ dot 18.900 25.200 23.100
+end_object
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+An ODL file with spheres looks like this:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+begin sdot
+colour cyan
+ sphere_xyz 11.900 20.300 21.700 0.100
+ sphere_xyz 11.900 20.300 22.400 0.100
+[...]
+ sphere_xyz 18.900 25.200 22.400 0.100
+ sphere_xyz 18.900 25.200 23.100 0.100
+end_object
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S14">9.14 </A>DElete</H3> 
+ <BR> remove a mask from memory; if there are unsaved changes to
+this mask, MAMA will ask you if you are sure (if you are
+running interactively)
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAMA &gt; delet m1
+ WARNING - unsaved changes to mask M1 !!!
+ Really DELETE this mask (Y/N) ? (N) y
+ Deleted : (M1)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S15">9.15 </A>LIst</H3> 
+ <BR> list characteristics of any or all masks in memory; if you
+don't provide a maskname, all masks are listed
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAMA &gt; li m6
+ Nr of masks in memory : (       1)
+<P>   
+ Mask  1 = M6
+ File    = tomcat.mask
+ Grid    =        100       100       100
+ Origin  =          0         0         0
+ Extent  =         99        99        99
+ Cell    =     50.000    50.000    50.000    90.000    90.000    90.000
+ Nr of points =     970299      Set   =      91154 (  9.39 %)
+ Cell volume  =  1.250E+05      Voxel =  1.250E-01
+ Grid volume  =  1.213E+05      Mask  =  1.139E+04
+ Centre-of-gravity (A) =     26.755    25.000    25.831
+ Spacing =      0.500     0.500     0.500
+ Top     =         98        98        98
+ Changes = F
+ Label   = Read from tomcat.mask
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S16">9.16 </A>DUplicate</H3> 
+ <BR> make a &quot;carbon copy&quot; (in memory !) of an existing mask;
+you may want to use this to make a &quot;backup&quot; copy of a mask
+prior to doing a drastic operation (such as overlap removal)
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S17">9.17 </A>NBr_count</H3> 
+ <BR> count the number of mask points which have a given number of
+neighbours which are not in the mask and vice versa (use this
+option before SMOOTH, EXPAND, CUT or CONTRACT to get an
+impression of how many points those operations are going to
+add to or remove from your mask). This option also calculates
+the &quot;roughness&quot; of your mask by dividing the surface:volume
+ratio by that of a sphere with the same volume (values close
+to 1.0 indicate completely smooth masks; usually a value of
+about 1.7 implies a &quot;pleasingly smooth&quot; mask.
+ <BR> This option EXCLUDES border points !
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S18">9.18 </A>UNite</H3> 
+ <BR> unite two masks into a new one (e.g., two monomer masks into
+a dimer mask); both must have the same cell and grid;
+(in fact, what this option does is to NEW MAKE a suitably
+large empty mask which is then OR-ed with the two existing
+masks)
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S19">9.19 </A>SImilarity</H3> 
+ <BR> this will determine how similar two masks (which must be
+on the same grid and have the same cell) are. It will also
+calculate the &quot;similarity index&quot; (defined as the number
+of mask points which they have in common divided by the
+square root of the product of the number of mask points
+in each mask: SI = N1&amp;2 / SQRT(N1 * N2). In addition, this
+option produces a list which tells you how many points
+will be left in the mask if you would do an AND, OR,
+XOR or BUTNOT on these two masks next
+<P>   
+From version 6.0.1 on, this command prints some more information.
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAMA &gt; si m2 m3
+ Command &gt; (si m2 m3)
+ Similarity Mask : (M2)
+ Similarity Mask : (M3)
+ Lower limits common volume : (      23       35       -1)
+ Upper limits common volume : (      86      105       75)
+ Limits first  mask  : (      13       76       13       83       12
+  88)
+ Limits second mask  : (       1       64        1       71        1
+  77)
+ Number of common mask points : (     349888)
+ Nr of points in common grid      : (     349888)
+ Nr of points set in mask 1 = N1  : (      88991)
+ Nr of points set in mask 2 = N2  : (      30250)
+ Nr of points set in both   = N12 : (      30250)
+<P>   
+ Tanimoto index   = N12 / (N1+N2-N12) : (   0.340)
+ Similarity index = N12 / SQRT(N1*N2) : (   0.583)
+ Sim index 2      = 2*N12 / (N1+N2)   : (   0.507)
+ Fraction common mask 1 = N12 / N1    : (   0.340)
+ Fraction common mask 2 = N12 / N2    : (   1.000)
+<P>   
+ AND    mask1 mask2 = N12         : (      30250)
+ OR     mask1 mask2 = N1+N2-N12   : (      88991)
+ BUTNOT mask1 mask2 = N1-N12      : (      58741)
+ BUTNOT mask2 mask1 = N2-N12      : (          0)
+ XOR    mask1 mask2 = N1+N2-2*N12 : (      58741)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S20">9.20 </A>ODl</H3> 
+ <BR> create a little ODL file which, when drawn in &quot;O&quot;, will display
+the current box around the grid of a mask. This is useful to
+have on the screen when you are manually editing the mask in
+order to see if you get close to the border
+Use &quot;draw m1a_border.odl&quot; in &quot;O&quot; to display the object.
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S21">9.21 </A>BOrder_check</H3> 
+ <BR> this tells you how much space there is (in grid points) between
+your mask and the borders of your grid; if any of these values
+is low, MAMA prints some useful advice
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S22">9.22 </A>ATom_fit</H3> 
+ <BR> this option helps you to investigate which atoms are not covered
+by your mask. For each atom that doesn't fit, a warning
+message is printed. Use the NEW RADIUS option to define
+the atomic radius associated with each atom.
+<P>   
+From version 4.2 onward, this command checks both ATOM and HETATM
+atoms. In addition, there are two new optional parameters,
+namely a PDB file for all atoms inside the mask, and a PDB
+file for all atoms outside the mask. You could use this to
+find all internal water molecules in your model, for example.
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAMA &gt; at m1 1cbs.pdb inside.pdb outside.pdb
+ Checking atoms with radius : (   2.000)
+ ERROR -  C1  REA   200 not covered by the mask
+ ERROR -  C2  REA   200 not covered by the mask
+ ERROR -  C3  REA   200 not covered by the mask
+ ERROR -  C16 REA   200 not covered by the mask
+ ERROR -  O   HOH   304 not covered by the mask
+ ERROR -  O   HOH   311 not covered by the mask
+ ERROR -  O   HOH   315 not covered by the mask
+ ERROR -  O   HOH   316 not covered by the mask
+ ERROR -  O   HOH   318 not covered by the mask
+ ...
+ ERROR -  O   HOH   398 not covered by the mask
+ ERROR -  O   HOH   399 not covered by the mask
+ Nr of atoms read        : (       1213)
+ Nr covered by the mask  : (       1141)
+ Below lower grid bounds : (          0)
+ Above upper grid bounds : (          0)
+ Nr not covered by mask  : (         72)
+ ERROR --- Mask too tight !
+ CPU total/user/sys :       1.4       1.4       0.0
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S23">9.23 </A>EZd</H3> 
+ <BR> write an EZD file for a certain mask. At present, &quot;O&quot; cannot
+handle multiple masks, but with this option you may create
+an EZD file for one mask (e.g., an NCS-related molecule),
+mappage it (use prod &amp; plus = 100 &amp; 100) and draw it in &quot;O&quot;.
+Of course, you can't manipulate an EZD-ed mask !
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S24">9.24 </A>TRanslate</H3> 
+ <BR> translate a mask an integer number of unit cells along X, Y
+and Z. The averaging programs get slower if your mask if
+further away from the unit cell which has x,y,z = [0,1&gt;.
+With this option you may move the mask such that its origin
+(or centre) is close to or inside this unit cell.
+The program simply adds the numbers that you input times
+the corresponding grid value to the old origin.
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAMA &gt; tr m1
+ Old origin : (         21          34          -1)
+ Grid       : (        100         110          64)
+ Nr of unit cells translation in X ? (0) 1
+ Nr of unit cells translation in Y ? (0) -1
+ Nr of unit cells translation in Z ? (0) 2
+ New origin : (        121         -76         127)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S25">9.25 </A>GTranslate</H3> 
+ <BR> translate a mask any number of grid points along X, Y and Z.
+Please note that this is NOT a safe translation
+operation as it is bound to upset the compatibility between
+the mask and the underlying data and model. Use this option
+only when you understand this and are still convinced that
+the safe TRanslate command does not do what you want !
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAMA &gt; gt m1
+<P>   
+ WARNING !!! This option will change the origin of your
+ map by any number of grid points that you specify.
+ This is bound to upset the compatibility between this
+ mask and your model/data. Only use this option if you
+ understand this and know what you are doing ...
+<P>   
+ Old origin : (        121         -76         127)
+ Grid       : (        100         110          64)
+ Nr of GRID POINTs translation in X ? (0) -21
+ Nr of GRID POINTs translation in Y ? (0) 76
+ Nr of GRID POINTs translation in Z ? (0) -127
+ New origin : (        100           0           0)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S26">9.26 </A>INvert_ncs</H3> 
+ <BR> use this command to invert one or more O-style Cartesian space
+RT-operators (e.g., NCS or inter-crystal). Provide the name
+of the operator file and the name of the output file with
+the inverted operator(s).
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAMA &gt; inv
+ Input NCS file ? ( ) ab.rt
+ Output NCS file ? ( ) inv.rt
+<P>   
+ ==&gt; Read NCS operator : (.LSQ_RT_M1_TO_M1)
+<P>   
+...
+<P>   
+ Nr of NCS operators to invert : (          1)
+<P>   
+ ***** Operator nr   1 *****
+<P>   
+ Nr of RT operators :   1
+<P>   
+ RT-OP  1 =     0.3884420    0.0835182    0.9176806                -16.778
+                0.1145766    0.9837781   -0.1380325                 25.467
+               -0.9143222    0.1587623    0.3725714                 66.911
+ Determinant of rotation matrix         1.000000
+ Column-vector products (12,13,23)      0.000000    0.000000    0.000000
+ Crowther Alpha Beta Gamma               171.446     -68.126    -170.149
+ Spherical polars Omega Phi Chi           89.041      80.798      68.137
+ Direction cosines of rotation axis     0.159898    0.986992    0.016733
+ Dave Smith                             -159.671    -156.110     167.866
+ X-PLOR polars Phi Psi Kappa             174.026     170.748      68.137
+ Lattmann Theta+ Theta2 Theta-            -1.297      68.126    -198.405
+ Rotation angle                              68.137
+<P>   
+ ***** INVERSE Operator nr   1 *****
+<P>   
+ Nr of RT operators :   1
+<P>   
+ RT-OP  1 =     0.3884419    0.1145766   -0.9143222                 64.778
+                0.0835182    0.9837780    0.1587623                -34.276
+                0.9176804   -0.1380325    0.3725714                 -6.017
+ Determinant of rotation matrix         1.000000
+ Column-vector products (12,13,23)      0.000000    0.000000    0.000000
+ Crowther Alpha Beta Gamma               170.149      68.126    -171.446
+ Spherical polars Omega Phi Chi           90.959     -99.202      68.137
+ Direction cosines of rotation axis    -0.159898   -0.986992   -0.016733
+ Dave Smith                              -23.080      23.411     -16.434
+ X-PLOR polars Phi Psi Kappa              -5.974    -170.748      68.137
+ Lattmann Theta+ Theta2 Theta-             1.297      68.126     161.595
+ Rotation angle                              68.137
+<P>   
+ Nr of NCS operators written : (          1)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H10">10 </A>MAKING NEW MASKS</H2> </CENTER>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S27">10.1 </A>NEw ?</H3> 
+ <BR> list the current default values; in other words, these are
+the characteristics of a newly created mask (except for the
+origin and extent in some cases)
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S28">10.2 </A>NEw ORigin</H3> 
+ <BR> change the default origin
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S29">10.3 </A>NEw EXtent</H3> 
+ <BR> change the default extent
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S30">10.4 </A>NEw GRid</H3> 
+ <BR> change the default grid
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S31">10.5 </A>NEw CEll</H3> 
+ <BR> change the default cell
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S32">10.6 </A>NEw RAdius</H3> 
+ <BR> change the default atomic radius (for NEW PDB and ATOM_FIT)
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S33">10.7 </A>NEw RT_op</H3> 
+ <BR> change the default RT-operator (for NEW PDB, NEW BONES and
+NEW UNIT_CELL)
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAMA &gt; new rt rt_error_imp.o
+ NEW RT-operator : (   0.392    0.082    0.916    0.113    0.984
+    -0.137   -0.913    0.158    0.377   64.649  -34.211   -6.153)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S34">10.8 </A>NEw SAme</H3> 
+ <BR> make the origin, cell, grid and extent of an existing mask
+the defaults (for the NEXT NEW mask)
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S35">10.9 </A>NEw ENcompass</H3> 
+ <BR> If you want to combine masks that are in different places in space,
+normally the AND, OR, etc. operations only work in the part of
+space that the first mask has in common with the second. If you
+don't want that, you'll need to make sure that the grid of the
+first mask also encompasses the space occupied by the second mask.
+With the NEw ENcompass command you can set origin and extent values
+for the NEXT NEW mask, such that it will encompass the space
+of one or more other masks (even if it may not actually *occupy*
+any of that space).
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAMA &gt; new same m1
+ MAMA &gt; new enc m2
+ Current NEw ORigin  : (          4          38         -16)
+ Current NEw EXtent  : (         43          54          49)
+ Current mask origin : (         -4          32         -27)
+ Current mask extent : (         60          67          74)
+ New origin : (         -4          32         -27)
+ New extent : (         60          67          74)
+ MAMA &gt; new make
+ New mask ? (M3) m9
+ Nr of points set : (          0)
+ CPU total/user/sys :       1.6       1.6       0.0
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S36">10.10 </A>NEw FActor</H3> 
+ <BR> multiply grid, origin and extent by a constant
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S37">10.11 </A>NEw PAd</H3> 
+ <BR> set padding (for PDB, BONES and UNIT_CELL); this defines the
+number of EXTRA grid points that is added to the mask on
+BOTH sides
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S38">10.12 </A>NEw SPacing</H3> 
+ <BR> enter desired spacing of the grid (e.g., 0.8 A); MAMA will
+calculate the new grid values by dividing the cell axes by
+the spacing (you may need to change them slightly to get
+nice CCP4 numbers)
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAMA &gt; new spa 0.8
+ NEW grid : (     146      153      103)
+ MAMA &gt; new grid 144 156 104
+ NEW grid : (     144      156      104)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S39">10.13 </A>NEw REset_rt_operator</H3> 
+ <BR> reset the RT-operator (used in PDB, BONES and UNIT_CELL) to
+the identity operator
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S40">10.14 </A>NEw MAke</H3> 
+ <BR> create a new mask with the current defaults; all mask values
+are set to 0
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S41">10.15 </A>NEw PDb</H3> 
+ <BR> create a new mask from a set of atoms in a PDB file; the
+default cell and grid are taken, but the origin and extent
+depend on the position in space and the size of your
+molecule (i.e., as PDB_MASK) as well as on the default
+padding
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S42">10.16 </A>NEw BOnes/OLdbones</H3> 
+ <BR> ditto, based on an &quot;O&quot; data block file which contains Bones
+atoms (i.e., as BONES_MASK).
+ <BR> NEw BOnes - should be used with BONES files that contain a
+radius for each atom (the radius set with NEW RADIUS
+is NOT used in this case)
+ <BR> NEw OLdbones - should be used for BONES files without radii;
+each BONES atom gets the radius you set with NEW RADIUS
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S43">10.17 </A>NEw COpy</H3> 
+ <BR> create a new mask by copying an existing mask into it; the
+new mask inherits the cell from the existing mask, but the
+current default grid, origin and extent are used; this enables
+you to transfer your mask to a new grid and/or to alter the
+origin and extent (i.e., as MASK_NEW_GRID)
+ <BR> NOTE: as of version 2.1, this command should NOT be used;
+use NEW UNIT_CELL instead, since this option:
+ <BR> (a) automatically sets the padding to your current defaults
+ <BR> (b) attempts to keep the VOLUME of your new mask as close
+as possible to that of the original mask
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S44">10.18 </A>NEw UNit_cell</H3> 
+ <BR> make a copy of a mask in another spacegroup. The current
+default grid and cell are used, the origin and extent are
+calculated by the program. Note that the current padding
+AND RT-operator are also used ! This option serves two
+purposes:
+ <BR> - if you have a good mask from one structure in one spacegroup
+and you get another structure (different ligand, for example)
+in another spacegroup
+ <BR> - if you want to edit the mask around an NCS-related molecule
+ <BR> Multiple crystal-form averaging also required use of this option.
+ <BR> NOTE: as of version 2.1, this option also does its utmost to
+keep the volume of the new mask as close as possible to
+that of the original mask
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S45">10.19 </A>NEw BAll</H3> 
+ <BR> make a spherical mask around a point (X,Y,Z) with a radius R.
+You must supply the name of the new mask, followed by the
+values for X, Y, Z and R, respectively.
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S46">10.20 </A>NEw CUbe</H3> 
+ <BR> make a cubic mask around a point (X,Y,Z) with extent R. Note
+that the extent is HALF the side of the resulting cube, i.e.,
+using an extent of 10 A will give you a cube with dimensions
+20 * 20 * 20 A, centred on (X,Y,Z). See the HINTS section
+if you don't like cubic masks.
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H11">11 </A>IMPROVING MASKS</H2> </CENTER>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S47">11.1 </A>FIll_voids</H3> 
+ <BR> fill the voids inside a mask; your mask may NOT touch the
+boundaries of the grid
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S48">11.2 </A>ISland_erase</H3> 
+ <BR> erase little &quot;mask droplets&quot; that may be introduced by some
+MAMA options or by manual editing. These are little islands
+where the mask is set, but which are not connected to the
+bulk of the mask
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S49">11.3 </A>BLob_erase</H3> 
+ <BR> erase little &quot;mask droplets&quot;. All blobs which contain more
+than a certain number of grid points are kept; all others
+are removed. The difference with ISland_erase is that the
+BLob_erase command keeps any (disconnected) blobs, whereas
+ISland_erase only keeps the largest blob. This command may
+be useful when you are using MAMA to visualise tunnels and
+cavities using Delaney's algorithm.
+<P>   
+As of version 6.1.7, there is an optional parameter to impose
+an upper limit on the size of blobs you want to keep as well.
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S50">11.4 </A>SMooth</H3> 
+ <BR> make a mask surface smoother; for every non-mask point, the
+number of neighbours which ARE in the mask are counted; if
+this number (0-26) is greater than or equal to the parameter
+&quot;FACTOR&quot;, the point is included in the mask
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S51">11.5 </A>EXpand</H3> 
+ <BR> the same as SMooth with a factor of 1 (this adds one layer of
+points to the mask)
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S52">11.6 </A>CUt</H3> 
+ <BR> the opposite of SMooth; all points IN the mask which have
+&gt;= &quot;FACTOR&quot; neighbours which are not in the mask, are excluded
+from the mask
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S53">11.7 </A>COntract</H3> 
+ <BR> the same as CUt with a factor of 1 (this peels one layer of
+points from the mask)
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S54">11.8 </A>NOt</H3> 
+ <BR> take the logical NOT of a mask: all 0's become 1's and vice
+versa
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H12">12 </A> COMBINING MASKS</H2> </CENTER>
+<P>   
+These options combine two masks, but they alter only one.
+ <BR> If you combine two masks, both must have unit cell constants
+which are identical to within 0.01 A and 0.01 degrees ! Also,
+both must be on the SAME grid and they must have a non-zero overlap.
+Only points inside the common volume are compared; the others
+(if any) are NOT affected !
+Furthermore, MASK1 and MASK2 may not be identical.
+In all cases, the result of the operation is stored in MASK1 !
+Use the SIMILARITY option first if you want to get an idea of
+what will happen to your mask when you use one of these options.
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S55">12.1 </A>ANd</H3> 
+ <BR> logical operation: mask1 AND mask2
+ <BR> Only points which are in BOTH masks are retained in mask1
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAMA &gt; and m1 m7
+ ERROR --- Masks have different cell constants
+ MAMA &gt; and m1 m4
+ Mask     : (M1)
+ And Mask : (M4)
+ Nr of points set before : (      30854)
+ Lower limits common volume : (      31       45        8)
+ Upper limits common volume : (      78       97       68)
+ Limits first  mask  : (      11       58       12       64       10       70)
+ Limits second mask  : (       1       48        1       53        1       61)
+ Number of common mask points : (     155184)
+ Nr of points set after  : (      27761)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S56">12.2 </A>OR</H3> 
+ <BR> logical operation: mask1 OR mask2
+ <BR> Points which are either in mask1 OR in mask 2 are set to be
+in mask1
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S57">12.3 </A>BUtnot</H3> 
+ <BR> logical operation: mask1 AND (NOT mask2)
+ <BR> Only points which are IN mask1, BUT NOT in mask2 are retained
+in mask1
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S58">12.4 </A>XOr</H3> 
+ <BR> logical operation: mask1 XOR mask2
+ <BR> I.e.: (mask1 AND NOT mask2) OR (NOT mask1 AND mask2)
+only points which are in one of the masks, but not in the
+other, are retained in mask1
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H13">13 </A>REMOVING OVERLAP</H2> </CENTER>
+<P>   
+When used while your brain is active, these options are very
+powerful. They allow you to trim your mask in places where
+it overlaps with (non-) crystallographically related mates
+or to visualise places in the structure where a molecule
+might interact with a (NCS-) symmetry-related partner. See the
+HINTS at the end of this manual for clever tricks that help
+you find such contacts !
+<P>   
+The overlap commands require careful input ! In particular,
+you should define the asymmetric unit of your unit cell very
+accurately !
+<P>   
+The overlap option works as follows:
+ <BR> - it creates an &quot;overlap map&quot; the size of your asymmetric unit
+ <BR> - each point in the mask is subjected to ALL the NCS operators
+and forced into the asymmetric unit (by applying the symmetry
+operators of your space group); the point it ends up on is
+marked in the overlap map
+ <BR> - the overlap map is then processed so that it contains a
+count of the number of times a mask point ended up at a
+particular place in the asymmetric unit
+ <BR> - this new overlap map is &quot;averaged&quot; inside the mask, except that
+the counts are ADDED instead of averaged; this means, that
+if you have three molecules in the asymmetric unit, points
+without overlap will get a value of round about three (this
+is &quot;round about&quot; since the operators lead to non-integer
+grid points which have to be interpolated)
+ <BR> - if you do OVERLAP ERASE, all mask points which have a count
+higher than the value you supply will be removed from the
+mask. This value MUST be larger than the number of NCS
+operators; we recommend this number plus one.
+ <BR> - if you are wise, you don't use the ERASE option but rather
+the TRIM option ! If there is overlap, this means that
+two different parts of the mask end up in the same place
+after applying the NCS and/or symmetry operators and BOTH
+places will be &quot;flagged&quot; as giving rise to overlap. Using
+ERASE removes both parts but this will usually be too much.
+It is better to remove only points at the mask SURFACE which
+have overlap since this may be sufficient to get rid of (most
+of) the overlap ! This is exactly what TRIM does for you !
+It is recommended that you use TRIM two or three times in
+succession to remove all of the overlap without cutting too
+much off your mask.
+<P>   
+Note: from version 5.2 on, there is a new command, OVerlap UNit_cell,
+which is easier to use than OV TRim and OV ERase, and which
+should be spacegroup-general.
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S59">13.1 </A>OVerlap ?</H3> 
+ <BR> list the current settings for the overlap option
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S60">13.2 </A>OVerlap MOde</H3> 
+ <BR> select the algorithm for the overlap (trim, erase, ezd, asu)
+calculations. There are two options at present: LABEL (the
+original algorithm) and COUNT (a new method).
+As a rule of thumb, use the COUNT mode if you have either
+very few NCS operators (1, 2, maybe even 3) OR very many
+NCS operators (more than 31, maybe even fewer). In all
+other cases, you can use either option (there's not enough
+experience yet that suggests that one or the other is better).
+<P>   
+If you want to make an informed decision, here are the
+algorithms:
+<P>   
+*1* in both cases, all NCS operators are applied to each of
+the mask points. The resulting point will in general be
+non-integral; therefore the eight nearest points are
+flagged as follows:
+<P>   
+2A* in LABEL mode, each point is OR-ed with 2**N, where N
+is the number of the NCS operator (modulo 32, since we
+use 4-byte integers for the overlap map). Thus, this
+option counts for each point in the asymmetric unit
+WHICH operators give rise to this point, BUT NOT how
+often they do that, AND NOT if the number of NCS operators
+is greater than 31 !!! As a consequence, if you have
+only one NCS operator (e.g., a tetramer in the asymmetric
+unit for which you want to use proper symmetry), this
+option is useless, since each flagged point will obviously
+be considered to arise from operator number 1, but it
+is impossible to figure out HOW OFTEN a mask point gave
+rise to this point, i.e. to detect overlap. In general,
+any overlap between the mask under operator N and itself
+will go undetected !! On the other hand, if you have
+more than 31 operators, the ultimate count MAY be an
+underestimation of the actual overlap.
+<P>   
+2B* in COUNT mode, for each &quot;hit&quot; point in the asymmetric
+unit a simple counter is incremented. Since each mask
+point, under each NCS operator, will give rise to the
+flagging of EIGHT points in the asymmetric unit, you
+would expect that a normal, non-overlapping point
+would be flagged around eight times. For this reason,
+the accumulated counters are divided by eight afterwards,
+so as to get numbers comparable to those obtained with
+the LABEL algorithm.
+<P>   
+*3* for the ezd, trim and erase options, the asymmetric unit
+in which each point contains a counter (LABEL: an estimate
+of the number of NCS operators that &quot;hit&quot; that point;
+COUNT: the number of times that point is &quot;hit&quot;, divided
+by eight) is projected back onto the mask, but rather
+than &quot;averaging&quot;, the counters (obtained after interpolation)
+are accumulated. At the end of that, each well-behaved
+mask point would be expected to contain an overlap count
+close to the number of NCS operators (this can be used
+to decide on a proper cut-off to use for the trim and
+erase options).
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S61">13.3 </A>OVerlap ORigin</H3> 
+ <BR> define the origin of the ASYMMETRIC UNIT of your unit cell
+in GRID POINTS
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S62">13.4 </A>OVerlap EXtent</H3> 
+ <BR> define the extent of your ASYMMETRIC UNIT in grid points
+AND ADD ONE POINT TO EACH. For example, if your grid is
+100 110 64 and your spacegroup P212121, then one possible
+asymmetric unit is 0 - 1/2, 0 - 1/2, 0 - 1. In that case,
+the extent would be: 1/2*100+1 = 51 along the a-axis,
+1/2*110+1 = 56 along b and 1*64+1 = 65 along c.
+<P>   
+NOTE: from version 3.0 onward, you may add ONE, TWO or THREE
+points on all sides (must be the same number of extra
+points for each direction !). This turns out to be
+necessary for &quot;pathetic&quot; spacegroups such as R23 where
+the asymmetric unit runs from 0-1/3, 0-1/3, 0-1/2.
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S63">13.5 </A>OVerlap SYmm_op</H3> 
+ <BR> read the symmetry operators pertaining to your spacegroup from
+an &quot;O&quot;-style datablock file
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAMA &gt; ov sym symop.o
+ Nr of symmetry operators : (          4)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S64">13.6 </A>OV REset_ncs</H3> 
+ <BR> delete the current NCS-operators
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAMA &gt; ov reset_ncs
+ Nr of NCS RT operators : (          0)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S65">13.7 </A>OVerlap NCs_rt</H3> 
+ <BR> add NCS operators from an O-style datablock file. Unlike previous
+versions of the program, you can put all NCS operators in one
+O file if you like and read them in one go with this command.
+Don't forget to include the unit operator !
+ <BR> To get one file with all NCS operators, use something like
+&quot;write .lsq_rt_m1* all_ncs.o ;&quot; from within O, or
+&quot;cat rt_*.o &gt; all_ncs.o&quot; under Unix.
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAMA &gt; ov ncs rt_unit.o
+ New NCS RT operator : (          1)
+ MAMA &gt; ov ncs rt_error_imp.o
+ New NCS RT operator : (          2)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAMA &gt; ov ncs allncs.o
+<P>   
+ ==&gt; Read NCS operator : (.LSQ_RT_M9A_TO_A)
+<P>   
+ Nr of NCS operators :   1
+<P>   
+ NCSOP  1 =     1.0000000    0.0000000    0.0000000                  0.000
+ ...
+ Rotation angle                         0.000000
+<P>   
+ ==&gt; Read NCS operator : (.LSQ_RT_M9A_TO_B)
+<P>   
+ Nr of NCS operators :   1
+ ...
+ Rotation angle                       179.490646
+<P>   
+ ==&gt; Read NCS operator : (.LSQ_RT_M9A_TO_C)
+<P>   
+ Nr of NCS operators :   1
+ ...
+ Rotation angle                       179.362045
+<P>   
+ ==&gt; Read NCS operator : (.LSQ_RT_M9A_TO_D)
+<P>   
+ Nr of NCS operators :   1
+ ...
+ Nr of NCS operators now : (          4)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S66">13.8 </A>OVerlap EZd</H3> 
+ <BR> calculates the overlap map, &quot;averages&quot; it and writes the
+result to an EZD file. Mappage this EZD file and plot it
+at a level which is slightly higher than the number of
+NCS operators that you used. All areas where contours
+are drawn suffer from mask overlap.
+<P>   
+NOTE: in the output of OVERLAP EZD, TRIM and ERASE there are
+some checks as to whether or not you have picked a
+proper asymmetric unit. First, there's the number of
+grid points: the number of points in your asymmetric
+unit TIMES the number of crystallographic symmetry
+operators MUST be equal to the calculated number of
+grid points in your unit cell. (Don't worry, MAMA
+knows that you have added an extra point in all three
+directions !)
+ <BR> Second, the routine that calculates the overlap map
+prints something like:
+ <BR> Nr of errors in FRC2V : ( 0)
+ <BR> This is a count of the number of points which could not
+be brought into your asymmetric unit by applying your
+symmetry operators. If this number is not zero, you
+either have a wrong asymmetric unit, or a wrong set of
+symmetry operators.
+ <BR> Similarly, the &quot;averaging&quot; routine prints:
+ <BR> Severe FRCSYM errors : ( 0)
+ <BR> Again, if this number is non-zero, you made an error.
+See the example for the OVERLAP TRIM option.
+ <BR> Finally, MAMA prints which part of the unit cell will
+be checked:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+             Checking the following part of the unit cell :
+             Start in fractional coordinates : (   0.000    0.000    0.000)
+             End   in fractional coordinates : (   0.500    0.500    1.000)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+Naturally, these limits should coincide with those of
+the asymmetric unit you had in mind (check the International
+Tables when in doubt).
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S67">13.9 </A>OVerlap ERase</H3> 
+ <BR> remove all points from the mask which have overlap. Use of
+this option is NOT recommended (see comments above) !
+You must supply the mask name, the minimum count for points
+to be removed and (optional !) the name of an EZD-file to
+which the overlap map will be written (but the overlap map
+will be out-dated already since you just removed all overlap).
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S68">13.10 </A>OVerlap TRim</H3> 
+ <BR> remove all SURFACE points from the mask which overlap; same
+parameters as for ERASE
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S69">13.11 </A>OVerlap ASu_mask</H3> 
+ <BR> expand an existing mask into an asymmetric unit and store
+the result in a new mask (this can be used with certain
+solvent flattening programs). The way this works is as
+follows: an overlap map is created as with TRIM etc.,
+afterwards, all points which have a count of at least
+ONE are set to &quot;1&quot; in the new mask.
+<P>   
+NOTE: the origin of the new mask will be the same as that
+of the asymmetric unit; its extent will normally be that of
+the asymmetric unit minus 1, 2 or 3 points in all three directions.
+However, if your solvent-flattening software complains that
+your mask doesn't cover an entire asymmetric unit, you can
+add 0 or 1 points in any or all directions with the fudge
+margin parameters (default is 0 for all three). For instance,
+for P212121 in CCP4, the asymmetric unit is 0-1, 0-1, 0-1/4.
+In order for the OVerlap ASu_mask option to give a proper
+asymmetric unit, you must use fudge margins of 0, 0, 1.
+<P>   
+NOTE: since the asymmetric-unit mask is generally not a continous
+&quot;blob&quot;, you should NOT use the regular &quot;clean-up&quot; commands such
+as COntract, ISland_erase and EXpand on it !!!
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAMA &gt;  over asu m2 m1 0 0 1
+ ASU Mask : (M2)
+ Fudge margins : (       0        0        1)
+ Assume margin (extra points) : (       1)
+ Nr of points in unit cell  : (     704000)
+ Nr in your asymmetric unit : (     176000)
+ Nr of symmetry operators   : (          4)
+ Asymm. unit * symm. opers. : (     704000)
+ Extra points at all sides  : (          1)
+ Creating overlap map (mode COUNT) ...
+ Nr of symmetry operators : (       4)
+ Nr of NCS RT   operators : (       3)
+ Checking the following part of the unit cell :
+ Start in fractional coordinates : (   0.000    0.000    0.000)
+ End   in fractional coordinates : (   1.000    1.000    0.250)
+ ... Busy ...
+ Expanding mask ...
+ Nr of errors in FRC2V : (          0)
+ Counting ...
+ Counts for asymmetric unit :
+ Nr of points set    0 to    1 times :      45378
+ Nr of points set    1 to    2 times :      66977
+ Nr of points set    2 to    3 times :         59
+ Nr of suspect points        :         59
+ Nr of points in solvent areas ..........      78173
+ Solvent areas as %-age of asymm. unit ..      41.02
+ ASU extent : (     100      110       17)
+ Nr of points set : (      98046)
+ CPU total/user/sys :      10.1      10.1       0.0
+ MAMA &gt; li m2
+ Nr of masks in memory : (       2)
+<P>   
+ Mask  2 = M2
+ File    = not_defined
+ Grid    =        100       110        64
+ Origin  =          0         0         0
+ Extent  =        100       110        17
+ Cell    =     91.800    99.500    56.500    90.000    90.000    90.000
+ Nr of points =     187000      Set   =      98046 ( 52.43 %)
+ Cell volume  =  5.161E+05      Voxel =  7.331E-01
+ Grid volume  =  1.371E+05      Mask  =  7.187E+04
+ Spacing =      0.918     0.905     0.883
+ Top     =         99       109        16
+ Changes = T
+ Label   = No comment
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S70">13.12 </A>OVerlap UNit_cell</H3> 
+ <BR> new overlap removal option, available since version 5.2 of MAMA.
+In essence, this is a generalised version of the OV TRim and
+OV ERase commands, with an important difference: rather than
+working on an asymmetric unit, this commands works on an entire
+unit cell. This has the advantage that you don't have to worry
+about the precise extent of the asymmetric unit, and that this
+command should also work for spacegroup with macabre asymmetric
+unit limits (such as &quot;y&lt;x&quot;). The only potential disadvantage
+is that it requires MAMA to allocate space for an entire unit
+cell (increase the MASKSIZE environment variable or command-line
+parameter if necessary).
+<P>   
+This command ignores the OV ORigin and OV EXtent settings, instead
+using a fixed origin of (0,0,0), and calculating the extent of your
+unit cell from the grid of the mask on which you work. The OV MOde
+is used however, so you can still use LABEL and COUNT modes. Also,
+the NCS and symmetry operators must still be provided.
+<P>   
+The OVerlap UNit_cell command has the following parameters:
+ <BR> - mask = name of the mask for which you want to remove overlap
+ <BR> - factor = the overlap cutting factor (same as for the OV ERase
+and OV TRim commands)
+ <BR> - trim = the surface cutting factor: only overlapping mask points
+with at least &quot;trim&quot; non-mask neighbours (0 to 26) will be removed
+from the mask. In the OV TRim command, this number is always fixed
+at 1, in the OV ERase command, it is always 0. Here, you can set
+it yourself, enabling you to emulate both the TRim and ERase
+behaviours, but allowing more flexibility by letting you set the
+precise number yourself. (Note: this &quot;trim&quot; parameter is the same
+as the &quot;factor&quot; parameter of the CUt command.)
+ <BR> - nextra = number of extra points that will be added on all sides
+of the unit cell (sometimes necessary; a value of 1 or 2 is
+recommended)
+ <BR> - ezdfile = optional; see the OV TRim and ERase commands
+<P>   
+At present, the easy way to remove overlap is as follows:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+! read the mask
+re m1 coma_okay.mask
+li m1
+! define spacegroup symmetry
+ov sym p212121
+! define all NCS operators
+ov ncs rt_unit.o
+ov ncs rt_a_to_b.o
+ov ncs rt_a_to_c.o
+! list settings
+ov ?
+! remove overlap (three cycles)
+ov un m1 4.0 5 2
+ov un m1 4.0 5 2
+ov un m1 4.0 5 2
+! clean up the mask a bit
+contract m1
+island m1
+expand m1
+! save the new mask
+wr m1 coma_ovtrim.mask
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAMA &gt; ov un m1 4.0 5 2
+ Unit-cell-based overlap removal for mask : (M1)
+ Nr of points set before : (      29669)
+ Unit cell origin : (          0           0           0)
+ Unit cell grid   : (        100         110          64)
+ Unit cell extent : (        102         112          66)
+ Unit cell spacing (A) : (   0.918    0.905    0.883)
+ Nr of points in unit cell   : (     704000)
+ Nr of extra points for grid : (          2)
+ Nr of unit cell grid points : (     753984)
+ Creating overlap map (mode COUNT) ...
+ Nr of symmetry operators : (       4)
+ Nr of NCS RT   operators : (       3)
+ Checking the following part of the unit cell :
+ Start in fractional coordinates : (   0.000    0.000    0.000)
+ End   in fractional coordinates : (   1.010    1.009    1.016)
+ ... Busy ...
+ Expanding mask ...
+ Nr of errors in FRC2V : (          0)
+ Counting ...
+ Counts for asymmetric unit :
+ Nr of points set    0 to    1 times :     156667
+ Nr of points set    1 to    2 times :     241448
+ Nr of points set    2 to    3 times :       1688
+ Nr of suspect points        :       1688
+ Nr of points in solvent areas ..........     354181
+ Solvent areas as %-age of asymm. unit ..      46.97
+ &quot;Averaging&quot; overlap map ...
+ Map  Cell   : (  91.800   99.500   56.500   90.000   90.000   90.000)
+ Spacing     : (   0.918    0.905    0.883)
+ Map  origin : (       0        0        0)
+ Map  extent : (     102      112       66)
+ Mask origin : (      25       39       -8)
+ Mask extent : (      78       63       79)
+ FORGN : (   0.000    0.000    0.000)
+ FEXT  : (   1.010    1.009    1.016)
+ GEXT  : (   1.000    1.000    1.000)
+ ... Busy ...
+ Nr of boundary points : (          0)
+ Severe FRCSYM errors  : (          0)
+ Counting neighbours ...
+ Removing overlapping mask points ...
+ Min count for removal       : (   4.000)
+ Min nr of nbrs outside mask : (       5)
+ Points with count    0 -    1 =         31
+ Points with count    1 -    2 =       1681
+ Points with count    2 -    3 =      14356
+ Points with count    3 -    4 =      12728
+ Points with count    4 -    5 =        659
+ Points with count    5 -    6 =        213
+ Points with count    6 -    7 =          1
+ Total nr of mask points : (      29669)
+ Suspicious mask points  : (        873)
+ Percentage suspicious   : (   2.942)
+ Nr of mask points removed : (        172)
+ Percentage removed        : (   0.580)
+ Nr of points set after : (      29497)
+ CPU total/user/sys :      16.6      16.5       0.1
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H14">14 </A>VRML COMMANDS</H2> </CENTER>
+<P>   
+From version 5.0 on, MAMA can produce VRML files of masks and
+molecules (VRML = Virtual Reality Modelling Language). Rather than
+writing a dedicated set of routines to display these, use of
+of VRML is trivial for the programmer, and easy for the user.
+<P>   
+Some things you may need to know:
+ <BR> - VRML files have the extension &quot;.wrl&quot;
+ <BR> - use your favourite browser with VRML viewer plug-in to inspect
+the displays (you can launch it from inside MAMA, e.g.:
+&quot;$ netscape test.wrl &amp;&quot;)
+ <BR> - colours can be defined by name or by RGB values (red-green-blue,
+three numbers in the range 0-1). The VRml COlour_list command
+will list all (&gt; 400) predefined colour names and their RGB
+values
+<P>   
+A typical series of commands would be:
+ <BR> - (generate or read mask)
+ <BR> - VRml SEtup (if necessary)
+ <BR> - VRml INit filename
+ <BR> - VRml DOt mask
+ <BR> - VRml TRace pdbfile
+ <BR> - VRml CEll mask
+ <BR> - VRml BOx mask
+ <BR> - VRml CLose_file
+<P>   
+The VRML interface was written for two purposes:
+ <BR> - quick inspection of masks and models (much quicker than
+first writing them, then reading them into O, etc.; also,
+not all MAMA users have access to O); since you can write
+any number of masks and molecules to a VRML file you can
+quickly see the results of mask improvement operations,
+you can compare different masks, etc.
+ <BR> - creating files with masks and models which you can
+include in your web pages (in this case, don't forget to
+compress the files with the &quot;gzip&quot; command to reduce their
+size !)
+<P>   
+The options have been kept simple and fast. For fancier pictures
+of molecules you should use dedicated software (e.g., all-atom
+ball-and-stick models). Masks are drawn as hollow sets of
+points (i.e., dot surfaces).
+<P>   
+<A HREF="http://xray.bmc.uu.se/cgi-bin/gerard/image_page.pl?image=usf/pics/vrmlmask.jpg">
+Example of a VRML display generated with MAMA</A>.
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S71">14.1 </A>VRml SEtup (define some parameters)</H3> 
+<P>   
+With this command you can define the following parameters:
+<P>   
+- the central atom type (&quot; CA &quot; for proteins)
+ <BR> - the maximum allowed distance between two subsequent central
+atoms for them to be connected on the display (4.5 &Aring; is a
+reasonable cut-off for CA-CA distances in proteins)
+ <BR> - the background colour (default is black)
+ <BR> - the default colour for molecules (default is white)
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAMA &gt; vr set &quot; CA &quot; 4.5 white &quot;0.35 0.87 1.0&quot;
+ Central atom type : ( CA)
+ Max central atom distance : (   4.500)
+ Background colour : (1.000000 1.000000 1.000000)
+ Default colour : (0.3500000 0.8700000 1.000000)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAMA &gt; vr se
+ Central atom type ? ( CA)
+ Central atom type : ( CA)
+ Max central atom distance ? (   4.500000)
+ Max central atom distance : (   4.500)
+ Background colour ? (1.000000 1.000000 1.000000) grey
+ Background colour : (0.5000000 0.5000000 0.5000000)
+ Default colour ? (0.3500000 0.8700000 1.000000) red
+ Default colour : (1.000000 0.0000000E+00 0.0000000E+00)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S72">14.2 </A>VRml INit (open a new VRML file)</H3> 
+<P>   
+This command opens a new VRML file (default: same file name as
+before if the file name is not provided). To actually write
+masks and molecules to it, use the VRml DOt and VRml TRace commands
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAMA &gt; vr in
+ Open VRML file : (mama.wrl)
+ Opened VRML file
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S73">14.3 </A>VRml CLose_file (close current VRML file)</H3> 
+<P>   
+The current VRML file is not closed until you open a new VRML
+file, or use this command. It may be necessary to close the
+file so that the output buffer is flushed properly and your
+VRML browser can read the file.
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAMA &gt; vr close
+ Command &gt; (vr close)
+ Closed VRML file
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S74">14.4 </A>VRml COlour_list (list predefined colour names)</H3> 
+<P>   
+To help you find colours, more than 400 colour names have been
+predefined. This command will list their names and their
+RGB values.
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAMA &gt; vr co
+ Nr of colours : (        411)
+ #   1 (black                ) =     12595212 RGB    0.000   0.000   0.000
+ #   2 (red                  ) =     12596212 RGB    1.000   0.000   0.000
+ #   3 (green                ) =     13619212 RGB    0.000   1.000   0.000
+ #   4 (blue                 ) =   1061171212 RGB    0.000   0.000   1.000
+ #   5 (yellow               ) =     13620212 RGB    1.000   1.000   0.000
+ #   6 (magenta              ) =   1061172212 RGB    1.000   0.000   1.000
+ #   7 (cyan                 ) =   1062195212 RGB    0.000   1.000   1.000
+ #   8 (light_grey           ) =    852276012 RGB    0.800   0.800   0.800
+ #   9 (grey                 ) =    537395712 RGB    0.500   0.500   0.500
+ #  10 (dark_grey            ) =    222515412 RGB    0.200   0.200   0.200
+ #  11 (white                ) =   1062196212 RGB    1.000   1.000   1.000
+ #  12 (gainsboro            ) =    917351274 RGB    0.862   0.862   0.862
+ #  13 (honeydew             ) =   1000330169 RGB    0.941   1.000   0.941
+ #  14 (mistyrose            ) =    938355700 RGB    1.000   0.894   0.882
+ ...
+ # 407 (dodgerblue2          ) =    991454330 RGB    0.110   0.525   0.933
+ # 408 (lightsteelblue3      ) =    855328391 RGB    0.635   0.709   0.803
+ # 409 (green3               ) =     13417484 RGB    0.000   0.803   0.000
+ # 410 (orangered4           ) =     12745261 RGB    0.545   0.146   0.000
+ # 411 (mediumorchid1        ) =   1061582714 RGB    0.878   0.401   1.000
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S75">14.5 </A>VRml DOt_surface (add a mask to the current VRML file)</H3> 
+<P>   
+Adds the mask you select to the current VRML file in the colour
+you indicate (if any). Only the surface points are written
+(to keep the files small).
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAMA &gt; vr ini
+ Closed VRML file
+ Open VRML file : (mama.wrl)
+ Opened VRML file
+ MAMA &gt; vr do m2 green
+ VRML - Dot surface for mask M2
+ Nr of points written : (      13227)
+ CPU total/user/sys :       2.1       2.0       0.0
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S76">14.6 </A>VRml TRace (add a trace of a molecule to the current VRML file)</H3> 
+<P>   
+Adds the central-atom trace of the molecule in the PDB file you
+supply, in the colour you specify (if any), to the current
+VRML file. Use the VRml SEtup command to define the central
+atom type and the maximum distance between sequential central
+atoms for them to be connected.
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAMA &gt; vr tr /nfs/pdb/full/1cbs.pdb yellow
+ VRML - Trace of  CA  atoms for PDB file /nfs/pdb/full/1cbs.pdb
+ Nr of atoms written : (        137)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S77">14.7 </A>VRml CEll (add a unit cell to the current VRML file)</H3> 
+<P>   
+Adds a unit cell. You must supply the mask name. Optionally,
+you can specify the drawing colour, whether the cell should
+be drawn as lines or as a solid body, and you can supply
+offsets (integeral numbers of unit cells) so you can show other
+unit cells than the one with x,y,z = 0-&gt;1.
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAMA &gt; vr cel m1 green line -1 1 0
+ VRML - Cell for mask M1
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S78">14.8 </A>VRml BOx (adds a mask's box to the current VRML file)</H3> 
+<P>   
+Adds the box of a selected mask. This can be helpful to see if
+the mask extends close to the borders of its grid.
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAMA &gt; vr box m1 purple
+ VRML - Box for mask M1
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H15">15 </A>WILDCARD</H2> </CENTER>
+<P>   
+The following options accept the wildcard character &quot;*&quot;, i.e.,
+if you type an asterisk instead of a maskname, the operation
+will be carried out for ALL masks in memory:
+ <BR> LIST, DELETE, FILL_VOIDS, ISLAND_ERASE, NBR_COUNT, BORDER_CHECK,
+SMOOTH, EXPAND, CUT, CONTRACT and NOT.
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H16">16 </A>FORMATS</H2> </CENTER>
+<P>   
+Fortran code for reading/writing masks is available from the
+O ftp-server (directory pub/gerard/extras/fortran).
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H17">17 </A>SOLVENT-FLATTENING MASKS</H2> </CENTER>
+<P>   
+Generating a mask for solvent flattening is quite different from
+generating a mask for averaging. In the former case, the mask
+should cover one or more asymmetric units, and depending on the
+distribution of the molecules, it will usually be discontinous
+(different parts of your molecule will be in different places
+in the asymmetric unit). In the latter case, the mask is continuous
+and thus tools that assume this can be used (e.g., EXpand,
+COntract and ISland_erase).
+<P>   
+If you don't have an atomic model yet, but you do have a mask from
+averaging (e.g., from COMA), you can generate a solvent-flattening
+mask by expanding the mask (under non-crystallographic and
+crystallographic symmetry) to fill an asymmetric unit.
+<P>   
+If you do have an atomic model, you can proceed in two different
+ways:
+<P>   
+- first symmetry-expand the model, then generate the mask (this has
+the advantage that it can also be used to generate a mask around an
+entire unit cell). For this you will need the USF programs MAMA
+(version 6.1.2 or later) and XPAND (version 1.7.1 or later)
+<P>   
+- first generate the mask from the model, then symmetry-expand it
+(this has the advantage that you can improve the mask before
+you expand it with COntract etc.). For this you will need MAMA
+(version 6.1.2 or later)
+<P>   
+Whichever method you use, you must begin by establishing the
+precise definition of the asymmetric unit that the programs
+you will be using expect. For instance, in P212121 the CCP4
+programs insist you select your asymmetric unit as 0-1, 0-1,
+0-1/4 (and not as 0-1/2, 0-1/2, 0-1, which is an equally
+valid choice purely crystallographically).
+<P>   
+Next, you need to decide or find out what grid you are going
+to use, and from that calculate the extent of your asymmetric
+unit in grid points.
+<P>   
+In the following, we shall discuss the two cases (first mask,
+then expansion, versus first expansion, then mask) separately.
+<P>   
+Thanks to Erik Vogan and Venki Ramakrishnan for useful comments.
+<P>   
+Venki Ramakrishnan suggested a third method which is to generate
+a model map (e.g., with SFALL if you use CCP4) and to convert
+that into a mask. Perhaps this is the easiest way to do it :-)
+For more details, see the manual of the CCP4 program MAPMASK.
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S79">17.1 </A>MASK FIRST, EXPANSION SECOND</H3> 
+<P>   
+If you have a mask, either from earlier round of NCS averaging,
+or generated from an atomic model (e.g., an initial model you
+built, or a molecular replacement solution), then you can
+simply expand it under (non-)crystallographic symmetry with
+MAMA to get a mask that covers the asymmetric unit.
+<P>   
+In the following example, we use the P2 myelin data that are
+distributed with RAVE and O. This is what we have:
+<P>   
+- cell = 91.8 99.5 56.5 90 90 90
+ <BR> - spacegroup = P212121
+ <BR> - grid 100 110 64
+<P>   
+In this case, we have a mask around one molecule (in a file called
+p2.mask) and three-fold NCS (with NCS operators in O format in
+files called rt_unit.o, rt_a_to_b.o and rt_a_to_c.o). If you
+don't have NCS, all you need is the unit operator which looks like
+this:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+unit_operator R 12 (3f15.7)
+      1.0000000      0.0000000      0.0000000
+      0.0000000      1.0000000      0.0000000
+      0.0000000      0.0000000      1.0000000
+      0.0000000      0.0000000      0.0000000
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+In spacegroup P212121, CCP4 wants the asymmetric unit to be 0-1,
+0-1, 0-1/4, i.e. if the origin is 0, 0, 0 then the extent of
+the asymmetric unit in grid points is 100 110 16. In fact,
+CCP4 wants an extra point in the C direction, so this should be
+17 instead of 16.
+<P>   
+The following MAMA recipe will generate our asymmetric unit mask
+(make sure to check the write-up for each command elsewhere in
+this manual !):
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ! read the &quot;molecular mask&quot;
+ read m1 p2.mask
+ ! choose overlap mode &quot;count&quot;
+ ov mode count
+ ! origin of ASU is 0 0 0
+ ov origin 0 0 0
+ ! the extent should be 100 110 16 PLUS 1, 2, or 3 points added
+ ! in each direction
+ ov ext 101 111 17
+ ! spacegroup operators
+ ov sym p212121
+ ! reset NCS operators
+ ov reset
+ ! read all NCS operators (they could also be in one file);
+ ! if you don't have NCS, supply the unit operator
+ ov ncs rt_unit.o
+ ov ncs rt_a_to_b.o
+ ov ncs rt_a_to_c.o
+ ! now generate the asymmetric-unit mask. we need to fudge the
+ ! extent of this mask by 1 point along C for CCP4
+ over asu m2 m1 0 0 1
+ ! check that the mask is okay
+ li m2
+ ! save it
+ wr m2 p2_asu.mask
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+At this stage, you probably want to check the mask in O. When you're
+happy, convert it to CCP4 format and perhaps expand it to cover an
+entire unit cell:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ mama2ccp4  maskin p2_asu.mask    maskout mama_ccp4.msk
+ mapmask    mskin  mama_ccp4.msk  mskout  mama_ccp4_cell.msk  &lt;&lt; EOF
+SYMM P212121
+XYZLIM CELL
+END
+EOF
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S80">17.2 </A>EXPANSION FIRST, MASK SECOND</H3> 
+<P>   
+If you have an appropriate atomic model (i.e., you shouldn't be
+missing any domains or loops in this model, or the corresponding
+areas in the map will be flattened during the solvent flattening !),
+you can first expand that into slightly more than an asymmetric
+unit or unit cell. The reason why we need to cover slightly more
+than the asymmetric unit or unit cell is that atoms that lie just
+outside it will still contribute to the mask (if you use a masking
+radius of 3 &Aring;, you will need a margin of at least that much on
+all sides - divide by the cell axis lengths to find out how much
+that is in fractional coordinates, and err on the side of caution).
+<P>   
+For the expansion we will use the XPAND program (option &quot;F&quot;):
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Task ? (N) d
+ Input  PDB file ? (in.pdb) 1pmp.pdb
+<P>   
+ Reading PDB file ...
+ CRYST1 card found : (CRYST1   91.800   99.500   56.500  90.00  90.00
+  90.00 P 21 21 21   12  1PMP 178)
+ Cell axes (A)     : (  91.800   99.500   56.500)
+ Cell angles (deg) : (  90.000   90.000   90.000)
+ Spacegroup name   : (P 21 21 21)
+ SGS operator file : (p212121.sym)
+<P>   
+ Task ? (D) f
+ Input  PDB file ? (1pmp.pdb)
+ Output PDB file ? (out.pdb) asu.pdb
+ SGS operator file ? (p212121.sym)
+ OSYM : (/home/gerard/oinfo/symm/)
+ Opened file : (/home/gerard/oinfo/symm/p212121.sym)
+ Opening O datablock : (/home/gerard/oinfo/symm/p212121.sym)
+ O-style symm-ops for spacegroup P212121
+ 19 4 4 P212121 PG222 ORTHORHOMBIC 'P 21 21 21'
+ Datablock : (.SPACE_GROUP_OPERATORS)
+ Data type : (R)
+ Number    : (48)
+ Format    : ((3F15.6))
+ Nr of SGS operators : (          4)
+<P>   
+ Nr of spacegroup symmetry operators :   4
+<P>   
+ [...]
+<P>   
+ Cell constants ? (  91.800   99.500   56.500   90.000   90.000   90.000)
+ Select option:
+ M = apply to the Molecule as a whole
+ A = apply to each Atom individually
+ Option (M/A) ? (M) a
+ Max allowed fractional range [-1,+2&gt;
+ Fractional lower limits ? (   0.000    0.000    0.000) -0.1 -0.1 -0.1
+ Fractional upper limits ? (   1.000    1.000    1.000) 1.1 1.1 0.35
+<P>   
+ Reading PDB file ...
+<P>   
+ Nr of lines read : (       3440)
+ Nr of atoms read : (       3192)
+<P>   
+ Nr of atoms written : (       8367)
+ Nr of lines written : (       8615)
+<P>   
+ Off-spring counts :
+ Nr of atoms with      6 off-spring =     59
+ Nr of atoms with      5 off-spring =     87
+ Nr of atoms with      4 off-spring =    375
+ Nr of atoms with      3 off-spring =   1084
+ Nr of atoms with      2 off-spring =   1239
+ Nr of atoms with      1 off-spring =    348
+ Nr of atoms with      0 off-spring =      0
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+So now we have a PDB file that contains all atoms in the range
+-0.1 -&gt; +1.1, -0.1 -&gt; +1.1, -0.1 -&gt; +0.35 (in fractional
+coordinates). The next step is to generate a mask around
+these atoms, and then to carve out precisely one asymmetric
+unit. This we do with MAMA, and the recipe is:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ! define the cell constants
+ new cell 91.8 99.5 56.5 90 90 90
+ ! define the grid
+ new grid 100 110 64
+ ! define the masking radius around the atoms
+ new rad 3.0
+ new ?
+ ! generate the mask from the (more than one) asymmetric unit
+ ! full of atoms generated with XPAND
+ new pdb m1 asu.pdb
+ li m1
+ ! define the origin of the asymmetric unit
+ new origin 0 0 0
+ ! define the extent of the asymmetric unit that your solvent-flattening
+ ! software expects (here: 0-1, 0-1, 0-1/4 + 1 point for CCP4 P212121)
+ new extent 100 110 17
+ ! copy the corresponding part of the first mask we generated
+ new copy m2 m1
+ li m2
+ wr m2 p2_xpa.mask
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+At this stage, you probably want to check the mask in O. When you're
+happy, convert it to CCP4 format and perhaps expand it to cover an
+entire unit cell:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ mama2ccp4  maskin p2_xpa.mask    maskout mama_ccp4.msk
+ mapmask    mskin  mama_ccp4.msk  mskout  mama_ccp4_cell.msk  &lt;&lt; EOF
+SYMM P212121
+XYZLIM CELL
+END
+EOF
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H18">18 </A>KNOWN BUGS</H2> </CENTER>
+<P>   
+(1) Overlap removal doesn't work with pathetic asymmetric units
+which have borders defined as &quot;y&lt;x&quot; etc.
+<P>   
+(2) There is no provision for overlap removal when multiple domain
+masks are used.
+<HR NOSHADE>    <A HREF="http://xray.bmc.uu.se/usf/" target="_top">
+<IMG ALIGN="right" BORDER="0" SRC="usf_logo.gif"
+ALT="Uppsala Software Factory"></A>
+<FONT SIZE=-1>
+<B> <I> Created at Thu Jun 26 11:57:38 2008
+by MAN2HTML version 070111/2.0.8 . This manual
+describes MAMA, a program of the <A HREF="http://xray.bmc.uu.se/usf/" target="_top">Uppsala
+Software Factory</A> (USF), written and maintained by <A HREF="http://xray.bmc.uu.se/gerard"
+target="_blank">Gerard Kleywegt</A>. &copy; 1992-2007.
+</I> </B> </FONT><P>
+<IMG SRC="http://xray.bmc.uu.se/cgi-bin/nph-count?width=6&link=http://alpha2.bmc.uu.se/~gerard/www/manuals/mama_man.html">
+</body></html>

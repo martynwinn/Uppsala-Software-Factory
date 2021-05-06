@@ -1,0 +1,256 @@
+<html><head><!-- This document was created for ZPROF at Fri Jan 14 20:12:44 2005 from
+../prosite/zprof.txt by MAN2HTML version 050114/2.0.6 -->
+<title>Uppsala Software Factory - ZPROF Manual</title>
+<meta name="DESCRIPTION" content="Manual for Gerard 
+Kleywegt's program ZPROF">
+<meta name="KEYWORDS" content="manual software Gerard 
+Kleywegt program ZPROF structural biology 
+protein X-ray crystallography macromolecular molecular
+Uppsala Software Factory bioinformatics">
+</head><body bgcolor="#fefefe" background="back.gif">
+
+<A HREF="http://xray.bmc.uu.se/usf/" target="_top">
+<IMG ALIGN="right" BORDER="0" SRC="usf_logo.gif"
+ALT="Uppsala Software Factory"></A>
+
+<H2>  Uppsala Software Factory - ZPROF Manual</H2> <P>   
+<UL>  
+<LI><H3>  <A HREF="#H1">1  </A>ZPROF - GENERAL INFORMATION</H3> 
+<LI><H3>  <A HREF="#H2">2  </A>REFERENCES</H3> 
+<LI><H3>  <A HREF="#H3">3  </A>VERSION HISTORY</H3> 
+<LI><H3>  <A HREF="#H4">4  </A>DESCRIPTION</H3> 
+<LI><H3>  <A HREF="#H5">5  </A>KNOWN BUGS</H3> 
+<LI><H3>  <A HREF="#H6">6  </A>UNKNOWN BUGS</H3> 
+</UL> 
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H1">1 </A>ZPROF - GENERAL INFORMATION</H2> </CENTER>
+<P>   
+Program : ZPROF
+ <BR> Version : 001121
+ <BR> Author : Gerard J. Kleywegt, Dept. of Cell and Molecular Biology,
+Uppsala University, Biomedical Centre, Box 596,
+SE-751 24 Uppsala, SWEDEN
+ <BR> E-mail : gerard@xray.bmc.uu.se
+ <BR> Purpose : calculate Z-scores for profile/database scan results
+ <BR> Package : SBIN
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H2">2 </A>REFERENCES</H2> </CENTER>
+<P>   
+Reference(s) for this program:
+<P>   
+* 1 * G.J. Kleywegt &amp; T.A. Jones (1998). Databases in protein
+crystallography. Acta Cryst D54, 1119-1131.
+[http://xray.bmc.uu.se/gerard/papers/databases.html]
+[http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=PubMed&amp;cmd=Retrieve&amp;list_uids=10089488&amp;dopt=Citation]
+[http://scripts.iucr.org/cgi-bin/paper?ba0001]
+<P>   
+* 2 * Kleywegt, G.J., Zou, J.Y., Kjeldgaard, M. &amp; Jones, T.A. (2001).
+Around O. In: &quot;International Tables for Crystallography, Vol. F.
+Crystallography of Biological Macromolecules&quot; (Rossmann, M.G.
+&amp; Arnold, E., Editors). Chapter 17.1, pp. 353-356, 366-367.
+Dordrecht: Kluwer Academic Publishers, The Netherlands.
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H3">3 </A>VERSION HISTORY</H2> </CENTER>
+<P>   
+970813 - 0.1 - first version
+ <BR> 971103 - 1.0 - cleaned up code and manual
+ <BR> 001121 - 1.1 - increased max nr of sequences from 100,000 to 1,000,000
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H4">4 </A>DESCRIPTION</H2> </CENTER>
+<P>   
+ZPROF is a simple non-interactive program which reads a *sorted* list
+of profile/sequence scores (calculated with the pftools-program
+&quot;pfsearch&quot;) and calculates Z-scores.
+<P>   
+Usage: ZPROF [Z-score cut-off] &lt; sorted_list &gt; log_file
+<P>   
+The value for the Z-score cut-off is optional (defaults to 4.0).
+<P>   
+Typical example:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+pfsearch -a aligned.prf /home/gerard/lib/sprot.dat | &amp; tee pfsearch_all.log
+sort -nr pfsearch_all.log &gt; pfsearch_all.sorted
+ZPROF 3.5 &lt; pfsearch_all.sorted &gt; zprof.top
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+The output may look as follows:
+<P>   
+(1) The Z-score cut-off value is set to the default; if a command-line
+argument is found which can be interpreted as a real or integer
+number, that cut-off is used instead:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ *** ZPROF *** ZPROF *** ZPROF *** ZPROF *** ZPROF *** ZPROF *** ZPROF ***
+<P>   
+ Version  - 971103/1.0
+ (C) 1992-1999 Gerard J. Kleywegt, Dept. Cell Mol. Biol., Uppsala (S)
+ User I/O - routines courtesy of Rolf Boelens, Univ. of Utrecht (NL)
+ Others   - T.A. Jones, G. Bricogne, Rams, W.A. Hendrickson
+ Others   - W. Kabsch, CCP4, PROTEIN, E. Dodson, etc. etc.
+<P>   
+ Started  - Mon Oct 11 19:32:25 1999
+ User     - gerard
+ Mode     - interactive
+ Host     - sarek
+ ProcID   - 13383
+ Tty      - /dev/ttyq12
+<P>   
+ *** ZPROF *** ZPROF *** ZPROF *** ZPROF *** ZPROF *** ZPROF *** ZPROF ***
+<P>   
+ Reference(s) for this program:
+<P>   
+ *  1 * G.J. Kleywegt &amp; T.A. Jones (1998). Databases in protein
+        crystallography. Acta Cryst D54, 1119-1131.
+        [http://xray.bmc.uu.se/gerard/papers/databases.html]
+        [http://www.ncbi.nlm.nih.gov/htbin-post/Entrez/query?uid=10089488&amp;form=6&amp;db=m&amp;Dopt=b]
+        [http://www.iucr.org/iucr-top/journals/acta/tocs/actad/1998/actad5406_1.html]
+<P>   
+ *  2 * G.J. Kleywegt, J.Y. Zou, M. Kjeldgaard &amp; T.A. Jones (1999 ?).
+        Chapter 25.2.6.  Around O. Int. Tables for
+        Crystallography, Volume F. Submitted.
+<P>   
+ ==&gt; For manuals and up-to-date references, visit:
+ ==&gt; http://xray.bmc.uu.se/usf
+<P>   
+ *** ZPROF *** ZPROF *** ZPROF *** ZPROF *** ZPROF *** ZPROF *** ZPROF ***
+<P>   
+ Z-score cut-off : (   4.000)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+(2) The sorted score file is read and statistics are calculated and
+printed. Then an iterative process starts (max. 10 cycles) to
+determine the average score and the standard deviation therein
+for the sequences whose score is less than Average + Z_cut-off *
+St_deviation. When the number of such sequences is constant,
+the calculations have converged. The values for the average
+and standard deviation of that cycle will be used.
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Working ...
+<P>   
+ Nr of sequences scored : (      59021)
+ Average : ( 178.673)
+ St.dev. : (  44.654)
+ Minimum : (  26.000)
+ Maximum : ( 594.000)
+<P>   
+ Remove &quot;outliers&quot; and re-calc ...
+ Nr of sequences left : (      58944)
+ Average : ( 178.324)
+ St.dev. : (  43.513)
+ Minimum : (  26.000)
+ Maximum : ( 334.000)
+<P>   
+ Remove &quot;outliers&quot; and re-calc ...
+ Nr of sequences left : (      58939)
+ Average : ( 178.311)
+ St.dev. : (  43.491)
+ Minimum : (  26.000)
+ Maximum : ( 330.000)
+<P>   
+ Remove &quot;outliers&quot; and re-calc ...
+ Nr of sequences left : (      58939)
+ Average : ( 178.311)
+ St.dev. : (  43.491)
+ Minimum : (  26.000)
+ Maximum : ( 330.000)
+<P>   
+ Converged !
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+(3) A bit of &quot;profile code&quot; is printed which can be cut and pasted
+into the profile file:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+MA   /NORMALIZATION: MODE=1; FUNCTION=LINEAR;
+MA     R1=    -4.09993267; R2=     0.02299311; TEXT ='Z-score';
+MA   /CUT_OFF: LEVEL=0; SCORE=     331; N_SCORE=     3.50000000; MODE=1;
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+(4) In case you want to use a different cut-off, a number of Z-score
+cut-off values and the corresponding raw score values are printed:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Z-score of  0.0 requires raw score      178
+ Z-score of  0.5 requires raw score      200
+ Z-score of  1.0 requires raw score      222
+ Z-score of  1.5 requires raw score      244
+ Z-score of  2.0 requires raw score      265
+ Z-score of  2.5 requires raw score      287
+ Z-score of  3.0 requires raw score      309
+ Z-score of  3.5 requires raw score      331
+ Z-score of  4.0 requires raw score      352
+ Z-score of  4.5 requires raw score      374
+ Z-score of  5.0 requires raw score      396
+ Z-score of  5.5 requires raw score      418
+ Z-score of  6.0 requires raw score      439
+ Z-score of  6.5 requires raw score      461
+ Z-score of  7.0 requires raw score      483
+ Z-score of  7.5 requires raw score      504
+ Z-score of  8.0 requires raw score      526
+ Z-score of  8.5 requires raw score      548
+ Z-score of  9.0 requires raw score      570
+ Z-score of  9.5 requires raw score      591
+ Z-score of 10.0 requires raw score      613
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+(5) The top-scoring entries are listed with their rank, Z-score and
+raw score. (Note that this assumes that the input file was
+already sorted !!!) After the first entry which scores below
+the Z-score cut-off has been listed, the listing ends.
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+        1     9.56    594 P29257|LEC2_CYTSC 2-ACETAMIDO-2-DEOXY-D-GALACTOSE-BINDING SEED LECTIN II
+        2     9.24    580 P45797|GUB_BACPO BETA-GLUCANASE PRECURSOR (EC 3.2.1.73) (ENDO-BETA-1,3-1,
+        3     9.03    571 P27051|GUB_BACLI BETA-GLUCANASE PRECURSOR (EC 3.2.1.73) (ENDO-BETA-1,3-1,
+<P>   
+[...]
+<P>   
+       80     3.56    333 P36851|HEX_ADE07 HEXON PROTEIN (LATE PROTEIN 2).
+       81     3.56    333 P36849|HEX_ADE03 HEXON PROTEIN (LATE PROTEIN 2).
+       82     3.53    332 P32491|MKK2_YEAST PROTEIN KINASE MKK2/SSP33 (EC 2.7.1.-).
+       83     3.49    330 P38419|LOXC_ORYSA LIPOXYGENASE, CHLOROPLAST PRECURSOR (EC 1.13.11.12).
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+(6) Finally, a brief summary is printed:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Z-score cut-off : (   3.500)
+ Nr of &quot;hits&quot;    : (         82)
+ % of database   : (   0.139)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H5">5 </A>KNOWN BUGS</H2> </CENTER>
+<P>   
+None, at present (&quot;peppar, peppar&quot;).
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H6">6 </A>UNKNOWN BUGS</H2> </CENTER>
+<P>   
+Does not compute.
+<HR NOSHADE>    <A HREF="http://xray.bmc.uu.se/usf/" target="_top">
+<IMG ALIGN="right" BORDER="0" SRC="usf_logo.gif"
+ALT="Uppsala Software Factory"></A>
+<FONT SIZE=-1>
+<B> <I> Created at Fri Jan 14 20:12:44 2005
+by MAN2HTML version 050114/2.0.6 . This manual
+describes ZPROF, a program of the <A HREF="http://xray.bmc.uu.se/usf/" target="_top">Uppsala
+Software Factory</A> (USF), written and maintained by <A HREF="http://xray.bmc.uu.se/gerard"
+target="_blank">Gerard Kleywegt</A>. &copy; 1992-2005.
+</I> </B> </FONT><P>
+<IMG SRC="http://xray.bmc.uu.se/cgi-bin/nph-count?width=6&link=http://alpha2.bmc.uu.se/~gerard/www/manuals/zprof_man.html">
+</body></html>

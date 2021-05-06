@@ -1,0 +1,357 @@
+<html><head><!-- This document was created for MAPFIX at Fri Jan 14 20:12:18 2005 from
+../average/mapfix.txt by MAN2HTML version 050114/2.0.6 -->
+<title>Uppsala Software Factory - MAPFIX Manual</title>
+<meta name="DESCRIPTION" content="Manual for Gerard 
+Kleywegt's program MAPFIX">
+<meta name="KEYWORDS" content="manual software Gerard 
+Kleywegt program MAPFIX structural biology 
+protein X-ray crystallography macromolecular molecular
+Uppsala Software Factory bioinformatics">
+</head><body bgcolor="#fefefe" background="back.gif">
+
+<A HREF="http://xray.bmc.uu.se/usf/" target="_top">
+<IMG ALIGN="right" BORDER="0" SRC="usf_logo.gif"
+ALT="Uppsala Software Factory"></A>
+
+<H2>  Uppsala Software Factory - MAPFIX Manual</H2> <P>   
+<UL>  
+<LI><H3>  <A HREF="#H1">1  </A>MAPFIX - GENERAL INFORMATION</H3> 
+<LI><H3>  <A HREF="#H2">2  </A>REFERENCES</H3> 
+<LI><H3>  <A HREF="#H3">3  </A>MAP SIZE</H3> 
+<LI><H3>  <A HREF="#H4">4  </A>NOTES</H3> 
+<LI><H3>  <A HREF="#H5">5  </A>EXAMPLE</H3> 
+<LI><H3>  <A HREF="#H6">6  </A>KNOWN BUGS</H3> 
+</UL> 
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H1">1 </A>MAPFIX - GENERAL INFORMATION</H2> </CENTER>
+<P>   
+Program : MAPFIX
+ <BR> Version : 040701
+ <BR> Author : Gerard J. Kleywegt &amp; T. Alwyn Jones,
+Dept. of Cell and Molecular Biology,
+Uppsala University, Biomedical Centre, Box 596,
+SE-751 24 Uppsala, SWEDEN
+ <BR> E-mail : gerard@xray.bmc.uu.se
+ <BR> Purpose : fix CCP4 maps from RAVE
+ <BR> Package : RAVE
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H2">2 </A>REFERENCES</H2> </CENTER>
+<P>   
+Reference(s) for this program:
+<P>   
+* 1 * T.A. Jones (1992). A, yaap, asap, @#*? A set of averaging
+programs. In &quot;Molecular Replacement&quot;, edited by E.J. Dodson,
+S. Gover and W. Wolf. SERC Daresbury Laboratory, Warrington,
+pp. 91-105.
+<P>   
+* 2 * G.J. Kleywegt &amp; T.A. Jones (1994). Halloween ... Masks and
+Bones. In &quot;From First Map to Final Model&quot;, edited by
+S. Bailey, R. Hubbard and D. Waller. SERC Daresbury
+Laboratory, Warrington, pp. 59-66.
+[http://xray.bmc.uu.se/gerard/papers/halloween.html]
+<P>   
+* 3 * G.J. Kleywegt &amp; R.J. Read (1997). Not your average density.
+Structure 5, 1557-1569.
+[http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=PubMed&amp;cmd=Retrieve&amp;list_uids=9438862&amp;dopt=Citation]
+<P>   
+* 4 * R.J. Read &amp; G.J. Kleywegt (2001). Density modification:
+theory and practice. In: &quot;Methods in Macromolecular
+Crystallography&quot; (D Turk &amp; L Johnson, Eds.), IOS Press,
+Amsterdam, pp. 123-135.
+<P>   
+* 5 * Kleywegt, G.J., Zou, J.Y., Kjeldgaard, M. &amp; Jones, T.A. (2001).
+Around O. In: &quot;International Tables for Crystallography, Vol. F.
+Crystallography of Biological Macromolecules&quot; (Rossmann, M.G.
+&amp; Arnold, E., Editors). Chapter 17.1, pp. 353-356, 366-367.
+Dordrecht: Kluwer Academic Publishers, The Netherlands.
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H3">3 </A>MAP SIZE</H2> </CENTER>
+<P>   
+From version 2.0 onward, MAPFIX allocates memory for its map
+dynamically. This means that you can increase the size
+that the program can handle on the fly:
+<P>   
+1 - through the environment variable MAPSIZE (must be in capital
+letters !), for example put the following in your .cshrc file
+or your script:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ setenv MAPSIZE 8000000
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+2 - by using command-line argument MAPSIZE (need not be in capitals),
+for example in your script:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ run mapfix mapsize 10000000
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+Note that command-line argument takes precedence over the environment
+variable. So you can set the environment variable in your .cshrc
+file to a &quot;typical&quot; value, and if you have to deal with a map
+which is bigger than that, you can use the command-line argument.
+<P>   
+If sufficient memory cannot be allocated, the program will print
+a message and quit. In that case, increase the amount of virtual
+memory (this will not help, of course, if you try to allocate more
+memory than can be addressed by your machine (for 32-bit machines,
+something 2**32-1 bytes, I think), or reduce the size requirements.
+<P>   
+MAPFIX needs space for 1 map.
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H4">4 </A>NOTES</H2> </CENTER>
+<P>   
+This is an unsupported jiffy program.
+<P>   
+NOTE: this program is now sensitive to the environment variable
+CCP4_OPEN. If this variable has *not* been set, you will
+not be able to create any CCP4 maps. If this happens, the
+program will abort execution on startup. To fix this,
+put the following line in your .login or .cshrc file:
+setenv CCP4_OPEN UNKNOWN
+<P>   
+Quick-and-dirty program to fix the following in CCP4 maps:
+ <BR> - add a title
+ <BR> - alter the write-order of the axes
+ <BR> - add (or change) the spacegroup's symmetry operators
+<P>   
+960116 - fixed bug which limited max size of map sections; check
+for environment variable CLIBD to deduce the name of the
+local CCP4 symm-op file
+ <BR> 960412 - echo all input to help debug scripts
+ <BR> 961122 - dynamic memory allocation
+ <BR> 040701 -3.0.1- changed checks of dynamic memory allocation to allow
+for pointers with negative values as returned by
+some recent Linux versions
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H5">5 </A>EXAMPLE</H2> </CENTER>
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+&lt; % 119 gerard rigel 20:57:10 gerard/scratch&gt; MAPFIX
+<P>   
+ *** MAPFIX *** MAPFIX *** MAPFIX *** MAPFIX *** MAPFIX *** MAPFIX ***
+<P>   
+ Version  - 930615/1.0
+ (C) 1993 - Gerard J. Kleywegt &amp; T. Alwyn Jones, BMC, Uppsala (S)
+ User I/O - routines courtesy of Rolf Boelens, Univ. of Utrecht (NL)
+ Others   - T.A. Jones, G. Bricogne, Rams &amp; W.A. Hendrickson
+ Others   - CCP4, PROTEIN, etc. etc.
+<P>   
+ Started  - Tue Jun 15 21:03:55 1993
+ User     - gerard
+ Mode     - interactive
+ Host     - rigel
+ ProcID   - 5991
+ Tty      - /dev/ttyq0
+<P>   
+ *** MAPFIX *** MAPFIX *** MAPFIX *** MAPFIX *** MAPFIX *** MAPFIX ***
+<P>   
+ Max size of map : (    4194304)
+ Input map ? ( ) a2u/m5_4.E
+ Read header
+ Input map : (a2u/m5_4.E)
+...
+ Titles :
+           new 2Fo-Fc map
+           Created by AVE V. 930603/1.4 at Thu Jun 10 22:29:12 1993 for user A. Nonymous
+<P>   
+ Parameters as read from the map file
+ Origin ......................          0         0         0
+ Extent ......................        140        80       144
+ Grid ........................        140        80       144
+ Cell axes ...................     106.82     62.34    114.19
+ Cell angles .................      90.00     90.00     90.00
+ UVW (fast, medium, slow) ....          Z         X         Y
+<P>   
+ Header done
+ Map read OK
+ Cell axes   (A) : ( 106.820   62.340  114.190)
+ Cell angles (d) : (  90.000   90.000   90.000)
+ Grid axes (pts) : (     140       80      144)
+ Origin    (pts) : (       0        0        0)
+ Extent    (pts) : (     140       80      144)
+<P>   
+ Output map ? (out.E) test.E
+<P>   
+ Title ? (RAVE/CCP4 map) test MAPFIX
+<P>   
+ UVW (write-order axes) ? (       3        1        2) 2 3 1
+<P>   
+ Spacegroup ? (      19) 5
+ Library file with symm-ops ? (/nfs/public/packages/ccp4/lib/data/symop.lib)
+...
+ Calculating min, max etc.
+<P>   
+   Minimum density in map  =      -53.37548
+   Maximum density         =       93.61629
+   Mean density            =        0.00001
+   Rms deviation from mean =       11.75688
+<P>   
+ Map written out
+<P>   
+ *** MAPFIX *** MAPFIX *** MAPFIX *** MAPFIX *** MAPFIX *** MAPFIX ***
+<P>   
+ Version - 930615/1.0
+ Started - Tue Jun 15 21:03:55 1993
+ Stopped - Tue Jun 15 21:06:28 1993
+<P>   
+ CPU-time taken :
+ User    -     39.0 Sys    -      4.4 Total   -     43.4
+<P>   
+ *** MAPFIX *** MAPFIX *** MAPFIX *** MAPFIX *** MAPFIX *** MAPFIX ***
+<P>   
+ &gt;&gt;&gt; This program is (C) 1993, GJ Kleywegt &amp; TA Jones &lt;&lt;&lt;
+ E-mail: &quot;gerard@xray.bmc.uu.se&quot; or &quot;alwyn@xray.bmc.uu.se&quot;
+<P>   
+ *** MAPFIX *** MAPFIX *** MAPFIX *** MAPFIX *** MAPFIX *** MAPFIX ***
+<P>   
+STOP ... Toodle pip ... statement executed
+39.0u 4.4s 2:33 28%
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+To show that it works, run EXTEND:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+&lt; % 123 gerard rigel 20:57:10 gerard/scratch&gt; extend mapin test.E
+<P>   
+1### CCP PROGRAM SUITE: EXTEND      VERSION 2.1.3: 28/08/92###
+ User: gerard  Run date:  6/15/93  Run time:21:11:43
+<P>   
+xyzlim -10 10 -10 10 -10 10
+end
+...
+           Number of columns, rows, sections ...............   80  144  140
+           Map mode ........................................    2
+           Start and stop points on columns, rows, sections     0   79    0  143    0  139
+           Grid sampling on x, y, z ........................  140   80  144
+           Cell dimensions ................................. 106.82000  62.34000 114.18999  90.00000  90.00000  90.00000
+           Fast, medium, slow axes .........................    Y    Z    X
+           Minimum density .................................   -53.37548
+           Maximum density .................................    93.61629
+           Mean density ....................................     0.00001
+           Rms deviation from mean density .................    11.75688
+           Space-group .....................................    5
+           Number of titles ................................    3
+<P>   
+ Titles :
+           new 2Fo-Fc map
+           Created by AVE V. 930603/1.4 at Thu Jun 10 22:29:12 1993 for user A. Nonymous
+           test MAPFIX
+...
+ Fractional limits of output map are -0.0714 0.0714-0.1250 0.1250-0.0694 0.0694
+...
+ Symmetry operations :  X,Y,Z * -X,Y,-Z
+<P>   
+ Symmetry operations :  1/2+X,1/2+Y,Z * 1/2-X,1/2+Y,-Z
+<P>   
+   Minimum density in map  =      -40.17652
+   Maximum density         =       71.92261
+   Mean density            =        0.16396
+   Rms deviation from mean =       17.06237
+...
+           Number of columns, rows, sections ...............   21   21   21
+           Map mode ........................................    2
+           Start and stop points on columns, rows, sections   -10   10  -10   10  -10   10
+           Grid sampling on x, y, z ........................  140   80  144
+           Cell dimensions ................................. 106.82000  62.34000 114.18999  90.00000  90.00000  90.00000
+           Fast, medium, slow axes .........................    Y    Z    X
+           Minimum density .................................   -40.17652
+           Maximum density .................................    71.92261
+           Mean density ....................................     0.16396
+           Rms deviation from mean density .................    17.06237
+           Space-group .....................................    5
+           Number of titles ................................    1
+<P>   
+ Titles :
+           new 2Fo-Fc map
+<P>   
+ Normal termination
+User: 0.50s System: 0.45s Elapsed: 00:11.00s
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+Now use MAPMAN to calculate the correlation coefficient between
+the new, small map and the original map (should be 1.000):
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+&lt; % 125 gerard rigel 20:57:10 gerard/scratch&gt; MAPMAN
+<P>   
+ *** MAPMAN *** MAPMAN *** MAPMAN *** MAPMAN *** MAPMAN *** MAPMAN ***
+...
+ MAPMAN &gt; re m1 MAPOUT ccp4
+ Read header
+ Input map : (MAPOUT)
+...
+ Parameters as read from the map file
+ Origin ......................        -10       -10       -10
+ Extent ......................         21        21        21
+ Grid ........................        140        80       144
+ Cell axes ...................     106.82     62.34    114.19
+ Cell angles .................      90.00     90.00     90.00
+ UVW (fast, medium, slow) ....          Y         Z         X
+<P>   
+ Header done
+ Sum of density in map : (  1.518E+03)
+ Map read into memory
+ MAPMAN &gt; re m2 a2u/m5_4.E ccp4
+ Read header
+ Input map : (a2u/m5_4.E)
+...
+ Parameters as read from the map file
+ Origin ......................          0         0         0
+ Extent ......................        140        80       144
+ Grid ........................        140        80       144
+ Cell axes ...................     106.82     62.34    114.19
+ Cell angles .................      90.00     90.00     90.00
+ UVW (fast, medium, slow) ....          Z         X         Y
+<P>   
+ Header done
+ Sum of density in map : (  9.694E+00)
+ Map read into memory
+ CPU total/user/sys :      14.2      12.0       2.2
+ MAPMAN &gt; si m1 m2
+ Similarity Map : (M1)
+ Similarity Map : (M2)
+ Lower limits common volume : (       0        0        0)
+ Upper limits common volume : (      10       10       10)
+ Limits first  map  : (      11       21       11       21       11
+  21)
+ Limits second map  : (       1       11        1       11        1
+  11)
+ Number of common map points : (       1331)
+ Nr of points in common grid : (       1331)
+ Correlation coefficient : (   1.000)
+ R-factor w.r.t. map 1   : (   0.000)
+ R-factor w.r.t. map 2   : (   0.000)
+ RMS difference          : (  0.000E+00)
+ Shape similarity index  : (   1.000)
+ MAPMAN &gt; quit
+...
+STOP ... Toodle pip ... statement executed
+12.2u 2.6s 0:54 27%
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H6">6 </A>KNOWN BUGS</H2> </CENTER>
+<P>   
+None, at present.
+<HR NOSHADE>    <A HREF="http://xray.bmc.uu.se/usf/" target="_top">
+<IMG ALIGN="right" BORDER="0" SRC="usf_logo.gif"
+ALT="Uppsala Software Factory"></A>
+<FONT SIZE=-1>
+<B> <I> Created at Fri Jan 14 20:12:18 2005
+by MAN2HTML version 050114/2.0.6 . This manual
+describes MAPFIX, a program of the <A HREF="http://xray.bmc.uu.se/usf/" target="_top">Uppsala
+Software Factory</A> (USF), written and maintained by <A HREF="http://xray.bmc.uu.se/gerard"
+target="_blank">Gerard Kleywegt</A>. &copy; 1992-2005.
+</I> </B> </FONT><P>
+<IMG SRC="http://xray.bmc.uu.se/cgi-bin/nph-count?width=6&link=http://alpha2.bmc.uu.se/~gerard/www/manuals/mapfix_man.html">
+</body></html>

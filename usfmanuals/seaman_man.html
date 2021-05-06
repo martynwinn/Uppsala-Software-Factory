@@ -1,0 +1,627 @@
+<html><head><!-- This document was created for SEAMAN at Fri Jan 14 20:12:34 2005 from
+../seaman/seaman.txt by MAN2HTML version 050114/2.0.6 -->
+<title>Uppsala Software Factory - SEAMAN Manual</title>
+<meta name="DESCRIPTION" content="Manual for Gerard 
+Kleywegt's program SEAMAN">
+<meta name="KEYWORDS" content="manual software Gerard 
+Kleywegt program SEAMAN structural biology 
+protein X-ray crystallography macromolecular molecular
+Uppsala Software Factory bioinformatics">
+</head><body bgcolor="#fefefe" background="back.gif">
+
+<A HREF="http://xray.bmc.uu.se/usf/" target="_top">
+<IMG ALIGN="right" BORDER="0" SRC="usf_logo.gif"
+ALT="Uppsala Software Factory"></A>
+
+<H2>  Uppsala Software Factory - SEAMAN Manual</H2> <P>   
+<UL>  
+<LI><H3>  <A HREF="#H1">1  </A>SEAMAN - GENERAL INFORMATION</H3> 
+<LI><H3>  <A HREF="#H2">2  </A>REFERENCES</H3> 
+<LI><H3>  <A HREF="#H3">3  </A>VERSION HISTORY</H3> 
+<LI><H3>  <A HREF="#H4">4  </A>INTRODUCTION</H3> 
+<LI><H3>  <A HREF="#H5">5  </A>STARTUP</H3> 
+<LI><H3>  <A HREF="#H6">6  </A>COMMANDS</H3> 
+<H5><A HREF="#S1">6.1  </A>?</H5>
+<H5><A HREF="#S2">6.2  </A>!</H5>
+<H5><A HREF="#S3">6.3  </A>QUIT</H5>
+<H5><A HREF="#S4">6.4  </A>$</H5>
+<H5><A HREF="#S5">6.5  </A>READ</H5>
+<H5><A HREF="#S6">6.6  </A>LIST</H5>
+<H5><A HREF="#S7">6.7  </A>SEQU</H5>
+<H5><A HREF="#S8">6.8  </A>BFAC</H5>
+<H5><A HREF="#S9">6.9  </A>OCCU</H5>
+<H5><A HREF="#S10">6.10  </A>ZONE</H5>
+<H5><A HREF="#S11">6.11  </A>LOOP</H5>
+<H5><A HREF="#S12">6.12  </A>TURN</H5>
+<H5><A HREF="#S13">6.13  </A>ISOL</H5>
+<H5><A HREF="#S14">6.14  </A>GLYC</H5>
+<H5><A HREF="#S15">6.15  </A>ALAN</H5>
+<H5><A HREF="#S16">6.16  </A>SERI</H5>
+<H5><A HREF="#S17">6.17  </A>RESI</H5>
+<H5><A HREF="#S18">6.18  </A>MINI</H5>
+<H5><A HREF="#S19">6.19  </A>MUTA</H5>
+<H5><A HREF="#S20">6.20  </A>ROTA</H5>
+<H5><A HREF="#S21">6.21  </A>WRIT</H5>
+<LI><H3>  <A HREF="#H7">7  </A>KNOWN BUGS</H3> 
+</UL> 
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H1">1 </A>SEAMAN - GENERAL INFORMATION</H2> </CENTER>
+<P>   
+Program : SEAMAN
+ <BR> Version : 041001
+ <BR> Author : Gerard J. Kleywegt, Dept. of Cell and Molecular Biology,
+Uppsala University, Biomedical Centre, Box 596,
+SE-751 24 Uppsala, SWEDEN
+ <BR> E-mail : gerard@xray.bmc.uu.se
+ <BR> Purpose : generate search models for Molecular Replacement
+ <BR> Package : X-UTIL
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H2">2 </A>REFERENCES</H2> </CENTER>
+<P>   
+Reference(s) for this program:
+<P>   
+* 1 * G.J. Kleywegt (1996). Making the most of your search model.
+CCP4/ESF-EACBM Newsletter on Protein Crystallography 32,
+June 1996, pp. 32-36.
+[http://xray.bmc.uu.se/usf/factory_6.html]
+<P>   
+* 2 * Y.W. Chen, E.J. Dodson &amp; G.J. Kleywegt (2000). Does NMR
+mean &quot;Not for Molecular Replacement&quot; ? Using NMR-based
+search models to solve protein crystal structures.
+Structure 8, R213-R220.
+[http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=PubMed&amp;cmd=Retrieve&amp;list_uids=11080645&amp;dopt=Citation]
+<P>   
+* 3 * Kleywegt, G.J., Zou, J.Y., Kjeldgaard, M. &amp; Jones, T.A. (2001).
+Around O. In: &quot;International Tables for Crystallography, Vol. F.
+Crystallography of Biological Macromolecules&quot; (Rossmann, M.G.
+&amp; Arnold, E., Editors). Chapter 17.1, pp. 353-356, 366-367.
+Dordrecht: Kluwer Academic Publishers, The Netherlands.
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H3">3 </A>VERSION HISTORY</H2> </CENTER>
+<P>   
+950622 - 0.1 - initial version
+ <BR> 950623 - 0.2 - more options
+ <BR> 950626 - 1.0 - first production version
+ <BR> 951121 - 1.1 - minor changes; write CRYST1 etc. cards if they were
+in the input PDB file
+ <BR> 961121 - 1.2 - fixed a nasty bug which *sometimes* occurred for commands
+like ALAN, GLYC, MINI, BFAC etc. (thanks to Margareta Ingelman)
+ <BR> 970818 - 1.3 - use P-SEA algorithm to determine secondary structure
+ <BR> 970818 -1.3.1- small changes to P-SEA parameters
+ <BR> 991213 - 1.4 - use YASSPA algorithm again for sec. str. determination
+ <BR> 041001 - 1.5 - replaced Kabsch' routine U3BEST by quaternion-based
+routine (U3QION) to do least-squares superpositioning
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H4">4 </A>INTRODUCTION</H2> </CENTER>
+<P>   
+SEAMAN is a small program which should making search models for
+Molecular Replacement calculations a bit easier. It is probably
+best used in conjunction with LSQMAN (to align multiple copies
+of a search model and to find the most similar regions) and
+MOLEMAN (to reset occupancies and to reset, smooth or average
+temperature factors).
+<P>   
+SEAMAN was designed specifically with the aim of coping with
+multiple search models, e.g. NMR families of structures, or
+NCS-copies or multiple determinations of a structure. Still,
+it will work just as well on single models.
+<P>   
+SEAMAN can do most things I could think of to mutate a model
+into a suitable MR probe: you can delete loops, regions with
+high-temperature factors, do conservative substitutions or
+an O-like mutate_replace, replace residues by their most-frequent
+rotamer conformation.
+<P>   
+SEAMAN requires a small library file (seaman.lib) which contains
+the most-frequent rotamer for each of the twenty amino acids
+(ergo, SEAMAN will be most useful if you work with proteins).
+<P>   
+NOTE: some commands are *destructive*, i.e. they may delete some
+but not all atoms of a residue (e.g., BFAC). Since the MINI,
+MUTA and ROTA commands need *intact* residues, the destructive
+commands should be used *last* !!! Destructive commands are
+BFAC, OCCU and ISOL.
+<P>   
+NOTE: you may want to run O simultaneously in a separate window
+to monitor the effects of your changes, or to identify other
+regions that need to be deleted (e.g., those with a large
+conformational spread).
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H5">5 </A>STARTUP</H2> </CENTER>
+<P>   
+When you start the program, you will see the current dimensioning
+and available commands, after you have provided the name of the
+library file (use environment variable GKLIB to point to an
+appropriate directory):
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ % 160 gerard onyx 02:56:47 progs/seaman &gt; setenv GKLIB /nfs/public/lib
+ % 161 gerard onyx 02:56:47 progs/seaman &gt; SEAMAN
+<P>   
+ *** SEAMAN *** SEAMAN *** SEAMAN *** SEAMAN *** SEAMAN *** SEAMAN ***
+<P>   
+ Version  - 950626/1.0
+ (C) 1993-5 Gerard J. Kleywegt, Dept. Mol. Biology, BMC, Uppsala (S)
+ User I/O - routines courtesy of Rolf Boelens, Univ. of Utrecht (NL)
+ Others   - T.A. Jones, G. Bricogne, Rams, W.A. Hendrickson
+ Others   - W. Kabsch, CCP4, PROTEIN, E. Dodson, etc. etc.
+<P>   
+ Started  - Mon Jun 26 18:08:43 1995
+ User     - gerard
+ Mode     - interactive
+ Host     - onyx
+ ProcID   - 26929
+ Tty      - /dev/ttyq13
+<P>   
+ *** SEAMAN *** SEAMAN *** SEAMAN *** SEAMAN *** SEAMAN *** SEAMAN ***
+<P>   
+ Reference(s) for this program:
+<P>   
+ *  1 * G.J. Kleywegt
+        Uppsala University, Uppsala, Sweden
+        Unpublished program
+<P>   
+ *** SEAMAN *** SEAMAN *** SEAMAN *** SEAMAN *** SEAMAN *** SEAMAN ***
+<P>   
+ Max nr of residue types : (         20)
+ Max nr of type atoms    : (         15)
+ Max nr of residues      : (      10000)
+ Max nr of atoms         : (     100000)
+ Max nr of chains/models : (         26)
+<P>   
+ Name of library file ? (/nfs/public/lib/seaman.lib)
+<P>   
+ Reading library ...
+ Lines read    : (        233)
+ Residue types : (         20)
+<P>   
+ SEAMAN options :
+<P>   
+ ? (list options)                     ! (comment)
+ QUIT program                         $ issue shell command
+<P>   
+ READ molecule from PDB file          WRITe molecule to PDB file
+ LIST molecule statistics             SEQUence of molecule
+<P>   
+ BFACtor delete                       OCCUpancy delete
+ ISOLated atoms delete                ZONE delete
+ LOOPs delete                         TURNs delete
+<P>   
+ GLYCine zone                         ALANine zone
+ SERIne zone                          RESIdue type to Gly/Ala/Ser
+ MINImalist substitutions             MUTAte replace rotamer
+ ROTAmer residue
+<P>   
+ Command ? (READ)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H6">6 </A>COMMANDS</H2> </CENTER>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S1">6.1 </A>?</H3> 
+ <BR> This gives the list of options again.
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S2">6.2 </A>!</H3> 
+ <BR> A line starting with an exclamation mark is ignored.
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S3">6.3 </A>QUIT</H3> 
+ <BR> Stop the program.
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S4">6.4 </A>$</H3> 
+ <BR> Issue a shell command (e.g., ls -al *.pdb).
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S5">6.5 </A>READ</H3> 
+ <BR> Read a PDB file into memory. All HETATMs, hydrogens and other non-recognised
+atoms (including OXTs) are *stripped* on reading ! Hence, you don't have to
+edit the PDB file in advance to get rid of waters, ligands, metal ions etc.
+ <BR> After the structure has been read, SEAMAN runs a variant of YASSPA to figure
+out the secondary structure, and to define loops and turns (a turn is simply
+a stretch of 1-4 consecutive residues which connect two secondary structure
+elements).
+<P>   
+NOTE: from version 1.3, SEAMAN uses the P-SEA algorithm to figure out
+secondary structure elements (Labesse et al., CABIOS 13, 291 (1997)).
+Since the default ranges they quote do not always lead to correct
+delineation of helices and strands, you can set a &quot;sensitivity
+factor&quot; by which the ranges will be multiplied (typical values
+~1-1.5).
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Command ? (READ)
+ PDB file name ? (m1.pdb) /nfs/pdb/full/1ldn.pdb
+ Cell : (  84.900  118.200  135.500   90.000   96.070   90.000)
+ Old chain |A| becomes chain A
+ Old chain |B| becomes chain B
+ Old chain |C| becomes chain C
+ Old chain |D| becomes chain D
+ Old chain |E| becomes chain E
+ Old chain |F| becomes chain F
+ Old chain |G| becomes chain G
+ Old chain |H| becomes chain H
+<P>   
+ Nr of lines read from file  : (      21617)
+ Nr of atoms in molecule     : (      19584)
+ Nr of chains or models      : (          8)
+ Nr of hydrogens stripped    : (          0)
+ Nr of HETATMs stripped      : (       1132)
+ Nr of non-AA atoms stripped : (          0)
+<P>   
+ Doing some book-keeping ...
+ Running YASSPA ...
+ Nr of ALPHA : (       1019)
+ Nr of BETA  : (        380)
+ Nr of TURN  : (        271)
+ Nr of LOOP  : (        858)
+ CPU total/user/sys :       5.2       5.0       0.2
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S6">6.6 </A>LIST</H3> 
+ <BR> List some information about the current molecule(s).
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Command ? (?) list
+<P>   
+ Model read from file : (/nfs/pdb/full/1ldn.pdb)
+ Last saved to file   : (not_saved_yet)
+ Nr of atoms in molecule     : (      19584)
+ Nr of chains or models      : (          8)
+ Nr of residues              : (       2528)
+    B-factors : Ave, Sdv :    26.12   13.68
+                Min, Max :     0.50   68.32
+  Occupancies : Ave, Sdv :     1.00    0.00
+                Min, Max :     1.00    1.00
+<P>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S7">6.7 </A>SEQU</H3> 
+ <BR> List the sequence (residue type, name, secondary structure, average
+temperature factor and number of atoms).
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ ...
+<P>   
+ Type      :  ARG    PHE    HIS    HIS    SER    ALA    ALA    THR    LEU    LYS
+ Name      :  H313   H314   H315   H316   H317   H318   H319   H320   H321   H322
+ Structure :  ALPHA  ALPHA  ALPHA  ALPHA  ALPHA  ALPHA  ALPHA  ALPHA  ALPHA  ALPHA
+ &lt;Bresi&gt;   :   31.8   27.9   42.8   32.0   22.9   23.2   29.7   28.7   24.9   30.4
+ # atoms   :  11     11     10     10      6      5      5      7      8      9
+<P>   
+ Type      :  SER    VAL    LEU    ALA    ARG    ALA    PHE    THR
+ Name      :  H323   H324   H325   H326   H327   H328   H329   H330
+ Structure :  ALPHA  ALPHA  ALPHA  ALPHA  ALPHA  LOOP   LOOP   LOOP
+ &lt;Bresi&gt;   :   39.2   28.9   22.3   34.3   42.5   34.9   47.3   33.0
+ # atoms   :   6      7      8      5     11      5     11      7
+<P>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S8">6.8 </A>BFAC</H3> 
+ <BR> Delete atoms with too low or too high a temperature factor.
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Command ? (LIST) bfac
+ Provide B-factor limits for atoms to KEEP
+ Limits ? (   1.000   60.000) 5 50
+ Nr of atoms marked for deletion : (       1824)
+ Delete them ? ( Y)
+ Nr of atoms now : (      17760)
+ Doing some book-keeping ...
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S9">6.9 </A>OCCU</H3> 
+ <BR> Delete atoms with too low or too high an occupancy.
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Command ? (BFAC) occu
+ Provide occupancy limits for atoms to KEEP
+ Limits ? (   0.990    1.010)
+ NO atoms marked for deletion
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S10">6.10 </A>ZONE</H3> 
+ <BR> Delete a zone of residues in any or all chains (models).
+ <BR> Zone selection works as follows:
+ <BR> - 0 0 =&gt; all residues
+ <BR> - 0 132 =&gt; all residues up to 132
+ <BR> - 133 0 =&gt; all residues beginning with 133
+ <BR> - 132 146 =&gt; all residues in [132,146]
+ <BR> - a chain ID or &quot;*&quot; (the latter meaning: &quot;in all chains/models&quot;)
+<P>   
+NOTE: if you run the program in batch mode (-b flag), the question
+&quot;Delete them ? ( Y)&quot; will *NOT* be asked !!!
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Command ? (OCCU) zone
+ Select zone (0 0 = all residues)
+ Zone ? (          0           0) 325 0
+ Select chain (* = all chains)
+ Chain ? (*)
+ Nr of selected atoms : (        286)
+ Nr of atoms marked for deletion : (        286)
+ Delete them ? ( Y)
+ Nr of atoms now : (      17474)
+ Doing some book-keeping ...
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S11">6.11 </A>LOOP</H3> 
+ <BR> Delete all residues marked as LOOP.
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Command ? (?) loop
+ Nr of atoms marked for deletion : (       5630)
+ Delete them ? ( Y)
+ Nr of atoms now : (      11844)
+ Doing some book-keeping ...
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S12">6.12 </A>TURN</H3> 
+ <BR> Delete all residues marked as TURN.
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Command ? (LOOP) turn
+ Nr of atoms marked for deletion : (       1798)
+ Delete them ? ( Y)
+ Nr of atoms now : (      10046)
+ Doing some book-keeping ...
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S13">6.13 </A>ISOL</H3> 
+ <BR> Delete all atoms which are not connected to at least one other atom
+in the same residue. It is best to only do this at the very end,
+since it may delete atoms necessary for MUTAte, MINImalist or ROTAmer.
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Command ? (?) isol
+ Nr of atoms marked for deletion : (        669)
+ Delete them ? ( Y)
+ Nr of atoms now : (       9622)
+ Doing some book-keeping ...
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S14">6.14 </A>GLYC</H3> 
+ <BR> Change a zone of residues to glycines.
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Command ? (?) glyc
+ Select zone (0 0 = all residues)
+ Zone ? (        325           0) 10 30
+ Select chain (* = all chains)
+ Chain ? (*)
+ Nr of selected atoms : (        231)
+ Nr of atoms marked for deletion : (        109)
+ Nr of atoms now : (       9513)
+ Doing some book-keeping ...
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S15">6.15 </A>ALAN</H3> 
+ <BR> Change a zone of residues to alanines (glycines are left intact).
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Command ? (GLYC) alan
+ Glycines left intact
+ Select zone (0 0 = all residues)
+ Zone ? (         10          30) 30 50
+ Select chain (* = all chains)
+ Chain ? (*)
+ Nr of selected atoms : (        716)
+ Nr of atoms marked for deletion : (        245)
+ Nr of atoms now : (       9268)
+ Doing some book-keeping ...
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S16">6.16 </A>SERI</H3> 
+ <BR> Change a zone of residues to serines (glycines and alanines are left
+intact).
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Command ? (ALAN) seri
+ Glycines and alanines left intact
+ Select zone (0 0 = all residues)
+ Zone ? (         30          50) 50 70
+ Select chain (* = all chains)
+ Chain ? (*)
+ Nr of selected atoms : (        756)
+ Nr of atoms marked for deletion : (        176)
+ Nr of atoms now : (       9092)
+ Doing some book-keeping ...
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S17">6.17 </A>RESI</H3> 
+ <BR> Change all residues of a certain kind to Gly, Ala or Ser. For example,
+this can be used to replace all lysines by alanines, or all tryptophans
+to glycines (if you want to have an independent check on the correctness
+of a Molecular Replacement solution: Trp side-chain density should come
+up in the maps).
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Command ? (?) resi
+ Glycines and alanines left intact
+ Residue type ? (LYS)
+ Nr of selected atoms : (        352)
+ Change to Gly/Ala/Ser ? (ALA) ser
+ Nr of atoms marked for deletion : (         88)
+ Nr of atoms now : (       9004)
+ Doing some book-keeping ...
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S18">6.18 </A>MINI</H3> 
+ <BR> Carry out some &quot;minimalist&quot; substitutions. Implemented are at present:
+ <BR> - anything except Gly, Ala --&gt; Cys
+ <BR> - Ile or Val --&gt; Thr
+ <BR> - Ile or Thr --&gt; Val
+ <BR> - Arg --&gt; Lys
+ <BR> - Asp &lt;--&gt; Asn
+ <BR> - Glu &lt;--&gt; Gln
+ <BR> - Trp --&gt; His
+ <BR> - Tyr --&gt; Phe
+ <BR> Note that *no rotamers* are involved; i.e., a Tyr --&gt; Phe will give a
+phenylalanine with the same conformation as the tyrosine had !!
+ <BR> Note that this option *only* works if the residues are still intact !
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Command ? (READ) mini
+ Residue number ? (          1) 238
+ Select chain (* = all chains)
+ Chain ? (*)
+ Nr of selected residues : (          8)
+ Change to type ? (VAL) phe
+ MINI : (A238)
+ Nr of atoms marked for deletion : (          1)
+ Nr of atoms now : (      19583)
+ Doing some book-keeping ...
+ MINI : (B238)
+ Nr of atoms marked for deletion : (          1)
+ Nr of atoms now : (      19582)
+ Doing some book-keeping ...
+ MINI : (C238)
+ Nr of atoms marked for deletion : (          1)
+ Nr of atoms now : (      19581)
+ Doing some book-keeping ...
+ MINI : (D238)
+ Nr of atoms marked for deletion : (          1)
+ Nr of atoms now : (      19580)
+ Doing some book-keeping ...
+ MINI : (E238)
+ Nr of atoms marked for deletion : (          1)
+ Nr of atoms now : (      19579)
+ Doing some book-keeping ...
+ MINI : (F238)
+ Nr of atoms marked for deletion : (          1)
+ Nr of atoms now : (      19578)
+ Doing some book-keeping ...
+ MINI : (G238)
+ Nr of atoms marked for deletion : (          1)
+ Nr of atoms now : (      19577)
+ Doing some book-keeping ...
+ MINI : (H238)
+ Nr of atoms marked for deletion : (          1)
+ Nr of atoms now : (      19576)
+ Doing some book-keeping ...
+ CPU total/user/sys :       1.7       1.7       0.0
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S19">6.19 </A>MUTA</H3> 
+ <BR> Same as Mutate_replace in O. Note that this option *only* works if the
+residues are still intact !
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Command ? (MINI) muta
+ Residue number ? (        238) 324
+ Select chain (* = all chains)
+ Chain ? (*)
+ Nr of selected residues : (          8)
+ Change to type ? (PHE) trp
+ MUTA : (A324)
+ RMSD (A) : (   0.025)
+ NO atoms marked for deletion
+ MUTA : (B324)
+ RMSD (A) : (   0.006)
+ NO atoms marked for deletion
+ MUTA : (C324)
+ RMSD (A) : (   0.012)
+ NO atoms marked for deletion
+ MUTA : (D324)
+ RMSD (A) : (   0.008)
+ NO atoms marked for deletion
+ MUTA : (E324)
+ RMSD (A) : (   0.014)
+ NO atoms marked for deletion
+ MUTA : (F324)
+ RMSD (A) : (   0.008)
+ NO atoms marked for deletion
+ MUTA : (G324)
+ RMSD (A) : (   0.006)
+ NO atoms marked for deletion
+ MUTA : (H324)
+ RMSD (A) : (   0.048)
+ NO atoms marked for deletion
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S20">6.20 </A>ROTA</H3> 
+ <BR> Replace a residue by the most-frequent rotamer of its kind (i.e., same
+as Lego_auto_sc in O). Note that this option *only* works if the residues
+are still intact !
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Command ? (MUTA) rota
+ Residue number ? (        324) 314
+ Select chain (* = all chains)
+ Chain ? (*)
+ Nr of selected residues : (          8)
+ ROTA : (A314)
+ Identical residue types; replace by rotamer
+ ROTA : (B314)
+ Identical residue types; replace by rotamer
+ ROTA : (C314)
+ Identical residue types; replace by rotamer
+ ROTA : (D314)
+ Identical residue types; replace by rotamer
+ ROTA : (E314)
+ Identical residue types; replace by rotamer
+ ROTA : (F314)
+ Identical residue types; replace by rotamer
+ ROTA : (G314)
+ Identical residue types; replace by rotamer
+ ROTA : (H314)
+ Identical residue types; replace by rotamer
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S21">6.21 </A>WRIT</H3> 
+ <BR> Save the current model in a PDB file.
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Command ? (?) writ
+ PDB file name ? (not_saved_yet) q.pdb
+ Number of atoms written : (       9055)
+ CPU total/user/sys :       2.6       2.6       0.1
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H7">7 </A>KNOWN BUGS</H2> </CENTER>
+<P>   
+None, at present.
+<HR NOSHADE>    <A HREF="http://xray.bmc.uu.se/usf/" target="_top">
+<IMG ALIGN="right" BORDER="0" SRC="usf_logo.gif"
+ALT="Uppsala Software Factory"></A>
+<FONT SIZE=-1>
+<B> <I> Created at Fri Jan 14 20:12:34 2005
+by MAN2HTML version 050114/2.0.6 . This manual
+describes SEAMAN, a program of the <A HREF="http://xray.bmc.uu.se/usf/" target="_top">Uppsala
+Software Factory</A> (USF), written and maintained by <A HREF="http://xray.bmc.uu.se/gerard"
+target="_blank">Gerard Kleywegt</A>. &copy; 1992-2005.
+</I> </B> </FONT><P>
+<IMG SRC="http://xray.bmc.uu.se/cgi-bin/nph-count?width=6&link=http://alpha2.bmc.uu.se/~gerard/www/manuals/seaman_man.html">
+</body></html>

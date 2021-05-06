@@ -1,0 +1,1458 @@
+<html><head><!-- This document was created for VOIDOO at Tue Aug 26 18:41:02 2008 from
+../cavity/voidoo.txt by MAN2HTML version 070111/2.0.8 -->
+<title>Uppsala Software Factory - VOIDOO Manual</title>
+<meta name="DESCRIPTION" content="Manual for Gerard 
+Kleywegt's program VOIDOO">
+<meta name="KEYWORDS" content="manual software Gerard 
+Kleywegt program VOIDOO structural biology 
+protein X-ray crystallography macromolecular molecular
+Uppsala Software Factory bioinformatics">
+</head><body bgcolor="#fefefe" background="back.gif">
+
+<A HREF="http://xray.bmc.uu.se/usf/" target="_top">
+<IMG ALIGN="right" BORDER="0" SRC="usf_logo.gif"
+ALT="Uppsala Software Factory"></A>
+
+<H2>  Uppsala Software Factory - VOIDOO Manual</H2> <P>   
+<UL>  
+<LI><H3>  <A HREF="#H1">1  </A>VOIDOO - GENERAL INFORMATION</H3> 
+<LI><H3>  <A HREF="#H2">2  </A>REFERENCES</H3> 
+<LI><H3>  <A HREF="#H3">3  </A>VERSION HISTORY</H3> 
+<LI><H3>  <A HREF="#H4">4  </A>INTRODUCTION</H3> 
+<LI><H3>  <A HREF="#H5">5  </A>ROTATING MOLECULES</H3> 
+<LI><H3>  <A HREF="#H6">6  </A>VOLUME CALCULATIONS</H3> 
+<H5><A HREF="#S1">6.1  </A>startup</H5>
+<H5><A HREF="#S2">6.2  </A>calculation type</H5>
+<H5><A HREF="#S3">6.3  </A>extensive output</H5>
+<H5><A HREF="#S4">6.4  </A>library file</H5>
+<H5><A HREF="#S5">6.5  </A>PDB file</H5>
+<H5><A HREF="#S6">6.6  </A>grid spacing</H5>
+<H5><A HREF="#S7">6.7  </A>probe radius</H5>
+<H5><A HREF="#S8">6.8  </A>other parameters</H5>
+<H5><A HREF="#S9">6.9  </A>surface file</H5>
+<H5><A HREF="#S10">6.10  </A>algorithm</H5>
+<H5><A HREF="#S11">6.11  </A>output</H5>
+<H5><A HREF="#S12">6.12  </A>(New-)EZD surface file</H5>
+<LI><H3>  <A HREF="#H7">7  </A>CAVITY CALCULATIONS</H3> 
+<H5><A HREF="#S13">7.1  </A>startup</H5>
+<H5><A HREF="#S14">7.2  </A>detection cycles</H5>
+<H5><A HREF="#S15">7.3  </A>growth factor</H5>
+<H5><A HREF="#S16">7.4  </A>minimum size</H5>
+<H5><A HREF="#S17">7.5  </A>specific cavity</H5>
+<H5><A HREF="#S18">7.6  </A>MASK file</H5>
+<H5><A HREF="#S19">7.7  </A>LOG file</H5>
+<H5><A HREF="#S20">7.8  </A>refinement</H5>
+<H5><A HREF="#S21">7.9  </A>algorithm</H5>
+<H5><A HREF="#S22">7.10  </A>output</H5>
+<LI><H3>  <A HREF="#H8">8  </A>CAVITY REFINEMENT</H3> 
+<H5><A HREF="#S23">8.1  </A>refinement cycles</H5>
+<H5><A HREF="#S24">8.2  </A>type of cavity</H5>
+<H5><A HREF="#S25">8.3  </A>other refinement parameters</H5>
+<H5><A HREF="#S26">8.4  </A>surface file</H5>
+<H5><A HREF="#S27">8.5  </A>cavity plot files</H5>
+<H5><A HREF="#S28">8.6  </A>refinement algorithm</H5>
+<H5><A HREF="#S29">8.7  </A>refinement output</H5>
+<H5><A HREF="#S30">8.8  </A>residues in and near cavities</H5>
+<H5><A HREF="#S31">8.9  </A>plot files and O macros</H5>
+<H5><A HREF="#S32">8.10  </A>correcting cavity volumes</H5>
+<LI><H3>  <A HREF="#H9">9  </A>LOG FILE</H3> 
+<LI><H3>  <A HREF="#H10">10  </A>CAVITY PLOT FILES</H3> 
+<LI><H3>  <A HREF="#H11">11  </A>CAVITY O MACROS</H3> 
+<LI><H3>  <A HREF="#H12">12  </A>CAVITY-SURFACE-POINT COORDINATES</H3> 
+<LI><H3>  <A HREF="#H13">13  </A>KNOWN BUGS</H3> 
+</UL> 
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H1">1 </A>VOIDOO - GENERAL INFORMATION</H2> </CENTER>
+<P>   
+Program : VOIDOO
+ <BR> Version : 080826
+ <BR> Author : Gerard J. Kleywegt, Dept. of Cell and Molecular Biology,
+Uppsala University, Biomedical Centre, Box 596,
+SE-751 24 Uppsala, SWEDEN
+ <BR> E-mail : gerard@xray.bmc.uu.se
+ <BR> Purpose : cavity detection, volume calculation, surface generation
+ <BR> Package : VOIDOO
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H2">2 </A>REFERENCES</H2> </CENTER>
+<P>   
+Reference(s) for this program:
+<P>   
+* 1 * G.J. Kleywegt &amp; T.A. Jones (1993). Biomacromolecular
+Speleology. CCP4/ESF-EACBM Newsletter on Protein
+Crystallography 29, November 1993, pp. 26-28.
+[http://xray.bmc.uu.se/usf/factory_2.html]
+<P>   
+* 2 * G.J. Kleywegt &amp; T.A. Jones (1994). Detection, delineation,
+measurement and display of cavities in macromolecular
+structures. Acta Cryst D50, 178-185.
+[http://scripts.iucr.org/cgi-bin/paper?gr0263]
+<P>   
+* 3 * Kleywegt, G.J., Zou, J.Y., Kjeldgaard, M. &amp; Jones, T.A. (2001).
+Around O. In: &quot;International Tables for Crystallography, Vol. F.
+Crystallography of Biological Macromolecules&quot; (Rossmann, M.G.
+&amp; Arnold, E., Editors). Chapter 17.1, pp. 353-356, 366-367.
+Dordrecht: Kluwer Academic Publishers, The Netherlands.
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H3">3 </A>VERSION HISTORY</H2> </CENTER>
+<P>   
+Version 0.1 @ 920807 - basic algorithm &amp; documentation
+ <BR> Version 0.2 @ 920810 - altered definition of Vanderwaals radii
+- sped up protein finder algorithm by factor 400
+- atom fattening to detect &quot;true&quot; nr of cavities
+- output proper mask file
+- implemented volume refinement
+- implemented simple ODL files
+ <BR> Version 0.3 @ 920811 - also read residue definitions from library file
+- removed references to unit cell data (not used)
+- add/subtract grid spacing to/from lower/upper limits
+to account for the fact that we don't use the grid
+points on the borders
+- added probe radius
+- implemented iterative zapping instead of recursive
+(it's a bit faster and it doesn't crash with huge
+grids)
+- use character*1 parameters for filling the grid
+- added volume option
+- made MASK and ODL files optional
+- implemented trace option to reduce output for normal
+non-debugging runs
+ <BR> Version 0.4 @ 920812 - improved test file vol.pdb for volume testing
+- took some Vanderwaals radii from the AMBER paper:
+SJ Weiner et al., JACS 106, 765-784 (1984)
+- implemented refinement for volume calculation option
+- exclude borders in iterative zapping routines
+- debugged grid-definition code (... aaarrgghhh ...)
+- made it possible to actually perform all N detection
+cycles (rather than only the &quot;first best&quot; option)
+- made refinement optional
+- implemented percentage convergence criterion
+- removed several smaller bugs which only showed up in
+&quot;unfortunate&quot; cases
+ <BR> Version 0.5 @ 920813 - implemented 1-sweep contour odl-output
+- implemented 3-sweep contour odl-output
+- updated documentation
+ <BR> Version 0.6 @ 920814 - implemented residue/atom combinations in vdw-lib
+ <BR> Version 0.7 @ 920820 - implemented dots odl-output
+- added option to exclude probe from cavity volume
+- print average/sigma of volumes calculated
+ <BR> Version 0.8 @ 920821 - use probe radius in volume calculation (if 1.4 &Aring; =&gt;
+gives solvent-excluded volume)
+- implemented option to look for a specific cavity by
+providing XYZ-coordinates of a point you think or know
+is inside it
+- implemented output of ODL file which contains dots for
+the protein surface points
+ <BR> Version 0.9 @ 920825 - implemented EZD plot output for cavities
+ <BR> Version 1.0 @ 920826 - implemented EZD plot output for protein itself
+ <BR> Version 1.1 @ 920922 - don't bail out if primary grid is too small and the
+program is run interactively
+- write cavity box to log file (for future option to
+cut out a certain box to do the calculations on in
+case you are looking for a specific cavity and want
+to use a very fine primary grid)
+- only allow error recovery in file open routines
+(XOPxxx) if program is run interactively
+ <BR> Version 1.2 @ 920923 - implement limits on X,Y,Z to see if it works
+ <BR> Version 1.3 @ 921020 - problems with limit option -&gt; removed it again
+(couldn't always find &quot;outside world&quot;)
+ <BR> Version 1.4 @ 921029 - altered find_spec_cavity so that the program
+checks a 11*11*11 cube around the coordinates
+that the user entered (used to be 5*5*5);
+also changed so that closest point is selected;
+doubled buffer size to 2 megawords
+ <BR> Version 1.5 @ 930202 - print radius of corresponding sphere whenever a
+(cavity or molecular) volume is calculated;
+doubled buffer size again, now to 4 megawords;
+implemented new EZD format
+ <BR> Version 1.6 @ 930222 - minor changes
+ <BR> Version 2.0 @ 930302 - attempted to implement Connolly's &quot;solvent-
+occupied volume&quot; ... it works !!!
+ <BR> Version 2.1 @ 930607 - implement molecule pre-rotation
+ <BR> Version 2.2 @ 930618 - print list of non-included atoms inside cavities
+also print list of protein atoms lining it
+ <BR> Version 2.3 @ 930630 - removed bugs from these two new options
+ <BR> Version 2.4 @ 930809 - changed log-file format; new feature: IF plot
+files are requested for the cavities, THEN also
+O-macros to draw just the residues that are INSIDE
+and those that are LINING the cavities are made
+ <BR> Version 2.4.1 930823 - include 'centre_xyz cavity_center_of_gravity'
+ <BR> 			in output O macros
+ <BR> Version 2.4.2 930825 - made NEWEZD format compatible with O 5.9.1
+ <BR> Version 3.0 @ 931116 - recognise HETATM cards; echo REMARK cards;
+add comments to rotated PDB files; updated and
+shortened this manual
+ <BR> Version 3.0.1 940715 - add &quot;END&quot; record to New-EZD maps
+ <BR> Version 3.1 @ 950118 - sensitive to environment variable GKLIB
+ <BR> 960415 - 3.1.1 - minor bug fixes
+ <BR> 971120 - 3.1.2 - changed &quot;EZD&quot; to &quot;Old-EZD&quot;; made (New-)EZD default
+for output maps
+ <BR> 981123 - 3.1.3 - minor bug fix (bail out if no atoms accepted)
+ <BR> 990322 - 3.1.4 - increased max number of atoms to 100000
+ <BR> 990617 - 3.1.5 - increased max number of atoms to 500000
+ <BR> 000201 - 3.1.6 - removed hideous bug from PDB-reading code ;-)
+ <BR> 000202 - 3.1.7 - allow column 6 of an ATOM record to be non-blank
+(for very large structures with consecutively numbered
+atoms)
+ <BR> 000225 - 3.1.8 - increased max number of cavities from 500 to 10000
+ <BR> 000324 - 3.1.9 - add &quot;Quit&quot; option to first menu
+ <BR> 010903 - 3.2 - minor changes
+ <BR> 030312 - 3.3 - increased dimensioning of some arrays
+ <BR> 030424 - n/a - added note about scaling cavity volumes
+ <BR> 030902 - 3.3.1 - minor changes
+ <BR> 040617 - 3.3.2 - increased dimensioning of some arrays
+ <BR> 060727 - 3.3.3 - increased dimensioning of some arrays
+ <BR> 070508 - n/a - added note about cavity surface point coordinates
+ <BR> 080826 - 3.3.4 - increased max size of grids
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H4">4 </A>INTRODUCTION</H2> </CENTER>
+<P>   
+VOIDOO is a program for computing molecular volumes and for
+studying cavities in big molecules such as proteins. It
+requires a PDB file, a library file and some additional input.
+ <BR> In order to do calculations with &quot;randomly oriented&quot; molecules,
+an option to apply pseudo-random rotations to molecules in
+PDB files is also supplied.
+<P>   
+NOTE: This program is sensitive to the environment variable
+GKLIB. If set, the name of this directory will be prepended
+to the default name for the library file needed by this
+program. For example, in Uppsala, put the following line
+in your .login or .cshrc file: setenv GKLIB /home/gerard/lib
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H5">5 </A>ROTATING MOLECULES</H2> </CENTER>
+<P>   
+Supply a seed integer for the random number generator (identical
+seeds give identical rotations, so you can reproduce the
+results if you remember the seed !), an existing PDB file and
+a PDB file for the rotated molecule.
+This option is supported from version 2.1 and higher.
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+...
+ Select one of the following types of calculation:
+ C = cavity calculations
+ V = volume calculations
+ R = rotate a molecule
+<P>   
+ Type of calculation (C/V/R)           ? (C) r
+  2 CPU total/user/sys :       0.1       0.0       0.1
+ =&gt; Random number generator initialised with seed :          3
+ Seed for random number generator     ? (          0) 1234567
+ =&gt; Random number generator initialised with seed :    1234567
+ Rotations around X,Y,Z (deg) :  180.19  207.54  160.97
+<P>   
+ X Matrix :     1.0000000    0.0000000    0.0000000
+                0.0000000   -0.9999947    0.0032597
+                0.0000000   -0.0032597   -0.9999947
+ Determinant of X rotation matrix : (  1.000E+00)
+ Y Matrix :    -0.8866662    0.0000000    0.4624100
+                0.0000000    1.0000000    0.0000000
+               -0.4624100    0.0000000   -0.8866662
+ Determinant of Y rotation matrix : (  1.000E+00)
+ Z Matrix :    -0.9453575    0.3260356    0.0000000
+               -0.3260356   -0.9453575    0.0000000
+                0.0000000    0.0000000    1.0000000
+ Determinant of Z rotation matrix : (  1.000E+00)
+   Matrix :     0.8382166   -0.2890848    0.4624100
+                0.3274588    0.9448611   -0.0028903
+               -0.4360777    0.1538429    0.8866615
+ Determinant of random rotation matrix : (  1.000E+00)
+<P>   
+ Input  PDB file name ? (in.pdb) m26.pdb
+<P>   
+ Output PDB file name ? (out.pdb) rot.pdb
+<P>   
+ Reading, rotating and writing ...
+<P>   
+ Number of lines read   : (       1240)
+ Number of atoms read   : (       1236)
+...
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+Note that VOIDOO stores an account of how the rotated file was
+created through a number of REMARK records at the beginning of
+the new file:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ % 920 gerard rigel 22:18:28 cavity/crbpm26 &gt; head -10 rot.pdb
+REMARK Created by VOIDOO V. 931116/3.0 at Tue Nov 16 22:21:58 1993 for user gerard
+REMARK Created by rotating atoms in file m26.pdb
+REMARK Xnew = 0.8382166 * Xold + -0.2890848 * Yold + 0.4624100 * Zold
+REMARK Ynew = 0.3274588 * Xold + 0.9448611 * Yold + -0.0028903 * Zold
+REMARK Znew = -0.4360777 * Xold + 0.1538429 * Yold + 0.8866615 * Zold
+REMARK Seed 1234567 used for random number generator
+REMARK CRBP MODEL M26 (CELLULAR RETINOL-BINDING PROTEIN)
+ATOM      1  CB  PRO     1       1.894  -9.180 -17.892  1.00 20.29
+ATOM      2  CG  PRO     1       2.453 -10.121 -18.947  1.00 20.79
+ATOM      3  C   PRO     1       1.321  -9.620 -15.461  1.00 18.52
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H6">6 </A>VOLUME CALCULATIONS</H2> </CENTER>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S1">6.1 </A>startup</H3> 
+<P>   
+We shall first discuss the volume-calculation option of the program, by
+going step-by-step through an example calculation, explaining all the
+input parameters.
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ % 862 gerard rigel 21:07:29 cavity/crbpm26 &gt; run voidoo
+<P>   
+... Run voidoo
+<P>   
+... Executing /nfs/public/IRIX/bin/4d_voidoo
+... For gerard on rigel at Tue Nov 16 21:11:15 MET 1993
+<P>   
+ *** VOIDOO *** VOIDOO *** VOIDOO *** VOIDOO *** VOIDOO *** VOIDOO ***
+<P>   
+ Version  - 931116/3.0
+ (C) 1993 - Gerard J. Kleywegt, Dept. Mol. Biology, BMC, Uppsala (S)
+ User I/O - routines courtesy of Rolf Boelens, Univ. of Utrecht (NL)
+ Others   - T.A. Jones, G. Bricogne, Rams, W.A. Hendrickson
+ Others   - W. Kabsch, CCP4, PROTEIN, etc. etc.
+<P>   
+ Started  - Tue Nov 16 21:11:16 1993
+ User     - gerard
+ Mode     - interactive
+ Host     - rigel
+ ProcID   - 8131
+ Tty      - /dev/ttyq1
+<P>   
+ *** VOIDOO *** VOIDOO *** VOIDOO *** VOIDOO *** VOIDOO *** VOIDOO ***
+<P>   
+ ***** VOIDOO ***** VOIDOO ***** VOIDOO ***** VOIDOO ***** VOIDOO *****
+<P>   
+                          Current version : 930825/2.4.2
+                          Max nr of atoms :    50000
+                       Max nr of elements :       50
+                     Max nr of atom types :      100
+             Max nr of residue/atom types :      500
+                  Max nr of residue types :       50
+                       Max nr of cavities :      500
+               Max nr of detection cycles :       50
+              Max nr of refinement cycles :       50
+           Max nr of grid points per axis :      500
+              Max nr of points for grid 1 :  4194304
+              Max nr of points for grid 2 :  4194304
+              Max nr of points for grid 3 :   250000
+      Memory use (Bytes) for major arrays :  9438608
+<P>   
+ ***** VOIDOO ***** VOIDOO ***** VOIDOO ***** VOIDOO ***** VOIDOO *****
+<P>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S2">6.2 </A>calculation type</H3> 
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Data input
+ ----------
+<P>   
+ Select one of the following types of calculation:
+ C = cavity calculations
+ V = volume calculations
+ R = rotate a molecule
+<P>   
+ Type of calculation (C/V/R)           ? (C) v
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+a flag which indicates whether you want to do volume or cavity
+calculations ('C' or 'V')
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S3">6.3 </A>extensive output</H3> 
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Do you want extensive output          ? (N) n
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+a flag which indicates whether or not you want extensive output
+(and I mean extensive ...); unless you have run into a bug or
+apparently strange results, you should reply 'N(o)' at this point
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S4">6.4 </A>library file</H3> 
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+<P>   
+ (1) Vanderwaals radii and residue types
+<P>   
+ Library file ? (cavity.lib) ../cavity.lib
+ Reading your library file ...
+ Nr of lines in library file : (        132)
+ Nr of elements defined      : (         14)
+ Nr of atom types defined    : (          2)
+ Nr of residue/atom types    : (         37)
+ Nr of residue types defined : (         21)
+<P>   
+ ELEM       N    1.75       C    1.85       O    1.60       S    2.00
+...
+ RESI      THR     TRP     TYR     VAL     CPR
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+the name of an input library file; you may copy the example library
+(pertaining to proteins) and edit it at your heart's content. The
+library may/must contain the following key-worded information:
+<P>   
+* comments, keyword 'REMA', followed by any text
+<P>   
+* generic Vanderwaals radii for elements, keyword 'ELEM', followed
+by the element symbol (two characters !) and its radius
+<P>   
+* specific Vanderwaals radii for certain atom types, keyword 'ATOM',
+followed by the atom name (four characters !) and its radius
+<P>   
+* specific Vanderwaals radii for specific atoms in specific residues,
+keyword 'SPAT' followed by a string of the type 'RES*ATOM', where
+'RES' is the residue name, '*' may be anything and 'ATOM' is the name
+of the atom, followed by its radius
+<P>   
+* residue types which are to be read from the PDB file, keyword
+'RESI', followed by the name of the residue type (three characters);
+if you want to measure the size of the cavity that your inhibitor is
+in, for example, you don't want to use the inhibitor's atoms to
+calculate the free volume, and therefore you don't read the inhibitor
+at all
+<P>   
+* an end-of-file marker, keyword 'END '
+<P>   
+Selected parts of such a file may look as follows:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+REMA cavity.lib - library of Vanderwaals radii and residue types
+REMA              used by program VOIDOO
+REMA *** elements *** TWO characters; RIGHT justified
+REMA
+ELEM ' N' 1.75
+ELEM ' C' 1.85  NOTE: all Cs are 1.85 in AMBER, except CH2/CH3
+ELEM ' O' 1.60
+(...)
+REMA *** atom types *** FOUR characters; element is first TWO
+REMA
+ATOM ' NZ ' 1.85   NOTE: occurs only in Lys
+(...)
+REMA *** residue/atom combinations *** EIGHT chracaters: RRR*AAAA
+REMA first three=residue, four=anything, five-eight=atom name
+REMA
+REMA OH = 1.65
+REMA
+SPAT 'TYR* OH ' 1.65
+SPAT 'THR* OG1' 1.65
+REMA
+REMA CH2 = 1.925
+REMA
+SPAT 'SER* CB ' 1.925
+SPAT 'ASN* CB ' 1.925
+(...)
+REMA CH3 = 2.00
+REMA
+SPAT 'ALA* CB ' 2.00
+SPAT 'THR* CG2' 2.00
+SPAT 'LEU* CD1' 2.00
+(...)
+REMA *** allowed residue types ***
+REMA
+RESI 'ALA'
+RESI 'ARG'
+RESI 'ASN'
+(...)
+RESI 'TYR'
+RESI 'VAL'
+RESI 'CPR'
+END
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S5">6.5 </A>PDB file</H3> 
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ (2) PDB file
+<P>   
+ PDB file name ? (in.pdb) rot.pdb
+ Reading your PDB file ...
+ REMARK CREATED BY VOIDOO V. 931116/3.0 AT TUE NOV 16 22:21:58 1993 FOR USER GERARD
+ REMARK CREATED BY ROTATING ATOMS IN FILE M26.PDB
+ REMARK XNEW = 0.8382166 * XOLD + -0.2890848 * YOLD + 0.4624100 * ZOLD
+ REMARK YNEW = 0.3274588 * XOLD + 0.9448611 * YOLD + -0.0028903 * ZOLD
+ REMARK ZNEW = -0.4360777 * XOLD + 0.1538429 * YOLD + 0.8866615 * ZOLD
+ REMARK SEED 1234567 USED FOR RANDOM NUMBER GENERATOR
+ REMARK CRBP MODEL M26 (CELLULAR RETINOL-BINDING PROTEIN)
+ Number of atoms read     : (       1236)
+ Number of atoms kept     : (       1102)
+ Number of atoms rejected : (        134)
+ Max Vanderwaals radius   : (   2.000)
+ Sum of atomic volumes  : (  2.772E+04)
+ Rejected residue types : ( RTL CD2 HOH)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+the name of your PDB file
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S6">6.6 </A>grid spacing</H3> 
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ (3) Primary grid
+<P>   
+ Min, max, cog for X :    -10.443    29.645    10.919
+ Min, max, cog for Y :    -13.207    20.736     4.429
+ Min, max, cog for Z :    -30.775     6.903   -10.179
+ Primary grid spacing (A) ? (   1.000) 0.5
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+the spacing (in Angstrom) of the primary grid on which the initial
+steps (of detecting your molecule or cavities) will be performed. This
+value must be &gt;= 0.01; if it is too small, the grid will not fit into
+the program's buffers and the program will bail out
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S7">6.7 </A>probe radius</H3> 
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Probe radius (1.4 A for water) ? (   0.000) 0
+ Min, max, cog for X :    -12.500    32.000
+ Min, max, cog for Y :    -15.500    23.000
+ Min, max, cog for Z :    -33.000     9.000
+ Number of grid points : (         90          78          85)
+ Volume per voxel (A3) : (  1.250E-01)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+the probe radius is added to the Vanderwaals radii of the atoms; use 1.4 &Aring;
+if you want to compute the solvent-excluded volume or 0.0 &Aring; for the volume
+of the protein per se.
+<P>   
+NOTE: the reason people often use 1.4 &Aring; as the radius for a water molecule
+is based on the observation that the O-O distance in ice is ~2.8 &Aring;. While
+this hardly justifies the use of a 1.4 &Aring; radius for a solvent water, the
+fact that many have used this value and are still using it means that
+you can compare numbers slightly better than when you are using another
+(arbitrary) number (e.g., 1.2 &Aring; or 1.8 &Aring;).
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S8">6.8 </A>other parameters</H3> 
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ (4) Various parameters
+<P>   
+ Nr of volume-refinement cycles        ? (         10) 15
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+the number of volume-refinement cycles. Once your molecule has been
+detected on the primary grid, a number of refinement cycles can be
+carried out on increasingly fine grids, until the calculated volume
+converges. This number must lie between 1 and 1000
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Grid-shrink factor                    ? (   0.900)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+the grid-shrink factor. This number determines how much finer the grid
+is made in each refinement cycle. The value must lie between 0.1 and
+0.999; recommended are values of the order of 0.8 - 0.9
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Convergence criterion (A3)            ? (   0.100)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+an absolute volume-convergence criterion. If the difference in volume
+between two consecutive refinement cycles is less than this number,
+convergence has been achieved. This number must be &gt;= 0.001
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Convergence criterion (%)             ? (   0.100)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+a relative volume-convergence criterion. If the percentage difference
+in volume between two consecutive refinement cycles is less than this number,
+convergence has been achieved. This number must lie between 0.001 and
+99.999
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S9">6.9 </A>surface file</H3> 
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Create protein-surface plot file      ? (N) y
+ Dots, Old-EZD or New-EZD (D/O/N)      ? (N)
+ Name of this file                     ? (protein.ezd)
+ Grid spacing to use                   ? (   0.700)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+optionally, VOIDOO can be used to create files showing the surface of the
+protein when viewed with &quot;O&quot;. You may produce either an ODL file (dots)
+or an EZD or NEWEZD file. ODL files can be viewed with the DRAW command in &quot;O&quot;;
+NEWEZD files can be displayed using the EZD_READ and EZD_DRAW options, or
+they can be converted into ordinary MAP files with MAPMAN. EZD files must
+first be converted with MAPMAN.
+<P>   
+From version 3.1.2, (New-)EZD files are the default. They can be
+drawn directly using the FM_* commands in O. The Old-EZD format
+will be phased out, so don't use it.
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S10">6.10 </A>algorithm</H3> 
+<P>   
+The algorithm is rather simple:
+<P>   
+* for each cycle do:
+ <BR> - initialise grid and calculate volume/voxel ratio
+ <BR> - label all grid points which lie within the Vanderwaals radius of an atom
+ <BR> - count all labelled points and multiply by the volume/voxel ratio
+ <BR> - if cycle &gt; 1, compare with the volume found in the previous cycle and
+test for convergence; if converged, jump out of the refinement loop
+<P>   
+The algorithm's order is approximately linear with respect to the number of
+atoms, but inversely proportional to the third power of the grid spacing. For
+example, model M3 of gta requires 7.8 CPU seconds (on a slow Personal Iris)
+for a 1.0 &Aring; grid and 10.7 seconds on a 0.9 &Aring; grid; now 10.7 / 7.8 = 1.37 and
+1/(0.9*0.9*0.9) = 1.37 !
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S11">6.11 </A>output</H3> 
+<P>   
+The output during program execution may look as follows:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ CYCLE : (          1)
+ Grid spacing : (   0.500)
+ Setting up grid ...
+ Nr of points in grid : (     596700)
+ Not the protein      : (     481012)
+ The protein itself   : (     115688)
+ 23 CPU total/user/sys :       2.7       2.6       0.1
+ Nr of voxels in protein : (     115688)
+ Volume per voxel (A3)   : (  1.250E-01)
+ Protein volume (A3)     : (  1.446E+04)
+ Volume corresponds to a sphere of radius (A) : (  1.511E+01)
+ Nr of new grid points : (        101          88          96)
+<P>   
+ CYCLE : (          2)
+ Grid spacing : (   0.450)
+ Setting up grid ...
+ Nr of points in grid : (     853248)
+ Not the protein      : (     694538)
+ The protein itself   : (     158710)
+ 23 CPU total/user/sys :       4.1       4.1       0.1
+ Nr of voxels in protein : (     158710)
+ Volume per voxel (A3)   : (  9.112E-02)
+ Protein volume (A3)     : (  1.446E+04)
+ Volume corresponds to a sphere of radius (A) : (  1.511E+01)
+<P>   
+ &gt;&gt;&gt; CONVERGENCE &lt;&lt;&lt;
+<P>   
+ Last change (A3/%) : (  1.447E+00   1.001E-02)
+ Nr of volume calculations : (          2)
+ Average volume       (A3) : (  1.446E+04)
+ Volume corresponds to a sphere of radius (A) : (  1.511E+01)
+ Standard deviation   (A3) : (  7.236E-01)
+ 17 CPU total/user/sys :       0.9       0.9       0.0
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+Note that the volume converges to within approximately 0.01 % in two cycles,
+but this could be accidental. In general, it's better to have a number of
+values so you can judge how sensitive the volume is to the chosen grid
+spacing. In this case, you could change the grid-shrink factor and/or the
+primary grid spacing and/or the convergence criteria.
+<P>   
+Subsequently, VOIDOO will generate the protein-surface file and stop:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Protein plot grid : (         92          80          87)
+ Setting up grid ...
+ Nr of points in grid : (     640320)
+ Not the protein      : (     524632)
+ The protein itself   : (     115688)
+ 23 CPU total/user/sys :       2.8       2.7       0.1
+ Nr of protein points : (     115688)
+ Nr of protein points : (     115688)
+ 32 CPU total/user/sys :      19.6      18.8       0.7
+<P>   
+ *** VOIDOO *** VOIDOO *** VOIDOO *** VOIDOO *** VOIDOO *** VOIDOO ***
+<P>   
+ Version - 930825/2.4.2
+ Started - Tue Nov 16 21:11:16 1993
+ Stopped - Tue Nov 16 21:15:50 1993
+<P>   
+ CPU-time taken :
+ User    -     30.0 Sys    -      1.1 Total   -     31.1
+<P>   
+ *** VOIDOO *** VOIDOO *** VOIDOO *** VOIDOO *** VOIDOO *** VOIDOO ***
+<P>   
+ &gt;&gt;&gt; This program is (C) 1993, GJ Kleywegt &amp; TA Jones &lt;&lt;&lt;
+ E-mail: &quot;gerard@xray.bmc.uu.se&quot; or &quot;alwyn@xray.bmc.uu.se&quot;
+<P>   
+ *** VOIDOO *** VOIDOO *** VOIDOO *** VOIDOO *** VOIDOO *** VOIDOO ***
+<P>   
+STOP ... Toodle pip ... statement executed
+<P>   
+real     4:35.0
+user       29.9
+sys         1.1
+<P>   
+... Started  Tue Nov 16 21:11:15 MET 1993
+... Finished Tue Nov 16 21:15:51 MET 1993
+... Mode     Normal
+<P>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S12">6.12 </A>(New-)EZD surface file</H3> 
+<P>   
+let's have a look at the surface plot file (note that a New-EZD file
+can be read into O directly !)
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ % 865 gerard rigel 21:07:29 cavity/crbpm26 &gt; head -10 crbp_surf.nezd
+EZD_MAP
+! Created by VOIDOO V. 930825/2.4.2 at Tue Nov 16 21:15:32 1993 for user gerard
+CELL 100.000 100.000 100.000 90.000 90.000 90.000
+ORIGIN -26 -32 -67
+EXTENT 92 80 87
+GRID 200 200 200
+SCALE 1.000
+MAP
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H7">7 </A>CAVITY CALCULATIONS</H2> </CENTER>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S13">7.1 </A>startup</H3> 
+<P>   
+We shall now deal with the cavity-related options of VOIDOO:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+...
+ Select one of the following types of calculation:
+ C = cavity calculations
+ V = volume calculations
+ R = rotate a molecule
+<P>   
+ Type of calculation (C/V/R)           ? (C)
+ Do you want extensive output          ? (N)
+<P>   
+ (1) Vanderwaals radii and residue types
+<P>   
+ Library file ? (cavity.lib) ../cavity.lib
+ Reading your library file ...
+...
+ (2) PDB file
+<P>   
+ PDB file name ? (in.pdb) rot.pdb
+ Reading your PDB file ...
+...
+ (3) Primary grid
+<P>   
+ Min, max, cog for X :    -10.443    29.645    10.919
+ Min, max, cog for Y :    -13.207    20.736     4.429
+ Min, max, cog for Z :    -30.775     6.903   -10.179
+ Primary grid spacing (A) ? (   1.000) 0.75
+ Probe radius (1.4 A for water) ? (   1.400) 1.2
+ Min, max, cog for X :    -14.250    33.000
+ Min, max, cog for Y :    -16.500    24.000
+ Min, max, cog for Z :    -34.500    10.500
+ Number of grid points : (         64          55          61)
+ Volume per voxel (A3) : (  4.219E-01)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+The first few input items are the same as in the case of volume calculations.
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S14">7.2 </A>detection cycles</H3> 
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Nr of detection cycles                ? (         10) 8
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+the maximum number of cavity-detection cycles
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S15">7.3 </A>growth factor</H3> 
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Growth factor for Vanderwaals radii   ? (   1.100) 1.05
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+the growth factor for the Vanderwaals radii in the cavity-detection stage
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S16">7.4 </A>minimum size</H3> 
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Min size of &quot;real&quot; cavities (voxels)  ? (          1) 5
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+minimum size (in voxels on the primary grid) of &quot;real&quot; cavities; this is
+to enable you to disregard (ridiculously) small cavities.
+<P>   
+NOTE: Hubbard and Argos (Protein Engineering 8, 1011-1015) argue that,
+using a 1.2 &Aring; probe radius a minimum volume of 10 &Aring;**3 can be used
+for &quot;real&quot; cavities.
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S17">7.5 </A>specific cavity</H3> 
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Are you looking for a specific cavity ? (N) n
+ All cycles or First decline (A/F)     ? (F) f
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+either look for a specific cavity (in which case you are prompted to supply
+the X, Y and Z coordinate of a &quot;seed point&quot; of which you know that it is
+inside the cavity (and not too close to any atoms, please) or detect unknown
+cavities by either finding the best growth factor after all cycles have been
+completed (A), or stop as soon as the number of cavities ceases to increase (F)
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S18">7.6 </A>MASK file</H3> 
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Do you want a MASK file               ? (N) y
+ MASK file name                        ? (out.mask) crbp.mask
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+create a MASK file or not; if you want one, supply its name
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S19">7.7 </A>LOG file</H3> 
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ LOG file name                         ? (cavity.log) crbp_test.log
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+the name for your LOG file, to which a summary of the calculations
+and their results will be written
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S20">7.8 </A>refinement</H3> 
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Do you want to refine the cavities    ? (Y)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+refine the cavities or not; if you only want to count the number of
+cavities, or to find the 'optimal' value for the growth factor, you
+should reply with 'N(o)' here
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S21">7.9 </A>algorithm</H3> 
+<P>   
+The algorithm for cavity detection is as follows:
+<P>   
+* set the atom-fattening factor to 1.00
+ <BR> * for each cycle do
+ <BR> - initialise the grid
+ <BR> - flag all points on the grid which lie within a distance Dmin of an
+atom, where
+Dmin = (Vanderwaals radius) * (atom-fattening factor) + (probe radius)
+ <BR> - count the number of &quot;real&quot; (i.e., big enough) cavities
+ <BR> - cycle &gt; 1 and option = 'F' then if the number of cavities is not higher
+than that found in the previous cycle (unless there were zero then),
+jump out of the loop
+ <BR> - multiply atom-fattening factor by Vanderwaals growth factor
+ <BR> * if option = 'A' then find the atom-fattening factor which gave the highest
+number of cavities
+ <BR> * restore the grid using the best atom-fattening factor
+ <BR> * produce a MASK file if required
+<P>   
+Again, the order of the algorithm is inversely proportional to the third power
+of the grid spacing.
+<P>   
+The 'atom fattening' has been implemented in order to close cavities which
+are still connected to 'the outside world'. By artificially increasing the
+Vanderwaals radii, at a certain stage you will start to close those connections,
+which will be evidenced by an increasing number of detected cavities. When
+the atoms get too big, they will start to fill existing cavities and, hence,
+the number of cavities will decrease. If you make the atoms still bigger,
+the number of cavities will increase again, but these are not real cavities,
+but actually parts of thee outside world which have become isolated since the
+molecule 'expands' outside its 'box' (ie, the primary grid).
+<P>   
+The probe radius also helps to close off connections to the outside world,
+but in addition it will ensure that you only find cavities which are big
+enough to contain a certain type of molecule/ion (eg, if you want to find
+possible water cavities, you may set the probe radius to 1.4 &Aring;). The minimum
+cavity size (in voxels) may be used to the same effect.
+<P>   
+The MASK file is created using the best atom-fattening factor and the probe
+radius. The mask will therefore give you an idea of the LOCATIONS of the
+cavities, but NOT of their EXTENT in space (since you have to correct for
+the fattened atoms and the probe radius; this is done in the refinement phase).
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S22">7.10 </A>output</H3> 
+<P>   
+Output for the cavity-detection stage may look as follows:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+<P>   
+ Data input done
+ ---------------
+<P>   
+  2 CPU total/user/sys :       1.3       1.0       0.2
+<P>   
+ DETECTION CYCLE : (          1)
+ Vanderwaals factor : (   1.000)
+ Setting up grid ...
+ Nr of points in grid : (     214720)
+ Not the protein      : (     152956)
+ The protein itself   : (      61764)
+ Nr of non-protein points now : (     132110)
+ Nr of points outside protein : (     131524)
+ Nr of cavity points          : (        586)
+ 23 CPU total/user/sys :      12.9      12.6       0.3
+ Cavity found ! Nr of points : (        583)
+ Nr of cavities found : (          1)
+ Total nr of points in cavities : (        583)
+ Total cavity volume            : (  2.460E+02)
+  8 CPU total/user/sys :       5.4       5.2       0.1
+ Nr of cavities : (          1)
+<P>   
+ DETECTION CYCLE : (          2)
+ Vanderwaals factor : (   1.050)
+ Setting up grid ...
+ Nr of points in grid : (     214720)
+ Not the protein      : (     151485)
+ The protein itself   : (      63235)
+ Nr of non-protein points now : (     130640)
+ Nr of points outside protein : (     130143)
+ Nr of cavity points          : (        497)
+ 23 CPU total/user/sys :      12.9      12.7       0.2
+ Cavity found ! Nr of points : (        493)
+ Nr of cavities found : (          1)
+ Total nr of points in cavities : (        493)
+ Total cavity volume            : (  2.080E+02)
+  8 CPU total/user/sys :       5.3       5.0       0.3
+ Nr of cavities : (          1)
+  4 CPU total/user/sys :       0.0       0.0       0.0
+ Setting up grid ...
+ Nr of points in grid : (     214720)
+ Not the protein      : (     152956)
+ The protein itself   : (      61764)
+ Nr of non-protein points now : (     132110)
+ Nr of points outside protein : (     131524)
+ Nr of cavity points          : (        586)
+ 23 CPU total/user/sys :      12.5      12.3       0.2
+ Writing mask
+  5 CPU total/user/sys :       5.4       5.2       0.2
+  6 CPU total/user/sys :       0.0       0.0       0.0
+ Vanderwaals factor employed : (   1.000)
+ Max Vanderwaals radius used : (   2.000)
+ Margin for adding to grid   : (   2.000)
+<P>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+In this example, cycle 2 did not give more cavities than cycle 1,
+ <BR> so the detection stage finishes with one cavity found.
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H8">8 </A>CAVITY REFINEMENT</H2> </CENTER>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S23">8.1 </A>refinement cycles</H3> 
+<P>   
+In case you want to refine the cavity volumes, the following additional input
+ <BR> is required:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Nr of volume-refinement cycles        ? (         10)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+the number of cavity-volume refinement cycles
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S24">8.2 </A>type of cavity</H3> 
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ You may calculate one of these type of cavity volumes:
+ (V) Vanderwaals: not occupied by the molecule
+ (A) Probe-accessible: available to the probe centre
+ (O) Probe-occupied: occupied by rolling probe
+ Type of cavity volume (V/A/O)         ? (A)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+- Vanderwaals cavity: the complement of the molecule's Vanderwaals surface
+(not recommended, unless the atoms without the probe close off the cavity)
+ <BR> - Probe-accessible: the volume accessible to the centre of the probe sphere
+ <BR> - Probe-occupied: the volume occupied by the probe; this gives nice &quot;Connolly-
+surfaces&quot; of your cavity and the numerical results (provided that you use a
+FINE grid for the cavities, less than approximately 0.25 &Aring;) are comparable
+to those obtained with Connolly's MS program. This type of cavity is
+created from the probe-accessible cavity by adding all points which are
+within the probe radius from the accessible cavity's surface to the cavity.
+Use ONLY when your cavity is closed by the probe at the standard
+Vanderwaals radii !!!
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S25">8.3 </A>other refinement parameters</H3> 
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Grid-shrink factor                    ? (   0.900) 0.93
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+- the grid-shrink factor
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Min size of secondary grid            ? (         10)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+- the minimum size of the secondary grid (in any one dimension); this is to
+prevent calculations on a grid which is small and therefore relatively
+coarse (which makes the computed volume less reliable and usually leads
+to large variations in the volumes computed in consecutive cycles); use
+a large number if you want to compare your numerical results to those
+of Connolly's MS program
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Convergence criterion (A3)            ? (   0.100)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+- an absolute convergence threshold (A3)
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Convergence criterion (%)             ? (   0.100)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+- a relative convergence threshold (%)
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S26">8.4 </A>surface file</H3> 
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Create protein-surface plot file      ? (N) no
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+protein-surface files; see under volume calculations
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S27">8.5 </A>cavity plot files</H3> 
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Do you want plot files                ? (Y)
+ First part of plot file names         ? (cavity)
+ Grid for plot files                   ? (   0.700)
+ You may choose from the following types of
+ graphical representations for your cavities:
+  O * generate Old-EZD files
+  N * generate New-EZD files
+  D * draw dots for all cavity points
+  3 * 3-sweep contour (fairly quick)
+  1 * 1-sweep contour (quick and dirty)
+  C * connect all surface points (fast/big objects)
+  T * tiles (ie, poly-triangles; not implemented yet)
+ Graphical representation (C/1/3/D/T/O/N)? (N)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+whether or not you want plot output files, which contain graphical
+descriptions of the cavities and which can be drawn directly with &quot;O&quot;;
+ <BR> if you want such files, then the following input is required as well:
+ <BR> - the first part of the plot file names (if you enter 'abc', then the
+files for cavity 1, 2 etc will be called abc_1.o, abc_2.o etc.)
+ <BR> - the grid spacing to use for the graphical representations of cavities
+(the finer you make this grid, the bigger the graphics objects will
+become and the slower will drawing and manipulating them in &quot;O&quot; be);
+use a fine grid (e.g., 0.2 &Aring;) for plotting probe-occupied cavities !!!
+ <BR> - the type of graphical representation you want
+ <BR> HINT: use CPK models of your protein and/or ligand etc in conjunction
+with the cavity drawings !
+<P>   
+From version 3.1.2, (New-)EZD is the default.
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S28">8.6 </A>refinement algorithm</H3> 
+<P>   
+The volume-refinement algorithm is as follows:
+<P>   
+* for all cavities found in the primary grid do
+ <BR> - isolate the cavity
+ <BR> - for each refinement cycle do
+ <BR> o set up a secondary grid, compensating for the atom-fattening and the
+probe radius used in the primary grid; each dimension must have at
+least a certain number of grid points, if not multiply the grid size
+by the grid-shrink factor and try again; if the grid no longer fits
+the program's buffer, jump out of the loop
+ <BR> o initialise the secondary grid and compute the volume/voxel ratio
+ <BR> o label all points which are within the Vanderwaals radius of an atom
+ <BR> o isolate the cavity (&quot;zapping&quot;)
+ <BR> o count the grid points that constitute the cavity and compute the
+cavity's volume from that
+ <BR> o test for convergence
+ <BR> - afterwards, print the coordinates of the centre of cavity gravity etc.
+ <BR> - generate the plot files if required
+ <BR> * print the total number of cavities and their combined volume
+<P>   
+Again, the order of the algorithm is inversely proportional to the third power
+of the grid spacing.
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S29">8.7 </A>refinement output</H3> 
+<P>   
+Output may look like this:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+<P>   
+ NEW CAVITY ! Nr of points : (        583)
+ Zero-order volume : (  2.460E+02)
+  9 CPU total/user/sys :       3.8       3.7       0.1
+<P>   
+ REFINEMENT CYCLE : (          1)
+ Grid spacing : (   0.750)
+ Nr of secondary grid points : (         24          28          27)
+ Volume per voxel (A3) : (  4.219E-01)
+ Setting up grid ...
+ Nr of points in grid : (      18144)
+ Not the protein      : (       1426)
+ The protein itself   : (      16718)
+ 23 CPU total/user/sys :       0.8       0.7       0.0
+ Nr of points &quot;zapped&quot; : (        583)
+ 11 CPU total/user/sys :       0.2       0.2       0.0
+ Volume : (  2.460E+02)
+ Volume corresponds to a sphere of radius (A) : (  3.887E+00)
+<P>   
+...
+<P>   
+ REFINEMENT CYCLE : (         10)
+ Grid spacing : (   0.390)
+ Nr of secondary grid points : (         43          51          49)
+ Volume per voxel (A3) : (  5.946E-02)
+ Setting up grid ...
+ Nr of points in grid : (     107457)
+ Not the protein      : (       7811)
+ The protein itself   : (      99646)
+ 23 CPU total/user/sys :       3.0       2.9       0.1
+ Nr of points &quot;zapped&quot; : (       4142)
+ 11 CPU total/user/sys :       3.1       3.0       0.0
+ Volume : (  2.463E+02)
+ Volume corresponds to a sphere of radius (A) : (  3.888E+00)
+ Centre of cavity gravity     12.371     9.891    -7.847
+ Nr of volume calculations : (         10)
+ Average volume       (A3) : (  2.462E+02)
+ Volume corresponds to a sphere of radius (A) : (  3.888E+00)
+ Standard deviation   (A3) : (  1.385E+00)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S30">8.8 </A>residues in and near cavities</H3> 
+<P>   
+Now VOIDOO will list the atoms that are inside this cavity, and those
+that line it:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Looking for atoms inside this cavity ...
+ Inside &gt;  C1  RTL   200  @     11.813    12.750    -5.950
+ Inside &gt;  C2  RTL   200  @     11.812    13.896    -4.907
+...
+ Inside &gt;  C15 RTL   200  @      9.077     3.575   -11.205
+ Inside &gt;  O1  HOH   260  @     16.834     7.214   -12.232
+ Nr found : (         20)
+<P>   
+ Looking for atoms lining this cavity ...
+ Nr of candidates : (        458)
+ Lining &gt;  CE  MET    10  @      9.303     6.153    -1.218
+ Lining &gt;  ND2 ASN    13  @     12.929     6.691     0.277
+...
+ Lining &gt;  NE2 GLN   128  @     12.436     5.329    -3.371
+ Lining &gt;  CZ  PHE   130  @      7.163     4.791    -3.985
+ Nr found : (        106)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S31">8.9 </A>plot files and O macros</H3> 
+<P>   
+Finally, if you requested them, plot files and O macros will
+be generated:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Nr of plot grid points : (         33          40          39)
+ Setting up grid ...
+ Nr of points in grid : (      51480)
+ Not the protein      : (       3707)
+ The protein itself   : (      47773)
+ 23 CPU total/user/sys :      64.1      63.1       1.0
+ Nr of points &quot;zapped&quot; : (       1959)
+ Nr of points &quot;zapped&quot; for plot   : (       1959)
+ Volume per voxel (A3)            : (  1.250E-01)
+ Cavity volume on plot grid (A3)  : (  2.449E+02)
+ Volume corresponds to a sphere of radius (A) : (  3.881E+00)
+ 34 CPU total/user/sys :       2.8       2.7       0.1
+<P>   
+ Summary :
+ Nr of cavities found : (          1)
+ Nr of original grid points in cavities : (        583)
+ Total cavity volume                    : (  2.463E+02)
+<P>   
+ *** VOIDOO *** VOIDOO *** VOIDOO *** VOIDOO *** VOIDOO *** VOIDOO ***
+<P>   
+ Version - 930825/2.4.2
+ Started - Tue Nov 16 21:19:55 1993
+ Stopped - Tue Nov 16 21:29:55 1993
+<P>   
+ CPU-time taken :
+ User    -    150.9 Sys    -      3.5 Total   -    154.5
+<P>   
+ *** VOIDOO *** VOIDOO *** VOIDOO *** VOIDOO *** VOIDOO *** VOIDOO ***
+<P>   
+ &gt;&gt;&gt; This program is (C) 1993, GJ Kleywegt &amp; TA Jones &lt;&lt;&lt;
+ E-mail: &quot;gerard@xray.bmc.uu.se&quot; or &quot;alwyn@xray.bmc.uu.se&quot;
+<P>   
+ *** VOIDOO *** VOIDOO *** VOIDOO *** VOIDOO *** VOIDOO *** VOIDOO ***
+...
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S32">8.10 </A>correcting cavity volumes</H3> 
+<P>   
+Chakravarty et al. (J. Biol. Chem. 277 (35), 31345-31353 (2002)) have
+suggested that VOIDOO cavity volumes (not for solvent-accessible
+cavities !) are overestimated. They suggest the following correction:
+<P>   
+Voronoi_volume_of_cavity = 0.26 * VOIDOO_cavity_volume - 8.8 (A**3)
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H9">9 </A>LOG FILE</H2> </CENTER>
+<P>   
+The LOG file contains a summary of the input and the results:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ % 869 gerard rigel 21:07:29 cavity/crbpm26 &gt; cat crbp_test.log
+...
+ - PDB file
+ rot.pdb
+<P>   
+ - MASK file
+ crbp.mask
+<P>   
+ - LOG file
+ crbp_test.log
+<P>   
+ - Plot files
+ crbp_cav_#.o
+<P>   
+ - Grid &amp; cavity parameters
+ Max nr of cavity-detection cycles   :          8
+ Will do detection cycles until first best
+ Vanderwaals growth factor           :      1.050
+ Probe radius                        :      1.200
+ Min nr of voxels in &quot;real&quot; cavities :          5
+ Max nr of volume-refinement cycles  :         10
+ Will calculate probe-accessible volumes
+ Will use probe in cavity-volume calculations
+ Grid shrink factor                  :      0.930
+ Min size of secondary grid          :         10
+ Grid for plot files                 :      0.500
+ Volume-convergence tolerance (A3)   :      0.100
+ Volume-convergence tolerance (%)    :      0.100
+ Primary grid spacing                :      0.750
+ Grid sizes                          :         64        55        61
+ Lower X/Y/Z limits                  :    -14.250   -16.500   -34.500
+ Upper X/Y/Z limits                  :     33.000    24.000    10.500
+ No plot file for protein surface will be made
+ Plot grid spacing                   :      0.500
+ Representation: New-EZD
+<P>   
+ Determining number of cavities
+ ... Cycle   1 | Vdw-factor    1.00000 | Cavities      1
+ ... Cycle   2 | Vdw-factor    1.05000 | Cavities      1
+ Best Vdw-factor    1.00000 gives      1 cavities
+<P>   
+ Refining cavity volumes
+<P>   
+ Cavity
+ #      1 Starts at      8.250     3.750   -11.250
+ Cavity box      5.050    20.450    -0.200    18.950   -16.700     1.700
+ Cycle       Grid     V(vox)       #Vox   Cavity volume
+     1    0.75000    0.42188        583     2.45953E+02
+     2    0.69750    0.33934        722     2.45002E+02
+     3    0.64868    0.27295        906     2.47292E+02
+     4    0.60327    0.21955       1106     2.42821E+02
+     5    0.56104    0.17660       1393     2.45997E+02
+     6    0.52177    0.14205       1736     2.46591E+02
+     7    0.48524    0.11426       2164     2.47249E+02
+     8    0.45128    0.09190       2699     2.48044E+02
+     9    0.41969    0.07392       3338     2.46752E+02
+    10    0.39031    0.05946       4142     2.46282E+02
+ Centre of cavity gravity     12.371     9.891    -7.847
+ Nr of calcns/average/sigma volume  10   246.198     1.385
+ Inside &gt;  C1  RTL   200  @     11.813    12.750    -5.950
+ Inside &gt;  C2  RTL   200  @     11.812    13.896    -4.907
+...
+ Inside &gt;  C15 RTL   200  @      9.077     3.575   -11.205
+ Inside &gt;  O1  HOH   260  @     16.834     7.214   -12.232
+ Lining &gt;  CE  MET    10  @      9.303     6.153    -1.218
+ Lining &gt;  ND2 ASN    13  @     12.929     6.691     0.277
+...
+ Lining &gt;  NE2 GLN   128  @     12.436     5.329    -3.371
+ Lining &gt;  CZ  PHE   130  @      7.163     4.791    -3.985
+ Nr voxels/Voxel volume/Cavity volume on plot grid       1959 0.1250000   244.875
+<P>   
+  *** VOIDOO ***
+<P>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H10">10 </A>CAVITY PLOT FILES</H2> </CENTER>
+<P>   
+We also have a plot file for every cavity:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ % 871 gerard rigel 21:07:29 cavity/crbpm26 &gt; head -10 crbp_cav_1.ez2
+EZD_MAP
+! Created by VOIDOO V. 930825/2.4.2 at Tue Nov 16 21:29:51 1993 for user gerard
+CELL 50.000 50.000 50.000 90.000 90.000 90.000
+ORIGIN 9 -1 -34
+EXTENT 33 40 39
+GRID 100 100 100
+SCALE 1.000
+MAP
+ 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H11">11 </A>CAVITY O MACROS</H2> </CENTER>
+<P>   
+And an O macro to draw the residues inside and surrounding each cavity:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ % 872 gerard rigel 21:07:29 cavity/crbpm26 &gt; cat crbp_cav_1.omac
+! Created by VOIDOO V. 930825/2.4.2 at Tue Nov 16 21:28:39 1993 for user gerard
+!
+mol #Cavity-molecule name ?#
+!
+centre_xyz 12.37121 9.891000 -7.847060
+!
+obj ins_1
+zone 200 200
+zone 260 260
+end_object
+!
+obj lin_1
+zone 10 10
+zone 13 13
+zone 16 16
+zone 19 19
+zone 20 20
+zone 23 23
+zone 25 25
+zone 29 29
+...
+zone 128 128
+zone 130 130
+end_object
+!
+bell
+message Done
+!
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H12">12 </A>CAVITY-SURFACE-POINT COORDINATES</H2> </CENTER>
+<P>   
+If you want to get XYZ coordinates for the points on a cavity's surface,
+you can use the following method:
+<P>   
+- save your cavity plot files in New-EZD format
+ <BR> - convert the cavity plot files into masks with MAPMAN
+(e.g.: &quot;re m1 cavity_1.ezd newezd&quot; followed by:
+&quot;wr m1 cavity_1.mask mask 0.5&quot;)
+ <BR> - read the cavity masks into MAMA and create dot (or sphere) ODL
+files (with the DOt_odl command in MAMA; see the MAMA manual):
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ MAMA &gt; re m1 cavity_1.mask
+ MAMA &gt; dot m1 cav1d.odl
+ ODL file written
+ Nr of mask points  : (        363)
+ Nr of surface dots : (        199)
+ MAMA &gt; dot m1 cav1s.odl 0.1
+ Sphere radius (A): (   0.100)
+ ODL file written
+ Nr of mask points  : (        363)
+ Nr of surface dots : (        199)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+The ODL file contains one line for every point on the cavity surface
+with its XYZ coordinates, e.g.:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+begin mdot
+colour magenta
+ dot 11.900 20.300 21.700
+ dot 11.900 20.300 22.400
+ dot 11.900 21.000 23.100
+[...]
+ dot 18.900 24.500 23.800
+ dot 18.900 25.200 22.400
+ dot 18.900 25.200 23.100
+end_object
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+If you want to display the ODL files in O, you can edit them first
+to change the default colours and object names, then do something
+like &quot;sketch_setup sphere smooth 2&quot; in O before drawing them
+with the &quot;draw&quot; command (e.g.: &quot;draw cav1s.odl draw cav2s.odl&quot;).
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H13">13 </A>KNOWN BUGS</H2> </CENTER>
+<P>   
+None, at present.
+<HR NOSHADE>    <A HREF="http://xray.bmc.uu.se/usf/" target="_top">
+<IMG ALIGN="right" BORDER="0" SRC="usf_logo.gif"
+ALT="Uppsala Software Factory"></A>
+<FONT SIZE=-1>
+<B> <I> Created at Tue Aug 26 18:41:02 2008
+by MAN2HTML version 070111/2.0.8 . This manual
+describes VOIDOO, a program of the <A HREF="http://xray.bmc.uu.se/usf/" target="_top">Uppsala
+Software Factory</A> (USF), written and maintained by <A HREF="http://xray.bmc.uu.se/gerard"
+target="_blank">Gerard Kleywegt</A>. &copy; 1992-2007.
+</I> </B> </FONT><P>
+<IMG SRC="http://xray.bmc.uu.se/cgi-bin/nph-count?width=6&link=http://alpha2.bmc.uu.se/~gerard/www/manuals/voidoo_man.html">
+</body></html>

@@ -1,0 +1,371 @@
+<html><head><!-- This document was created for XVRML at Fri Jan 14 20:12:39 2005 from
+../utils/xvrml.txt by MAN2HTML version 050114/2.0.6 -->
+<title>Uppsala Software Factory - XVRML Manual</title>
+<meta name="DESCRIPTION" content="Manual for Gerard 
+Kleywegt's program XVRML">
+<meta name="KEYWORDS" content="manual software Gerard 
+Kleywegt program XVRML structural biology 
+protein X-ray crystallography macromolecular molecular
+Uppsala Software Factory bioinformatics">
+</head><body bgcolor="#fefefe" background="back.gif">
+
+<A HREF="http://xray.bmc.uu.se/usf/" target="_top">
+<IMG ALIGN="right" BORDER="0" SRC="usf_logo.gif"
+ALT="Uppsala Software Factory"></A>
+
+<H2>  Uppsala Software Factory - XVRML Manual</H2> <P>   
+<UL>  
+<LI><H3>  <A HREF="#H1">1  </A>XVRML - GENERAL INFORMATION</H3> 
+<LI><H3>  <A HREF="#H2">2  </A>REFERENCES</H3> 
+<LI><H3>  <A HREF="#H3">3  </A>VERSION HISTORY</H3> 
+<LI><H3>  <A HREF="#H4">4  </A>INTRODUCTION</H3> 
+<LI><H3>  <A HREF="#H5">5  </A>OPTIONS</H3> 
+<H5><A HREF="#S1">5.1  </A>0 - quit</H5>
+<H5><A HREF="#S2">5.2  </A>99 - change background colour</H5>
+<H5><A HREF="#S3">5.3  </A>98 - change default drawing colour</H5>
+<H5><A HREF="#S4">5.4  </A>97 - colour atoms by element</H5>
+<H5><A HREF="#S5">5.5  </A>96 - scale atomic radii</H5>
+<H5><A HREF="#S6">5.6  </A>95 - list predefined colours</H5>
+<H5><A HREF="#S7">5.7  </A>94 - RGB from colour name</H5>
+<H5><A HREF="#S8">5.8  </A>93 - colour code from RGB</H5>
+<H5><A HREF="#S9">5.9  </A>8 - read new PDB file</H5>
+<H5><A HREF="#S10">5.10  </A>1 - monochrome CPK model</H5>
+<H5><A HREF="#S11">5.11  </A>2 - atom-coloured CPK model</H5>
+<H5><A HREF="#S12">5.12  </A>3 - monochrome wire model</H5>
+<H5><A HREF="#S13">5.13  </A>4 - atom-coloured wire model</H5>
+<H5><A HREF="#S14">5.14  </A>5 - monochrome ball-and-stick</H5>
+<H5><A HREF="#S15">5.15  </A>6 - atom-coloured ball-and-stick</H5>
+<H5><A HREF="#S16">5.16  </A>7 - monochrome CA trace</H5>
+<LI><H3>  <A HREF="#H6">6  </A>KNOWN BUGS</H3> 
+<LI><H3>  <A HREF="#H7">7  </A>UNKNOWN BUGS</H3> 
+</UL> 
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H1">1 </A>XVRML - GENERAL INFORMATION</H2> </CENTER>
+<P>   
+Program : XVRML
+ <BR> Version : 990924
+ <BR> Author : Gerard J. Kleywegt, Dept. of Cell and Molecular Biology,
+Uppsala University, Biomedical Centre, Box 596,
+SE-751 24 Uppsala, SWEDEN
+ <BR> E-mail : gerard@xray.bmc.uu.se
+ <BR> Purpose : generate VRML files from PDB files
+ <BR> Package : X-UTIL
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H2">2 </A>REFERENCES</H2> </CENTER>
+<P>   
+Reference(s) for this program:
+<P>   
+* 1 * G.J. Kleywegt (1992-2004).
+Uppsala University, Uppsala, Sweden.
+Unpublished program.
+<P>   
+* 2 * Kleywegt, G.J., Zou, J.Y., Kjeldgaard, M. &amp; Jones, T.A. (2001).
+Around O. In: &quot;International Tables for Crystallography, Vol. F.
+Crystallography of Biological Macromolecules&quot; (Rossmann, M.G.
+&amp; Arnold, E., Editors). Chapter 17.1, pp. 353-356, 366-367.
+Dordrecht: Kluwer Academic Publishers, The Netherlands.
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H3">3 </A>VERSION HISTORY</H2> </CENTER>
+<P>   
+970722 - 0.2 - first documented version
+ <BR> 990806 - 0.3 - minor bug fix (set atomnr to 1 if unknown element)
+ <BR> 990924 - 0.4 - allow addition to atomic radii (option 96)
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H4">4 </A>INTRODUCTION</H2> </CENTER>
+<P>   
+NOTE: more sophisticated VRML &quot;worlds&quot; can be created with MOLEMAN2
+(version 2.0 and on) !
+<P>   
+This program is just a quick-and-dirty jiffy to produce VRML files
+of molecules from PDB files. Operation is pretty simple:
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ *** XVRML *** XVRML *** XVRML *** XVRML *** XVRML *** XVRML *** XVRML ***
+<P>   
+ Version  - 990924/0.4
+ (C) 1992-1999 Gerard J. Kleywegt, Dept. Cell Mol. Biol., Uppsala (S)
+ User I/O - routines courtesy of Rolf Boelens, Univ. of Utrecht (NL)
+ Others   - T.A. Jones, G. Bricogne, Rams, W.A. Hendrickson
+ Others   - W. Kabsch, CCP4, PROTEIN, E. Dodson, etc. etc.
+<P>   
+ Started  - Mon Oct 11 19:40:23 1999
+ User     - gerard
+ Mode     - interactive
+ Host     - sarek
+ ProcID   - 13663
+ Tty      - /dev/ttyq12
+<P>   
+ *** XVRML *** XVRML *** XVRML *** XVRML *** XVRML *** XVRML *** XVRML ***
+<P>   
+ Reference(s) for this program:
+<P>   
+ *  1 * G.J. Kleywegt (1992-1999).
+        Uppsala University, Uppsala, Sweden.
+        Unpublished program.
+<P>   
+ *  2 * G.J. Kleywegt, J.Y. Zou, M. Kjeldgaard &amp; T.A. Jones (1999 ?).
+        Chapter 25.2.6.  Around O. Int. Tables for
+        Crystallography, Volume F. Submitted.
+<P>   
+ ==&gt; For manuals and up-to-date references, visit:
+ ==&gt; http://xray.bmc.uu.se/usf
+<P>   
+ *** XVRML *** XVRML *** XVRML *** XVRML *** XVRML *** XVRML *** XVRML ***
+<P>   
+ Initialising : (XVRML - 990924/0.7)
+ Nr of predefined colours : (        411)
+<P>   
+ PDB file name ? (test.pdb) 1cbs.pdb
+ ==&gt; Found file in GKPATH : (/nfs/pdb/full/1cbs.pdb)
+ Nr of atoms read : (       1213)
+ Looking for bonds ...
+ Nr of unique bonds : (       1129)
+<P>   
+ Select:
+  0 = QUIT
+  1 = monochrome CPK model
+  2 = atom-coloured CPK model
+  3 = monochrome wire model
+  4 = atom-coloured wire model
+  5 = monochrome ball-and-stick
+  6 = atom-coloured ball-and-stick
+  7 = monochrome CA trace
+  8 = read new PDB file
+ 93 = colour code from RGB
+ 94 = RGB from colour name
+ 95 = list predefined colours
+ 96 = scale atomic radii
+ 97 = colour atoms by element
+ 98 = change default drawing colour
+ 99 = change background colour
+ Option ? (       1)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H5">5 </A>OPTIONS</H2> </CENTER>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S1">5.1 </A>0 - quit</H3> 
+ <BR> Stop working with the program.
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S2">5.2 </A>99 - change background colour</H3> 
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (       1) 99
+<P>   
+ Background colour (RGB) ? (   0.500    0.500    0.500) 0 0 0
+ Background colour (RGB) : (   0.000    0.000    0.000)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S3">5.3 </A>98 - change default drawing colour</H3> 
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (      99) 98
+<P>   
+ Default colour (RGB) ? (   1.000    1.000    1.000) 1 1 0
+ Default colour (RGB) : (   1.000    1.000    0.000)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S4">5.4 </A>97 - colour atoms by element</H3> 
+ <BR> This assumes that the first two characters of every atom name define
+the chemical (i.e., carbon atoms called &quot;AC1*&quot; will be interpreted
+as Actinium atoms, &quot;NO12&quot; will be Nobelium, &quot;OSC3&quot; is Osmium, etc. !).
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (      98) 97
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S5">5.5 </A>96 - scale atomic radii</H3> 
+ <BR> Applies a scale factor to the atomic radii. The default radii are
+the covalent bond radii which are quite a bit smaller than the
+van der Waals radii. For CPK models, scale by a factor of 1.5-2;
+for ball-and-stick models, use a factor of ~0.5.
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (      97) 96
+<P>   
+ Scale factor (&gt;0) ? (   1.000) 0.5
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S6">5.6 </A>95 - list predefined colours</H3> 
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (      96) 95
+<P>   
+ Nr of colours : (        411)
+ #   1 (black                ) =     12595212 RGB    0.000   0.000   0.000
+ #   2 (red                  ) =     12596212 RGB    1.000   0.000   0.000
+ #   3 (green                ) =     13619212 RGB    0.000   1.000   0.000
+ #   4 (blue                 ) =   1061171212 RGB    0.000   0.000   1.000
+ ...
+ # 408 (lightsteelblue3      ) =    855328391 RGB    0.635   0.709   0.803
+ # 409 (green3               ) =     13417484 RGB    0.000   0.803   0.000
+ # 410 (orangered4           ) =     12745261 RGB    0.545   0.146   0.000
+ # 411 (mediumorchid1        ) =   1061582714 RGB    0.878   0.401   1.000
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S7">5.7 </A>94 - RGB from colour name</H3> 
+ <BR> Enter a colour name and the program will return the corresponding RGB
+values (Red-Green-Blue, three numbers between 0 and 1).
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (      95) 94
+<P>   
+ Colour name ? (red) dodgerblue2
+ dodgerblue2                    =    991454330 = RGB    0.110   0.525   0.933
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S8">5.8 </A>93 - colour code from RGB</H3> 
+ <BR> Enter RGB values, and the program will return an integer code for
+the colour. Not intended for users.
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (      94) 93
+<P>   
+ RGB values ? (   0.110    0.525    0.933)
+ Code =    991453306 for RGB    0.110   0.525   0.933
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S9">5.9 </A>8 - read new PDB file</H3> 
+ <BR> Re-start the program with a new PDB file.
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (      93) 8
+<P>   
+ PDB file name ? (rea.pdb) trp.pdb
+ Nr of atoms read : (        252)
+ Looking for bonds ...
+ Nr of unique bonds : (        270)
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S10">5.10 </A>1 - monochrome CPK model</H3> 
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (       1)
+<P>   
+ VRML file name ? (test.wrl)
+ Opened VRML file
+ Closed VRML file
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S11">5.11 </A>2 - atom-coloured CPK model</H3> 
+ <BR> This requires that you have first used option 97 to colour the atoms
+by element type !
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (       1) 2
+<P>   
+ VRML file name ? (test.wrl)
+ Opened VRML file
+ Closed VRML file
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S12">5.12 </A>3 - monochrome wire model</H3> 
+ <BR> Draws a wire model of all atoms. Atoms not bonded to any others will
+be shown as 3D crosses.
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (       2) 3
+<P>   
+ VRML file name ? (test.wrl)
+ Opened VRML file
+ Closed VRML file
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S13">5.13 </A>4 - atom-coloured wire model</H3> 
+ <BR> This requires that you have first used option 97 to colour the atoms
+by element type !
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (       3) 4
+<P>   
+ VRML file name ? (test.wrl)
+ Opened VRML file
+ Closed VRML file
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S14">5.14 </A>5 - monochrome ball-and-stick</H3> 
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (       4) 5
+<P>   
+ VRML file name ? (test.wrl)
+ Opened VRML file
+ Stick radius ? (   0.200)
+ Closed VRML file
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S15">5.15 </A>6 - atom-coloured ball-and-stick</H3> 
+ <BR> This requires that you have first used option 97 to colour the atoms
+by element type !
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (       5) 6
+<P>   
+ VRML file name ? (test.wrl)
+ Opened VRML file
+ Stick radius ? (   0.200)
+ Closed VRML file
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <H3>  <A NAME="S16">5.16 </A>7 - monochrome CA trace</H3> 
+ <BR> Only works for proteins ;-)
+<P>   
+<PRE> <TT>  <B>   
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+ Option ? (       6) 7
+<P>   
+ VRML file name ? (test.wrl)
+ Opened VRML file
+ CA-CA cut-off distance ? (   4.500)
+ Closed VRML file
+ ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE ----- EXAMPLE -----
+</B>  </TT> </PRE>
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H6">6 </A>KNOWN BUGS</H2> </CENTER>
+<P>   
+None, at present (&quot;peppar, peppar&quot;).
+<P>   
+<HR NOSHADE>   <CENTER><H2>  <A NAME="H7">7 </A>UNKNOWN BUGS</H2> </CENTER>
+<P>   
+Does not compute.
+<HR NOSHADE>    <A HREF="http://xray.bmc.uu.se/usf/" target="_top">
+<IMG ALIGN="right" BORDER="0" SRC="usf_logo.gif"
+ALT="Uppsala Software Factory"></A>
+<FONT SIZE=-1>
+<B> <I> Created at Fri Jan 14 20:12:39 2005
+by MAN2HTML version 050114/2.0.6 . This manual
+describes XVRML, a program of the <A HREF="http://xray.bmc.uu.se/usf/" target="_top">Uppsala
+Software Factory</A> (USF), written and maintained by <A HREF="http://xray.bmc.uu.se/gerard"
+target="_blank">Gerard Kleywegt</A>. &copy; 1992-2005.
+</I> </B> </FONT><P>
+<IMG SRC="http://xray.bmc.uu.se/cgi-bin/nph-count?width=6&link=http://alpha2.bmc.uu.se/~gerard/www/manuals/xvrml_man.html">
+</body></html>
