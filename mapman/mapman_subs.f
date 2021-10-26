@@ -3941,7 +3941,7 @@ c
 c
 c
 c
-      logical function litend ()
+      logical function litend_gk ()
 C
 C Check endedness, return true if little-ended (Vax-like),
 C false if big-ended (IBM-like)
