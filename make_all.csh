@@ -139,7 +139,7 @@ set echo
 
 cd $LIB_DIR
 
-if ("$skiplib" == "") make_fresh_gklib.csh $OS $int_size
+if ("$skiplib" == "") ./make_fresh_gklib.csh $OS $int_size
 
 if ($status < 0) then
     echo "Error - gklib build failed"
