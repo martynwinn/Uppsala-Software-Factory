@@ -8,9 +8,9 @@ STATIC =
 ##INCL## INCL = Makefile_linux PROGRAMNAME.incl
 ##STATIC## STATIC = -static
 
-fc =	 gfortran -DLINUX -m32
+fc =	 gfortran -DLINUX -m32 -std=legacy
 
-opt= -O -u -check_bounds -ffixed-line-length-132 -I..
+opt= -O -u -ffixed-line-length-132 -I..
 link= -O
 
 $(EXEC):	$(OBJ) $(SUBS)
