@@ -74,11 +74,11 @@ echo "Building LINUX gklib library"
 
 set lib=linux_kleylib
 
-set fort='gfortran -DLINUX -O -u -g -check_bounds -fbacktrace -fbounds-check -m32 -std=legacy -ffixed-line-length-132'
+set fort="gfortran -DLINUX -O -u -g -m"$int_size" -std=legacy -ffixed-line-length-132"
 
 
 #set ccom='cc -c -g -DOSX'
-set ccom='gcc -c -g -DLINUX -m32 '
+set ccom="gcc -c -g -DLINUX -m"$int_size
 
 # backup existing library
 if (-e $lib) mv $lib {$lib}.ckp
